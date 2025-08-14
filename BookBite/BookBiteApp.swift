@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct BookBiteApp: App {
+    @StateObject private var dependencies = DependencyContainer.shared
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
+                .environmentObject(dependencies)
         }
     }
 }

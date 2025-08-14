@@ -1,0 +1,69 @@
+[
+  {
+    "id": "book_001",
+    "title": "The Manager's Path",
+    "subtitle": "A Guide for Tech Leaders Navigating Growth and Change",
+    "authors": ["Camille Fournier"],
+    "isbn10": "1491973897",
+    "isbn13": "9781491973899",
+    "publishedYear": 2017,
+    "publisher": "O'Reilly Media",
+    "categories": ["Management", "Technology", "Leadership"],
+    "coverAssetName": "managers_path_cover",
+    "description": "Managing people is difficult wherever you work. But in the tech industry, where management is also a technical discipline, the learning curve can be brutal. This book provides a path through the management maze for tech leaders.",
+    "sourceAttribution": ["O'Reilly Media", "Amazon Reviews"]
+  },
+  {
+    "id": "book_002",
+    "title": "Accelerate",
+    "subtitle": "The Science of Lean Software and DevOps",
+    "authors": ["Nicole Forsgren", "Jez Humble", "Gene Kim"],
+    "isbn13": "9781942788331",
+    "publishedYear": 2018,
+    "publisher": "IT Revolution Press",
+    "categories": ["DevOps", "Software Engineering", "Business"],
+    "coverAssetName": "accelerate_cover",
+    "description": "Building and scaling high performing technology organizations. Through four years of groundbreaking research, the authors discovered the practices that drive higher software delivery performance.",
+    "sourceAttribution": ["DORA Research", "IT Revolution"]
+  },
+  {
+    "id": "book_003",
+    "title": "Inspired",
+    "subtitle": "How to Create Tech Products Customers Love",
+    "authors": ["Marty Cagan"],
+    "isbn13": "9781119387503",
+    "publishedYear": 2017,
+    "publisher": "Wiley",
+    "categories": ["Product Management", "Innovation", "Technology"],
+    "coverAssetName": "inspired_cover",
+    "description": "How do today's most successful tech companies define, design, and develop products that have earned the love of literally billions of people around the world?",
+    "sourceAttribution": ["Silicon Valley Product Group"]
+  },
+  {
+    "id": "book_004",
+    "title": "Thinking in Systems",
+    "subtitle": "A Primer",
+    "authors": ["Donella H. Meadows"],
+    "isbn10": "1603580557",
+    "isbn13": "9781603580557",
+    "publishedYear": 2008,
+    "publisher": "Chelsea Green Publishing",
+    "categories": ["Systems Thinking", "Science", "Business"],
+    "coverAssetName": "thinking_systems_cover",
+    "description": "A concise and crucial book offering insight for problem solving on scales ranging from the personal to the global. This essential primer brings systems thinking out of the realm of computers and equations.",
+    "sourceAttribution": ["Sustainability Institute", "Academic Reviews"]
+  },
+  {
+    "id": "book_005",
+    "title": "The Lean Startup",
+    "subtitle": "How Today's Entrepreneurs Use Continuous Innovation to Create Radically Successful Businesses",
+    "authors": ["Eric Ries"],
+    "isbn13": "9780307887894",
+    "publishedYear": 2011,
+    "publisher": "Crown Business",
+    "categories": ["Entrepreneurship", "Business", "Innovation"],
+    "coverAssetName": "lean_startup_cover",
+    "description": "Most startups fail. But many of those failures are preventable. The Lean Startup is a new approach being adopted across the globe, changing the way companies are built and new products are launched.",
+    "sourceAttribution": ["The Lean Startup Movement"]
+  }
+]

@@ -23,17 +23,51 @@ final class BookBiteUITests: XCTestCase {
     }
 
     @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
+    func testAppLaunchAndSearch() throws {
         let app = XCUIApplication()
         app.launch()
-
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        
+        XCTAssertTrue(app.tabBars.buttons["Search"].exists)
+        
+        let searchField = app.searchFields.element
+        XCTAssertTrue(searchField.exists)
+        
+        searchField.tap()
+        searchField.typeText("Manager")
+        
+        let firstResult = app.cells.firstMatch
+        XCTAssertTrue(firstResult.waitForExistence(timeout: 5.0))
+        
+        firstResult.tap()
+        
+        XCTAssertTrue(app.staticTexts["The Manager's Path"].waitForExistence(timeout: 3.0))
+    }
+    
+    @MainActor
+    func testTabNavigation() throws {
+        let app = XCUIApplication()
+        app.launch()
+        
+        let searchTab = app.tabBars.buttons["Search"]
+        let libraryTab = app.tabBars.buttons["Library"]
+        let settingsTab = app.tabBars.buttons["Settings"]
+        
+        XCTAssertTrue(searchTab.exists)
+        XCTAssertTrue(libraryTab.exists)
+        XCTAssertTrue(settingsTab.exists)
+        
+        libraryTab.tap()
+        XCTAssertTrue(app.navigationBars["My Library"].exists)
+        
+        settingsTab.tap()
+        XCTAssertTrue(app.navigationBars["Settings"].exists)
+        
+        searchTab.tap()
+        XCTAssertTrue(app.searchFields.element.exists)
     }
 
     @MainActor
     func testLaunchPerformance() throws {
-        // This measures how long it takes to launch your application.
         measure(metrics: [XCTApplicationLaunchMetric()]) {
             XCUIApplication().launch()
         }
