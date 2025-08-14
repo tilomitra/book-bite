@@ -1,0 +1,44 @@
+
+You are a senior iOS architect.
+Plan out the following iOS application in this code repository. The plan should be outputted in a markdown file in the `requirements/` directory so that it can be executed on later.
+
+PRODUCT SUMMARY
+An iOS app for people to search non-fiction books and read concise (<10-minute) summaries. Differentiators: role-specific "How to apply at work", claim-level confidence indicators + citations, simple comparative view (book vs. book), and export (one-page PDF, simple mind map). For this MVP, all book metadata and summary content are read from local JSON files included in the app bundle. No networking or remote services.
+
+SCOPE CONSTRAINTS
+- No backend. No networking. All data is hardcoded as local JSON fixtures bundled with the app. We will add backend later.
+- Use SwiftUI (iOS 17+), async/await, and modern Swift.
+- All data loaded from local JSON under /Fixtures in the app bundle.
+- Simulate LLM output by reading from pre-generated JSON summaries (do not call any APIs).
+- Implement minimal but clean architecture that can later be swapped for a real backend.
+
+DELIVERABLES (WRITE THEM ALL)
+1) User Stories (8–10)
+   - Search by title or author over local dataset.
+   - View book detail with cover, metadata, and summary sections:
+     - oneSentenceHook, keyIdeas (5–7), howToApply (3–5), commonPitfalls (2+), critiques (2–3), whoShouldRead, limitations, citations[], readTimeMinutes.
+
+2) Functional Requirements
+   - Search: index over fields (title, author, categories).
+   - Detail: tabbed sections, confidence badges, citation list with tappable links
+
+4) App Architecture
+   - Pattern: MVVM + lightweight Repository.
+   - Set it up in a way where we can replace the hardcoded data with server calls later.
+   - No auth needed at the moment, but we will be adding it later.
+   - Dependency injection via simple composition root.
+
+5) Data Model (define types with Swift structs)
+   - Book: id, title, subtitle?, authors[], isbn10?, isbn13?, publishedYear, publisher?, categories[], coverAssetName, description, sourceAttribution[].
+   - Summary: bookId, oneSentenceHook, keyIdeas[{ id, idea, tags[], confidence, sources[] }], howToApply[{ id, action, tags[] }], commonPitfalls[], critiques[], whoShouldRead, limitations, citations[{ source, url? }], readTimeMinutes, style("brief"|"full").
+   - Provide JSON Schema examples for /Fixtures/books.json and /Fixtures/summaries.json.
+
+6) Local JSON Fixtures (provide concrete samples)
+   - Provide 3–5 sample book entries (e.g., "The Manager's Path", "Accelerate", "Inspired", "Thinking in Systems").
+   - Provide 2 sample summaries with realistic content and fields populated, including confidence ratings and citations.
+
+
+7) UI Design & Navigation (SwiftUI)
+   - Screens:
+       - Home/Search: search field, results list with covers, skeleton loaders.
+       - Book Detail: header with cover, metadata; segmented control for sections; “Generate/Regenerate” triggers the streaming simulator.
