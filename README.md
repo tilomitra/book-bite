@@ -93,6 +93,66 @@ Test coverage includes:
 - UI navigation flows
 - Export functionality
 
+## Data Population Scripts
+
+BookBite includes powerful scripts for automatically populating the database with thousands of books and AI-generated summaries:
+
+### Category-Based Book Discovery
+
+Automatically discover and add books by category using Google Books API:
+
+```bash
+# Get 50 books per category (all priorities)
+cd server && npx tsx scripts/populate-books-by-category.ts 50
+
+# Get 25 books per category, high priority categories only
+cd server && npx tsx scripts/populate-books-by-category.ts 25 high
+
+# Get 10 books per category, medium priority categories only  
+cd server && npx tsx scripts/populate-books-by-category.ts 10 medium
+
+# Get 5 books per category, low priority categories only
+cd server && npx tsx scripts/populate-books-by-category.ts 5 low
+```
+
+**Features:**
+- 35+ comprehensive non-fiction categories (Self-Help, Business, Science, History, etc.)
+- Automatic deduplication across categories
+- AI-generated summaries and extended summaries
+- Smart rate limiting for API compliance
+- Progress tracking and detailed statistics
+
+**Categories Include:**
+- **High Priority**: Self-Help, Psychology, Business, History, Biography, Memoir, Leadership, etc.
+- **Medium Priority**: Economics, Innovation, Biology, Philosophy, Politics, Health, etc.
+- **Low Priority**: Art, Music, Travel, Cooking
+
+### Manual Book Curation
+
+For curated lists of popular books:
+
+```bash
+# Populate with handpicked popular non-fiction books
+cd server && npx tsx scripts/populate-nonfiction-books.ts
+```
+
+This script includes 75+ carefully selected popular non-fiction books across categories like:
+- Self-Help & Personal Development
+- Biography & Memoir  
+- Science & Nature
+- Business & Economics
+- History & Politics
+- Health & Wellness
+
+### Extended Summary Generation
+
+Generate cost-effective extended summaries for existing books:
+
+```bash
+# Generate extended summaries for all books without them
+cd server && npm run generate-extended-summaries
+```
+
 ## Sample Data
 
 The app includes sample summaries for popular business and technology books:

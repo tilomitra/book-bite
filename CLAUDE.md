@@ -62,6 +62,54 @@ cd server && npm install
 cat server/supabase/schema.sql
 ```
 
+#### Data Population Scripts
+
+##### Category-Based Book Discovery (Recommended for Scale)
+```bash
+# Get 50 books per category (all 35+ categories)
+cd server && npx tsx scripts/populate-books-by-category.ts 50
+
+# Get 25 books per category, high priority categories only (13 categories: Self-Help, Psychology, Business, History, Biography, etc.)
+cd server && npx tsx scripts/populate-books-by-category.ts 25 high
+
+# Get 10 books per category, medium priority categories only (15 categories: Economics, Innovation, Biology, Philosophy, etc.)
+cd server && npx tsx scripts/populate-books-by-category.ts 10 medium
+
+# Get 5 books per category, low priority categories only (7 categories: Art, Music, Travel, Cooking)
+cd server && npx tsx scripts/populate-books-by-category.ts 5 low
+```
+
+**Features:**
+- Automatic discovery via Google Books API
+- 35+ comprehensive non-fiction categories
+- Automatic deduplication across categories  
+- AI-generated summaries + extended summaries
+- Smart rate limiting and progress tracking
+- Can generate 1,750+ books (50 per category × 35 categories)
+
+##### Manual Curated Book Population
+```bash
+# Populate with 75+ handpicked popular non-fiction books
+cd server && npx tsx scripts/populate-nonfiction-books.ts
+```
+
+**Features:**
+- Curated list of popular books (Atomic Habits, Sapiens, etc.)
+- Covers Self-Help, Biography, Science, Business, History, Health categories
+- Quality over quantity approach
+
+##### Extended Summary Generation
+```bash
+# Generate cost-effective extended summaries for existing books without them
+cd server && npm run generate-extended-summaries
+```
+
+**Usage Notes:**
+- Always start with high priority categories for best content quality
+- Monitor API usage to stay within rate limits
+- Scripts include automatic deduplication to prevent duplicates
+- Each book gets both regular summary and extended summary via AI
+
 ## Architecture
 
 ### Project Structure
