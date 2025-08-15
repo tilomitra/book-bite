@@ -6,18 +6,17 @@ struct RootView: View {
     var body: some View {
         TabView {
             NavigationStack {
+                FeaturedBooksView()
+            }
+            .tabItem {
+                Label("Featured", systemImage: "star.fill")
+            }
+            
+            NavigationStack {
                 SearchView()
             }
             .tabItem {
                 Label("Search", systemImage: "magnifyingglass")
-            }
-            
-            NavigationStack {
-                Text("Library")
-                    .navigationTitle("My Library")
-            }
-            .tabItem {
-                Label("Library", systemImage: "books.vertical")
             }
             
             NavigationStack {

@@ -13,23 +13,11 @@ class DependencyContainer: ObservableObject {
     private init() {}
     
     private func createBookRepository() -> BookRepository {
-        switch appConfig.currentDataSource {
-        case .local:
-            return LocalBookRepository()
-        case .remote:
-            return RemoteBookRepository()
-        case .hybrid:
-            return HybridBookRepository()
-        }
+        // Simplified - always use RemoteBookRepository (HybridBookRepository now just wraps it)
+        return HybridBookRepository()
     }
     
     // For testing or manual switching
-    func switchToLocalRepository() {
-        bookRepository = LocalBookRepository()
-        searchService = SearchService(repository: bookRepository)
-        objectWillChange.send()
-    }
-    
     func switchToRemoteRepository() {
         bookRepository = RemoteBookRepository()
         searchService = SearchService(repository: bookRepository)

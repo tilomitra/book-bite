@@ -25,14 +25,12 @@ struct SettingsView: View {
                                 .foregroundColor(.secondary)
                         }
                         
-                        if let hybridRepo = dependencies.bookRepository as? HybridBookRepository {
-                            HStack {
-                                Image(systemName: hybridRepo.isOnline ? "wifi" : "wifi.slash")
-                                    .foregroundColor(hybridRepo.isOnline ? .green : .orange)
-                                Text(hybridRepo.isOnline ? "Online" : "Offline")
-                                    .foregroundColor(.secondary)
-                                Spacer()
-                            }
+                        HStack {
+                            Image(systemName: "wifi")
+                                .foregroundColor(.green)
+                            Text("Online (API Only)")
+                                .foregroundColor(.secondary)
+                            Spacer()
                         }
                     }
                     
@@ -43,7 +41,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Data Source")
                 } footer: {
-                    Text("The app automatically uses remote data when available and falls back to local cache when offline.")
+                    Text("The app now uses API-only mode for always fresh data. A stable internet connection is required.")
                 }
                 
                 // Cache Management Section
@@ -89,7 +87,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Storage")
                 } footer: {
-                    Text("Cached data allows the app to work offline. Clearing cache will remove all downloaded book data.")
+                    Text("Cache improves performance by storing recently accessed data. Clearing cache will remove all cached book data.")
                 }
                 
                 // App Information
@@ -130,7 +128,7 @@ struct SettingsView: View {
                     clearCache()
                 }
             } message: {
-                Text("This will remove all cached books and summaries. You'll need an internet connection to reload content.")
+                Text("This will remove all cached books and summaries. Content will be re-downloaded from the API as needed.")
             }
         }
     }
@@ -141,11 +139,6 @@ struct SettingsView: View {
     @ViewBuilder
     private var debugDataSourceControls: some View {
         VStack(spacing: 8) {
-            Button("Switch to Local") {
-                dependencies.switchToLocalRepository()
-            }
-            .buttonStyle(.bordered)
-            
             Button("Switch to Remote") {
                 dependencies.switchToRemoteRepository()
             }
@@ -155,6 +148,10 @@ struct SettingsView: View {
                 dependencies.switchToHybridRepository()
             }
             .buttonStyle(.borderedProminent)
+            
+            Text("Note: Both options now use API only")
+                .font(.caption)
+                .foregroundColor(.secondary)
         }
     }
     #endif
@@ -163,12 +160,10 @@ struct SettingsView: View {
     
     private var currentDataSourceText: String {
         switch appConfig.currentDataSource {
-        case .local:
-            return "Local Only"
         case .remote:
-            return "Remote Only"
+            return "API Only"
         case .hybrid:
-            return "Hybrid (Recommended)"
+            return "API Only (Simplified)"
         }
     }
     

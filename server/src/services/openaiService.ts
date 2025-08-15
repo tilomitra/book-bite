@@ -1,18 +1,18 @@
-import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 import { Summary, KeyIdea, ApplicationPoint, Citation } from '../models/types';
 import { v4 as uuidv4 } from 'uuid';
 
-export class ClaudeService {
-  private client: Anthropic;
-  private model = 'claude-3-5-sonnet-20241022';
+export class OpenAIService {
+  private client: OpenAI;
+  private model = 'gpt-4o';
 
   constructor() {
-    if (!process.env.ANTHROPIC_API_KEY) {
-      throw new Error('Anthropic API key not configured');
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error('OpenAI API key not configured');
     }
     
-    this.client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY
+    this.client = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY
     });
   }
 
@@ -32,10 +32,11 @@ export class ClaudeService {
     );
 
     try {
-      const response = await this.client.messages.create({
+      const response = await this.client.chat.completions.create({
         model: this.model,
         max_tokens: 4000,
         temperature: 0.7,
+        response_format: { type: "json_object" },
         messages: [
           {
             role: 'user',
@@ -44,16 +45,16 @@ export class ClaudeService {
         ]
       });
 
-      const content = response.content[0];
-      if (content.type !== 'text') {
-        throw new Error('Unexpected response type from Claude');
+      const content = response.choices[0].message.content;
+      if (!content) {
+        throw new Error('No response content from OpenAI');
       }
 
-      const parsedResponse = JSON.parse(content.text);
+      const parsedResponse = JSON.parse(content);
       
-      return this.transformClaudeResponseToSummary(parsedResponse, style);
+      return this.transformOpenAIResponseToSummary(parsedResponse, style);
     } catch (error) {
-      console.error('Error generating summary with Claude:', error);
+      console.error('Error generating summary with OpenAI:', error);
       throw new Error('Failed to generate book summary');
     }
   }
@@ -110,7 +111,7 @@ Please provide a JSON response with the following structure:
 Ensure all arrays have at least one item, and confidence levels are realistic based on the description provided.`;
   }
 
-  private transformClaudeResponseToSummary(
+  private transformOpenAIResponseToSummary(
     response: any,
     style: 'brief' | 'full'
   ): Omit<Summary, 'id' | 'book_id' | 'created_at' | 'updated_at'> {
@@ -148,7 +149,7 @@ Ensure all arrays have at least one item, and confidence levels are realistic ba
       read_time_minutes: response.readTimeMinutes || 15,
       style: style,
       llm_model: this.model,
-      llm_version: '20241022',
+      llm_version: 'gpt-4o-2024-05-13',
       generation_date: new Date()
     };
   }
@@ -175,10 +176,11 @@ Please enhance the summary with:
 Return the enhanced summary in the same JSON structure as the input.`;
 
     try {
-      const response = await this.client.messages.create({
+      const response = await this.client.chat.completions.create({
         model: this.model,
         max_tokens: 4000,
         temperature: 0.5,
+        response_format: { type: "json_object" },
         messages: [
           {
             role: 'user',
@@ -187,13 +189,13 @@ Return the enhanced summary in the same JSON structure as the input.`;
         ]
       });
 
-      const content = response.content[0];
-      if (content.type !== 'text') {
-        throw new Error('Unexpected response type from Claude');
+      const content = response.choices[0].message.content;
+      if (!content) {
+        throw new Error('No response content from OpenAI');
       }
 
-      const parsedResponse = JSON.parse(content.text);
-      return this.transformClaudeResponseToSummary(parsedResponse, existingSummary.style);
+      const parsedResponse = JSON.parse(content);
+      return this.transformOpenAIResponseToSummary(parsedResponse, existingSummary.style);
     } catch (error) {
       console.error('Error enhancing summary:', error);
       // Return original summary if enhancement fails

@@ -8,7 +8,11 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "lint": "eslint src --ext .ts",
-    "test": "jest"
+    "test": "jest",
+    "populate-featured": "tsx scripts/populate-featured-books.ts",
+    "populate-business": "tsx scripts/populate-business-books.ts",
+    "generate-summaries": "tsx scripts/generate-summaries.ts",
+    "setup-featured": "tsx scripts/setup-featured-books.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
@@ -16,7 +20,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "axios": "^1.6.2",
-    "@anthropic-ai/sdk": "^0.24.3",
+    "openai": "^4.52.0",
     "express-rate-limit": "^7.1.5",
     "helmet": "^7.1.0",
     "morgan": "^1.10.0",

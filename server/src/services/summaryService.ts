@@ -1,18 +1,18 @@
 import { supabase } from '../config/supabase';
-import { ClaudeService } from './claudeService';
+import { OpenAIService } from './openaiService';
 import { BookService } from './bookService';
 import { Summary, SummaryJob, JobStatus } from '../models/types';
 import NodeCache from 'node-cache';
 import Bull from 'bull';
 
 export class SummaryService {
-  private claude: ClaudeService;
+  private openai: OpenAIService;
   private bookService: BookService;
   private cache: NodeCache;
   private summaryQueue: Bull.Queue;
 
   constructor() {
-    this.claude = new ClaudeService();
+    this.openai = new OpenAIService();
     this.bookService = new BookService();
     this.cache = new NodeCache({ stdTTL: 1800, checkperiod: 300 }); // 30 min cache
     
@@ -116,8 +116,8 @@ export class SummaryService {
       throw new Error('Book not found');
     }
 
-    // Generate summary using Claude
-    const summaryData = await this.claude.generateBookSummary(
+    // Generate summary using OpenAI
+    const summaryData = await this.openai.generateBookSummary(
       book.title,
       book.authors,
       book.description || '',

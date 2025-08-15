@@ -22,6 +22,21 @@ export class BookController {
     }
   }
 
+  async getFeaturedBooks(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { page = 1, limit = 100 } = req.query;
+      
+      const books = await bookService.getFeaturedBooks({
+        page: Number(page),
+        limit: Number(limit)
+      });
+      
+      res.json(books);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getBookById(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;

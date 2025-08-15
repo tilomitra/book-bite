@@ -90,7 +90,7 @@ fastlane/test_output
 iOSInjectionProject/
 
 # Node.js (for server directory)
-server/node_modules/
+node_modules/
 server/npm-debug.log*
 server/yarn-debug.log*
 server/yarn-error.log*
@@ -126,7 +126,6 @@ server/.lock-wscript
 server/build/Release
 
 # Dependency directories
-server/node_modules/
 server/jspm_packages/
 
 # Snowpack dependency directory (https://snowpack.dev/)
@@ -210,6 +209,9 @@ server/.pnp.*
 
 # Build output
 server/dist/
+
+# Test files
+server/test-openai.js
 
 # Logs
 server/logs

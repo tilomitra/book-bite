@@ -8,30 +8,30 @@ class RemoteBookRepository: BookRepository {
     // MARK: - BookRepository Implementation
     
     func fetchAllBooks() async throws -> [Book] {
-        // Check cache first
-        if let cachedBooks = try? cacheService.getCachedBooks(), !cachedBooks.isEmpty {
-            return cachedBooks
-        }
-        
         let response: BooksResponse = try await networkService.get(endpoint: "books")
         let books = response.books
         
-        // Cache the results
+        // Cache the results for performance
         try? cacheService.cacheBooks(books)
         
         return books
     }
     
-    func fetchBook(by id: String) async throws -> Book? {
-        // Check cache first
-        if let cachedBook = try? cacheService.getCachedBook(id: id) {
-            return cachedBook
-        }
+    func fetchFeaturedBooks() async throws -> [Book] {
+        let response: BooksResponse = try await networkService.get(endpoint: "books/featured")
+        let books = response.books
         
+        // Cache the results for performance
+        try? cacheService.cacheFeaturedBooks(books)
+        
+        return books
+    }
+    
+    func fetchBook(by id: String) async throws -> Book? {
         do {
             let book: Book = try await networkService.get(endpoint: "books/\(id)")
             
-            // Cache the result
+            // Cache the result for performance
             try? cacheService.cacheBook(book)
             
             return book
@@ -44,15 +44,10 @@ class RemoteBookRepository: BookRepository {
     }
     
     func fetchSummary(for bookId: String) async throws -> Summary? {
-        // Check cache first
-        if let cachedSummary = try? cacheService.getCachedSummary(bookId: bookId) {
-            return cachedSummary
-        }
-        
         do {
             let summary: Summary = try await networkService.get(endpoint: "summaries/book/\(bookId)")
             
-            // Cache the result
+            // Cache the result for performance
             try? cacheService.cacheSummary(summary)
             
             return summary

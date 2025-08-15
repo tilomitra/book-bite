@@ -5,7 +5,7 @@ Node.js/Express API server for the BookBite iOS application. Provides book metad
 ## Features
 
 - **Book Management**: CRUD operations for books with metadata from Google Books API
-- **AI Summaries**: Generate book summaries using Claude (Anthropic) API
+- **AI Summaries**: Generate book summaries using OpenAI GPT-4o API
 - **Search**: Full-text search across books with external API integration
 - **Authentication**: Supabase Auth integration with role-based access control
 - **Background Jobs**: Async summary generation using Bull/Redis
@@ -17,7 +17,7 @@ Node.js/Express API server for the BookBite iOS application. Provides book metad
 - **Framework**: Express.js with TypeScript
 - **Database**: Supabase (PostgreSQL)
 - **Authentication**: Supabase Auth
-- **AI**: Anthropic Claude API (@anthropic-ai/sdk)
+- **AI**: OpenAI API (openai)
 - **External APIs**: Google Books API
 - **Queue**: Bull (Redis)
 - **Caching**: NodeCache + Redis
@@ -37,7 +37,7 @@ Required environment variables:
 - `SUPABASE_URL` - Your Supabase project URL
 - `SUPABASE_SERVICE_KEY` - Supabase service role key
 - `GOOGLE_BOOKS_API_KEY` - Google Books API key
-- `ANTHROPIC_API_KEY` - Claude API key
+- `OPENAI_API_KEY` - OpenAI API key
 - `REDIS_URL` - Redis connection URL
 
 ### 2. Install Dependencies
@@ -125,7 +125,7 @@ Admin endpoints require users with `role: 'admin'` in their user metadata.
 
 ## Summary Generation
 
-Summaries are generated using Claude 3.5 Sonnet with structured prompts:
+Summaries are generated using OpenAI GPT-4o with structured prompts:
 - **Brief**: 3-4 key ideas, 2-3 application points
 - **Full**: 5-7 key ideas, 4-5 application points
 

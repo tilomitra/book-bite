@@ -13,6 +13,8 @@ struct Book: Identifiable, Codable, Hashable {
     let coverAssetName: String
     let description: String
     let sourceAttribution: [String]
+    let popularityRank: Int?
+    let isFeatured: Bool
     
     var formattedAuthors: String {
         authors.joined(separator: ", ")

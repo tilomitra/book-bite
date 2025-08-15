@@ -20,6 +20,8 @@ export const BookSchema = z.object({
   source_attribution: z.array(z.string()).default([]),
   google_books_id: z.string().nullable().optional(),
   open_library_id: z.string().nullable().optional(),
+  popularity_rank: z.number().int().nullable().optional(),
+  is_featured: z.boolean().default(false),
   created_at: z.date().optional(),
   updated_at: z.date().optional()
 });

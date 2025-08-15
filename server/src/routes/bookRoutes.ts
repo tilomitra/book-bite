@@ -6,6 +6,7 @@ const router = Router();
 
 // Public routes
 router.get('/', bookController.getAllBooks);
+router.get('/featured', bookController.getFeaturedBooks);
 router.get('/search', bookController.searchBooks);
 router.get('/:id', bookController.getBookById);
 router.get('/:id/cover', bookController.getBookCover);

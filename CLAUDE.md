@@ -96,7 +96,7 @@ cat server/supabase/schema.sql
   - `middleware/`: Authentication, error handling, rate limiting
   - `models/`: TypeScript types and Zod schemas
   - `routes/`: Express route definitions
-  - `services/`: Business logic (GoogleBooksService, ClaudeService, etc.)
+  - `services/`: Business logic (GoogleBooksService, OpenAIService, etc.)
 - **supabase/**: Database schema and migrations
 
 ### Key Implementation Details
@@ -112,7 +112,7 @@ cat server/supabase/schema.sql
 - Express.js with TypeScript for type safety
 - Supabase (PostgreSQL) for database with row-level security
 - Google Books API integration for book metadata enrichment
-- Anthropic Claude API for AI-generated book summaries
+- OpenAI API for AI-generated book summaries
 - Bull job queue with Redis for async summary generation
 - JWT authentication with role-based access control (admin/public)
 - Comprehensive error handling and request validation with Zod
@@ -149,7 +149,7 @@ cat server/supabase/schema.sql
 - **TypeScript**: 5.3+
 - **Database**: PostgreSQL via Supabase
 - **Queue**: Redis for background jobs
-- **APIs**: Google Books API, Anthropic Claude API
+- **APIs**: Google Books API, OpenAI API
 
 ## Environment Setup
 
@@ -165,7 +165,7 @@ SUPABASE_SERVICE_KEY=your_supabase_service_key
 
 # External APIs
 GOOGLE_BOOKS_API_KEY=your_google_books_api_key
-ANTHROPIC_API_KEY=your_anthropic_api_key
+OPENAI_API_KEY=your_openai_api_key
 
 # Queue
 REDIS_URL=redis://localhost:6379

@@ -46,6 +46,43 @@ export class BookService {
     };
   }
 
+  async getFeaturedBooks(options: { 
+    page?: number; 
+    limit?: number;
+  } = {}) {
+    const { page = 1, limit = 100 } = options;
+    const offset = (page - 1) * limit;
+
+    // Check cache first
+    const cacheKey = `featured-books:${page}:${limit}`;
+    const cached = this.cache.get(cacheKey);
+    if (cached) return cached;
+
+    const { data, error, count } = await supabase
+      .from('books')
+      .select('*', { count: 'exact' })
+      .eq('is_featured', true)
+      .order('popularity_rank', { ascending: true })
+      .range(offset, offset + limit - 1);
+
+    if (error) {
+      throw new Error(`Failed to fetch featured books: ${error.message}`);
+    }
+
+    const result = {
+      books: data || [],
+      total: count || 0,
+      page,
+      limit,
+      totalPages: Math.ceil((count || 0) / limit)
+    };
+
+    // Cache for 30 minutes since featured books don't change often
+    this.cache.set(cacheKey, result, 1800);
+
+    return result;
+  }
+
   async getBookById(id: string): Promise<Book | null> {
     // Check cache first
     const cacheKey = `book:${id}`;

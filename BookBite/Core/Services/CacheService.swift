@@ -24,6 +24,10 @@ class CacheService {
         cacheDirectory.appendingPathComponent("summaries.json")
     }
     
+    private var featuredBooksPath: URL {
+        cacheDirectory.appendingPathComponent("featured_books.json")
+    }
+    
     private func bookPath(id: String) -> URL {
         cacheDirectory.appendingPathComponent("book_\(id).json")
     }
@@ -62,6 +66,20 @@ class CacheService {
     func removeCachedBook(id: String) {
         let path = bookPath(id: id)
         try? fileManager.removeItem(at: path)
+    }
+    
+    // MARK: - Featured Books Caching
+    
+    func cacheFeaturedBooks(_ books: [Book]) throws {
+        let data = try JSONEncoder().encode(books)
+        try data.write(to: featuredBooksPath)
+    }
+    
+    func getCachedFeaturedBooks() throws -> [Book]? {
+        guard fileManager.fileExists(atPath: featuredBooksPath.path) else { return nil }
+        
+        let data = try Data(contentsOf: featuredBooksPath)
+        return try JSONDecoder().decode([Book].self, from: data)
     }
     
     // MARK: - Summary Caching

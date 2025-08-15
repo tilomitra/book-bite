@@ -17,6 +17,8 @@ CREATE TABLE books (
     source_attribution TEXT[],
     google_books_id VARCHAR(50),
     open_library_id VARCHAR(50),
+    popularity_rank INTEGER,
+    is_featured BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
@@ -59,6 +61,8 @@ CREATE INDEX idx_books_isbn13 ON books(isbn13);
 CREATE INDEX idx_books_title ON books(title);
 CREATE INDEX idx_books_authors ON books USING GIN(authors);
 CREATE INDEX idx_books_categories ON books USING GIN(categories);
+CREATE INDEX idx_books_popularity_rank ON books(popularity_rank);
+CREATE INDEX idx_books_is_featured ON books(is_featured);
 CREATE INDEX idx_summaries_book_id ON summaries(book_id);
 CREATE INDEX idx_jobs_book_id ON summary_generation_jobs(book_id);
 CREATE INDEX idx_jobs_status ON summary_generation_jobs(status);

@@ -8,19 +8,13 @@ struct AppConfiguration {
     // MARK: - Data Source Configuration
     
     enum DataSource {
-        case local
         case remote
-        case hybrid // Uses remote with local fallback
+        case hybrid // Now just wraps remote (simplified)
     }
     
     var currentDataSource: DataSource {
-        #if DEBUG
-        // In debug mode, you can easily switch between data sources
-        return .hybrid
-        #else
-        // In production, use remote with local fallback
-        return .hybrid
-        #endif
+        // Always use remote (hybrid is just a wrapper now)
+        return .remote
     }
     
     // MARK: - Server Configuration
@@ -36,15 +30,15 @@ struct AppConfiguration {
     // MARK: - Feature Flags
     
     var isOfflineModeEnabled: Bool {
-        return true
+        return false // Disabled - API only now
     }
     
     var isRemoteSearchEnabled: Bool {
-        return currentDataSource == .remote || currentDataSource == .hybrid
+        return true // Always enabled
     }
     
     var isSummaryGenerationEnabled: Bool {
-        return currentDataSource == .remote || currentDataSource == .hybrid
+        return true // Always enabled
     }
     
     var isCacheEnabled: Bool {
