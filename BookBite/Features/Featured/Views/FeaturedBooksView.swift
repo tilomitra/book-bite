@@ -72,12 +72,12 @@ struct FeaturedBooksGenreView: View {
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: 20) {
                 ForEach(filteredGenres, id: \.genre) { genreGroup in
                     GenreSection(genre: genreGroup.genre, books: genreGroup.books)
                 }
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, 4)
         }
     }
 }
@@ -87,12 +87,11 @@ struct GenreSection: View {
     let books: [Book]
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 10) {
             // Section Header
             HStack {
                 Text(genre)
-                    .font(.title2)
-                    .fontWeight(.bold)
+                    .font(.system(size: 20, weight: .bold))
                     .foregroundColor(.primary)
                 
                 Spacer()
@@ -101,10 +100,9 @@ struct GenreSection: View {
                     NavigationLink(destination: GenreDetailView(genre: genre, books: books)) {
                         HStack(spacing: 4) {
                             Text("See all")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
+                                .font(.system(size: 14, weight: .medium))
                             Image(systemName: "chevron.right")
-                                .font(.caption)
+                                .font(.system(size: 12, weight: .medium))
                         }
                         .foregroundColor(.accentColor)
                     }
@@ -114,7 +112,7 @@ struct GenreSection: View {
             
             // Horizontal Scroll View of Books
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 16) {
+                HStack(spacing: 12) {
                     ForEach(books.prefix(10)) { book in
                         NavigationLink(destination: BookDetailView(book: book)) {
                             CompactBookCard(book: book)
@@ -159,27 +157,25 @@ struct CompactBookCard: View {
     let book: Book
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // Book Cover
-            BookCoverView(coverURL: book.coverAssetName, size: .small)
-                .frame(width: 120, height: 180)
-                .clipped()
+        VStack(alignment: .leading, spacing: 6) {
+            // Book Cover - Larger and consistent
+            EnhancedBookCover(coverURL: book.coverAssetName)
+                .frame(width: 140, height: 210)
             
-            // Book Info
+            // Book Info - Simplified
             VStack(alignment: .leading, spacing: 2) {
                 Text(book.title)
-                    .font(.caption)
-                    .fontWeight(.semibold)
+                    .font(.system(size: 13, weight: .semibold))
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.primary)
                 
                 Text(book.formattedAuthors)
-                    .font(.caption2)
+                    .font(.system(size: 11))
                     .lineLimit(1)
                     .foregroundColor(.secondary)
             }
-            .frame(width: 120, alignment: .leading)
+            .frame(width: 140, alignment: .leading)
         }
     }
 }

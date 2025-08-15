@@ -14,23 +14,30 @@ struct BookDetailView: View {
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(spacing: 0) {
+                // Clean book header section
                 bookHeader
+                    .padding(.horizontal)
+                    .padding(.top)
+                    .padding(.bottom, 24)
                 
+                // Loading or error states
                 if viewModel.isLoadingSummary {
                     LoadingView()
                         .frame(height: 200)
+                        .padding()
                 } else if let error = viewModel.summaryError {
                     ErrorView(error: error) {
                         Task {
                             await viewModel.loadSummary()
                         }
                     }
+                    .padding()
                 } else if let summary = viewModel.summary {
+                    // Extended summary section
                     summaryContent(summary)
                 }
             }
-            .padding()
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -65,58 +72,64 @@ struct BookDetailView: View {
     }
     
     var bookHeader: some View {
-        HStack(alignment: .top, spacing: 16) {
+        VStack(spacing: 20) {
+            // Book cover centered
             BookCoverView(coverURL: viewModel.book.coverAssetName, size: .large)
+                .frame(height: 200)
+                .shadow(radius: 10)
             
-            VStack(alignment: .leading, spacing: 8) {
+            // Book information
+            VStack(spacing: 12) {
                 Text(viewModel.book.title)
-                    .font(.title2)
+                    .font(.title)
                     .fontWeight(.bold)
-                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
                 
                 if let subtitle = viewModel.book.subtitle {
                     Text(subtitle)
-                        .font(.subheadline)
+                        .font(.callout)
                         .foregroundColor(.secondary)
-                        .lineLimit(2)
+                        .multilineTextAlignment(.center)
                 }
                 
                 Text(viewModel.book.formattedAuthors)
-                    .font(.body)
+                    .font(.subheadline)
                     .fontWeight(.medium)
+                    .foregroundColor(.primary.opacity(0.8))
                 
-                Text(viewModel.publicationInfo)
+                HStack(spacing: 20) {
+                    // Publication info
+                    Text(viewModel.publicationInfo)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    // Reading time
+                    HStack(spacing: 4) {
+                        Image(systemName: "clock")
+                        Text(viewModel.readingTime)
+                    }
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
-                HStack {
-                    Image(systemName: "clock.fill")
-                    Text(viewModel.readingTime)
                 }
-                .font(.caption)
-                .fontWeight(.medium)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(Color.blue.opacity(0.1))
-                .foregroundColor(.blue)
-                .cornerRadius(20)
             }
-            
-            Spacer()
         }
     }
     
     func summaryContent(_ summary: Summary) -> some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text(summary.oneSentenceHook)
-                .font(.headline)
-                .italic()
-                .padding()
-                .background(Color.secondary.opacity(0.1))
-                .cornerRadius(12)
+        VStack(alignment: .leading, spacing: 0) {
+            // Hook section with clean design
+            if !summary.oneSentenceHook.isEmpty {
+                Text(summary.oneSentenceHook)
+                    .font(.callout)
+                    .italic()
+                    .foregroundColor(.primary.opacity(0.9))
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color(UIColor.systemGray6))
+            }
             
-            SummaryTabView(summary: summary)
-                .frame(minHeight: 400)
+            // Replace SummaryTabView with new elegant design
+            EnhancedSummaryView(summary: summary)
         }
     }
 }
