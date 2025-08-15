@@ -13,6 +13,23 @@ struct Summary: Identifiable, Codable {
     let citations: [Citation]
     let readTimeMinutes: Int
     let style: SummaryStyle
+    let extendedSummary: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case bookId = "book_id"
+        case oneSentenceHook = "one_sentence_hook"
+        case keyIdeas = "key_ideas"
+        case howToApply = "how_to_apply"
+        case commonPitfalls = "common_pitfalls"
+        case critiques
+        case whoShouldRead = "who_should_read"
+        case limitations
+        case citations
+        case readTimeMinutes = "read_time_minutes"
+        case style
+        case extendedSummary = "extended_summary"
+    }
     
     enum SummaryStyle: String, Codable {
         case brief

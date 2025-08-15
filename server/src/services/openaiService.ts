@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 export class OpenAIService {
   private client: OpenAI;
   private model = 'gpt-4o';
+  private cheaperModel = 'gpt-3.5-turbo';
 
   constructor() {
     if (!process.env.OPENAI_API_KEY) {
@@ -202,5 +203,70 @@ Return the enhanced summary in the same JSON structure as the input.`;
       const { id, book_id, created_at, updated_at, ...summaryWithoutIds } = existingSummary;
       return summaryWithoutIds;
     }
+  }
+
+  async generateExtendedSummary(
+    bookTitle: string,
+    bookAuthors: string[],
+    bookDescription: string,
+    bookCategories: string[]
+  ): Promise<string> {
+    const prompt = this.buildExtendedSummaryPrompt(
+      bookTitle,
+      bookAuthors,
+      bookDescription,
+      bookCategories
+    );
+
+    try {
+      const response = await this.client.chat.completions.create({
+        model: this.cheaperModel, // Use cheaper model for extended summaries
+        max_tokens: 1500, // Allow for longer response
+        temperature: 0.7,
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ]
+      });
+
+      const content = response.choices[0].message.content;
+      if (!content) {
+        throw new Error('No response content from OpenAI');
+      }
+
+      return content.trim();
+    } catch (error) {
+      console.error('Error generating extended summary with OpenAI:', error);
+      throw new Error('Failed to generate extended book summary');
+    }
+  }
+
+  private buildExtendedSummaryPrompt(
+    title: string,
+    authors: string[],
+    description: string,
+    categories: string[]
+  ): string {
+    return `Generate a comprehensive, detailed summary of approximately 1000 words for the following book. This should be a narrative-style summary that covers all major themes, concepts, and insights from the book in an engaging, readable format.
+
+Book Information:
+- Title: ${title}
+- Authors: ${authors.join(', ')}
+- Categories: ${categories.join(', ')}
+- Description: ${description}
+
+The extended summary should:
+1. Start with an engaging introduction that sets the context and explains why this book matters
+2. Cover the main themes and concepts in detail, with specific examples where relevant
+3. Explain the author's key arguments and supporting evidence
+4. Discuss practical applications and implications
+5. Address any limitations or criticisms of the work
+6. Conclude with the book's overall significance and who would benefit from reading it
+
+Write this as a flowing, narrative summary that someone could read to get a comprehensive understanding of the book's content without having to read the full book. Make it engaging and informative, similar to a detailed book review or summary you might find in a literary journal.
+
+Do not use JSON formatting - provide the summary as plain text that flows naturally from paragraph to paragraph.`;
   }
 }

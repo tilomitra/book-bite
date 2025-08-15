@@ -11,7 +11,10 @@
     "test": "jest",
     "populate-featured": "tsx scripts/populate-featured-books.ts",
     "populate-business": "tsx scripts/populate-business-books.ts",
+    "populate-nonfiction": "tsx scripts/populate-nonfiction-books.ts",
     "generate-summaries": "tsx scripts/generate-summaries.ts",
+    "generate-missing-summaries": "tsx scripts/generate-missing-summaries.ts",
+    "generate-extended-summaries": "tsx scripts/generate-extended-summaries.ts",
     "setup-featured": "tsx scripts/setup-featured-books.ts"
   },
   "dependencies": {

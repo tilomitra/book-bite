@@ -74,6 +74,7 @@ export const SummarySchema = z.object({
   citations: z.array(CitationSchema),
   read_time_minutes: z.number().int(),
   style: SummaryStyleSchema,
+  extended_summary: z.string().nullable().optional(),
   llm_model: z.string().optional(),
   llm_version: z.string().optional(),
   generation_date: z.date().optional(),

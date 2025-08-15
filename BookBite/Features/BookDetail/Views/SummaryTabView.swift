@@ -9,8 +9,9 @@ struct SummaryTabView: View {
             Picker("Summary Section", selection: $selectedTab) {
                 Text("Overview").tag(0)
                 Text("Apply").tag(1)
-                Text("Analysis").tag(2)
-                Text("References").tag(3)
+                Text("Full Summary").tag(2)
+                Text("Analysis").tag(3)
+                Text("References").tag(4)
             }
             .pickerStyle(SegmentedPickerStyle())
             .padding(.horizontal)
@@ -23,11 +24,14 @@ struct SummaryTabView: View {
                 ApplicationTab(summary: summary)
                     .tag(1)
                 
-                AnalysisTab(summary: summary)
+                ExtendedSummaryTab(summary: summary)
                     .tag(2)
                 
-                ReferencesTab(summary: summary)
+                AnalysisTab(summary: summary)
                     .tag(3)
+                
+                ReferencesTab(summary: summary)
+                    .tag(4)
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
         }
@@ -165,6 +169,88 @@ struct AnalysisTab: View {
                 }
             }
             .padding()
+        }
+    }
+}
+
+struct ExtendedSummaryTab: View {
+    let summary: Summary
+    @State private var textSize: CGFloat = 16
+    
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                // Header with controls
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Extended Summary")
+                            .font(.headline)
+                        
+                        if let extendedSummary = summary.extendedSummary {
+                            let wordCount = extendedSummary.split(separator: " ").count
+                            Text("\(wordCount) words • \(Int(ceil(Double(wordCount) / 200))) min read")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
+                    Spacer()
+                    
+                    // Text size controls
+                    HStack(spacing: 12) {
+                        Button(action: { 
+                            textSize = max(12, textSize - 2) 
+                        }) {
+                            Image(systemName: "textformat.size.smaller")
+                                .foregroundColor(.primary)
+                        }
+                        .disabled(textSize <= 12)
+                        
+                        Button(action: { 
+                            textSize = min(24, textSize + 2) 
+                        }) {
+                            Image(systemName: "textformat.size.larger")
+                                .foregroundColor(.primary)
+                        }
+                        .disabled(textSize >= 24)
+                    }
+                    .font(.system(size: 14))
+                }
+                .padding(.horizontal)
+                
+                Divider()
+                    .padding(.horizontal)
+                
+                // Extended summary content
+                if let extendedSummary = summary.extendedSummary, !extendedSummary.isEmpty {
+                    Text(extendedSummary)
+                        .font(.system(size: textSize))
+                        .lineSpacing(textSize * 0.3) // Dynamic line spacing based on text size
+                        .padding(.horizontal)
+                        .textSelection(.enabled) // Allow text selection for copying
+                } else {
+                    VStack(spacing: 16) {
+                        Image(systemName: "doc.text")
+                            .font(.system(size: 40))
+                            .foregroundColor(.secondary)
+                        
+                        Text("Extended Summary Not Available")
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+                        
+                        Text("This book doesn't have an extended summary yet. Extended summaries provide comprehensive, narrative-style overviews of the book's content.")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 20)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.top, 60)
+                }
+                
+                Spacer(minLength: 40)
+            }
+            .padding(.vertical)
         }
     }
 }
