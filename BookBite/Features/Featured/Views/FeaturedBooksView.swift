@@ -24,10 +24,10 @@ struct FeaturedBooksView: View {
                 } else if viewModel.showInitialState {
                     InitialFeaturedView()
                 } else {
-                    FeaturedBooksList(books: viewModel.filteredBooks)
+                    FeaturedBooksGenreView(booksByGenre: viewModel.booksByGenre, searchText: viewModel.searchText)
                 }
             }
-            .navigationTitle("Featured Books")
+            .navigationTitle("Discover")
             .searchable(
                 text: $viewModel.searchText,
                 placement: .navigationBarDrawer(displayMode: .always),
@@ -50,7 +50,86 @@ struct FeaturedBooksView: View {
     }
 }
 
-struct FeaturedBooksList: View {
+struct FeaturedBooksGenreView: View {
+    let booksByGenre: [(genre: String, books: [Book])]
+    let searchText: String
+    
+    var filteredGenres: [(genre: String, books: [Book])] {
+        if searchText.isEmpty {
+            return booksByGenre
+        }
+        
+        let lowercasedQuery = searchText.lowercased()
+        return booksByGenre.compactMap { genreGroup in
+            let filteredBooks = genreGroup.books.filter { book in
+                book.title.lowercased().contains(lowercasedQuery) ||
+                book.authors.contains { $0.lowercased().contains(lowercasedQuery) } ||
+                book.categories.contains { $0.lowercased().contains(lowercasedQuery) }
+            }
+            return filteredBooks.isEmpty ? nil : (genre: genreGroup.genre, books: filteredBooks)
+        }
+    }
+    
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                ForEach(filteredGenres, id: \.genre) { genreGroup in
+                    GenreSection(genre: genreGroup.genre, books: genreGroup.books)
+                }
+            }
+            .padding(.vertical, 8)
+        }
+    }
+}
+
+struct GenreSection: View {
+    let genre: String
+    let books: [Book]
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Section Header
+            HStack {
+                Text(genre)
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                if books.count > 6 {
+                    NavigationLink(destination: GenreDetailView(genre: genre, books: books)) {
+                        HStack(spacing: 4) {
+                            Text("See all")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                        }
+                        .foregroundColor(.accentColor)
+                    }
+                }
+            }
+            .padding(.horizontal)
+            
+            // Horizontal Scroll View of Books
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 16) {
+                    ForEach(books.prefix(10)) { book in
+                        NavigationLink(destination: BookDetailView(book: book)) {
+                            CompactBookCard(book: book)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    }
+                }
+                .padding(.horizontal)
+            }
+        }
+    }
+}
+
+struct GenreDetailView: View {
+    let genre: String
     let books: [Book]
     
     var body: some View {
@@ -70,6 +149,37 @@ struct FeaturedBooksList: View {
             }
             .padding(.horizontal)
             .padding(.top, 8)
+        }
+        .navigationTitle(genre)
+        .navigationBarTitleDisplayMode(.large)
+    }
+}
+
+struct CompactBookCard: View {
+    let book: Book
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Book Cover
+            BookCoverView(coverURL: book.coverAssetName, size: .small)
+                .frame(width: 120, height: 180)
+                .clipped()
+            
+            // Book Info
+            VStack(alignment: .leading, spacing: 2) {
+                Text(book.title)
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                    .foregroundColor(.primary)
+                
+                Text(book.formattedAuthors)
+                    .font(.caption2)
+                    .lineLimit(1)
+                    .foregroundColor(.secondary)
+            }
+            .frame(width: 120, alignment: .leading)
         }
     }
 }
@@ -128,11 +238,11 @@ struct InitialFeaturedView: View {
                 .font(.system(size: 60))
                 .foregroundColor(.orange)
             
-            Text("Featured Books")
+            Text("Discover Books")
                 .font(.title2)
                 .fontWeight(.semibold)
             
-            Text("Discover the top 100 management and software development books, curated for technology professionals.")
+            Text("Explore curated collections of management and software development books, organized by genre for technology professionals.")
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
