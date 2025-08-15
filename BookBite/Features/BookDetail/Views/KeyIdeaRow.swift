@@ -5,7 +5,7 @@ struct KeyIdeaRow: View {
     let index: Int
     let isExpanded: Bool
     let toggleAction: () -> Void
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Button(action: toggleAction) {
@@ -14,17 +14,17 @@ struct KeyIdeaRow: View {
                         .font(.headline)
                         .foregroundColor(.blue)
                         .frame(width: 30, alignment: .leading)
-                    
+
                     VStack(alignment: .leading, spacing: 8) {
                         Text(idea.idea)
                             .font(.body)
-                            .lineLimit(isExpanded ? nil : 2)
                             .foregroundColor(.primary)
                             .multilineTextAlignment(.leading)
-                        
+                            .fixedSize(horizontal: false, vertical: true)
+
                         HStack(spacing: 12) {
                             ConfidenceBadge(confidence: idea.confidence)
-                            
+
                             if !idea.tags.isEmpty {
                                 HStack(spacing: 6) {
                                     ForEach(idea.tags, id: \.self) { tag in
@@ -38,13 +38,13 @@ struct KeyIdeaRow: View {
                                 }
                             }
                         }
-                        
+
                         if isExpanded && !idea.sources.isEmpty {
                             HStack(spacing: 4) {
                                 Image(systemName: "doc.text")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
-                                
+
                                 Text("Sources: \(idea.sources.joined(separator: ", "))")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
@@ -52,9 +52,9 @@ struct KeyIdeaRow: View {
                             .padding(.top, 4)
                         }
                     }
-                    
+
                     Spacer()
-                    
+
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                         .font(.caption)
                         .foregroundColor(.secondary)

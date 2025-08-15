@@ -6,4 +6,5 @@ protocol BookRepository {
     func fetchBook(by id: String) async throws -> Book?
     func fetchSummary(for bookId: String) async throws -> Summary?
     func searchBooks(query: String) async throws -> [Book]
+    func clearCache()
 }

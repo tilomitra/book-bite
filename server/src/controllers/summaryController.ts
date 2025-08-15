@@ -1,0 +1,119 @@
+import { Request, Response, NextFunction } from 'express';
+import { SummaryService } from '../services/summaryService';
+import { SummarySchema } from '../models/types';
+import { z } from 'zod';
+
+const summaryService = new SummaryService();
+
+export class SummaryController {
+  async getSummaryByBookId(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { bookId } = req.params;
+      const summary = await summaryService.getSummaryByBookId(bookId);
+      
+      if (!summary) {
+        return res.status(404).json({ error: 'Summary not found' });
+      }
+      
+      res.json(summary);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async generateSummary(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { bookId } = req.params;
+      const { style = 'full', regenerate = false } = req.body;
+      
+      // Check if summary already exists
+      if (!regenerate) {
+        const existingSummary = await summaryService.getSummaryByBookId(bookId);
+        if (existingSummary) {
+          return res.json(existingSummary);
+        }
+      }
+      
+      // Create a job for async generation
+      const job = await summaryService.createSummaryGenerationJob(bookId, style);
+      
+      res.status(202).json({
+        message: 'Summary generation started',
+        jobId: job.id,
+        status: job.status
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateSummary(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const summaryData = SummarySchema.partial().parse(req.body);
+      
+      const summary = await summaryService.updateSummary(id, summaryData);
+      
+      if (!summary) {
+        return res.status(404).json({ error: 'Summary not found' });
+      }
+      
+      res.json(summary);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          error: 'Invalid summary data', 
+          details: error.errors 
+        });
+      }
+      next(error);
+    }
+  }
+
+  async deleteSummary(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const deleted = await summaryService.deleteSummary(id);
+      
+      if (!deleted) {
+        return res.status(404).json({ error: 'Summary not found' });
+      }
+      
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getJobStatus(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { jobId } = req.params;
+      const job = await summaryService.getJobStatus(jobId);
+      
+      if (!job) {
+        return res.status(404).json({ error: 'Job not found' });
+      }
+      
+      res.json(job);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAllSummaries(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { page = 1, limit = 20 } = req.query;
+      
+      const summaries = await summaryService.getAllSummaries({
+        page: Number(page),
+        limit: Number(limit)
+      });
+      
+      res.json(summaries);
+    } catch (error) {
+      next(error);
+    }
+  }
+}
+
+export const summaryController = new SummaryController();

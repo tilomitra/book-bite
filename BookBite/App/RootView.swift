@@ -21,8 +21,7 @@ struct RootView: View {
             }
             
             NavigationStack {
-                Text("Settings")
-                    .navigationTitle("Settings")
+                SettingsView()
             }
             .tabItem {
                 Label("Settings", systemImage: "gear")

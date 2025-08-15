@@ -85,6 +85,11 @@ class LocalBookRepository: BookRepository {
             book.categories.contains { $0.lowercased().contains(lowercasedQuery) }
         }
     }
+    
+    func clearCache() {
+        // Local repository doesn't have a cache to clear
+        // Data is loaded from bundle resources
+    }
 }
 
 enum RepositoryError: LocalizedError {
