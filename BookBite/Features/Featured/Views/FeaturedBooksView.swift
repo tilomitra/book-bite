@@ -80,7 +80,7 @@ struct FeaturedBookCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             // Book Cover
-            BookCoverView(coverName: book.coverAssetName, size: .medium)
+            BookCoverView(coverURL: book.coverAssetName, size: .medium)
             
             // Book Info
             VStack(alignment: .leading, spacing: 4) {

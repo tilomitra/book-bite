@@ -67,7 +67,7 @@ struct ComparisonView: View {
     
     func bookCard(book: Book, summary: Summary?) -> some View {
         VStack(spacing: 8) {
-            BookCoverView(coverName: book.coverAssetName, size: .small)
+            BookCoverView(coverURL: book.coverAssetName, size: .small)
             
             Text(book.title)
                 .font(.caption)

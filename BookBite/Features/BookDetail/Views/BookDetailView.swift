@@ -66,7 +66,7 @@ struct BookDetailView: View {
     
     var bookHeader: some View {
         HStack(alignment: .top, spacing: 16) {
-            BookCoverView(coverName: viewModel.book.coverAssetName, size: .large)
+            BookCoverView(coverURL: viewModel.book.coverAssetName, size: .large)
             
             VStack(alignment: .leading, spacing: 8) {
                 Text(viewModel.book.title)

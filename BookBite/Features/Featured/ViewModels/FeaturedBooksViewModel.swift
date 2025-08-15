@@ -58,8 +58,13 @@ class FeaturedBooksViewModel: ObservableObject {
             let books = try await bookRepository.fetchFeaturedBooks()
             featuredBooks = books
         } catch {
-            self.error = error
-            print("Failed to load featured books: \(error)")
+            // Don't show cancellation errors to user - they're expected during rapid refreshes
+            if error is CancellationError {
+                print("Request cancelled: \(error)")
+            } else {
+                self.error = error
+                print("Failed to load featured books: \(error)")
+            }
         }
         
         isLoading = false

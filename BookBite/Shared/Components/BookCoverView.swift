@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct BookCoverView: View {
-    let coverName: String
+    let coverURL: String
     let size: CoverSize
     
     enum CoverSize {
@@ -21,7 +21,7 @@ struct BookCoverView: View {
         }
     }
     
-    var body: some View {
+    private var placeholderView: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 8)
                 .fill(
@@ -39,7 +39,33 @@ struct BookCoverView: View {
                 .font(.system(size: size.dimensions.width * 0.4))
                 .foregroundColor(.white.opacity(0.9))
         }
+    }
+    
+    var body: some View {
+        AsyncImage(url: URL(string: httpsURL)) { phase in
+            switch phase {
+            case .success(let image):
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            case .failure(_):
+                placeholderView
+            case .empty:
+                placeholderView
+            @unknown default:
+                placeholderView
+            }
+        }
         .frame(width: size.dimensions.width, height: size.dimensions.height)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+    }
+    
+    private var httpsURL: String {
+        // Convert HTTP Google Books URLs to HTTPS
+        if coverURL.hasPrefix("http://books.google.com") {
+            return coverURL.replacingOccurrences(of: "http://", with: "https://")
+        }
+        return coverURL
     }
 }

@@ -28,7 +28,9 @@
       "Bash(npm run lint)",
       "Bash(npm run build:*)",
       "Bash(npx tsc:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(lsof:*)",
+      "mcp__XcodeBuildMCP__swipe"
     ],
     "deny": [],
     "ask": [],

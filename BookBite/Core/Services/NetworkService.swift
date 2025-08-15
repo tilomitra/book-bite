@@ -9,14 +9,14 @@ class NetworkService: ObservableObject {
     
     // Configuration
     struct Configuration {
-        static let baseURL = "https://your-server-url.com/api"
         static let timeoutInterval: TimeInterval = 30.0
         static let maxRetryAttempts = 3
     }
     
     init() {
-        guard let url = URL(string: Configuration.baseURL) else {
-            fatalError("Invalid base URL")
+        let baseURLString = AppConfiguration.shared.baseServerURL
+        guard let url = URL(string: baseURLString) else {
+            fatalError("Invalid base URL: \(baseURLString)")
         }
         self.baseURL = url
     }

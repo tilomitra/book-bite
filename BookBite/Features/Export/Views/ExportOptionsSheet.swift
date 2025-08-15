@@ -49,7 +49,7 @@ struct ExportOptionsSheet: View {
     var exportOptions: some View {
         VStack(spacing: 24) {
             VStack(spacing: 16) {
-                BookCoverView(coverName: book.coverAssetName, size: .medium)
+                BookCoverView(coverURL: book.coverAssetName, size: .medium)
                 
                 Text(book.title)
                     .font(.headline)

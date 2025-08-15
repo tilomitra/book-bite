@@ -26,7 +26,7 @@ struct BookPickerView: View {
                     }
                 }) {
                     HStack(spacing: 12) {
-                        BookCoverView(coverName: book.coverAssetName, size: .small)
+                        BookCoverView(coverURL: book.coverAssetName, size: .small)
                         
                         VStack(alignment: .leading, spacing: 4) {
                             Text(book.title)
