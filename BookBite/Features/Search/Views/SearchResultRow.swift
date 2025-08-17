@@ -4,39 +4,43 @@ struct SearchResultRow: View {
     let book: Book
     
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            BookCoverView(coverURL: book.coverAssetName, size: .small)
+        HStack(alignment: .top, spacing: 16) {
+            BookCoverView(coverURL: book.coverAssetName, size: .medium)
             
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text(book.title)
-                    .font(.headline)
+                    .font(.title3)
+                    .fontWeight(.semibold)
                     .lineLimit(2)
+                    .foregroundColor(.primary)
                 
                 Text(book.formattedAuthors)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .lineLimit(1)
                 
-                HStack(spacing: 8) {
-                    ForEach(book.categories.prefix(3), id: \.self) { category in
-                        CategoryChip(category: category)
-                    }
-                }
-                .padding(.top, 4)
-                
-                HStack {
-                    Image(systemName: "clock")
+                if !book.categories.isEmpty {
+                    Text(book.categories.prefix(2).joined(separator: " · "))
                         .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                        .padding(.top, 2)
+                }
+                
+                HStack(spacing: 4) {
+                    Image(systemName: "clock")
+                        .font(.caption2)
                     Text("8 min read")
                         .font(.caption)
                 }
                 .foregroundColor(.secondary)
-                .padding(.top, 2)
+                .padding(.top, 4)
             }
             
             Spacer()
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 12)
+        .contentShape(Rectangle())
     }
 }
 
