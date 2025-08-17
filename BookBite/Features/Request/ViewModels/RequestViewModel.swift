@@ -55,9 +55,9 @@ class RequestViewModel: ObservableObject {
     }
     
     func requestBook(_ searchResult: GoogleBookSearchResult) {
-        // Prevent requesting if already in database
-        guard !searchResult.inDatabase else {
-            searchError = "This book is already in the database"
+        // If book is already in database, fetch it directly
+        if searchResult.inDatabase {
+            getExistingBook(searchResult)
             return
         }
         
@@ -71,6 +71,26 @@ class RequestViewModel: ObservableObject {
                 let response: BookRequestResponse = try await networkService.post(
                     endpoint: "search/request",
                     body: payload
+                )
+                
+                requestState = .bookRequested(response.book)
+                
+            } catch {
+                let errorMessage = handleNetworkError(error)
+                searchError = errorMessage
+                requestState = .error(errorMessage)
+            }
+        }
+    }
+    
+    private func getExistingBook(_ searchResult: GoogleBookSearchResult) {
+        requestState = .requestingBook(searchResult)
+        searchError = nil
+        
+        Task {
+            do {
+                let response: ExistingBookResponse = try await networkService.get(
+                    endpoint: "search/book/\(searchResult.googleBooksId)"
                 )
                 
                 requestState = .bookRequested(response.book)

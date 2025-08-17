@@ -46,6 +46,10 @@ struct BookRequestPayload: Codable {
     let googleBooksId: String
 }
 
+struct ExistingBookResponse: Codable {
+    let book: Book
+}
+
 enum RequestState {
     case idle
     case searching

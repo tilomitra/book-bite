@@ -93,7 +93,7 @@ struct GoogleBookSearchResultRow: View {
                 VStack {
                     // Status indicator
                     if result.inDatabase {
-                        Label("In Library", systemImage: "checkmark.circle.fill")
+                        Label("View in Library", systemImage: "book.circle.fill")
                             .font(.caption)
                             .foregroundColor(.green)
                     } else {
@@ -108,7 +108,6 @@ struct GoogleBookSearchResultRow: View {
             .padding(.vertical, 8)
         }
         .buttonStyle(PlainButtonStyle())
-        .disabled(result.inDatabase)
     }
 }
 
