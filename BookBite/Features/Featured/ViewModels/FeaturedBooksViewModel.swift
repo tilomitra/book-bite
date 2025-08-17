@@ -4,6 +4,7 @@ import Combine
 @MainActor
 class FeaturedBooksViewModel: ObservableObject {
     @Published var featuredBooks: [Book] = []
+    @Published var nytBestsellerBooks: [Book] = []
     @Published var booksByGenre: [(genre: String, books: [Book])] = []
     @Published var isLoading = false
     @Published var error: Error?
@@ -30,13 +31,17 @@ class FeaturedBooksViewModel: ObservableObject {
         }
     }
     
+    var allBooks: [Book] {
+        return featuredBooks + nytBestsellerBooks
+    }
+    
     var filteredBooks: [Book] {
         if searchText.isEmpty {
-            return featuredBooks
+            return allBooks
         }
         
         let lowercasedQuery = searchText.lowercased()
-        return featuredBooks.filter { book in
+        return allBooks.filter { book in
             book.title.lowercased().contains(lowercasedQuery) ||
             book.authors.contains { $0.lowercased().contains(lowercasedQuery) } ||
             book.categories.contains { $0.lowercased().contains(lowercasedQuery) }
@@ -48,7 +53,7 @@ class FeaturedBooksViewModel: ObservableObject {
     }
     
     var showInitialState: Bool {
-        !isLoading && featuredBooks.isEmpty && searchText.isEmpty
+        !isLoading && allBooks.isEmpty && searchText.isEmpty
     }
     
     func loadFeaturedBooks() async {
@@ -59,8 +64,14 @@ class FeaturedBooksViewModel: ObservableObject {
         bookRepository.clearCache()
         
         do {
-            let books = try await bookRepository.fetchFeaturedBooks()
-            featuredBooks = books
+            // Fetch both featured books and NYT bestsellers
+            async let featuredBooksTask = bookRepository.fetchFeaturedBooks()
+            async let nytBooksTask = bookRepository.fetchNYTBestsellerBooks()
+            
+            let (featured, nytBooks) = try await (featuredBooksTask, nytBooksTask)
+            
+            featuredBooks = featured
+            nytBestsellerBooks = nytBooks
             groupBooksByGenre()
         } catch {
             // Don't show cancellation errors to user - they're expected during rapid refreshes
@@ -68,7 +79,7 @@ class FeaturedBooksViewModel: ObservableObject {
                 print("Request cancelled: \(error)")
             } else {
                 self.error = error
-                print("Failed to load featured books: \(error)")
+                print("Failed to load books: \(error)")
             }
         }
         
@@ -92,7 +103,7 @@ class FeaturedBooksViewModel: ObservableObject {
         ]
         
         // Map books to genres based on their categories
-        for book in featuredBooks {
+        for book in allBooks {
             for category in book.categories {
                 // Map categories to main genres
                 let mainGenre = mapCategoryToGenre(category)

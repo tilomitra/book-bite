@@ -28,6 +28,10 @@ class CacheService {
         cacheDirectory.appendingPathComponent("featured_books.json")
     }
     
+    private var nytBestsellerBooksPath: URL {
+        cacheDirectory.appendingPathComponent("nyt_bestseller_books.json")
+    }
+    
     private func bookPath(id: String) -> URL {
         cacheDirectory.appendingPathComponent("book_\(id).json")
     }
@@ -79,6 +83,20 @@ class CacheService {
         guard fileManager.fileExists(atPath: featuredBooksPath.path) else { return nil }
         
         let data = try Data(contentsOf: featuredBooksPath)
+        return try JSONDecoder().decode([Book].self, from: data)
+    }
+    
+    // MARK: - NYT Bestseller Books Caching
+    
+    func cacheNYTBestsellerBooks(_ books: [Book]) throws {
+        let data = try JSONEncoder().encode(books)
+        try data.write(to: nytBestsellerBooksPath)
+    }
+    
+    func getCachedNYTBestsellerBooks() throws -> [Book]? {
+        guard fileManager.fileExists(atPath: nytBestsellerBooksPath.path) else { return nil }
+        
+        let data = try Data(contentsOf: nytBestsellerBooksPath)
         return try JSONDecoder().decode([Book].self, from: data)
     }
     

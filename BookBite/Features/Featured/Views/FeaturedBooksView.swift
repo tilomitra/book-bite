@@ -22,16 +22,20 @@ struct FeaturedBooksView: View {
                 } else if viewModel.showEmptyState {
                     EmptyNYTSearchView(searchText: viewModel.searchText)
                 } else if viewModel.showInitialState {
-                    InitialNYTView()
+                    InitialFeaturedView()
                 } else {
-                    FeaturedBooksGenreView(booksByGenre: viewModel.booksByGenre, searchText: viewModel.searchText)
+                    FeaturedBooksContentView(
+                        featuredBooks: viewModel.featuredBooks,
+                        booksByGenre: viewModel.booksByGenre,
+                        searchText: viewModel.searchText
+                    )
                 }
             }
-            .navigationTitle("NYT Bestsellers")
+            .navigationTitle("Featured")
             .searchable(
                 text: $viewModel.searchText,
                 placement: .navigationBarDrawer(displayMode: .always),
-                prompt: "Search NYT bestsellers"
+                prompt: "Search featured books"
             )
             .refreshable {
                 await viewModel.refreshFeaturedBooks()
@@ -52,6 +56,109 @@ struct FeaturedBooksView: View {
                 await viewModel.loadFeaturedBooks()
             }
         }
+    }
+}
+
+struct FeaturedBooksContentView: View {
+    let featuredBooks: [Book]
+    let booksByGenre: [(genre: String, books: [Book])]
+    let searchText: String
+    
+    var filteredFeaturedBooks: [Book] {
+        if searchText.isEmpty {
+            return featuredBooks
+        }
+        
+        let lowercasedQuery = searchText.lowercased()
+        return featuredBooks.filter { book in
+            book.title.lowercased().contains(lowercasedQuery) ||
+            book.authors.contains { $0.lowercased().contains(lowercasedQuery) } ||
+            book.categories.contains { $0.lowercased().contains(lowercasedQuery) }
+        }
+    }
+    
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                // Featured Books Section
+                if !filteredFeaturedBooks.isEmpty {
+                    FeaturedSection(books: filteredFeaturedBooks)
+                }
+                
+                // NYT Bestsellers by Genre
+                FeaturedBooksGenreView(booksByGenre: booksByGenre, searchText: searchText)
+            }
+            .padding(.vertical, 4)
+        }
+    }
+}
+
+struct FeaturedSection: View {
+    let books: [Book]
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            // Section Header
+            HStack {
+                Text("Featured Books")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                if books.count > 6 {
+                    NavigationLink(destination: FeaturedDetailView(books: books)) {
+                        HStack(spacing: 4) {
+                            Text("See all")
+                                .font(.system(size: 14, weight: .medium))
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 12, weight: .medium))
+                        }
+                        .foregroundColor(.accentColor)
+                    }
+                }
+            }
+            .padding(.horizontal)
+            
+            // Horizontal Scroll View of Books
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    ForEach(books.prefix(10)) { book in
+                        NavigationLink(destination: BookDetailView(book: book)) {
+                            CompactBookCard(book: book)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    }
+                }
+                .padding(.horizontal)
+            }
+        }
+    }
+}
+
+struct FeaturedDetailView: View {
+    let books: [Book]
+    
+    var body: some View {
+        ScrollView {
+            LazyVGrid(
+                columns: [
+                    GridItem(.adaptive(minimum: 160, maximum: 200), spacing: 16)
+                ],
+                spacing: 20
+            ) {
+                ForEach(books) { book in
+                    NavigationLink(destination: BookDetailView(book: book)) {
+                        FeaturedBookCard(book: book)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+            }
+            .padding(.horizontal)
+            .padding(.top, 8)
+        }
+        .navigationTitle("Featured Books")
+        .navigationBarTitleDisplayMode(.large)
     }
 }
 
@@ -243,18 +350,18 @@ struct FeaturedBookCard: View {
     }
 }
 
-struct InitialNYTView: View {
+struct InitialFeaturedView: View {
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "star.circle.fill")
                 .font(.system(size: 60))
                 .foregroundColor(.orange)
             
-            Text("NYT Bestsellers")
+            Text("Featured Books")
                 .font(.title2)
                 .fontWeight(.semibold)
             
-            Text("Discover New York Times bestselling non-fiction books, organized by genre and ranked by popularity.")
+            Text("Discover hand-picked featured books and New York Times bestselling non-fiction books, organized by genre and ranked by popularity.")
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -279,7 +386,7 @@ struct EmptyNYTSearchView: View {
                 .font(.title3)
                 .fontWeight(.semibold)
             
-            Text("No NYT bestsellers match \"\(searchText)\"")
+            Text("No featured books match \"\(searchText)\"")
                 .font(.body)
                 .foregroundColor(.secondary)
             
@@ -303,7 +410,7 @@ struct ErrorNYTView: View {
                 .font(.title3)
                 .fontWeight(.semibold)
             
-            Text("Unable to load NYT bestsellers. Please check your internet connection and try again.")
+            Text("Unable to load featured books. Please check your internet connection and try again.")
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)

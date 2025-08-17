@@ -17,6 +17,10 @@ class HybridBookRepository: BookRepository {
         return try await remoteRepository.fetchFeaturedBooks()
     }
     
+    func fetchNYTBestsellerBooks() async throws -> [Book] {
+        return try await remoteRepository.fetchNYTBestsellerBooks()
+    }
+    
     func fetchBook(by id: String) async throws -> Book? {
         return try await remoteRepository.fetchBook(by: id)
     }

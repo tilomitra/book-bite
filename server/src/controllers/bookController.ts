@@ -38,6 +38,22 @@ export class BookController {
     }
   }
 
+  async getNYTBestsellerBooks(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { page = 1, limit = 100, fresh = false } = req.query;
+      
+      const books = await bookService.getNYTBestsellerBooks({
+        page: Number(page),
+        limit: Number(limit),
+        fresh: fresh === 'true'
+      });
+      
+      res.json(books);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getBookById(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;

@@ -56,6 +56,46 @@ export class BookService {
     const offset = (page - 1) * limit;
 
     // Check cache first (unless fresh fetch is requested)
+    const cacheKey = `featured-books:${page}:${limit}`;
+    if (!fresh) {
+      const cached = this.cache.get(cacheKey);
+      if (cached) return cached;
+    }
+
+    const { data, error, count } = await supabase
+      .from('books')
+      .select('*', { count: 'exact' })
+      .eq('is_featured', true)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
+
+    if (error) {
+      throw new Error(`Failed to fetch featured books: ${error.message}`);
+    }
+
+    const result = {
+      books: data || [],
+      total: count || 0,
+      page,
+      limit,
+      totalPages: Math.ceil((count || 0) / limit)
+    };
+
+    // Cache for 30 minutes since featured books don't change often
+    this.cache.set(cacheKey, result, 1800);
+
+    return result;
+  }
+
+  async getNYTBestsellerBooks(options: { 
+    page?: number; 
+    limit?: number;
+    fresh?: boolean;
+  } = {}) {
+    const { page = 1, limit = 100, fresh = false } = options;
+    const offset = (page - 1) * limit;
+
+    // Check cache first (unless fresh fetch is requested)
     const cacheKey = `nyt-bestsellers:${page}:${limit}`;
     if (!fresh) {
       const cached = this.cache.get(cacheKey);
@@ -81,7 +121,7 @@ export class BookService {
       totalPages: Math.ceil((count || 0) / limit)
     };
 
-    // Cache for 30 minutes since featured books don't change often
+    // Cache for 30 minutes since NYT bestsellers don't change often
     this.cache.set(cacheKey, result, 1800);
 
     return result;
