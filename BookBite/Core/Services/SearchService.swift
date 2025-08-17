@@ -17,6 +17,11 @@ class SearchService: ObservableObject {
     func search(query: String) {
         searchTask?.cancel()
         
+        guard !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            clearSearch()
+            return
+        }
+        
         searchTask = Task {
             await performSearch(query: query)
         }
