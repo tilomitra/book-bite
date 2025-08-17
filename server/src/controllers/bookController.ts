@@ -78,7 +78,7 @@ export class BookController {
       }
       
       const books = await bookService.searchBooks(q as string, source as string);
-      res.json(books);
+      res.json({ results: books });
     } catch (error) {
       next(error);
     }

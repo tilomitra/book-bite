@@ -105,3 +105,29 @@ export const SummaryJobSchema = z.object({
 });
 
 export type SummaryJob = z.infer<typeof SummaryJobSchema>;
+
+// Chat Message Role enum
+export const MessageRoleSchema = z.enum(['user', 'assistant']);
+export type MessageRole = z.infer<typeof MessageRoleSchema>;
+
+// Chat Conversation schema
+export const ChatConversationSchema = z.object({
+  id: z.string().uuid().optional(),
+  book_id: z.string().uuid(),
+  title: z.string().nullable().optional(),
+  created_at: z.date().optional(),
+  updated_at: z.date().optional()
+});
+
+export type ChatConversation = z.infer<typeof ChatConversationSchema>;
+
+// Chat Message schema
+export const ChatMessageSchema = z.object({
+  id: z.string().uuid().optional(),
+  conversation_id: z.string().uuid(),
+  role: MessageRoleSchema,
+  content: z.string(),
+  created_at: z.date().optional()
+});
+
+export type ChatMessage = z.infer<typeof ChatMessageSchema>;

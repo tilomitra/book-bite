@@ -110,3 +110,53 @@ CREATE POLICY "Only admins can delete books" ON books
 
 CREATE POLICY "Only admins can manage summaries" ON summaries
     FOR ALL USING (auth.jwt() ->> 'role' = 'admin');
+
+-- Create chat_conversations table
+CREATE TABLE chat_conversations (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    book_id UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+    title TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+-- Create chat_messages table
+CREATE TABLE chat_messages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    conversation_id UUID NOT NULL REFERENCES chat_conversations(id) ON DELETE CASCADE,
+    role VARCHAR(20) NOT NULL CHECK (role IN ('user', 'assistant')),
+    content TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+-- Create indexes for chat tables
+CREATE INDEX idx_chat_conversations_book_id ON chat_conversations(book_id);
+CREATE INDEX idx_chat_messages_conversation_id ON chat_messages(conversation_id);
+CREATE INDEX idx_chat_messages_created_at ON chat_messages(created_at);
+
+-- Add triggers for chat tables updated_at
+CREATE TRIGGER update_chat_conversations_updated_at BEFORE UPDATE ON chat_conversations
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Enable RLS for chat tables
+ALTER TABLE chat_conversations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE chat_messages ENABLE ROW LEVEL SECURITY;
+
+-- Create policies for chat tables (public read/write for now)
+CREATE POLICY "Chat conversations are viewable by everyone" ON chat_conversations
+    FOR SELECT USING (true);
+
+CREATE POLICY "Anyone can create chat conversations" ON chat_conversations
+    FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Anyone can update chat conversations" ON chat_conversations
+    FOR UPDATE USING (true);
+
+CREATE POLICY "Anyone can delete chat conversations" ON chat_conversations
+    FOR DELETE USING (true);
+
+CREATE POLICY "Chat messages are viewable by everyone" ON chat_messages
+    FOR SELECT USING (true);
+
+CREATE POLICY "Anyone can create chat messages" ON chat_messages
+    FOR INSERT WITH CHECK (true);

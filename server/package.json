@@ -16,7 +16,8 @@
     "generate-summaries": "tsx scripts/generate-summaries.ts",
     "generate-missing-summaries": "tsx scripts/generate-missing-summaries.ts",
     "generate-extended-summaries": "tsx scripts/generate-extended-summaries.ts",
-    "setup-featured": "tsx scripts/setup-featured-books.ts"
+    "setup-featured": "tsx scripts/setup-featured-books.ts",
+    "update-book-covers": "tsx scripts/update-book-covers.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",

@@ -8,6 +8,7 @@ import rateLimit from 'express-rate-limit';
 import bookRoutes from './routes/bookRoutes';
 import summaryRoutes from './routes/summaryRoutes';
 import searchRoutes from './routes/searchRoutes';
+import chatRoutes from './routes/chatRoutes';
 import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
@@ -49,6 +50,7 @@ app.get('/health', (req, res) => {
 });
 
 // API routes
+app.use('/api', chatRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/summaries', summaryRoutes);
 app.use('/api/search', searchRoutes);
