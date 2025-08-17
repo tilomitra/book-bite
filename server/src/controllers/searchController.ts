@@ -91,7 +91,55 @@ export class SearchController {
   }
 
   /**
-   * POST /api/books/request
+   * GET /api/search/book/{googleBooksId}
+   * Get existing book from database by Google Books ID
+   */
+  async getExistingBook(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { googleBooksId } = req.params;
+      
+      if (!googleBooksId) {
+        return res.status(400).json({
+          error: 'Google Books ID is required'
+        });
+      }
+
+      // Get book with summary from database
+      const { data: book, error: bookError } = await supabase
+        .from('books')
+        .select('*')
+        .eq('google_books_id', googleBooksId)
+        .single();
+
+      if (bookError || !book) {
+        return res.status(404).json({
+          error: 'Book not found in database'
+        });
+      }
+
+      // Get summary for this book
+      const { data: summary, error: summaryError } = await supabase
+        .from('summaries')
+        .select('*')
+        .eq('book_id', book.id)
+        .single();
+
+      const completeBook = {
+        ...book,
+        summary: summary || null
+      };
+
+      res.json({
+        book: completeBook
+      });
+    } catch (error) {
+      console.error('Error getting existing book:', error);
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/search/request
    * Process a selected book from Google Books and add to database with AI processing
    */
   async requestBook(req: Request, res: Response, next: NextFunction) {
