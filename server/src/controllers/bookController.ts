@@ -71,14 +71,45 @@ export class BookController {
 
   async searchBooks(req: Request, res: Response, next: NextFunction) {
     try {
-      const { q, source = 'all' } = req.query;
+      const { q, source = 'all', page = 1, limit = 20 } = req.query;
       
-      if (!q) {
-        return res.status(400).json({ error: 'Search query is required' });
+      // If no search query provided, return all books with pagination
+      if (!q || (q as string).trim() === '') {
+        const result = await bookService.getAllBooks({
+          page: Number(page),
+          limit: Number(limit)
+        });
+        return res.json({
+          results: result.books,
+          pagination: {
+            page: result.page,
+            limit: result.limit,
+            total: result.total,
+            totalPages: result.totalPages,
+            hasMore: result.page < result.totalPages
+          }
+        });
       }
       
-      const books = await bookService.searchBooks(q as string, source as string);
-      res.json({ results: books });
+      const result = await bookService.searchBooks(
+        q as string, 
+        source as string,
+        {
+          page: Number(page),
+          limit: Number(limit)
+        }
+      );
+      
+      res.json({
+        results: result.books,
+        pagination: {
+          page: result.page,
+          limit: result.limit,
+          total: result.total,
+          totalPages: result.totalPages,
+          hasMore: result.page < result.totalPages
+        }
+      });
     } catch (error) {
       next(error);
     }

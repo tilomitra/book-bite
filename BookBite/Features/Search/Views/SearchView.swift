@@ -27,7 +27,6 @@ struct SearchView: View {
                         }
                     }
                     .buttonStyle(.borderedProminent)
-                    .disabled(viewModel.searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
                 .padding()
                 
@@ -45,7 +44,12 @@ struct SearchView: View {
                 } else if viewModel.showInitialState {
                     InitialSearchView()
                 } else {
-                    SearchResultsList(books: viewModel.searchResults)
+                    SearchResultsList(
+                        books: viewModel.searchResults,
+                        isLoadingMore: viewModel.isLoadingMore,
+                        hasMore: viewModel.hasMore,
+                        onBookAppear: viewModel.onBookAppear
+                    )
                 }
             }
             .navigationTitle("Discover Books")
@@ -55,11 +59,44 @@ struct SearchView: View {
 
 struct SearchResultsList: View {
     let books: [Book]
+    let isLoadingMore: Bool
+    let hasMore: Bool
+    let onBookAppear: (Book) -> Void
     
     var body: some View {
-        List(books) { book in
-            NavigationLink(destination: BookDetailView(book: book)) {
-                SearchResultRow(book: book)
+        List {
+            ForEach(books) { book in
+                NavigationLink(destination: BookDetailView(book: book)) {
+                    SearchResultRow(book: book)
+                }
+                .onAppear {
+                    onBookAppear(book)
+                }
+            }
+            
+            // Loading indicator at the bottom
+            if isLoadingMore {
+                HStack {
+                    Spacer()
+                    ProgressView()
+                        .scaleEffect(0.8)
+                    Text("Loading more books...")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                }
+                .padding(.vertical, 8)
+                .listRowSeparator(.hidden)
+            } else if !hasMore && !books.isEmpty {
+                HStack {
+                    Spacer()
+                    Text("No more books to load")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                }
+                .padding(.vertical, 8)
+                .listRowSeparator(.hidden)
             }
         }
         .listStyle(PlainListStyle())
@@ -77,7 +114,7 @@ struct InitialSearchView: View {
                 .font(.title2)
                 .fontWeight(.semibold)
             
-            Text("Start typing to search our library of business and technology books")
+            Text("Search our library or scroll to discover amazing books")
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)

@@ -154,27 +154,46 @@ export class BookService {
     return data;
   }
 
-  async searchBooks(query: string, source: string = 'all'): Promise<Book[]> {
-    const results: Book[] = [];
+  async searchBooks(
+    query: string, 
+    source: string = 'all',
+    options: { page?: number; limit?: number } = {}
+  ) {
+    const { page = 1, limit = 20 } = options;
+    const offset = (page - 1) * limit;
 
-    // Search local database
-    if (source === 'all' || source === 'local') {
-      const searchTerm = `%${query.trim()}%`;
-      const { data: localBooks } = await supabase
-        .from('books')
-        .select('*')
-        .or(`title.ilike.${searchTerm},subtitle.ilike.${searchTerm},description.ilike.${searchTerm}`)
-        .limit(10);
+    // Primary search in local database with pagination
+    const searchTerm = `%${query.trim()}%`;
+    const { data: localBooks, error, count } = await supabase
+      .from('books')
+      .select('*', { count: 'exact' })
+      .or(`title.ilike.${searchTerm},subtitle.ilike.${searchTerm},description.ilike.${searchTerm}`)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
-      if (localBooks) {
-        results.push(...localBooks);
-      }
+    if (error) {
+      throw new Error(`Failed to search books: ${error.message}`);
     }
 
-    // Search Google Books
+    const results: Book[] = localBooks || [];
+    const localCount = count || 0;
+
+    // If we have enough local results or user specified local only, return them
+    if (source === 'local' || results.length >= limit) {
+      return {
+        books: results,
+        total: localCount,
+        page,
+        limit,
+        totalPages: Math.ceil(localCount / limit)
+      };
+    }
+
+    // If searching all sources and we need more results, add Google Books
     if (source === 'all' || source === 'google') {
       try {
-        const googleResults = await this.googleBooks.searchBooks(query, 10);
+        const remainingLimit = limit - results.length;
+        const googleResults = await this.googleBooks.searchBooks(query, remainingLimit);
         
         // Filter out books we already have
         const existingISBNs = results.map(b => b.isbn13).filter(Boolean);
@@ -196,7 +215,16 @@ export class BookService {
       }
     }
 
-    return results;
+    // For mixed results, we estimate total since Google Books doesn't give exact counts
+    const estimatedTotal = localCount + (results.length > localBooks?.length ? 100 : 0);
+
+    return {
+      books: results,
+      total: estimatedTotal,
+      page,
+      limit,
+      totalPages: Math.ceil(estimatedTotal / limit)
+    };
   }
 
   async createBook(bookData: Partial<Book>): Promise<Book> {

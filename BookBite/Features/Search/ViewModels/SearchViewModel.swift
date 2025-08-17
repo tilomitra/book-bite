@@ -6,7 +6,9 @@ class SearchViewModel: ObservableObject {
     @Published var searchText = ""
     @Published var searchResults: [Book] = []
     @Published var isSearching = false
+    @Published var isLoadingMore = false
     @Published var searchError: Error?
+    @Published var hasMore = false
     
     private let searchService: SearchService
     private var cancellables = Set<AnyCancellable>()
@@ -27,25 +29,47 @@ class SearchViewModel: ObservableObject {
         searchService.$isSearching
             .assign(to: &$isSearching)
         
+        searchService.$isLoadingMore
+            .assign(to: &$isLoadingMore)
+        
+        searchService.$hasMore
+            .assign(to: &$hasMore)
+        
         searchService.$searchError
             .assign(to: &$searchError)
     }
     
     private func loadInitialBooks() async {
-        await searchService.loadAllBooks()
+        await searchService.loadInitialBooks()
     }
     
     func performSearch() async {
         guard !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            searchService.clearSearch()
+            await searchService.loadInitialBooks()
             return
         }
-        await searchService.performSearchAsync(query: searchText)
+        searchService.search(query: searchText)
+    }
+    
+    func loadMoreBooks() async {
+        await searchService.loadMoreBooks()
     }
     
     func clearSearch() {
         searchText = ""
         searchService.clearSearch()
+        Task {
+            await loadInitialBooks()
+        }
+    }
+    
+    // Check if we should load more books when a book appears
+    func onBookAppear(_ book: Book) {
+        if searchService.shouldLoadMore(for: book) {
+            Task {
+                await loadMoreBooks()
+            }
+        }
     }
     
     var hasResults: Bool {
