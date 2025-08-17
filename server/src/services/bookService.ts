@@ -50,14 +50,17 @@ export class BookService {
   async getFeaturedBooks(options: { 
     page?: number; 
     limit?: number;
+    fresh?: boolean;
   } = {}) {
-    const { page = 1, limit = 100 } = options;
+    const { page = 1, limit = 100, fresh = false } = options;
     const offset = (page - 1) * limit;
 
-    // Check cache first
+    // Check cache first (unless fresh fetch is requested)
     const cacheKey = `nyt-bestsellers:${page}:${limit}`;
-    const cached = this.cache.get(cacheKey);
-    if (cached) return cached;
+    if (!fresh) {
+      const cached = this.cache.get(cacheKey);
+      if (cached) return cached;
+    }
 
     const { data, error, count } = await supabase
       .from('books')

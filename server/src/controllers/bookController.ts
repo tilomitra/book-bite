@@ -24,11 +24,12 @@ export class BookController {
 
   async getFeaturedBooks(req: Request, res: Response, next: NextFunction) {
     try {
-      const { page = 1, limit = 100 } = req.query;
+      const { page = 1, limit = 100, fresh = false } = req.query;
       
       const books = await bookService.getFeaturedBooks({
         page: Number(page),
-        limit: Number(limit)
+        limit: Number(limit),
+        fresh: fresh === 'true'
       });
       
       res.json(books);
