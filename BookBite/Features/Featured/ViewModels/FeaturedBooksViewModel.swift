@@ -55,6 +55,9 @@ class FeaturedBooksViewModel: ObservableObject {
         isLoading = true
         error = nil
         
+        // Clear cache to ensure fresh data
+        bookRepository.clearCache()
+        
         do {
             let books = try await bookRepository.fetchFeaturedBooks()
             featuredBooks = books

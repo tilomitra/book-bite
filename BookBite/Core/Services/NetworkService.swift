@@ -29,7 +29,17 @@ class NetworkService: ObservableObject {
         body: Data? = nil,
         headers: [String: String]? = nil
     ) async throws -> T {
-        let url = baseURL.appendingPathComponent(endpoint)
+        // Handle query parameters in endpoint
+        let url: URL
+        if endpoint.contains("?") {
+            // If endpoint contains query parameters, construct URL manually
+            guard let fullURL = URL(string: "\(baseURL.absoluteString)/\(endpoint)") else {
+                throw NetworkError.invalidResponse
+            }
+            url = fullURL
+        } else {
+            url = baseURL.appendingPathComponent(endpoint)
+        }
         var request = URLRequest(url: url)
         
         request.httpMethod = method.rawValue

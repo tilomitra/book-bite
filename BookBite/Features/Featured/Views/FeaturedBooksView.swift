@@ -47,6 +47,11 @@ struct FeaturedBooksView: View {
                 }
             }
         }
+        .onAppear {
+            Task {
+                await viewModel.loadFeaturedBooks()
+            }
+        }
     }
 }
 

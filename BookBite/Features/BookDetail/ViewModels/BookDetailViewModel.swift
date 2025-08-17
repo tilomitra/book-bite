@@ -47,7 +47,7 @@ class BookDetailViewModel: ObservableObject {
     }
     
     var publicationInfo: String {
-        var info = "\(book.publishedYear)"
+        var info = book.publishedYear.map { "\($0)" } ?? "Unknown"
         if let publisher = book.publisher {
             info += " • \(publisher)"
         }

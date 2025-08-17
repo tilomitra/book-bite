@@ -18,7 +18,10 @@ class RemoteBookRepository: BookRepository {
     }
     
     func fetchFeaturedBooks() async throws -> [Book] {
-        let response: BooksResponse = try await networkService.get(endpoint: "books/featured")
+        // Always fetch fresh NYT bestsellers by bypassing server cache
+        let endpoint = "books/featured"
+        let freshEndpoint = "\(endpoint)?fresh=true"
+        let response: BooksResponse = try await networkService.get(endpoint: freshEndpoint)
         let books = response.books
         
         // Cache the results for performance

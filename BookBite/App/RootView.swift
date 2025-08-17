@@ -25,6 +25,13 @@ struct RootView: View {
             }
             
             NavigationStack {
+                RequestView()
+            }
+            .tabItem {
+                Label("Request", systemImage: "plus.magnifyingglass")
+            }
+            
+            NavigationStack {
                 SettingsView()
             }
             .tabItem {
