@@ -22,6 +22,11 @@ export const BookSchema = z.object({
   open_library_id: z.string().nullable().optional(),
   popularity_rank: z.number().int().nullable().optional(),
   is_featured: z.boolean().default(false),
+  is_nyt_bestseller: z.boolean().default(false).optional(),
+  nyt_rank: z.number().int().nullable().optional(),
+  nyt_weeks_on_list: z.number().int().nullable().optional(),
+  nyt_list: z.string().nullable().optional(),
+  nyt_last_updated: z.date().nullable().optional(),
   created_at: z.date().optional(),
   updated_at: z.date().optional()
 });

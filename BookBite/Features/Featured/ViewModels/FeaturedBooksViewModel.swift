@@ -76,16 +76,16 @@ class FeaturedBooksViewModel: ObservableObject {
         // Create genre groups based on categories
         var genreMap: [String: [Book]] = [:]
         
-        // Predefined genre sections to ensure consistent ordering
+        // Predefined genre sections for NYT bestsellers to ensure consistent ordering
         let primaryGenres = [
-            "Software Development",
-            "Management & Leadership",
-            "Business Strategy",
-            "Personal Development",
-            "Technology & Innovation",
-            "Entrepreneurship",
-            "Product Management",
-            "Data & Analytics"
+            "Business",
+            "Self-Help",
+            "Biography",
+            "Science",
+            "Politics",
+            "Health",
+            "History",
+            "Psychology"
         ]
         
         // Map books to genres based on their categories
@@ -126,32 +126,36 @@ class FeaturedBooksViewModel: ObservableObject {
     private func mapCategoryToGenre(_ category: String) -> String {
         let lowercased = category.lowercased()
         
-        // Map specific categories to main genres
-        if lowercased.contains("software") || lowercased.contains("programming") || 
-           lowercased.contains("coding") || lowercased.contains("development") ||
-           lowercased.contains("engineering") || lowercased.contains("agile") {
-            return "Software Development"
-        } else if lowercased.contains("management") || lowercased.contains("leadership") ||
-                  lowercased.contains("team") || lowercased.contains("manager") {
-            return "Management & Leadership"
-        } else if lowercased.contains("business") || lowercased.contains("strategy") ||
-                  lowercased.contains("corporate") {
-            return "Business Strategy"
-        } else if lowercased.contains("personal") || lowercased.contains("self") ||
-                  lowercased.contains("productivity") || lowercased.contains("habit") {
-            return "Personal Development"
-        } else if lowercased.contains("technology") || lowercased.contains("innovation") ||
-                  lowercased.contains("digital") || lowercased.contains("tech") {
-            return "Technology & Innovation"
-        } else if lowercased.contains("entrepreneur") || lowercased.contains("startup") ||
-                  lowercased.contains("founder") {
-            return "Entrepreneurship"
-        } else if lowercased.contains("product") || lowercased.contains("design") ||
-                  lowercased.contains("ux") {
-            return "Product Management"
-        } else if lowercased.contains("data") || lowercased.contains("analytics") ||
-                  lowercased.contains("metrics") || lowercased.contains("statistics") {
-            return "Data & Analytics"
+        // Map specific categories to main NYT genres
+        if lowercased.contains("business") || lowercased.contains("management") ||
+           lowercased.contains("leadership") || lowercased.contains("entrepreneur") ||
+           lowercased.contains("strategy") || lowercased.contains("corporate") {
+            return "Business"
+        } else if lowercased.contains("self-help") || lowercased.contains("self help") ||
+                  lowercased.contains("personal") || lowercased.contains("productivity") ||
+                  lowercased.contains("habit") || lowercased.contains("improvement") {
+            return "Self-Help"
+        } else if lowercased.contains("biography") || lowercased.contains("memoir") ||
+                  lowercased.contains("life") && (lowercased.contains("story") || lowercased.contains("journey")) {
+            return "Biography"
+        } else if lowercased.contains("science") || lowercased.contains("physics") ||
+                  lowercased.contains("biology") || lowercased.contains("chemistry") ||
+                  lowercased.contains("technology") || lowercased.contains("engineering") {
+            return "Science"
+        } else if lowercased.contains("politics") || lowercased.contains("government") ||
+                  lowercased.contains("democracy") || lowercased.contains("election") {
+            return "Politics"
+        } else if lowercased.contains("health") || lowercased.contains("medicine") ||
+                  lowercased.contains("fitness") || lowercased.contains("nutrition") ||
+                  lowercased.contains("wellness") {
+            return "Health"
+        } else if lowercased.contains("history") || lowercased.contains("historical") ||
+                  lowercased.contains("war") || lowercased.contains("ancient") {
+            return "History"
+        } else if lowercased.contains("psychology") || lowercased.contains("mental") ||
+                  lowercased.contains("mind") || lowercased.contains("behavior") ||
+                  lowercased.contains("social science") {
+            return "Psychology"
         } else {
             // Return the original category if it doesn't match any mapping
             return category

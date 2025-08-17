@@ -14,24 +14,24 @@ struct FeaturedBooksView: View {
                 if viewModel.isLoading && viewModel.featuredBooks.isEmpty {
                     LoadingView()
                 } else if let error = viewModel.error {
-                    ErrorFeaturedView(error: error) {
+                    ErrorNYTView(error: error) {
                         Task {
                             await viewModel.loadFeaturedBooks()
                         }
                     }
                 } else if viewModel.showEmptyState {
-                    EmptyFeaturedSearchView(searchText: viewModel.searchText)
+                    EmptyNYTSearchView(searchText: viewModel.searchText)
                 } else if viewModel.showInitialState {
-                    InitialFeaturedView()
+                    InitialNYTView()
                 } else {
                     FeaturedBooksGenreView(booksByGenre: viewModel.booksByGenre, searchText: viewModel.searchText)
                 }
             }
-            .navigationTitle("Discover")
+            .navigationTitle("NYT Bestsellers")
             .searchable(
                 text: $viewModel.searchText,
                 placement: .navigationBarDrawer(displayMode: .always),
-                prompt: "Search featured books"
+                prompt: "Search NYT bestsellers"
             )
             .refreshable {
                 await viewModel.refreshFeaturedBooks()
@@ -201,7 +201,18 @@ struct FeaturedBookCard: View {
                     .lineLimit(1)
                     .foregroundColor(.secondary)
                 
-                if let rank = book.popularityRank {
+                if let nytRank = book.nytRank {
+                    HStack(spacing: 2) {
+                        Image(systemName: "star.fill")
+                            .font(.caption2)
+                            .foregroundColor(.orange)
+                        
+                        Text("NYT #\(nytRank)")
+                            .font(.caption2)
+                            .fontWeight(.medium)
+                            .foregroundColor(.orange)
+                    }
+                } else if let rank = book.popularityRank {
                     HStack(spacing: 2) {
                         Image(systemName: "star.fill")
                             .font(.caption2)
@@ -227,18 +238,18 @@ struct FeaturedBookCard: View {
     }
 }
 
-struct InitialFeaturedView: View {
+struct InitialNYTView: View {
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "star.circle.fill")
                 .font(.system(size: 60))
                 .foregroundColor(.orange)
             
-            Text("Discover Books")
+            Text("NYT Bestsellers")
                 .font(.title2)
                 .fontWeight(.semibold)
             
-            Text("Explore curated collections of management and software development books, organized by genre for technology professionals.")
+            Text("Discover New York Times bestselling non-fiction books, organized by genre and ranked by popularity.")
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -250,7 +261,7 @@ struct InitialFeaturedView: View {
     }
 }
 
-struct EmptyFeaturedSearchView: View {
+struct EmptyNYTSearchView: View {
     let searchText: String
     
     var body: some View {
@@ -263,7 +274,7 @@ struct EmptyFeaturedSearchView: View {
                 .font(.title3)
                 .fontWeight(.semibold)
             
-            Text("No featured books match \"\(searchText)\"")
+            Text("No NYT bestsellers match \"\(searchText)\"")
                 .font(.body)
                 .foregroundColor(.secondary)
             
@@ -273,7 +284,7 @@ struct EmptyFeaturedSearchView: View {
     }
 }
 
-struct ErrorFeaturedView: View {
+struct ErrorNYTView: View {
     let error: Error
     let retry: () -> Void
     
@@ -287,7 +298,7 @@ struct ErrorFeaturedView: View {
                 .font(.title3)
                 .fontWeight(.semibold)
             
-            Text("Unable to load featured books. Please check your internet connection and try again.")
+            Text("Unable to load NYT bestsellers. Please check your internet connection and try again.")
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)

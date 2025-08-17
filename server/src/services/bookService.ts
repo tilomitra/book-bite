@@ -26,7 +26,8 @@ export class BookService {
       .select('*', { count: 'exact' });
 
     if (search) {
-      query = query.or(`title.ilike.%${search}%,subtitle.ilike.%${search}%`);
+      const searchTerm = `%${search.trim()}%`;
+      query = query.or(`title.ilike.${searchTerm},subtitle.ilike.${searchTerm}`);
     }
 
     const { data, error, count } = await query
@@ -54,19 +55,19 @@ export class BookService {
     const offset = (page - 1) * limit;
 
     // Check cache first
-    const cacheKey = `featured-books:${page}:${limit}`;
+    const cacheKey = `nyt-bestsellers:${page}:${limit}`;
     const cached = this.cache.get(cacheKey);
     if (cached) return cached;
 
     const { data, error, count } = await supabase
       .from('books')
       .select('*', { count: 'exact' })
-      .eq('is_featured', true)
-      .order('popularity_rank', { ascending: true })
+      .eq('is_nyt_bestseller', true)
+      .order('nyt_rank', { ascending: true })
       .range(offset, offset + limit - 1);
 
     if (error) {
-      throw new Error(`Failed to fetch featured books: ${error.message}`);
+      throw new Error(`Failed to fetch NYT bestsellers: ${error.message}`);
     }
 
     const result = {
@@ -115,10 +116,11 @@ export class BookService {
 
     // Search local database
     if (source === 'all' || source === 'local') {
+      const searchTerm = `%${query.trim()}%`;
       const { data: localBooks } = await supabase
         .from('books')
         .select('*')
-        .or(`title.ilike.%${query}%,subtitle.ilike.%${query}%,description.ilike.%${query}%`)
+        .or(`title.ilike.${searchTerm},subtitle.ilike.${searchTerm},description.ilike.${searchTerm}`)
         .limit(10);
 
       if (localBooks) {

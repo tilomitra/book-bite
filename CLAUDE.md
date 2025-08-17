@@ -64,6 +64,26 @@ cat server/supabase/schema.sql
 
 #### Data Population Scripts
 
+##### NYT Bestsellers Non-Fiction Books
+```bash
+# Populate with all NYT non-fiction bestseller lists
+cd server && npm run populate-nyt
+
+# Process only high-priority lists (combined, hardcover, business, science, biography)
+cd server && npx tsx scripts/populate-nyt-bestsellers.ts --priority
+
+# Process specific list
+cd server && npx tsx scripts/populate-nyt-bestsellers.ts --list business-books
+```
+
+**Features:**
+- Fetches from 16+ NYT non-fiction bestseller lists
+- Includes rank and weeks on list metadata
+- Automatic deduplication across lists
+- Enriches with Google Books metadata
+- AI-generated summaries + extended summaries
+- Rate limiting compliant with NYT API
+
 ##### Category-Based Book Discovery (Recommended for Scale)
 ```bash
 # Get 50 books per category (all 35+ categories)

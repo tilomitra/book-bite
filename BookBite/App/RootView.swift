@@ -9,7 +9,12 @@ struct RootView: View {
                 FeaturedBooksView()
             }
             .tabItem {
-                Label("Featured", systemImage: "star.fill")
+                Label("NYT Best", systemImage: "star.fill")
+            }
+            
+            SwipeView()
+            .tabItem {
+                Label("Swipe", systemImage: "rectangle.stack.fill")
             }
             
             NavigationStack {
