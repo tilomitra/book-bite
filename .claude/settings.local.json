@@ -30,7 +30,17 @@
       "Bash(npx tsc:*)",
       "Bash(git rm:*)",
       "Bash(lsof:*)",
-      "mcp__XcodeBuildMCP__swipe"
+      "mcp__XcodeBuildMCP__swipe",
+      "Bash(xcodebuild:*)",
+      "Bash(npm run dev:*)",
+      "mcp__XcodeBuildMCP__stop_app_sim",
+      "Bash(grep:*)",
+      "mcp__XcodeBuildMCP__build_run_sim_name_proj",
+      "Bash(pkill:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(uuidgen)",
+      "WebFetch(domain:api.github.com)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": [],

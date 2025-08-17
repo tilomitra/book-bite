@@ -186,7 +186,7 @@ struct BookRequestedSuccessView: View {
             
             // Book preview
             VStack(spacing: 12) {
-                AsyncImage(url: URL(string: book.coverAssetName)) { image in
+                AsyncImage(url: book.coverAssetName != nil ? URL(string: book.coverAssetName!) : nil) { image in
                     image
                         .resizable()
                         .aspectRatio(contentMode: .fit)

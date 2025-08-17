@@ -7,6 +7,7 @@ class DependencyContainer: ObservableObject {
     private let appConfig = AppConfiguration.shared
     
     lazy var bookRepository: BookRepository = createBookRepository()
+    lazy var chatRepository: ChatRepository = createChatRepository()
     lazy var searchService = SearchService(repository: bookRepository)
     lazy var exportService = ExportService()
     
@@ -15,6 +16,10 @@ class DependencyContainer: ObservableObject {
     private func createBookRepository() -> BookRepository {
         // Simplified - always use RemoteBookRepository (HybridBookRepository now just wraps it)
         return HybridBookRepository()
+    }
+    
+    private func createChatRepository() -> ChatRepository {
+        return RemoteChatRepository()
     }
     
     // For testing or manual switching

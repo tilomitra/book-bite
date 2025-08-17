@@ -13,7 +13,7 @@ struct BookDetailView: View {
     }
     
     var body: some View {
-        ScrollView {
+        ScrollView(.vertical, showsIndicators: true) {
             VStack(spacing: 0) {
                 // Clean book header section
                 bookHeader
@@ -130,6 +130,15 @@ struct BookDetailView: View {
             
             // Replace SummaryTabView with new elegant design
             EnhancedSummaryView(summary: summary)
+            
+            // Ask section
+            VStack(spacing: 0) {
+                Divider()
+                    .padding(.horizontal)
+                
+                BookChatView(book: viewModel.book)
+                    .frame(height: 400)
+            }
         }
     }
 }

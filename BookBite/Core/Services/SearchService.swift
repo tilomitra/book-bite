@@ -62,6 +62,10 @@ class SearchService: ObservableObject {
         isSearching = false
     }
     
+    func performSearchAsync(query: String) async {
+        await performSearch(query: query)
+    }
+    
     func clearSearch() {
         searchTask?.cancel()
         searchResults = []

@@ -87,32 +87,66 @@ class FeaturedBooksViewModel: ObservableObject {
     }
     
     private func groupBooksByGenre() {
-        // Create genre groups based on categories
+        // Create genre groups based on categories, excluding featured books to avoid duplicates
         var genreMap: [String: [Book]] = [:]
         
         // Predefined genre sections for NYT bestsellers to ensure consistent ordering
         let primaryGenres = [
             "Business",
             "Self-Help",
-            "Biography",
+            "Biography", 
             "Science",
-            "Politics",
+            "Psychology",
             "Health",
             "History",
-            "Psychology"
+            "Politics",
+            "Philosophy",
+            "Economics",
+            "Technology",
+            "Education",
+            "Arts & Culture",
+            "Nature & Environment"
         ]
         
-        // Map books to genres based on their categories
+        // Get featured book IDs to exclude from genre sections
+        let featuredBookIds = Set(featuredBooks.map { $0.id })
+        
+        // Track which books have been assigned to prevent duplicates across genres
+        var assignedBookIds = Set<String>()
+        
+        // Map books to their primary genre (first matching category only)
         for book in allBooks {
+            // Skip if this book is already featured or already assigned to a genre
+            if featuredBookIds.contains(book.id) || assignedBookIds.contains(book.id) {
+                continue
+            }
+            
+            // Find the first matching primary genre for this book
+            var assignedGenre: String? = nil
             for category in book.categories {
-                // Map categories to main genres
                 let mainGenre = mapCategoryToGenre(category)
-                if genreMap[mainGenre] == nil {
-                    genreMap[mainGenre] = []
+                if primaryGenres.contains(mainGenre) {
+                    assignedGenre = mainGenre
+                    break
                 }
-                if !genreMap[mainGenre]!.contains(where: { $0.id == book.id }) {
-                    genreMap[mainGenre]!.append(book)
+            }
+            
+            // If no primary genre match, use the first category mapped to any genre
+            if assignedGenre == nil {
+                for category in book.categories {
+                    let mainGenre = mapCategoryToGenre(category)
+                    assignedGenre = mainGenre
+                    break
                 }
+            }
+            
+            // Assign book to the determined genre
+            if let genre = assignedGenre {
+                if genreMap[genre] == nil {
+                    genreMap[genre] = []
+                }
+                genreMap[genre]!.append(book)
+                assignedBookIds.insert(book.id)
             }
         }
         
@@ -170,6 +204,30 @@ class FeaturedBooksViewModel: ObservableObject {
                   lowercased.contains("mind") || lowercased.contains("behavior") ||
                   lowercased.contains("social science") {
             return "Psychology"
+        } else if lowercased.contains("philosophy") || lowercased.contains("ethics") ||
+                  lowercased.contains("wisdom") || lowercased.contains("meaning") ||
+                  lowercased.contains("spiritual") {
+            return "Philosophy"
+        } else if lowercased.contains("economics") || lowercased.contains("economy") ||
+                  lowercased.contains("finance") || lowercased.contains("money") ||
+                  lowercased.contains("wealth") || lowercased.contains("investing") {
+            return "Economics"
+        } else if lowercased.contains("technology") || lowercased.contains("tech") ||
+                  lowercased.contains("digital") || lowercased.contains("computer") ||
+                  lowercased.contains("artificial intelligence") || lowercased.contains("ai") {
+            return "Technology"
+        } else if lowercased.contains("education") || lowercased.contains("learning") ||
+                  lowercased.contains("teaching") || lowercased.contains("school") ||
+                  lowercased.contains("university") {
+            return "Education"
+        } else if lowercased.contains("art") || lowercased.contains("culture") ||
+                  lowercased.contains("music") || lowercased.contains("literature") ||
+                  lowercased.contains("design") || lowercased.contains("creative") {
+            return "Arts & Culture"
+        } else if lowercased.contains("nature") || lowercased.contains("environment") ||
+                  lowercased.contains("climate") || lowercased.contains("ecology") ||
+                  lowercased.contains("sustainability") {
+            return "Nature & Environment"
         } else {
             // Return the original category if it doesn't match any mapping
             return category

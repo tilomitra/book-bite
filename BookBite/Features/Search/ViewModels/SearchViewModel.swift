@@ -29,18 +29,18 @@ class SearchViewModel: ObservableObject {
         
         searchService.$searchError
             .assign(to: &$searchError)
-        
-        $searchText
-            .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
-            .removeDuplicates()
-            .sink { [weak self] query in
-                self?.searchService.search(query: query)
-            }
-            .store(in: &cancellables)
     }
     
     private func loadInitialBooks() async {
         await searchService.loadAllBooks()
+    }
+    
+    func performSearch() async {
+        guard !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            searchService.clearSearch()
+            return
+        }
+        await searchService.performSearchAsync(query: searchText)
     }
     
     func clearSearch() {

@@ -79,7 +79,7 @@ struct FeaturedBooksContentView: View {
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 16) {
                 // Featured Books Section
                 if !filteredFeaturedBooks.isEmpty {
                     FeaturedSection(books: filteredFeaturedBooks)
@@ -122,8 +122,8 @@ struct FeaturedSection: View {
             
             // Horizontal Scroll View of Books
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(books.prefix(10)) { book in
+                HStack(spacing: 8) {
+                    ForEach(books.prefix(15)) { book in
                         NavigationLink(destination: BookDetailView(book: book)) {
                             CompactBookCard(book: book)
                         }
@@ -184,7 +184,7 @@ struct FeaturedBooksGenreView: View {
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 16) {
                 ForEach(filteredGenres, id: \.genre) { genreGroup in
                     GenreSection(genre: genreGroup.genre, books: genreGroup.books)
                 }
@@ -224,8 +224,8 @@ struct GenreSection: View {
             
             // Horizontal Scroll View of Books
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(books.prefix(10)) { book in
+                HStack(spacing: 8) {
+                    ForEach(books.prefix(15)) { book in
                         NavigationLink(destination: BookDetailView(book: book)) {
                             CompactBookCard(book: book)
                         }
@@ -269,25 +269,25 @@ struct CompactBookCard: View {
     let book: Book
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            // Book Cover - Larger and consistent
+        VStack(alignment: .leading, spacing: 4) {
+            // Book Cover - Smaller for more content
             EnhancedBookCover(coverURL: book.coverAssetName)
-                .frame(width: 140, height: 210)
+                .frame(width: 90, height: 135)
             
             // Book Info - Simplified
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 1) {
                 Text(book.title)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.system(size: 11, weight: .semibold))
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.primary)
                 
                 Text(book.formattedAuthors)
-                    .font(.system(size: 11))
+                    .font(.system(size: 9))
                     .lineLimit(1)
                     .foregroundColor(.secondary)
             }
-            .frame(width: 140, alignment: .leading)
+            .frame(width: 90, alignment: .leading)
         }
     }
 }

@@ -22,7 +22,7 @@ class RemoteBookRepository: BookRepository {
         let endpoint = "books/featured"
         let freshEndpoint = "\(endpoint)?fresh=true"
         let response: BooksResponse = try await networkService.get(endpoint: freshEndpoint)
-        let books = response.books.filter { $0.isFeatured }
+        let books = response.books.filter { $0.isFeatured == true }
         
         // Cache the results for performance
         try? cacheService.cacheFeaturedBooks(books)

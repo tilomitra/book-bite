@@ -21,7 +21,7 @@ struct AppConfiguration {
     
     var baseServerURL: String {
         #if DEBUG
-        return ProcessInfo.processInfo.environment["BOOKBITE_SERVER_URL"] ?? "https://37aa8f8da8bc.ngrok.app/api"
+        return ProcessInfo.processInfo.environment["BOOKBITE_SERVER_URL"] ?? "http://localhost:3000/api"
         #else
         return "https://your-production-server.com/api"
         #endif

@@ -29,7 +29,7 @@ struct EnhancedBookCard: View {
                     .lineLimit(1)
                 
                 // NYT Bestseller Badge
-                if book.isNYTBestseller {
+                if book.isNYTBestseller == true {
                     NYTBestsellerBadge(book: book)
                         .transition(.scale.combined(with: .opacity))
                 }
@@ -115,7 +115,7 @@ struct EnhancedBookCoverView: View {
                 .animation(DesignSystem.Animations.smooth, value: imageLoaded)
             
             // Book Cover Image
-            AsyncImage(url: URL(string: book.coverAssetName)) { image in
+            AsyncImage(url: book.coverAssetName != nil ? URL(string: book.coverAssetName!) : nil) { image in
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fill)
@@ -139,7 +139,7 @@ struct EnhancedBookCoverView: View {
             }
             
             // NYT Bestseller Corner Badge
-            if book.isNYTBestseller {
+            if book.isNYTBestseller == true {
                 VStack {
                     HStack {
                         Spacer()

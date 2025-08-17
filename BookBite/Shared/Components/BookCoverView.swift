@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct BookCoverView: View {
-    let coverURL: String
+    let coverURL: String?
     let size: CoverSize
     
     enum CoverSize {
@@ -42,7 +42,7 @@ struct BookCoverView: View {
     }
     
     var body: some View {
-        AsyncImage(url: URL(string: httpsURL)) { phase in
+        AsyncImage(url: coverURL != nil ? URL(string: httpsURL) : nil) { phase in
             switch phase {
             case .success(let image):
                 image
@@ -62,6 +62,7 @@ struct BookCoverView: View {
     }
     
     private var httpsURL: String {
+        guard let coverURL = coverURL else { return "" }
         // Convert HTTP Google Books URLs to HTTPS
         if coverURL.hasPrefix("http://books.google.com") {
             return coverURL.replacingOccurrences(of: "http://", with: "https://")

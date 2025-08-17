@@ -11,8 +11,35 @@ struct SearchView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
+                // Search bar with button
+                HStack {
+                    TextField("Search by title, author, or topic", text: $viewModel.searchText)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .onSubmit {
+                            Task {
+                                await viewModel.performSearch()
+                            }
+                        }
+                    
+                    Button("Search") {
+                        Task {
+                            await viewModel.performSearch()
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(viewModel.searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+                .padding()
+                
+                // Results area
                 if viewModel.isSearching {
                     LoadingView()
+                } else if let error = viewModel.searchError {
+                    ErrorSearchView(error: error) {
+                        Task {
+                            await viewModel.performSearch()
+                        }
+                    }
                 } else if viewModel.showEmptyState {
                     EmptySearchView(searchText: viewModel.searchText)
                 } else if viewModel.showInitialState {
@@ -22,7 +49,6 @@ struct SearchView: View {
                 }
             }
             .navigationTitle("Discover Books")
-            .searchable(text: $viewModel.searchText, prompt: "Search by title, author, or topic")
         }
     }
 }
@@ -79,6 +105,38 @@ struct EmptySearchView: View {
             Text("No books match \"\(searchText)\"")
                 .font(.body)
                 .foregroundColor(.secondary)
+            
+            Spacer()
+        }
+        .padding(.top, 100)
+    }
+}
+
+struct ErrorSearchView: View {
+    let error: Error
+    let retry: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "wifi.slash")
+                .font(.system(size: 50))
+                .foregroundColor(.red)
+            
+            Text("Search Error")
+                .font(.title3)
+                .fontWeight(.semibold)
+            
+            Text("Unable to search books. Error: \(error.localizedDescription)")
+                .font(.body)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 40)
+            
+            Button("Try Again") {
+                retry()
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
             
             Spacer()
         }
