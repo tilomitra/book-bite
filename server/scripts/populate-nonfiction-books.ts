@@ -14,35 +14,69 @@ const POPULAR_NONFICTION_BOOKS = [
   { title: "The 7 Habits of Highly Effective People", author: "Stephen Covey", subject: "self-improvement" },
   { title: "Think and Grow Rich", author: "Napoleon Hill", subject: "success" },
   { title: "Mindset", author: "Carol Dweck", subject: "psychology+self-improvement" },
+  { title: "How to Win Friends and Influence People", author: "Dale Carnegie", subject: "self-improvement+communication" },
+  { title: "The Subtle Art of Not Giving a F*ck", author: "Mark Manson", subject: "self-improvement" },
+  { title: "Grit", author: "Angela Duckworth", subject: "psychology+success" },
+  { title: "The Power of Habit", author: "Charles Duhigg", subject: "psychology+habits" },
   
   // Biography & Memoir
   { title: "Educated", author: "Tara Westover", subject: "memoir" },
   { title: "Becoming", author: "Michelle Obama", subject: "memoir" },
   { title: "Steve Jobs", author: "Walter Isaacson", subject: "biography" },
+  { title: "Long Walk to Freedom", author: "Nelson Mandela", subject: "memoir+biography" },
+  { title: "Born a Crime", author: "Trevor Noah", subject: "memoir+comedy" },
+  { title: "Kitchen Confidential", author: "Anthony Bourdain", subject: "memoir+food" },
   
   // Science & Nature
   { title: "Sapiens", author: "Yuval Noah Harari", subject: "history+anthropology" },
   { title: "The Immortal Life of Henrietta Lacks", author: "Rebecca Skloot", subject: "science" },
   { title: "Silent Spring", author: "Rachel Carson", subject: "environment" },
+  { title: "A Brief History of Time", author: "Stephen Hawking", subject: "physics+cosmology" },
+  { title: "The Gene", author: "Siddhartha Mukherjee", subject: "genetics+science" },
+  { title: "Cosmos", author: "Carl Sagan", subject: "astronomy+science" },
+  { title: "The Emperor of All Maladies", author: "Siddhartha Mukherjee", subject: "medicine+cancer" },
   
   // Psychology & Society
   { title: "Thinking, Fast and Slow", author: "Daniel Kahneman", subject: "psychology" },
   { title: "The Power of Now", author: "Eckhart Tolle", subject: "mindfulness" },
   { title: "Outliers", author: "Malcolm Gladwell", subject: "psychology+success" },
+  { title: "Blink", author: "Malcolm Gladwell", subject: "psychology+decision-making" },
+  { title: "Nudge", author: "Richard Thaler", subject: "behavioral-economics" },
+  { title: "The Social Animal", author: "David Brooks", subject: "psychology+society" },
   
   // Business & Economics
   { title: "The Lean Startup", author: "Eric Ries", subject: "business+entrepreneurship" },
   { title: "Good to Great", author: "Jim Collins", subject: "business+management" },
   { title: "Freakonomics", author: "Steven Levitt", subject: "economics" },
+  { title: "The Innovator's Dilemma", author: "Clayton Christensen", subject: "business+innovation" },
+  { title: "Crossing the Chasm", author: "Geoffrey Moore", subject: "business+technology" },
+  { title: "The Tipping Point", author: "Malcolm Gladwell", subject: "business+sociology" },
   
   // History & Politics
   { title: "The Guns of August", author: "Barbara Tuchman", subject: "history" },
   { title: "A People's History of the United States", author: "Howard Zinn", subject: "history" },
   { title: "The Righteous Mind", author: "Jonathan Haidt", subject: "politics+psychology" },
+  { title: "Guns, Germs, and Steel", author: "Jared Diamond", subject: "history+anthropology" },
+  { title: "The Diary of a Young Girl", author: "Anne Frank", subject: "history+memoir" },
+  { title: "Team of Rivals", author: "Doris Kearns Goodwin", subject: "history+politics" },
   
   // Health & Wellness
   { title: "The Blue Zones", author: "Dan Buettner", subject: "health+longevity" },
-  { title: "Being Mortal", author: "Atul Gawande", subject: "medicine+philosophy" }
+  { title: "Being Mortal", author: "Atul Gawande", subject: "medicine+philosophy" },
+  { title: "The Body Keeps the Score", author: "Bessel van der Kolk", subject: "psychology+trauma" },
+  { title: "Salt Sugar Fat", author: "Michael Moss", subject: "health+nutrition" },
+  { title: "In Defense of Food", author: "Michael Pollan", subject: "nutrition+food" },
+  
+  // Philosophy & Spirituality
+  { title: "Man's Search for Meaning", author: "Viktor Frankl", subject: "psychology+philosophy" },
+  { title: "The Alchemist", author: "Paulo Coelho", subject: "philosophy+spirituality" },
+  { title: "Meditations", author: "Marcus Aurelius", subject: "philosophy+stoicism" },
+  { title: "The Art of Happiness", author: "Dalai Lama", subject: "spirituality+happiness" },
+  
+  // Technology & Future
+  { title: "The Singularity Is Near", author: "Ray Kurzweil", subject: "technology+futurism" },
+  { title: "Homo Deus", author: "Yuval Noah Harari", subject: "technology+future" },
+  { title: "The Second Machine Age", author: "Erik Brynjolfsson", subject: "technology+economics" }
 ];
 
 async function checkForDuplicates(bookData: any): Promise<boolean> {
