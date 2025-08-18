@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "BookBite API Server",
   "main": "dist/index.js",
+  "license": "MIT",
   "engines": {
     "node": ">=20.0.0"
   },
