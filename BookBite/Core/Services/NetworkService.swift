@@ -72,7 +72,27 @@ class NetworkService: ObservableObject {
             // Handle different status codes
             switch httpResponse.statusCode {
             case 200...299:
-                return try JSONDecoder().decode(T.self, from: data)
+                let decoder = JSONDecoder()
+                decoder.dateDecodingStrategy = .custom { decoder in
+                    let container = try decoder.singleValueContainer()
+                    let dateString = try container.decode(String.self)
+                    
+                    // Try ISO8601 with microseconds first (server format)
+                    let microsecondsFormatter = ISO8601DateFormatter()
+                    microsecondsFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+                    if let date = microsecondsFormatter.date(from: dateString) {
+                        return date
+                    }
+                    
+                    // Fallback to standard ISO8601
+                    let standardFormatter = ISO8601DateFormatter()
+                    if let date = standardFormatter.date(from: dateString) {
+                        return date
+                    }
+                    
+                    throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date format: \(dateString)")
+                }
+                return try decoder.decode(T.self, from: data)
             case 400...499:
                 throw NetworkError.clientError(httpResponse.statusCode, data)
             case 500...599:
