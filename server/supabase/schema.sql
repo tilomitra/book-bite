@@ -55,6 +55,11 @@ CREATE TABLE summary_generation_jobs (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 
+-- Add unique constraint for author + title combination to prevent duplicates
+-- Note: This uses array-to-string conversion for authors array comparison
+ALTER TABLE books ADD CONSTRAINT unique_book_author_title 
+UNIQUE (title, (array_to_string(authors, '|')));
+
 -- Create indexes for better query performance
 CREATE INDEX idx_books_isbn10 ON books(isbn10);
 CREATE INDEX idx_books_isbn13 ON books(isbn13);

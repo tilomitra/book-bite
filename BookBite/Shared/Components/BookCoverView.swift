@@ -47,7 +47,7 @@ struct BookCoverView: View {
             case .success(let image):
                 image
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
+                    .aspectRatio(contentMode: .fit)
             case .failure(_):
                 placeholderView
             case .empty:

@@ -72,6 +72,7 @@ struct SearchResultsList: View {
                 .onAppear {
                     onBookAppear(book)
                 }
+                .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
             }
             
             // Loading indicator at the bottom
@@ -87,6 +88,7 @@ struct SearchResultsList: View {
                 }
                 .padding(.vertical, 8)
                 .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets())
             } else if !hasMore && !books.isEmpty {
                 HStack {
                     Spacer()
@@ -97,6 +99,7 @@ struct SearchResultsList: View {
                 }
                 .padding(.vertical, 8)
                 .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets())
             }
         }
         .listStyle(PlainListStyle())

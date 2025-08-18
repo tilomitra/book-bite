@@ -132,24 +132,53 @@ class NYTBestsellerPopulator {
 
     // Check if we've already processed this ISBN
     if (this.processedISBNs.has(isbn)) {
-      console.log(chalk.gray(`↩️ Already processed: ${nytBook.title}`));
+      console.log(chalk.gray(`↩️ Already processed in this session: ${nytBook.title}`));
       this.stats.duplicates++;
       return;
     }
 
     try {
-      // Check if book already exists in database
-      const { data: existingBook } = await supabase
+      // Check if book already exists in database by ISBN
+      const { data: existingBookByISBN } = await supabase
         .from('books')
-        .select('id')
+        .select('id, title, authors')
         .eq('isbn', isbn)
         .single();
 
-      if (existingBook) {
-        console.log(chalk.gray(`📖 Book already in database: ${nytBook.title}`));
+      if (existingBookByISBN) {
+        console.log(chalk.gray(`📖 Book already in database (ISBN match): ${nytBook.title}`));
         this.processedISBNs.add(isbn);
         this.stats.duplicates++;
         return;
+      }
+
+      // Also check by title and author to catch books with different ISBNs
+      // Normalize title and author for comparison
+      const normalizedTitle = nytBook.title.toLowerCase().trim();
+      const normalizedAuthor = nytBook.author.toLowerCase().trim();
+      
+      const { data: existingBookByTitleAuthor } = await supabase
+        .from('books')
+        .select('id, title, authors, isbn')
+        .ilike('title', `%${normalizedTitle}%`);
+
+      if (existingBookByTitleAuthor && existingBookByTitleAuthor.length > 0) {
+        // Check if any of the books have a matching author
+        for (const book of existingBookByTitleAuthor) {
+          const bookAuthors = book.authors || [];
+          const hasMatchingAuthor = bookAuthors.some((author: string) => 
+            author.toLowerCase().includes(normalizedAuthor) || 
+            normalizedAuthor.includes(author.toLowerCase())
+          );
+          
+          if (hasMatchingAuthor) {
+            console.log(chalk.gray(`📖 Book already in database (title/author match): ${nytBook.title} by ${nytBook.author}`));
+            console.log(chalk.gray(`   Existing ISBN: ${book.isbn}, New ISBN: ${isbn}`));
+            this.processedISBNs.add(isbn);
+            this.stats.duplicates++;
+            return;
+          }
+        }
       }
 
       console.log(chalk.cyan(`\n📘 Processing: ${nytBook.title} by ${nytBook.author}`));

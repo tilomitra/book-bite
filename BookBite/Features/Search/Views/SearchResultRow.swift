@@ -4,42 +4,49 @@ struct SearchResultRow: View {
     let book: Book
     
     var body: some View {
-        HStack(alignment: .top, spacing: 16) {
-            BookCoverView(coverURL: book.coverAssetName, size: .medium)
+        HStack(alignment: .top, spacing: 12) {
+            BookCoverView(coverURL: book.coverAssetName, size: .small)
             
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(book.title)
-                    .font(.title3)
+                    .font(.headline)
                     .fontWeight(.semibold)
-                    .lineLimit(2)
+                    .lineLimit(3)
+                    .multilineTextAlignment(.leading)
                     .foregroundColor(.primary)
                 
                 Text(book.formattedAuthors)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                    .lineLimit(1)
+                    .lineLimit(3)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
                 
-                if !book.categories.isEmpty {
-                    Text(book.categories.prefix(2).joined(separator: " · "))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
-                        .padding(.top, 2)
-                }
+                Text(book.publishedYear != nil ? String(book.publishedYear!) : "")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
                 
-                HStack(spacing: 4) {
-                    Image(systemName: "clock")
-                        .font(.caption2)
-                    Text("8 min read")
-                        .font(.caption)
+                if book.isNYTBestseller == true {
+                    HStack(spacing: 4) {
+                        Image(systemName: "star.fill")
+                            .font(.system(size: 10))
+                            .foregroundColor(.orange)
+                        Text("NYT Bestseller")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(.orange)
+                    }
+                    .padding(.top, 2)
                 }
-                .foregroundColor(.secondary)
-                .padding(.top, 4)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             
-            Spacer()
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .padding(.trailing, 4)
         }
-        .padding(.vertical, 12)
+        .padding(.vertical, 8)
         .contentShape(Rectangle())
     }
 }

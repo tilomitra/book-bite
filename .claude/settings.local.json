@@ -40,7 +40,11 @@
       "WebFetch(domain:github.com)",
       "Bash(uuidgen)",
       "WebFetch(domain:api.github.com)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "mcp__XcodeBuildMCP__list_devices",
+      "mcp__XcodeBuildMCP__build_dev_proj",
+      "Bash(security find-identity:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": [],

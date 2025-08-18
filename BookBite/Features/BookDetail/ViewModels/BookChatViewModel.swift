@@ -74,11 +74,24 @@ class BookChatViewModel: ObservableObject {
         
         guard let conversation = currentConversation else { return }
         
+        // Create and show user message immediately
+        let userMessage = ChatMessage(
+            id: UUID().uuidString,
+            conversationId: conversation.id,
+            role: .user,
+            content: messageText,
+            createdAt: Date(),
+            isPending: true
+        )
+        messages.append(userMessage)
+        
         isLoadingResponse = true
         error = nil
         
         do {
             let response = try await chatRepository.sendMessage(messageText, in: conversation.id, for: book.id)
+            
+            // Replace all messages with the server response (removes pending state)
             messages = response.messages
             
             // Update conversation if title was generated
@@ -87,6 +100,11 @@ class BookChatViewModel: ObservableObject {
             }
         } catch {
             self.error = error
+            
+            // Remove the pending user message on error
+            if let index = messages.firstIndex(where: { $0.id == userMessage.id }) {
+                messages.remove(at: index)
+            }
         }
         
         isLoadingResponse = false

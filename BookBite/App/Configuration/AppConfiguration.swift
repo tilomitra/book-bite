@@ -23,7 +23,7 @@ struct AppConfiguration {
         #if DEBUG
         return ProcessInfo.processInfo.environment["BOOKBITE_SERVER_URL"] ?? "http://localhost:3000/api"
         #else
-        return "https://your-production-server.com/api"
+        return "https://book-bite.onrender.com/api"
         #endif
     }
     

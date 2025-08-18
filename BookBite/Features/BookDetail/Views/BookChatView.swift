@@ -118,15 +118,14 @@ struct BookChatView: View {
                         .id(message.id)
                     }
                     
-                    // Loading indicator for assistant response
+                    // Typing indicator for assistant response
                     if viewModel.isLoadingResponse {
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack(spacing: 8) {
-                                    ProgressView()
-                                        .scaleEffect(0.7)
+                                    TypingIndicatorView()
                                     
-                                    Text("BookBite is thinking...")
+                                    Text("BookBite is typing...")
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                 }
@@ -247,6 +246,33 @@ struct ChatLoadingView: View {
             Text("Setting up chat...")
                 .font(.caption)
                 .foregroundColor(.secondary)
+        }
+    }
+}
+
+struct TypingIndicatorView: View {
+    @State private var animating = false
+    
+    var body: some View {
+        HStack(spacing: 3) {
+            ForEach(0..<3) { index in
+                Circle()
+                    .fill(Color.secondary.opacity(0.7))
+                    .frame(width: 6, height: 6)
+                    .scaleEffect(animating ? 1.0 : 0.5)
+                    .animation(
+                        Animation.easeInOut(duration: 0.6)
+                            .repeatForever()
+                            .delay(Double(index) * 0.2),
+                        value: animating
+                    )
+            }
+        }
+        .onAppear {
+            animating = true
+        }
+        .onDisappear {
+            animating = false
         }
     }
 }

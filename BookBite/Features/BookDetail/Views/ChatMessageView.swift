@@ -49,7 +49,8 @@ struct ChatMessageView: View {
                 conversationId: "conv1",
                 role: .user,
                 content: "What are the main ideas in this book?",
-                createdAt: Date()
+                createdAt: Date(),
+                isPending: false
             ),
             isUser: true
         )
@@ -60,7 +61,8 @@ struct ChatMessageView: View {
                 conversationId: "conv1",
                 role: .assistant,
                 content: "The main ideas in this book focus on building atomic habits through small, consistent changes. The author emphasizes the power of 1% improvements and how they compound over time to create remarkable results.",
-                createdAt: Date()
+                createdAt: Date(),
+                isPending: false
             ),
             isUser: false
         )

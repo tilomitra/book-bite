@@ -172,76 +172,161 @@ struct BookRequestedSuccessView: View {
     let onContinueSearching: () -> Void
     
     var body: some View {
-        VStack(spacing: 32) {
-            // Success illustration
+        VStack(spacing: 0) {
+            // Compact success indicator and book card
             VStack(spacing: 20) {
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 60))
-                    .foregroundColor(.green)
-                
-                Text("Book Added Successfully!")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-            }
-            
-            // Book preview
-            VStack(spacing: 12) {
-                AsyncImage(url: book.coverAssetName != nil ? URL(string: book.coverAssetName!) : nil) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                } placeholder: {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.gray.opacity(0.3))
-                        .overlay(
-                            Image(systemName: "book.closed")
-                                .font(.largeTitle)
-                                .foregroundColor(.gray)
-                        )
-                }
-                .frame(width: 100, height: 133)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                
-                VStack(spacing: 4) {
-                    Text(book.title)
-                        .font(.headline)
-                        .multilineTextAlignment(.center)
-                        .lineLimit(2)
+                // Inline success message with small checkmark
+                HStack(spacing: 12) {
+                    ZStack {
+                        Circle()
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.green.opacity(0.15), Color.mint.opacity(0.15)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 32, height: 32)
+                        
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(.green)
+                    }
                     
-                    Text(book.formattedAuthors)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Book Added Successfully!")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                        
+                        Text("Added to library with AI-generated summaries")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Spacer()
                 }
+                .padding(.horizontal, 20)
+                
+                // Compact book card
+                VStack(spacing: 12) {
+                    BookCoverView(coverURL: book.coverAssetName, size: .small)
+                    
+                    VStack(spacing: 6) {
+                        Text(book.title)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .multilineTextAlignment(.center)
+                            .lineLimit(2)
+                            .foregroundColor(.primary)
+                        
+                        if !book.authors.isEmpty {
+                            Text(book.formattedAuthors)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.center)
+                                .lineLimit(1)
+                        }
+                        
+                        // Categories or bestseller info
+                        if let nytInfo = book.nytBestsellerInfo {
+                            HStack(spacing: 4) {
+                                Image(systemName: "star.fill")
+                                    .font(.caption2)
+                                    .foregroundColor(.orange)
+                                Text(nytInfo)
+                                    .font(.caption2)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.orange)
+                            }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 2)
+                            .background(Color.orange.opacity(0.1))
+                            .clipShape(Capsule())
+                        } else if !book.categories.isEmpty {
+                            Text(book.categories.prefix(2).joined(separator: " • "))
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 2)
+                                .background(Color.gray.opacity(0.1))
+                                .clipShape(Capsule())
+                        }
+                    }
+                }
+                .padding(16)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color(.systemBackground))
+                        .shadow(
+                            color: Color.black.opacity(0.05),
+                            radius: 6,
+                            x: 0,
+                            y: 2
+                        )
+                )
+                .padding(.horizontal, 20)
             }
+            .padding(.top, 20)
             
-            // Action buttons
+            Spacer()
+            
+            // Always visible action buttons at bottom
             VStack(spacing: 12) {
                 NavigationLink(destination: BookDetailView(book: book)) {
-                    Text("View Book Summary")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                        .background(.blue)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    HStack {
+                        Image(systemName: "book.pages")
+                            .font(.headline)
+                        Text("View Book Summary")
+                            .font(.headline)
+                            .fontWeight(.medium)
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 56)
+                    .background(
+                        LinearGradient(
+                            colors: [Color.blue, Color.blue.opacity(0.8)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .shadow(color: Color.blue.opacity(0.3), radius: 8, x: 0, y: 4)
                 }
                 
                 Button(action: onContinueSearching) {
-                    Text("Request Another Book")
-                        .font(.subheadline)
-                        .foregroundColor(.blue)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 44)
-                        .background(Color.blue.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    HStack {
+                        Image(systemName: "plus.magnifyingglass")
+                            .font(.subheadline)
+                        Text("Request Another Book")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                    }
+                    .foregroundColor(.blue)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 48)
+                    .background(Color.blue.opacity(0.08))
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14)
+                            .stroke(Color.blue.opacity(0.2), lineWidth: 1)
+                    )
                 }
             }
             .padding(.horizontal, 20)
-            
-            Spacer()
+            .padding(.bottom, 34)
         }
-        .padding()
+        .background(
+            LinearGradient(
+                colors: [
+                    Color(.systemBackground),
+                    Color(.systemGroupedBackground).opacity(0.5)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
     }
 }
 

@@ -36,7 +36,7 @@ struct EnhancedBookCover: View {
             case .success(let image):
                 image
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
+                    .aspectRatio(contentMode: .fit)
                     .onAppear { isLoading = false }
             case .failure(_):
                 placeholderView
