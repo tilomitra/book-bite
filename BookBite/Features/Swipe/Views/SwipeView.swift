@@ -14,8 +14,29 @@ struct SwipeView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(.systemGroupedBackground)
+                // Background gradient based on swipe direction
+                if dragOffset.width > 20 {
+                    // Right swipe - green gradient
+                    LinearGradient(
+                        gradient: Gradient(colors: [Color.green.opacity(0.1), Color.green.opacity(0.3)]),
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                    .opacity(min(1.0, abs(dragOffset.width) / 150.0))
                     .ignoresSafeArea()
+                } else if dragOffset.width < -20 {
+                    // Left swipe - red gradient
+                    LinearGradient(
+                        gradient: Gradient(colors: [Color.red.opacity(0.3), Color.red.opacity(0.1)]),
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                    .opacity(min(1.0, abs(dragOffset.width) / 150.0))
+                    .ignoresSafeArea()
+                } else {
+                    Color(.systemGroupedBackground)
+                        .ignoresSafeArea()
+                }
                 
                 if viewModel.isLoading {
                     LoadingView()
@@ -26,27 +47,42 @@ struct SwipeView: View {
                         }
                     }
                 } else if let book = viewModel.currentBook {
-                    SwipeCardView(
-                        book: book,
-                        dragOffset: dragOffset,
-                        rotationAngle: rotationAngle
-                    )
-                    .scaleEffect(1.0 - abs(dragOffset.width) / 1000.0)
-                    .opacity(1.0 - abs(dragOffset.width) / 500.0)
-                    .offset(dragOffset)
-                    .rotationEffect(.degrees(rotationAngle))
-                    .gesture(
-                        DragGesture()
-                            .onChanged { value in
-                                dragOffset = value.translation
-                                rotationAngle = Double(value.translation.width / 10)
-                            }
-                            .onEnded { value in
-                                handleSwipeEnd(value: value)
-                            }
-                    )
-                    .animation(.spring(response: 0.6, dampingFraction: 0.8), value: dragOffset)
-                    .animation(.spring(response: 0.6, dampingFraction: 0.8), value: rotationAngle)
+                    ZStack {
+                        // Background cards stack
+                        ForEach(Array(viewModel.backgroundBooks.enumerated().reversed()), id: \.element.id) { index, backgroundBook in
+                            SwipeCardView(
+                                book: backgroundBook,
+                                dragOffset: .zero,
+                                rotationAngle: 0
+                            )
+                            .scaleEffect(0.95 - Double(index) * 0.03)
+                            .offset(x: 0, y: CGFloat(index + 1) * 8)
+                            .opacity(0.6 - Double(index) * 0.2)
+                            .allowsHitTesting(false)
+                        }
+                        
+                        // Main active card
+                        SwipeCardView(
+                            book: book,
+                            dragOffset: dragOffset,
+                            rotationAngle: rotationAngle
+                        )
+                        .scaleEffect(1.0 - abs(dragOffset.width) / 1000.0)
+                        .offset(dragOffset)
+                        .rotationEffect(.degrees(rotationAngle))
+                        .gesture(
+                            DragGesture()
+                                .onChanged { value in
+                                    dragOffset = value.translation
+                                    rotationAngle = Double(value.translation.width / 10)
+                                }
+                                .onEnded { value in
+                                    handleSwipeEnd(value: value)
+                                }
+                        )
+                        .animation(.spring(response: 0.6, dampingFraction: 0.8), value: dragOffset)
+                        .animation(.spring(response: 0.6, dampingFraction: 0.8), value: rotationAngle)
+                    }
                 } else {
                     EmptySwipeView()
                 }
@@ -56,8 +92,9 @@ struct SwipeView: View {
                     VStack {
                         Spacer()
                         SwipeInstructionsView()
-                            .padding(.bottom, 100)
+                            .padding(.bottom, 40)
                     }
+                    .allowsHitTesting(false)
                 }
             }
             .navigationTitle("Discover")
@@ -73,22 +110,31 @@ struct SwipeView: View {
     }
     
     private func handleSwipeEnd(value: DragGesture.Value) {
-        let threshold: CGFloat = 100
+        let threshold: CGFloat = 120
         
         if value.translation.width > threshold {
-            // Swipe right - show book detail
+            // Swipe right - show book detail (immediate stack update)
             if let book = viewModel.swipeRight() {
                 selectedBook = book
                 showingBookDetail = true
             }
+            // Reset position immediately since we're navigating away
+            dragOffset = .zero
+            rotationAngle = 0
         } else if value.translation.width < -threshold {
-            // Swipe left - next book
-            viewModel.swipeLeft()
+            // Swipe left - next book from stack (immediate stack update)
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                viewModel.swipeLeft()
+                dragOffset = .zero
+                rotationAngle = 0
+            }
+        } else {
+            // Not swiped far enough - return to original position
+            withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+                dragOffset = .zero
+                rotationAngle = 0
+            }
         }
-        
-        // Reset position
-        dragOffset = .zero
-        rotationAngle = 0
     }
 }
 
@@ -98,20 +144,20 @@ struct SwipeCardView: View {
     let rotationAngle: Double
     
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 16) {
             // Book Cover
             BookCoverView(coverURL: book.coverAssetName, size: .large)
-                .frame(maxHeight: 350)
+                .frame(maxHeight: 300)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
             
             // Book Info
-            VStack(spacing: 12) {
+            VStack(spacing: 10) {
                 Text(book.title)
                     .font(.title2)
                     .fontWeight(.bold)
                     .multilineTextAlignment(.center)
-                    .lineLimit(3)
+                    .lineLimit(2)
                 
                 Text(book.formattedAuthors)
                     .font(.title3)
@@ -123,7 +169,7 @@ struct SwipeCardView: View {
                     Text(book.formattedCategories)
                         .font(.caption)
                         .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
+                        .padding(.vertical, 4)
                         .background(Color.blue.opacity(0.1))
                         .foregroundColor(.blue)
                         .clipShape(Capsule())
@@ -131,19 +177,22 @@ struct SwipeCardView: View {
                 }
                 
                 if let description = book.description, !description.isEmpty {
-                    Text(description)
-                        .font(.body)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .lineLimit(4)
-                        .padding(.horizontal, 8)
+                    ScrollView(.vertical, showsIndicators: false) {
+                        Text(description)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .lineLimit(nil)
+                            .padding(.horizontal, 8)
+                    }
+                    .frame(height: 80)
                 }
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, 16)
             
-            Spacer()
+            Spacer(minLength: 20)
         }
-        .frame(maxWidth: 320, maxHeight: 600)
+        .frame(maxWidth: 340, maxHeight: 600)
         .background(Color(.systemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 20))
         .shadow(color: .black.opacity(0.1), radius: 15, x: 0, y: 5)
@@ -214,32 +263,32 @@ struct SwipeIndicator: View {
 
 struct SwipeInstructionsView: View {
     var body: some View {
-        HStack(spacing: 40) {
-            VStack(spacing: 8) {
+        HStack(spacing: 30) {
+            HStack(spacing: 6) {
                 Image(systemName: "arrow.left")
-                    .font(.title2)
+                    .font(.caption)
                     .foregroundColor(.red)
                 
-                Text("Next Book")
-                    .font(.caption)
+                Text("Next")
+                    .font(.caption2)
                     .foregroundColor(.secondary)
             }
             
-            VStack(spacing: 8) {
+            HStack(spacing: 6) {
                 Image(systemName: "arrow.right")
-                    .font(.title2)
+                    .font(.caption)
                     .foregroundColor(.green)
                 
                 Text("Read More")
-                    .font(.caption)
+                    .font(.caption2)
                     .foregroundColor(.secondary)
             }
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 12)
-        .background(Color(.systemBackground))
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(Color(.systemBackground).opacity(0.9))
         .clipShape(Capsule())
-        .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 2)
+        .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 1)
     }
 }
 
