@@ -129,16 +129,7 @@ struct BookDetailView: View {
             }
             
             // Replace SummaryTabView with new elegant design
-            EnhancedSummaryView(summary: summary)
-            
-            // Ask section
-            VStack(spacing: 0) {
-                Divider()
-                    .padding(.horizontal)
-                
-                BookChatView(book: viewModel.book)
-                    .frame(height: 400)
-            }
+            EnhancedSummaryView(summary: summary, book: viewModel.book)
         }
     }
 }

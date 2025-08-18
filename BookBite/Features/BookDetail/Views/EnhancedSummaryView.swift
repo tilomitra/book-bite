@@ -2,10 +2,12 @@ import SwiftUI
 
 struct EnhancedSummaryView: View {
     let summary: Summary
+    let book: Book
     @State private var selectedSection: SummarySection = .extended
     
     enum SummarySection: String, CaseIterable {
         case extended = "Summary"
+        case ask = "Chat with book"
         case keyIdeas = "Key Ideas"
         case application = "Apply"
         case analysis = "Analysis"
@@ -16,6 +18,7 @@ struct EnhancedSummaryView: View {
             case .extended: return "doc.text"
             case .keyIdeas: return "lightbulb"
             case .application: return "briefcase"
+            case .ask: return "message.circle"
             case .analysis: return "chart.line.uptrend.xyaxis"
             case .references: return "quote.opening"
             }
@@ -61,6 +64,8 @@ struct EnhancedSummaryView: View {
             KeyIdeasContent(summary: summary)
         case .application:
             ApplicationContent(summary: summary)
+        case .ask:
+            AskContent(book: book)
         case .analysis:
             AnalysisContent(summary: summary)
         case .references:
@@ -472,5 +477,14 @@ struct EmptyStateView: View {
                 .padding(.horizontal, 40)
         }
         .frame(maxWidth: .infinity)
+    }
+}
+
+// Ask Content
+struct AskContent: View {
+    let book: Book
+    
+    var body: some View {
+        BookChatView(book: book)
     }
 }
