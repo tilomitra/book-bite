@@ -9,6 +9,7 @@ import bookRoutes from './routes/bookRoutes';
 import summaryRoutes from './routes/summaryRoutes';
 import searchRoutes from './routes/searchRoutes';
 import chatRoutes from './routes/chatRoutes';
+import ratingsRoutes from './routes/ratingsRoutes';
 import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
@@ -54,6 +55,7 @@ app.use('/api', chatRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/summaries', summaryRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api', ratingsRoutes);
 
 // Error handling middleware
 app.use(errorHandler);

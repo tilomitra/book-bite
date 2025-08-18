@@ -131,3 +131,32 @@ export const ChatMessageSchema = z.object({
 });
 
 export type ChatMessage = z.infer<typeof ChatMessageSchema>;
+
+// Book Rating schema
+export const BookRatingSchema = z.object({
+  average: z.number().min(0).max(5),
+  count: z.number().int().min(0),
+  distribution: z.object({
+    '1': z.number().int().min(0).optional(),
+    '2': z.number().int().min(0).optional(),
+    '3': z.number().int().min(0).optional(),
+    '4': z.number().int().min(0).optional(),
+    '5': z.number().int().min(0).optional()
+  }).optional(),
+  source: z.string()
+});
+
+export type BookRating = z.infer<typeof BookRatingSchema>;
+
+// Book Review schema
+export const BookReviewSchema = z.object({
+  id: z.string(),
+  rating: z.number().min(1).max(5),
+  text: z.string().optional(),
+  author: z.string().optional(),
+  date: z.string().optional(),
+  source: z.string(),
+  helpful_count: z.number().int().min(0).optional()
+});
+
+export type BookReview = z.infer<typeof BookReviewSchema>;

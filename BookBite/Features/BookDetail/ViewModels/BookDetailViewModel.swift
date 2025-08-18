@@ -8,15 +8,20 @@ class BookDetailViewModel: ObservableObject {
     @Published var isLoadingSummary = false
     @Published var summaryError: Error?
     @Published var selectedTab = 0
+    @Published var rating: BookRating?
+    @Published var isLoadingRating = false
     
     private let repository: BookRepository
+    private let ratingsService: RatingsService
     
     init(book: Book, repository: BookRepository) {
         self.book = book
         self.repository = repository
+        self.ratingsService = DependencyContainer.shared.ratingsService
         
         Task {
             await loadSummary()
+            await loadRating()
         }
     }
     
@@ -39,6 +44,14 @@ class BookDetailViewModel: ObservableObject {
         try? await Task.sleep(nanoseconds: 1_000_000_000)
         
         await loadSummary()
+    }
+    
+    func loadRating() async {
+        isLoadingRating = true
+        
+        rating = await ratingsService.getRatingForBook(book)
+        
+        isLoadingRating = false
     }
     
     var readingTime: String {

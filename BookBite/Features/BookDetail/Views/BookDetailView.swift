@@ -111,19 +111,28 @@ struct BookDetailView: View {
                     .fontWeight(.medium)
                     .foregroundColor(.primary.opacity(0.8))
                 
-                HStack(spacing: 20) {
-                    // Publication info
-                    Text(viewModel.publicationInfo)
+                VStack(spacing: 8) {
+                    HStack(spacing: 20) {
+                        // Publication info
+                        Text(viewModel.publicationInfo)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        // Reading time
+                        HStack(spacing: 4) {
+                            Image(systemName: "clock")
+                            Text(viewModel.readingTime)
+                        }
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
-                    // Reading time
-                    HStack(spacing: 4) {
-                        Image(systemName: "clock")
-                        Text(viewModel.readingTime)
                     }
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    
+                    // Book rating
+                    if viewModel.isLoadingRating {
+                        RatingLoadingView(compact: true)
+                    } else if let rating = viewModel.rating {
+                        BookRatingDisplayView(rating: rating, showSource: false, compact: true)
+                    }
                 }
             }
         }
@@ -140,6 +149,26 @@ struct BookDetailView: View {
                     .padding()
                     .frame(maxWidth: .infinity)
                     .background(Color(UIColor.systemGray6))
+            }
+            
+            // Rating section
+            if let rating = viewModel.rating {
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack {
+                        Text("Reader Reviews")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 20)
+                    .padding(.bottom, 12)
+                    
+                    BookRatingDisplayView(rating: rating, showSource: true, compact: false)
+                        .padding(.horizontal)
+                        .padding(.bottom, 20)
+                }
+                .background(Color(UIColor.systemBackground))
             }
             
             // Replace SummaryTabView with new elegant design

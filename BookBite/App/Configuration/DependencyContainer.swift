@@ -10,6 +10,10 @@ class DependencyContainer: ObservableObject {
     lazy var chatRepository: ChatRepository = createChatRepository()
     lazy var searchService = SearchService(repository: bookRepository)
     lazy var exportService = ExportService()
+    lazy var ratingsService = RatingsService(
+        networkService: NetworkService.shared,
+        cacheService: CacheService.shared
+    )
     
     private init() {}
     
