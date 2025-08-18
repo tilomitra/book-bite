@@ -108,6 +108,39 @@ class RemoteBookRepository: BookRepository {
         return book
     }
     
+    func fetchCategories() async throws -> [BookCategory] {
+        struct CategoryResponse: Codable {
+            let name: String
+            let count: Int
+        }
+        
+        let response: [CategoryResponse] = try await networkService.get(endpoint: "books/categories")
+        
+        return response.map { categoryResponse in
+            BookCategory(
+                name: categoryResponse.name,
+                iconName: BookCategory.getCategoryIcon(for: categoryResponse.name),
+                bookCount: categoryResponse.count
+            )
+        }
+    }
+    
+    func fetchBooksByCategory(_ category: String, page: Int, limit: Int) async throws -> [Book] {
+        let encodedCategory = category.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? category
+        let endpoint = "books/category/\(encodedCategory)?page=\(page)&limit=\(limit)"
+        
+        struct CategoryBooksResponse: Codable {
+            let books: [Book]
+            let page: Int
+            let limit: Int
+            let total: Int
+            let totalPages: Int
+        }
+        
+        let response: CategoryBooksResponse = try await networkService.get(endpoint: endpoint)
+        return response.books
+    }
+    
     // MARK: - Cache Management
     
     func clearCache() {

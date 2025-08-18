@@ -9,6 +9,8 @@ router.get('/', bookController.getAllBooks);
 router.get('/featured', bookController.getFeaturedBooks);
 router.get('/nyt-bestsellers', bookController.getNYTBestsellerBooks);
 router.get('/search', bookController.searchBooks);
+router.get('/categories', bookController.getCategories);
+router.get('/category/:category', bookController.getBooksByCategory);
 router.get('/:id', bookController.getBookById);
 router.get('/:id/cover', bookController.getBookCover);
 

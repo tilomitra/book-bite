@@ -18,17 +18,17 @@ struct RootView: View {
             }
             
             NavigationStack {
-                SearchView()
-            }
-            .tabItem {
-                Label("Search", systemImage: "magnifyingglass")
-            }
-            
-            NavigationStack {
                 RequestView()
             }
             .tabItem {
                 Label("Request", systemImage: "plus.magnifyingglass")
+            }
+            
+            NavigationStack {
+                LibraryView()
+            }
+            .tabItem {
+                Label("Library", systemImage: "books.vertical")
             }
             
             NavigationStack {

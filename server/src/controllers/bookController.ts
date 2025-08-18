@@ -213,6 +213,37 @@ export class BookController {
       next(error);
     }
   }
+
+  async getCategories(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const categories = await bookService.getCategories();
+      res.json(categories);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getBooksByCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { category } = req.params;
+      const { page = 1, limit = 20 } = req.query;
+      
+      if (!category) {
+        res.status(400).json({ error: 'Category is required' });
+        return;
+      }
+      
+      const books = await bookService.getBooksByCategory(
+        category,
+        Number(page),
+        Number(limit)
+      );
+      
+      res.json(books);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const bookController = new BookController();

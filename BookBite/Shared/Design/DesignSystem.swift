@@ -38,7 +38,7 @@ struct DesignSystem {
         static let nytGold = Color(red: 1.0, green: 0.84, blue: 0.0)
         static let nytGoldAccent = Color(red: 0.8, green: 0.65, blue: 0.0)
         
-        // Genre Colors
+        // Genre/Category Colors
         static let businessColor = vibrantBlue
         static let selfHelpColor = vibrantGreen
         static let biographyColor = vibrantPurple
@@ -47,17 +47,84 @@ struct DesignSystem {
         static let healthColor = Color(red: 0.2, green: 0.8, blue: 0.6)
         static let historyColor = Color(red: 0.6, green: 0.4, blue: 0.2)
         static let psychologyColor = vibrantPink
+        static let technologyColor = Color(red: 0.3, green: 0.5, blue: 0.9)
+        static let philosophyColor = Color(red: 0.5, green: 0.3, blue: 0.7)
+        static let economicsColor = Color(red: 0.2, green: 0.7, blue: 0.5)
+        static let leadershipColor = Color(red: 0.9, green: 0.5, blue: 0.2)
+        static let entrepreneurshipColor = Color(red: 0.7, green: 0.4, blue: 0.9)
+        static let memoirColor = Color(red: 0.6, green: 0.2, blue: 0.8)
+        static let educationColor = Color(red: 0.4, green: 0.6, blue: 0.8)
+        static let artColor = Color(red: 0.9, green: 0.3, blue: 0.5)
+        static let musicColor = Color(red: 0.7, green: 0.2, blue: 0.6)
+        static let travelColor = Color(red: 0.3, green: 0.7, blue: 0.8)
+        static let cookingColor = Color(red: 0.8, green: 0.6, blue: 0.3)
+        static let nutritionColor = Color(red: 0.4, green: 0.8, blue: 0.4)
+        static let fitnessColor = Color(red: 0.9, green: 0.4, blue: 0.3)
+        static let mentalHealthColor = Color(red: 0.5, green: 0.7, blue: 0.9)
+        static let innovationColor = Color(red: 0.8, green: 0.3, blue: 0.8)
+        static let marketingColor = Color(red: 0.6, green: 0.5, blue: 0.9)
+        static let productivityColor = Color(red: 0.3, green: 0.8, blue: 0.7)
+        static let mindfulnessColor = Color(red: 0.4, green: 0.6, blue: 0.9)
+        static let biologyColor = Color(red: 0.3, green: 0.7, blue: 0.4)
+        static let physicsColor = Color(red: 0.5, green: 0.4, blue: 0.8)
+        static let medicineColor = Color(red: 0.7, green: 0.3, blue: 0.5)
+        static let environmentColor = Color(red: 0.2, green: 0.6, blue: 0.4)
+        static let spiritualityColor = Color(red: 0.6, green: 0.4, blue: 0.8)
+        static let sociologyColor = Color(red: 0.5, green: 0.6, blue: 0.7)
+        static let anthropologyColor = Color(red: 0.7, green: 0.5, blue: 0.6)
+        static let personalDevelopmentColor = Color(red: 0.4, green: 0.7, blue: 0.6)
         
         static func genreColor(for genre: String) -> Color {
             switch genre.lowercased() {
             case "business": return businessColor
-            case "self-help": return selfHelpColor
+            case "self-help", "self help": return selfHelpColor
             case "biography": return biographyColor
             case "science": return scienceColor
             case "politics": return politicsColor
-            case "health": return healthColor
+            case "health", "wellness": return healthColor
             case "history": return historyColor
             case "psychology": return psychologyColor
+            default: return vibrantBlue
+            }
+        }
+        
+        static func categoryColor(for category: String) -> Color {
+            switch category.lowercased() {
+            case "business": return businessColor
+            case "self-help", "self help": return selfHelpColor
+            case "biography": return biographyColor
+            case "science": return scienceColor
+            case "politics": return politicsColor
+            case "health", "wellness": return healthColor
+            case "history", "american history": return historyColor
+            case "psychology": return psychologyColor
+            case "technology": return technologyColor
+            case "philosophy": return philosophyColor
+            case "economics": return economicsColor
+            case "leadership": return leadershipColor
+            case "entrepreneurship": return entrepreneurshipColor
+            case "memoir": return memoirColor
+            case "education": return educationColor
+            case "art": return artColor
+            case "music": return musicColor
+            case "travel": return travelColor
+            case "cooking": return cookingColor
+            case "nutrition": return nutritionColor
+            case "fitness": return fitnessColor
+            case "mental health": return mentalHealthColor
+            case "innovation": return innovationColor
+            case "marketing": return marketingColor
+            case "productivity": return productivityColor
+            case "mindfulness": return mindfulnessColor
+            case "biology": return biologyColor
+            case "physics": return physicsColor
+            case "medicine": return medicineColor
+            case "environment": return environmentColor
+            case "spirituality", "religion": return spiritualityColor
+            case "sociology": return sociologyColor
+            case "anthropology": return anthropologyColor
+            case "personal development": return personalDevelopmentColor
+            case "world war": return historyColor
             default: return vibrantBlue
             }
         }

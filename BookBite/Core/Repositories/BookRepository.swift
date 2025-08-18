@@ -8,5 +8,7 @@ protocol BookRepository {
     func fetchBook(by id: String) async throws -> Book?
     func fetchSummary(for bookId: String) async throws -> Summary?
     func searchBooks(query: String) async throws -> [Book]
+    func fetchCategories() async throws -> [BookCategory]
+    func fetchBooksByCategory(_ category: String, page: Int, limit: Int) async throws -> [Book]
     func clearCache()
 }

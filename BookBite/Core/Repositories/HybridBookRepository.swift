@@ -33,6 +33,14 @@ class HybridBookRepository: BookRepository {
         return try await remoteRepository.searchBooks(query: query)
     }
     
+    func fetchCategories() async throws -> [BookCategory] {
+        return try await remoteRepository.fetchCategories()
+    }
+    
+    func fetchBooksByCategory(_ category: String, page: Int, limit: Int) async throws -> [Book] {
+        return try await remoteRepository.fetchBooksByCategory(category, page: page, limit: limit)
+    }
+    
     // MARK: - Additional Remote Features
     
     func generateSummary(for bookId: String, style: Summary.SummaryStyle = .full) async throws -> SummaryGenerationJob {

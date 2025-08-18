@@ -341,4 +341,132 @@ export class BookService {
 
     return this.createBook(bookToCreate);
   }
+
+  async getCategories(): Promise<{ name: string; count: number }[]> {
+    const { data: books, error } = await supabase
+      .from('books')
+      .select('categories');
+
+    if (error) throw error;
+
+    const categoryCounts = new Map<string, number>();
+    
+    if (books) {
+      books.forEach(book => {
+        if (book.categories && Array.isArray(book.categories)) {
+          book.categories.forEach(category => {
+            const normalizedCategory = this.normalizeCategory(category);
+            categoryCounts.set(
+              normalizedCategory,
+              (categoryCounts.get(normalizedCategory) || 0) + 1
+            );
+          });
+        }
+      });
+    }
+
+    const predefinedCategories = [
+      'Self-Help', 'Psychology', 'Business', 'History', 'Biography',
+      'Science', 'Technology', 'Health', 'Personal Development',
+      'Leadership', 'Entrepreneurship', 'Economics', 'Philosophy',
+      'Politics', 'Memoir', 'Mental Health', 'Innovation', 'Marketing',
+      'Productivity', 'Mindfulness', 'Biology', 'Physics', 'Medicine',
+      'Environment', 'Nutrition', 'Fitness', 'Spirituality', 'Sociology',
+      'Education', 'Art', 'Music', 'Travel', 'Cooking'
+    ];
+
+    return predefinedCategories.map(category => ({
+      name: category,
+      count: categoryCounts.get(category) || 0
+    }));
+  }
+
+  private normalizeCategory(category: string): string {
+    const categoryMap: Record<string, string> = {
+      'self-help': 'Self-Help',
+      'self help': 'Self-Help',
+      'psychology': 'Psychology',
+      'business': 'Business',
+      'history': 'History',
+      'biography': 'Biography',
+      'biographies': 'Biography',
+      'science': 'Science',
+      'technology': 'Technology',
+      'health': 'Health',
+      'wellness': 'Health',
+      'personal development': 'Personal Development',
+      'leadership': 'Leadership',
+      'entrepreneurship': 'Entrepreneurship',
+      'economics': 'Economics',
+      'philosophy': 'Philosophy',
+      'politics': 'Politics',
+      'political science': 'Politics',
+      'memoir': 'Memoir',
+      'memoirs': 'Memoir',
+      'mental health': 'Mental Health',
+      'innovation': 'Innovation',
+      'marketing': 'Marketing',
+      'productivity': 'Productivity',
+      'mindfulness': 'Mindfulness',
+      'meditation': 'Mindfulness',
+      'biology': 'Biology',
+      'physics': 'Physics',
+      'medicine': 'Medicine',
+      'medical': 'Medicine',
+      'environment': 'Environment',
+      'environmental': 'Environment',
+      'nutrition': 'Nutrition',
+      'diet': 'Nutrition',
+      'fitness': 'Fitness',
+      'exercise': 'Fitness',
+      'spirituality': 'Spirituality',
+      'religion': 'Spirituality',
+      'sociology': 'Sociology',
+      'education': 'Education',
+      'art': 'Art',
+      'music': 'Music',
+      'travel': 'Travel',
+      'cooking': 'Cooking',
+      'food': 'Cooking'
+    };
+
+    const lower = category.toLowerCase().trim();
+    return categoryMap[lower] || category;
+  }
+
+  async getBooksByCategory(category: string, page: number = 1, limit: number = 20): Promise<{
+    books: Book[];
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  }> {
+    const offset = (page - 1) * limit;
+
+    const { data: allBooks, error: countError, count } = await supabase
+      .from('books')
+      .select('*', { count: 'exact', head: false })
+      .order('popularity_rank', { ascending: true, nullsFirst: false })
+      .order('created_at', { ascending: false });
+
+    if (countError) throw countError;
+
+    const filteredBooks = allBooks?.filter(book => {
+      if (!book.categories || !Array.isArray(book.categories)) return false;
+      return book.categories.some(cat => 
+        this.normalizeCategory(cat).toLowerCase() === category.toLowerCase()
+      );
+    }) || [];
+
+    const paginatedBooks = filteredBooks.slice(offset, offset + limit);
+    const total = filteredBooks.length;
+
+    return {
+      books: paginatedBooks,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit)
+    };
+  }
 }
