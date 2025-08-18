@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { getRatingsByBookId, getRatingsByISBN } from '../controllers/ratingsController';
-import { authenticate } from '../middleware/auth';
 
 const router = Router();
 

@@ -72,21 +72,21 @@ export class SearchController {
             .select('id, google_books_id')
             .eq('google_books_id', result.googleBooksId);
           
-          result.inDatabase = existingBooks && existingBooks.length > 0;
+          result.inDatabase = Boolean(existingBooks && existingBooks.length > 0);
         }
         return result;
       });
 
       const resultsWithStatus = await Promise.all(existingBookPromises);
 
-      res.json({
+      return res.json({
         query,
         total: resultsWithStatus.length,
         results: resultsWithStatus
       });
     } catch (error) {
       console.error('Error searching Google Books:', error);
-      next(error);
+      return next(error);
     }
   }
 
@@ -118,7 +118,7 @@ export class SearchController {
       }
 
       // Get summary for this book
-      const { data: summary, error: summaryError } = await supabase
+      const { data: summary } = await supabase
         .from('summaries')
         .select('*')
         .eq('book_id', book.id)
@@ -129,12 +129,12 @@ export class SearchController {
         summary: summary || null
       };
 
-      res.json({
+      return res.json({
         book: completeBook
       });
     } catch (error) {
       console.error('Error getting existing book:', error);
-      next(error);
+      return next(error);
     }
   }
 
@@ -232,7 +232,7 @@ export class SearchController {
           summary: summary || null
         };
 
-        res.status(201).json({
+        return res.status(201).json({
           message: 'Book successfully added to database',
           book: completeBook
         });
@@ -240,7 +240,7 @@ export class SearchController {
         console.error('Error generating summaries:', summaryError);
         
         // Return the book even if summary generation fails
-        res.status(201).json({
+        return res.status(201).json({
           message: 'Book added to database, but summary generation failed',
           book: savedBook,
           warning: 'Summaries could not be generated at this time'
@@ -248,7 +248,7 @@ export class SearchController {
       }
     } catch (error) {
       console.error('Error processing book request:', error);
-      next(error);
+      return next(error);
     }
   }
 }

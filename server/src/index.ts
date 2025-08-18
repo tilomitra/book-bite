@@ -46,7 +46,7 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (_, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
@@ -61,14 +61,14 @@ app.use('/api', ratingsRoutes);
 app.use(errorHandler);
 
 // 404 handler
-app.use((req, res) => {
+app.use((_, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
 // Start server
 if (process.env.NODE_ENV !== 'test') {
   const HOST = process.env.HOST || '0.0.0.0';
-  app.listen(PORT, HOST, () => {
+  app.listen(Number(PORT), HOST, () => {
     console.log(`Server running on ${HOST}:${PORT}`);
     console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   });

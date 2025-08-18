@@ -54,13 +54,14 @@ export class BookController {
     }
   }
 
-  async getBookById(req: Request, res: Response, next: NextFunction) {
+  async getBookById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
       const book = await bookService.getBookById(id);
       
       if (!book) {
-        return res.status(404).json({ error: 'Book not found' });
+        res.status(404).json({ error: 'Book not found' });
+        return;
       }
       
       res.json(book);
@@ -69,7 +70,7 @@ export class BookController {
     }
   }
 
-  async searchBooks(req: Request, res: Response, next: NextFunction) {
+  async searchBooks(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { q, source = 'all', page = 1, limit = 20 } = req.query;
       
@@ -79,7 +80,7 @@ export class BookController {
           page: Number(page),
           limit: Number(limit)
         });
-        return res.json({
+        res.json({
           results: result.books,
           pagination: {
             page: result.page,
@@ -89,6 +90,7 @@ export class BookController {
             hasMore: result.page < result.totalPages
           }
         });
+        return;
       }
       
       const result = await bookService.searchBooks(
@@ -115,23 +117,24 @@ export class BookController {
     }
   }
 
-  async createBook(req: Request, res: Response, next: NextFunction) {
+  async createBook(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const bookData = BookSchema.parse(req.body);
       const book = await bookService.createBook(bookData);
       res.status(201).json(book);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ 
+        res.status(400).json({ 
           error: 'Invalid book data', 
           details: error.errors 
         });
+        return;
       }
       next(error);
     }
   }
 
-  async updateBook(req: Request, res: Response, next: NextFunction) {
+  async updateBook(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
       const bookData = BookSchema.partial().parse(req.body);
@@ -139,28 +142,31 @@ export class BookController {
       const book = await bookService.updateBook(id, bookData);
       
       if (!book) {
-        return res.status(404).json({ error: 'Book not found' });
+        res.status(404).json({ error: 'Book not found' });
+        return;
       }
       
       res.json(book);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ 
+        res.status(400).json({ 
           error: 'Invalid book data', 
           details: error.errors 
         });
+        return;
       }
       next(error);
     }
   }
 
-  async deleteBook(req: Request, res: Response, next: NextFunction) {
+  async deleteBook(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
       const deleted = await bookService.deleteBook(id);
       
       if (!deleted) {
-        return res.status(404).json({ error: 'Book not found' });
+        res.status(404).json({ error: 'Book not found' });
+        return;
       }
       
       res.status(204).send();
@@ -169,13 +175,14 @@ export class BookController {
     }
   }
 
-  async getBookCover(req: Request, res: Response, next: NextFunction) {
+  async getBookCover(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
       const book = await bookService.getBookById(id);
       
       if (!book || !book.cover_url) {
-        return res.status(404).json({ error: 'Cover not found' });
+        res.status(404).json({ error: 'Cover not found' });
+        return;
       }
       
       // Redirect to the cover URL or serve from cache
@@ -185,18 +192,20 @@ export class BookController {
     }
   }
 
-  async importFromISBN(req: Request, res: Response, next: NextFunction) {
+  async importFromISBN(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { isbn } = req.body;
       
       if (!isbn) {
-        return res.status(400).json({ error: 'ISBN is required' });
+        res.status(400).json({ error: 'ISBN is required' });
+        return;
       }
       
       const book = await bookService.importBookFromISBN(isbn);
       
       if (!book) {
-        return res.status(404).json({ error: 'Book not found with this ISBN' });
+        res.status(404).json({ error: 'Book not found with this ISBN' });
+        return;
       }
       
       res.status(201).json(book);

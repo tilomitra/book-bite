@@ -15,9 +15,9 @@ export class SummaryController {
         return res.status(404).json({ error: 'Summary not found' });
       }
       
-      res.json(summary);
+      return res.json(summary);
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 
@@ -37,13 +37,13 @@ export class SummaryController {
       // Create a job for async generation
       const job = await summaryService.createSummaryGenerationJob(bookId, style);
       
-      res.status(202).json({
+      return res.status(202).json({
         message: 'Summary generation started',
         jobId: job.id,
         status: job.status
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 
@@ -58,7 +58,7 @@ export class SummaryController {
         return res.status(404).json({ error: 'Summary not found' });
       }
       
-      res.json(summary);
+      return res.json(summary);
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ 
@@ -66,7 +66,7 @@ export class SummaryController {
           details: error.errors 
         });
       }
-      next(error);
+      return next(error);
     }
   }
 
@@ -79,9 +79,9 @@ export class SummaryController {
         return res.status(404).json({ error: 'Summary not found' });
       }
       
-      res.status(204).send();
+      return res.status(204).send();
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 
@@ -94,9 +94,9 @@ export class SummaryController {
         return res.status(404).json({ error: 'Job not found' });
       }
       
-      res.json(job);
+      return res.json(job);
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 
@@ -109,9 +109,9 @@ export class SummaryController {
         limit: Number(limit)
       });
       
-      res.json(summaries);
+      return res.json(summaries);
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 }

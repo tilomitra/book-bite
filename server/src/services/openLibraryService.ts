@@ -17,11 +17,6 @@ interface OpenLibraryRatingResponse {
   };
 }
 
-interface OpenLibraryWorkResponse {
-  key: string;
-  title: string;
-  authors?: Array<{ key: string }>;
-}
 
 interface OpenLibrarySearchResponse {
   docs: Array<{

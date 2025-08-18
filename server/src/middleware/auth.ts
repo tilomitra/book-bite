@@ -28,10 +28,10 @@ export async function authenticate(req: Request, res: Response, next: NextFuncti
     }
     
     req.user = user;
-    next();
+    return next();
   } catch (error) {
     console.error('Authentication error:', error);
-    res.status(500).json({ error: 'Authentication failed' });
+    return res.status(500).json({ error: 'Authentication failed' });
   }
 }
 
@@ -47,5 +47,5 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction) {
     return res.status(403).json({ error: 'Admin access required' });
   }
   
-  next();
+  return next();
 }

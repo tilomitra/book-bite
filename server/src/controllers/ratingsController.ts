@@ -5,14 +5,15 @@ import { supabase } from '../config/supabase';
 
 const openLibraryService = new OpenLibraryService();
 
-export const getRatingsByBookId = async (req: Request, res: Response) => {
+export const getRatingsByBookId = async (req: Request, res: Response): Promise<void> => {
   try {
     const { bookId } = req.params;
     
     if (!bookId) {
-      return res.status(400).json({
+      res.status(400).json({
         error: 'Book ID is required'
       });
+      return;
     }
 
     // Fetch the book to get its ISBN
@@ -23,9 +24,10 @@ export const getRatingsByBookId = async (req: Request, res: Response) => {
       .single();
 
     if (error || !book) {
-      return res.status(404).json({
+      res.status(404).json({
         error: 'Book not found'
       });
+      return;
     }
 
     let rating = null;
@@ -44,9 +46,10 @@ export const getRatingsByBookId = async (req: Request, res: Response) => {
     }
 
     if (!rating) {
-      return res.status(404).json({
+      res.status(404).json({
         error: 'No ratings found for this book'
       });
+      return;
     }
 
     // Validate the response
@@ -65,22 +68,24 @@ export const getRatingsByBookId = async (req: Request, res: Response) => {
   }
 };
 
-export const getRatingsByISBN = async (req: Request, res: Response) => {
+export const getRatingsByISBN = async (req: Request, res: Response): Promise<void> => {
   try {
     const { isbn } = req.params;
     
     if (!isbn) {
-      return res.status(400).json({
+      res.status(400).json({
         error: 'ISBN is required'
       });
+      return;
     }
 
     const rating = await openLibraryService.getRatingsByISBN(isbn);
 
     if (!rating) {
-      return res.status(404).json({
+      res.status(404).json({
         error: 'No ratings found for this ISBN'
       });
+      return;
     }
 
     // Validate the response
