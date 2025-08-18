@@ -203,33 +203,46 @@ export class SearchController {
         );
 
         // Generate extended summary
-        const extendedSummary = await this.openaiService.generateExtendedSummary(
+        const extendedSummaryData = await this.openaiService.generateExtendedBookSummary(
           savedBook.title,
           savedBook.authors,
           savedBook.description || '',
           savedBook.categories
         );
 
-        // Save summaries to database
+        // Save regular summary to database
         const { data: summary, error: summaryError } = await supabase
           .from('summaries')
           .insert({
             book_id: savedBook.id,
-            ...summaryData,
-            extended_summary: extendedSummary
+            ...summaryData
+          })
+          .select()
+          .single();
+
+        // Save extended summary to database
+        const { data: extendedSummary, error: extendedSummaryError } = await supabase
+          .from('extended_summaries')
+          .insert({
+            book_id: savedBook.id,
+            ...extendedSummaryData
           })
           .select()
           .single();
 
         if (summaryError) {
-          console.error('Error saving summary:', summaryError);
-          // Don't fail the whole request if summary generation fails
+          console.error('Error saving regular summary:', summaryError);
+        }
+        
+        if (extendedSummaryError) {
+          console.error('Error saving extended summary:', extendedSummaryError);
         }
 
         // Return the complete book with summary if available
         const completeBook = {
           ...savedBook,
-          summary: summary || null
+          summary: summary || null,
+          extended_summary: extendedSummary || null
         };
 
         return res.status(201).json({

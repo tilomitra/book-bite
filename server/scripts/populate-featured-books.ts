@@ -5,113 +5,162 @@ import { BookService } from '../src/services/bookService';
 // Load environment variables
 config();
 
-// Top 100 Management and Software Development Books
+// Open Library Covers API configuration
+const OPEN_LIBRARY_COVERS_BASE_URL = 'https://covers.openlibrary.org';
+const COVER_SIZE = 'L'; // Large size covers
+
+// Top 100 Popular Bestseller Books
 const TOP_100_BOOKS = [
-  // Management & Leadership Books (50 books)
+  // Self-Help & Productivity
+  { title: "Atomic Habits", author: "James Clear", isbn: "9780735211292" },
+  { title: "The 7 Habits of Highly Effective People", author: "Stephen R. Covey", isbn: "9781982137274" },
+  { title: "Think and Grow Rich", author: "Napoleon Hill", isbn: "9781585424337" },
+  { title: "The Power of Positive Thinking", author: "Norman Vincent Peale", isbn: "9780743234801" },
+  { title: "How to Win Friends and Influence People", author: "Dale Carnegie", isbn: "9780671027032" },
+  { title: "The Subtle Art of Not Giving a F*ck", author: "Mark Manson", isbn: "9780062457714" },
+  { title: "12 Rules for Life", author: "Jordan B. Peterson", isbn: "9780345816023" },
+  { title: "Mindset", author: "Carol S. Dweck", isbn: "9780345472328" },
+  { title: "The Four Agreements", author: "Don Miguel Ruiz", isbn: "9781878424310" },
+  { title: "The Alchemist", author: "Paulo Coelho", isbn: "9780061122415" },
+
+  // Business & Entrepreneurship
+  { title: "Rich Dad Poor Dad", author: "Robert T. Kiyosaki", isbn: "9781612680194" },
   { title: "Good to Great", author: "Jim Collins", isbn: "9780066620992" },
-  { title: "The Lean Startup", author: "Eric Ries", isbn: "9780307887894" },
-  { title: "Built to Last", author: "Jim Collins", isbn: "9780060516406" },
-  { title: "The First 90 Days", author: "Michael Watkins", isbn: "9781422188613" },
-  { title: "The Five Dysfunctions of a Team", author: "Patrick Lencioni", isbn: "9780787960759" },
-  { title: "High Output Management", author: "Andrew Grove", isbn: "9780679762881" },
-  { title: "The Hard Thing About Hard Things", author: "Ben Horowitz", isbn: "9780062273208" },
-  { title: "Crossing the Chasm", author: "Geoffrey Moore", isbn: "9780060517120" },
-  { title: "The Innovator's Dilemma", author: "Clayton Christensen", isbn: "9780875845852" },
   { title: "Zero to One", author: "Peter Thiel", isbn: "9780804139298" },
-  { title: "The E-Myth Revisited", author: "Michael Gerber", isbn: "9780887307287" },
-  { title: "The Goal", author: "Eliyahu Goldratt", isbn: "9780884271956" },
-  { title: "Radical Candor", author: "Kim Scott", isbn: "9781250103505" },
-  { title: "The Manager's Path", author: "Camille Fournier", isbn: "9781491973899" },
-  { title: "Measure What Matters", author: "John Doerr", isbn: "9780525536222" },
-  { title: "The Culture Code", author: "Daniel Coyle", isbn: "9780525492733" },
+  { title: "The Lean Startup", author: "Eric Ries", isbn: "9780307887894" },
+  { title: "The $100 Startup", author: "Chris Guillebeau", isbn: "9780307951526" },
+  { title: "The E-Myth Revisited", author: "Michael E. Gerber", isbn: "9780887307287" },
+  { title: "Built to Last", author: "Jim Collins", isbn: "9780060516406" },
+  { title: "The Hard Thing About Hard Things", author: "Ben Horowitz", isbn: "9780062273208" },
   { title: "Principles", author: "Ray Dalio", isbn: "9781501124020" },
-  { title: "The 7 Habits of Highly Effective People", author: "Stephen Covey", isbn: "9780743269513" },
-  { title: "Drive", author: "Daniel Pink", isbn: "9781594484803" },
+  { title: "The Millionaire Next Door", author: "Thomas J. Stanley", isbn: "9781589795471" },
+
+  // Psychology & Human Behavior
   { title: "Thinking, Fast and Slow", author: "Daniel Kahneman", isbn: "9780374275631" },
-  { title: "Good Strategy Bad Strategy", author: "Richard Rumelt", isbn: "9780307886231" },
-  { title: "The Lean Six Sigma Pocket Toolbook", author: "Michael George", isbn: "9780071441438" },
-  { title: "Scrum: The Art of Doing Twice the Work in Half the Time", author: "Jeff Sutherland", isbn: "9781847941107" },
-  { title: "Team of Teams", author: "General Stanley McChrystal", isbn: "9781591847489" },
-  { title: "The Phoenix Project", author: "Gene Kim", isbn: "9780988262508" },
-  { title: "Accelerate", author: "Nicole Forsgren", isbn: "9781942788331" },
-  { title: "The DevOps Handbook", author: "Gene Kim", isbn: "9781942788003" },
-  { title: "Multipliers", author: "Liz Wiseman", isbn: "9780061964398" },
-  { title: "The Challenger Sale", author: "Matthew Dixon", isbn: "9781591844358" },
-  { title: "Blue Ocean Strategy", author: "W. Chan Kim", isbn: "9781591396192" },
-  { title: "The Outsiders", author: "William Thorndike", isbn: "9781422162673" },
-  { title: "Crucial Conversations", author: "Kerry Patterson", isbn: "9780071401944" },
-  { title: "Getting Things Done", author: "David Allen", isbn: "9780142000281" },
-  { title: "The One Minute Manager", author: "Kenneth Blanchard", isbn: "9780688014292" },
-  { title: "Leadership in Turbulent Times", author: "Doris Kearns Goodwin", isbn: "9781476795928" },
-  { title: "The Advantage", author: "Patrick Lencioni", isbn: "9780470941522" },
-  { title: "Switch", author: "Chip Heath", isbn: "9780385528757" },
-  { title: "Made to Stick", author: "Chip Heath", isbn: "9781400064281" },
+  { title: "Freakonomics", author: "Steven D. Levitt", isbn: "9780061234002" },
   { title: "The Tipping Point", author: "Malcolm Gladwell", isbn: "9780316346627" },
   { title: "Outliers", author: "Malcolm Gladwell", isbn: "9780316017930" },
   { title: "Blink", author: "Malcolm Gladwell", isbn: "9780316010665" },
-  { title: "The Power of Moments", author: "Chip Heath", isbn: "9781501147760" },
-  { title: "Atomic Habits", author: "James Clear", isbn: "9780735211292" },
-  { title: "The Effective Executive", author: "Peter Drucker", isbn: "9780060833459" },
-  { title: "The Practice of Management", author: "Peter Drucker", isbn: "9780060878979" },
-  { title: "Management", author: "Peter Drucker", isbn: "9780887306136" },
-  { title: "The Essential Drucker", author: "Peter Drucker", isbn: "9780060742515" },
-  { title: "Emotional Intelligence", author: "Daniel Goleman", isbn: "9780553383713" },
-  { title: "Primal Leadership", author: "Daniel Goleman", isbn: "9780071388085" },
-  { title: "The Art of War", author: "Sun Tzu", isbn: "9780140439199" },
+  { title: "Predictably Irrational", author: "Dan Ariely", isbn: "9780061353246" },
+  { title: "The Power of Habit", author: "Charles Duhigg", isbn: "9780812981605" },
+  { title: "Influence", author: "Robert B. Cialdini", isbn: "9780061241895" },
+  { title: "Nudge", author: "Richard H. Thaler", isbn: "9780300122237" },
+  { title: "The Happiness Hypothesis", author: "Jonathan Haidt", isbn: "9780465028023" },
 
-  // Software Development Books (50 books)
-  { title: "Clean Code", author: "Robert Martin", isbn: "9780132350884" },
-  { title: "Code Complete", author: "Steve McConnell", isbn: "9780735619678" },
-  { title: "The Pragmatic Programmer", author: "Andy Hunt", isbn: "9780201616224" },
-  { title: "Refactoring", author: "Martin Fowler", isbn: "9780201485677" },
-  { title: "Design Patterns", author: "Erich Gamma", isbn: "9780201633610" },
-  { title: "Clean Architecture", author: "Robert Martin", isbn: "9780134494166" },
-  { title: "The Clean Coder", author: "Robert Martin", isbn: "9780137081073" },
-  { title: "You Don't Know JS", author: "Kyle Simpson", isbn: "9781491924464" },
-  { title: "Effective Java", author: "Joshua Bloch", isbn: "9780134685991" },
-  { title: "Head First Design Patterns", author: "Eric Freeman", isbn: "9780596007126" },
-  { title: "The Mythical Man-Month", author: "Frederick Brooks", isbn: "9780201835953" },
-  { title: "Introduction to Algorithms", author: "Thomas Cormen", isbn: "9780262033848" },
-  { title: "Cracking the Coding Interview", author: "Gayle McDowell", isbn: "9780984782857" },
-  { title: "System Design Interview", author: "Alex Xu", isbn: "9798664653403" },
-  { title: "Designing Data-Intensive Applications", author: "Martin Kleppmann", isbn: "9781449373320" },
-  { title: "Building Microservices", author: "Sam Newman", isbn: "9781491950357" },
-  { title: "Domain-Driven Design", author: "Eric Evans", isbn: "9780321125217" },
-  { title: "Patterns of Enterprise Application Architecture", author: "Martin Fowler", isbn: "9780321127426" },
-  { title: "Enterprise Integration Patterns", author: "Gregor Hohpe", isbn: "9780321200686" },
-  { title: "Test Driven Development", author: "Kent Beck", isbn: "9780321146533" },
-  { title: "Continuous Delivery", author: "Jez Humble", isbn: "9780321601919" },
-  { title: "Site Reliability Engineering", author: "Niall Murphy", isbn: "9781491929124" },
-  { title: "The Site Reliability Workbook", author: "Betsy Beyer", isbn: "9781492029502" },
-  { title: "Release It!", author: "Michael Nygard", isbn: "9780978739218" },
-  { title: "Working Effectively with Legacy Code", author: "Michael Feathers", isbn: "9780131177055" },
-  { title: "The Art of Computer Programming", author: "Donald Knuth", isbn: "9780201896831" },
-  { title: "Structure and Interpretation of Computer Programs", author: "Harold Abelson", isbn: "9780262011532" },
-  { title: "Computer Systems: A Programmer's Perspective", author: "Randal Bryant", isbn: "9780134092669" },
-  { title: "Operating System Concepts", author: "Abraham Silberschatz", isbn: "9781119800361" },
-  { title: "Database System Concepts", author: "Abraham Silberschatz", isbn: "9780078022159" },
-  { title: "Modern Operating Systems", author: "Andrew Tanenbaum", isbn: "9780133591620" },
-  { title: "Computer Networks", author: "Andrew Tanenbaum", isbn: "9780132553179" },
-  { title: "The Algorithm Design Manual", author: "Steven Skiena", isbn: "9781849967204" },
-  { title: "Programming Pearls", author: "Jon Bentley", isbn: "9780201657883" },
-  { title: "The Practice of Programming", author: "Brian Kernighan", isbn: "9780201615869" },
-  { title: "Compilers: Principles, Techniques, and Tools", author: "Alfred Aho", isbn: "9780321486813" },
-  { title: "Artificial Intelligence: A Modern Approach", author: "Stuart Russell", isbn: "9780134610993" },
-  { title: "Machine Learning", author: "Tom Mitchell", isbn: "9780070428072" },
-  { title: "Deep Learning", author: "Ian Goodfellow", isbn: "9780262035613" },
-  { title: "Hands-On Machine Learning", author: "Aurélien Géron", isbn: "9781491962299" },
-  { title: "The Elements of Statistical Learning", author: "Trevor Hastie", isbn: "9780387848570" },
-  { title: "Python Crash Course", author: "Eric Matthes", isbn: "9781593279288" },
-  { title: "Automate the Boring Stuff with Python", author: "Al Sweigart", isbn: "9781593275990" },
-  { title: "JavaScript: The Good Parts", author: "Douglas Crockford", isbn: "9780596517748" },
-  { title: "Eloquent JavaScript", author: "Marijn Haverbeke", isbn: "9781593275846" },
-  { title: "Learning React", author: "Alex Banks", isbn: "9781491954621" },
-  { title: "Node.js in Action", author: "Mike Cantelon", isbn: "9781617290572" },
-  { title: "Spring in Action", author: "Craig Walls", isbn: "9781617294945" },
-  { title: "Kubernetes in Action", author: "Marko Luksa", isbn: "9781617293726" },
-  { title: "Docker Deep Dive", author: "Nigel Poulton", isbn: "9781521822807" },
-  { title: "Learning SQL", author: "Alan Beaulieu", isbn: "9780596520830" }
+  // History & Biography
+  { title: "Sapiens", author: "Yuval Noah Harari", isbn: "9780062316097" },
+  { title: "Homo Deus", author: "Yuval Noah Harari", isbn: "9780062464316" },
+  { title: "21 Lessons for the 21st Century", author: "Yuval Noah Harari", isbn: "9780525512172" },
+  { title: "Educated", author: "Tara Westover", isbn: "9780399590504" },
+  { title: "Becoming", author: "Michelle Obama", isbn: "9781524763138" },
+  { title: "The Autobiography of Malcolm X", author: "Malcolm X", isbn: "9780345350688" },
+  { title: "Steve Jobs", author: "Walter Isaacson", isbn: "9781451648539" },
+  { title: "Benjamin Franklin", author: "Walter Isaacson", isbn: "9780743258074" },
+  { title: "The Wright Brothers", author: "David McCullough", isbn: "9781476728759" },
+  { title: "John Adams", author: "David McCullough", isbn: "9780743223133" },
+
+  // Science & Technology
+  { title: "A Brief History of Time", author: "Stephen Hawking", isbn: "9780553380163" },
+  { title: "The Immortal Life of Henrietta Lacks", author: "Rebecca Skloot", isbn: "9781400052189" },
+  { title: "Mary Roach's Packing for Mars", author: "Mary Roach", isbn: "9780393339918" },
+  { title: "The Gene", author: "Siddhartha Mukherjee", isbn: "9781476733524" },
+  { title: "Cosmos", author: "Carl Sagan", isbn: "9780345331359" },
+  { title: "The Elegant Universe", author: "Brian Greene", isbn: "9780393058581" },
+  { title: "Silent Spring", author: "Rachel Carson", isbn: "9780618249060" },
+  { title: "The Double Helix", author: "James D. Watson", isbn: "9780743216302" },
+  { title: "The Structure of Scientific Revolutions", author: "Thomas S. Kuhn", isbn: "9780226458120" },
+  { title: "Freakonomics", author: "Steven D. Levitt", isbn: "9780061234002" },
+
+  // Health & Wellness
+  { title: "The Body Keeps the Score", author: "Bessel van der Kolk", isbn: "9780143127741" },
+  { title: "How Not to Die", author: "Michael Greger", isbn: "9781250066114" },
+  { title: "Atomic Habits", author: "James Clear", isbn: "9780735211292" },
+  { title: "The 4-Hour Workweek", author: "Timothy Ferriss", isbn: "9780307465351" },
+  { title: "Born to Run", author: "Christopher McDougall", isbn: "9780307279187" },
+  { title: "The Blue Zones", author: "Dan Buettner", isbn: "9781426203008" },
+  { title: "Why We Sleep", author: "Matthew Walker", isbn: "9781501144318" },
+  { title: "The Power of Now", author: "Eckhart Tolle", isbn: "9781577314806" },
+  { title: "Wherever You Go, There You Are", author: "Jon Kabat-Zinn", isbn: "9781401307783" },
+  { title: "The Whole30", author: "Melissa Hartwig Urban", isbn: "9780544609716" },
+
+  // Economics & Politics
+  { title: "Capital in the Twenty-First Century", author: "Thomas Piketty", isbn: "9780674430006" },
+  { title: "The Wealth of Nations", author: "Adam Smith", isbn: "9780553585971" },
+  { title: "Democracy in America", author: "Alexis de Tocqueville", isbn: "9780226805368" },
+  { title: "The Road to Serfdom", author: "F.A. Hayek", isbn: "9780226320557" },
+  { title: "Free to Choose", author: "Milton Friedman", isbn: "9780156334600" },
+  { title: "The Black Swan", author: "Nassim Nicholas Taleb", isbn: "9780812973815" },
+  { title: "Antifragile", author: "Nassim Nicholas Taleb", isbn: "9780812979688" },
+  { title: "The Righteous Mind", author: "Jonathan Haidt", isbn: "9780307455772" },
+  { title: "The End of History and the Last Man", author: "Francis Fukuyama", isbn: "9780743284554" },
+  { title: "The Clash of Civilizations", author: "Samuel P. Huntington", isbn: "9781451628975" },
+
+  // Personal Finance
+  { title: "The Total Money Makeover", author: "Dave Ramsey", isbn: "9781595555274" },
+  { title: "Your Money or Your Life", author: "Vicki Robin", isbn: "9780143115762" },
+  { title: "The Richest Man in Babylon", author: "George S. Clason", isbn: "9780451205360" },
+  { title: "I Will Teach You to Be Rich", author: "Ramit Sethi", isbn: "9781523505746" },
+  { title: "The Intelligent Investor", author: "Benjamin Graham", isbn: "9780060555665" },
+  { title: "A Random Walk Down Wall Street", author: "Burton G. Malkiel", isbn: "9781324002185" },
+  { title: "The Bogleheads' Guide to Investing", author: "Taylor Larimore", isbn: "9781118921289" },
+  { title: "Think and Grow Rich", author: "Napoleon Hill", isbn: "9781585424337" },
+  { title: "The Millionaire Mind", author: "Thomas J. Stanley", isbn: "9780740718588" },
+  { title: "Rich Dad's Cashflow Quadrant", author: "Robert T. Kiyosaki", isbn: "9781612680057" },
+
+  // Philosophy & Spirituality
+  { title: "Man's Search for Meaning", author: "Viktor E. Frankl", isbn: "9780807014271" },
+  { title: "The Art of War", author: "Sun Tzu", isbn: "9780140439199" },
+  { title: "Meditations", author: "Marcus Aurelius", isbn: "9780140449334" },
+  { title: "The Republic", author: "Plato", isbn: "9780140455113" },
+  { title: "The Nicomachean Ethics", author: "Aristotle", isbn: "9780140449495" },
+  { title: "The Prince", author: "Niccolò Machiavelli", isbn: "9780140449150" },
+  { title: "Beyond Good and Evil", author: "Friedrich Nietzsche", isbn: "9780140449235" },
+  { title: "The Way of Zen", author: "Alan W. Watts", isbn: "9780375705106" },
+  { title: "The Tao of Physics", author: "Fritjof Capra", isbn: "9781590308356" },
+  { title: "A New Earth", author: "Eckhart Tolle", isbn: "9780452289963" },
+
+  // Communication & Relationships
+  { title: "Nonviolent Communication", author: "Marshall B. Rosenberg", isbn: "9781892005281" },
+  { title: "Getting to Yes", author: "Roger Fisher", isbn: "9780143118756" },
+  { title: "Crucial Conversations", author: "Kerry Patterson", isbn: "9780071771320" },
+  { title: "The Five Love Languages", author: "Gary Chapman", isbn: "9780802473158" },
+  { title: "Men Are from Mars, Women Are from Venus", author: "John Gray", isbn: "9780060574215" },
+  { title: "The Art of Listening", author: "Erich Fromm", isbn: "9780826414137" },
+  { title: "Emotional Intelligence", author: "Daniel Goleman", isbn: "9780553383713" },
+  { title: "The Charisma Myth", author: "Olivia Fox Cabane", isbn: "9781591845942" },
+  { title: "Never Eat Alone", author: "Keith Ferrazzi", isbn: "9780385512053" },
+  { title: "The Like Switch", author: "Jack Schafer", isbn: "9781476754482" }
 ];
+
+/**
+ * Get cover URL from Open Library API using ISBN
+ */
+async function getCoverUrl(isbn: string): Promise<string | null> {
+  try {
+    // First, check if cover exists by trying to fetch metadata
+    const metadataUrl = `${OPEN_LIBRARY_COVERS_BASE_URL}/b/isbn/${isbn}.json`;
+    const metadataResponse = await fetch(metadataUrl);
+    
+    if (!metadataResponse.ok) {
+      return null;
+    }
+
+    // If metadata exists, construct the cover URL
+    const coverUrl = `${OPEN_LIBRARY_COVERS_BASE_URL}/b/isbn/${isbn}-${COVER_SIZE}.jpg`;
+    
+    // Verify the actual image exists
+    const imageResponse = await fetch(coverUrl, { method: 'HEAD' });
+    
+    if (imageResponse.ok) {
+      return coverUrl;
+    }
+
+    return null;
+  } catch (error) {
+    console.warn(`    ⚠️  Failed to check cover for ISBN ${isbn}:`, error);
+    return null;
+  }
+}
 
 async function populateFeaturedBooks() {
   const googleBooksService = new GoogleBooksService();
@@ -121,6 +170,7 @@ async function populateFeaturedBooks() {
   
   let successCount = 0;
   let failCount = 0;
+  let skippedCount = 0;
   
   for (let i = 0; i < TOP_100_BOOKS.length; i++) {
     const bookInfo = TOP_100_BOOKS[i];
@@ -129,12 +179,29 @@ async function populateFeaturedBooks() {
     try {
       console.log(`Processing ${rank}/100: ${bookInfo.title} by ${bookInfo.author}`);
       
+      // Check if book already exists in database by title
+      console.log(`    🔍 Checking for existing book...`);
+      const existingBooks = await bookService.searchBooks(bookInfo.title, 1);
+      
+      if (existingBooks.length > 0) {
+        const existingBook = existingBooks[0];
+        // Check if it's a close match (fuzzy matching for slight title variations)
+        const titleMatch = existingBook.title.toLowerCase().includes(bookInfo.title.toLowerCase()) || 
+                          bookInfo.title.toLowerCase().includes(existingBook.title.toLowerCase());
+        
+        if (titleMatch) {
+          console.log(`    ⏭️  Book already exists: ${existingBook.title} - Skipping`);
+          skippedCount++;
+          continue;
+        }
+      }
+      
       // Try to find book by ISBN first
       let bookData = await googleBooksService.getBookByISBN(bookInfo.isbn);
       
       // If not found by ISBN, try searching by title and author
       if (!bookData) {
-        console.log(`  ISBN search failed, trying title/author search...`);
+        console.log(`    📚 ISBN search failed, trying title/author search...`);
         const searchResults = await googleBooksService.searchBooks(`${bookInfo.title} ${bookInfo.author}`, 5);
         if (searchResults.length > 0) {
           bookData = searchResults[0];
@@ -142,36 +209,47 @@ async function populateFeaturedBooks() {
       }
       
       if (!bookData) {
-        console.log(`  ❌ Could not find book: ${bookInfo.title}`);
+        console.log(`    ❌ Could not find book: ${bookInfo.title}`);
         failCount++;
         continue;
       }
       
-      // Add featured book properties
+      // Try to get a high-quality cover image from Open Library
+      console.log(`    🖼️  Fetching cover image...`);
+      const coverUrl = await getCoverUrl(bookInfo.isbn);
+      
+      // Add featured book properties with cover URL
       const featuredBookData = {
         ...bookData,
         popularity_rank: rank,
-        is_featured: true
+        is_featured: true,
+        cover_url: coverUrl || bookData.cover_url // Use Open Library cover if available, fallback to Google Books
       };
       
       // Create the book in database
       const createdBook = await bookService.createBook(featuredBookData);
-      console.log(`  ✅ Added: ${createdBook.title} (Rank: ${rank})`);
+      
+      if (coverUrl) {
+        console.log(`    ✅ Added: ${createdBook.title} (Rank: ${rank}) with high-quality cover`);
+      } else {
+        console.log(`    ✅ Added: ${createdBook.title} (Rank: ${rank}) with fallback cover`);
+      }
       successCount++;
       
-      // Add small delay to avoid rate limiting
-      await new Promise(resolve => setTimeout(resolve, 200));
+      // Add delay to avoid rate limiting (both Google Books and Open Library)
+      await new Promise(resolve => setTimeout(resolve, 500));
       
     } catch (error) {
-      console.error(`  ❌ Error processing ${bookInfo.title}:`, error.message);
+      console.error(`    ❌ Error processing ${bookInfo.title}:`, error.message);
       failCount++;
     }
   }
   
   console.log('\n📊 Population Summary:');
   console.log(`✅ Successfully added: ${successCount} books`);
+  console.log(`⏭️  Skipped (already exist): ${skippedCount} books`);
   console.log(`❌ Failed to add: ${failCount} books`);
-  console.log(`📝 Total processed: ${successCount + failCount}/100`);
+  console.log(`📝 Total processed: ${successCount + skippedCount + failCount}/100`);
 }
 
 // Run the script
