@@ -2,6 +2,7 @@ import SwiftUI
 
 struct BookDetailView: View {
     @StateObject private var viewModel: BookDetailViewModel
+    @StateObject private var colorExtractor = ColorExtractor()
     @State private var showExportSheet = false
     @State private var showComparisonView = false
     
@@ -13,13 +14,22 @@ struct BookDetailView: View {
     }
     
     var body: some View {
-        ScrollView(.vertical, showsIndicators: true) {
-            VStack(spacing: 0) {
-                // Clean book header section
-                bookHeader
-                    .padding(.horizontal)
-                    .padding(.top)
-                    .padding(.bottom, 24)
+        ZStack {
+            // Background gradient based on book cover colors
+            LinearGradient(
+                colors: colorExtractor.backgroundGradient,
+                startPoint: .top,
+                endPoint: .center
+            )
+            .ignoresSafeArea(.all, edges: .top)
+            
+            ScrollView(.vertical, showsIndicators: true) {
+                VStack(spacing: 0) {
+                    // Clean book header section
+                    bookHeader
+                        .padding(.horizontal)
+                        .padding(.top)
+                        .padding(.bottom, 24)
                 
                 // Loading or error states
                 if viewModel.isLoadingSummary {
@@ -37,6 +47,7 @@ struct BookDetailView: View {
                     // Extended summary section
                     summaryContent(summary)
                 }
+            }
             }
         }
         .navigationBarTitleDisplayMode(.inline)
@@ -68,6 +79,9 @@ struct BookDetailView: View {
         }
         .sheet(isPresented: $showComparisonView) {
             ComparisonView(firstBook: viewModel.book)
+        }
+        .task {
+            await colorExtractor.extractColors(from: viewModel.book.coverAssetName)
         }
     }
     
@@ -129,7 +143,12 @@ struct BookDetailView: View {
             }
             
             // Replace SummaryTabView with new elegant design
-            EnhancedSummaryView(summary: summary, book: viewModel.book)
+            EnhancedSummaryView(
+                summary: summary, 
+                book: viewModel.book,
+                dominantColor: colorExtractor.dominantColor,
+                secondaryColor: colorExtractor.secondaryColor
+            )
         }
     }
 }

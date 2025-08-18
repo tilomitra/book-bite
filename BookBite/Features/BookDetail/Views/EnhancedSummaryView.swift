@@ -3,6 +3,8 @@ import SwiftUI
 struct EnhancedSummaryView: View {
     let summary: Summary
     let book: Book
+    let dominantColor: Color
+    let secondaryColor: Color
     @State private var selectedSection: SummarySection = .extended
     
     enum SummarySection: String, CaseIterable {
@@ -34,7 +36,9 @@ struct EnhancedSummaryView: View {
                         PillButton(
                             title: section.rawValue,
                             icon: section.icon,
-                            isSelected: selectedSection == section
+                            isSelected: selectedSection == section,
+                            selectedColor: dominantColor,
+                            unselectedColor: Color(UIColor.systemGray5)
                         ) {
                             withAnimation(.easeInOut(duration: 0.2)) {
                                 selectedSection = section
@@ -61,13 +65,13 @@ struct EnhancedSummaryView: View {
         case .extended:
             ExtendedSummaryContent(summary: summary)
         case .keyIdeas:
-            KeyIdeasContent(summary: summary)
+            KeyIdeasContent(summary: summary, accentColor: dominantColor)
         case .application:
             ApplicationContent(summary: summary)
         case .ask:
             AskContent(book: book)
         case .analysis:
-            AnalysisContent(summary: summary)
+            AnalysisContent(summary: summary, accentColor: dominantColor)
         case .references:
             ReferencesContent(summary: summary)
         }
@@ -78,6 +82,8 @@ struct PillButton: View {
     let title: String
     let icon: String
     let isSelected: Bool
+    let selectedColor: Color
+    let unselectedColor: Color
     let action: () -> Void
     
     var body: some View {
@@ -90,10 +96,28 @@ struct PillButton: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
-            .background(isSelected ? Color.accentColor : Color(UIColor.systemGray5))
-            .foregroundColor(isSelected ? .white : .primary)
+            .background(isSelected ? selectedColor : unselectedColor)
+            .foregroundColor(isSelected ? contrastingTextColor(for: selectedColor) : .primary)
             .cornerRadius(20)
+            .shadow(color: isSelected ? selectedColor.opacity(0.3) : .clear, radius: 8, x: 0, y: 2)
         }
+    }
+    
+    private func contrastingTextColor(for color: Color) -> Color {
+        // Convert SwiftUI Color to UIColor to get RGB components
+        let uiColor = UIColor(color)
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+        
+        uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        
+        // Calculate luminance
+        let luminance = 0.299 * red + 0.587 * green + 0.114 * blue
+        
+        // Return white for dark colors, black for light colors
+        return luminance > 0.5 ? .black : .white
     }
 }
 
@@ -153,6 +177,7 @@ struct ExtendedSummaryContent: View {
 // Key Ideas Content
 struct KeyIdeasContent: View {
     let summary: Summary
+    let accentColor: Color
     @State private var expandedIdeas: Set<String> = []
     
     var body: some View {
@@ -162,7 +187,8 @@ struct KeyIdeasContent: View {
                     KeyIdeaCard(
                         idea: idea,
                         index: index + 1,
-                        isExpanded: expandedIdeas.contains(idea.id)
+                        isExpanded: expandedIdeas.contains(idea.id),
+                        accentColor: accentColor
                     ) {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
                             if expandedIdeas.contains(idea.id) {
@@ -183,18 +209,19 @@ struct KeyIdeaCard: View {
     let idea: KeyIdea
     let index: Int
     let isExpanded: Bool
+    let accentColor: Color
     let onTap: () -> Void
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Circle()
-                    .fill(Color.accentColor.opacity(0.1))
+                    .fill(accentColor.opacity(0.1))
                     .frame(width: 32, height: 32)
                     .overlay(
                         Text("\(index)")
                             .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(.accentColor)
+                            .foregroundColor(accentColor)
                     )
                 
                 Text(idea.idea)
@@ -218,8 +245,8 @@ struct KeyIdeaCard: View {
                                     .font(.caption)
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 4)
-                                    .background(Color.accentColor.opacity(0.1))
-                                    .foregroundColor(.accentColor)
+                                    .background(accentColor.opacity(0.1))
+                                    .foregroundColor(accentColor)
                                     .cornerRadius(8)
                             }
                         }
@@ -317,6 +344,7 @@ struct ApplicationCard: View {
 // Analysis Content
 struct AnalysisContent: View {
     let summary: Summary
+    let accentColor: Color
     
     var body: some View {
         ScrollView {
