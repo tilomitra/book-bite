@@ -21,91 +21,53 @@ struct GoogleBookSearchResultRow: View {
     
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 12) {
-                // Book cover
-                AsyncImage(url: URL(string: result.coverUrl ?? "")) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                } placeholder: {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.gray.opacity(0.3))
-                        .overlay(
-                            Image(systemName: "book.closed")
-                                .foregroundColor(.gray)
-                        )
-                }
-                .frame(width: 60, height: 80)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+            HStack(alignment: .top, spacing: 16) {
+                BookCoverView(coverURL: result.coverUrl, size: .medium)
                 
-                VStack(alignment: .leading, spacing: 4) {
-                    // Title
+                VStack(alignment: .leading, spacing: 6) {
                     Text(result.title)
-                        .font(.headline)
-                        .foregroundColor(.primary)
+                        .font(.title3)
+                        .fontWeight(.semibold)
                         .lineLimit(2)
-                        .multilineTextAlignment(.leading)
+                        .foregroundColor(.primary)
                     
-                    // Subtitle (if available)
-                    if let subtitle = result.subtitle, !subtitle.isEmpty {
-                        Text(subtitle)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .lineLimit(1)
-                    }
+                    Text(result.formattedAuthors)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
                     
-                    // Authors
-                    if !result.authors.isEmpty {
-                        Text(result.formattedAuthors)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .lineLimit(1)
-                    }
-                    
-                    // Publisher and year
-                    HStack {
-                        if let publisher = result.publisher {
-                            Text(publisher)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        if let year = result.publishedYear {
-                            Text("• \(year)")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    
-                    // Categories
                     if !result.categories.isEmpty {
-                        Text(result.formattedCategories)
+                        Text(result.categories.prefix(2).joined(separator: " · "))
                             .font(.caption)
-                            .foregroundColor(.blue)
+                            .foregroundColor(.secondary)
                             .lineLimit(1)
+                            .padding(.top, 2)
                     }
                     
-                    Spacer()
+                    HStack(spacing: 4) {
+                        if result.inDatabase {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.caption2)
+                                .foregroundColor(.green)
+                            Text("In Library")
+                                .font(.caption)
+                                .foregroundColor(.green)
+                        } else {
+                            Image(systemName: "plus.circle")
+                                .font(.caption2)
+                                .foregroundColor(.blue)
+                            Text("Add to Library")
+                                .font(.caption)
+                                .foregroundColor(.blue)
+                        }
+                    }
+                    .padding(.top, 4)
                 }
                 
                 Spacer()
-                
-                VStack {
-                    // Status indicator
-                    if result.inDatabase {
-                        Label("View in Library", systemImage: "book.circle.fill")
-                            .font(.caption)
-                            .foregroundColor(.green)
-                    } else {
-                        Label("Add to Library", systemImage: "plus.circle")
-                            .font(.caption)
-                            .foregroundColor(.blue)
-                    }
-                    
-                    Spacer()
-                }
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, 12)
+            .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
     }

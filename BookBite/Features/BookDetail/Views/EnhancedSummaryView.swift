@@ -200,7 +200,7 @@ struct KeyIdeaCard: View {
                 Text(idea.idea)
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.primary)
-                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
                 
                 Spacer()
                 
@@ -485,6 +485,10 @@ struct AskContent: View {
     let book: Book
     
     var body: some View {
-        BookChatView(book: book)
+        GeometryReader { geometry in
+            BookChatView(book: book)
+                .frame(width: geometry.size.width, height: geometry.size.height)
+        }
+        .frame(minHeight: 500) // Ensure minimum height for proper chat experience
     }
 }
