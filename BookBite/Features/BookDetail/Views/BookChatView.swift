@@ -148,14 +148,14 @@ struct BookChatView: View {
             .onChange(of: viewModel.messages.count) { _, _ in
                 if let lastMessage = viewModel.messages.last {
                     withAnimation(.easeOut(duration: 0.3)) {
-                        proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                        proxy.scrollTo(lastMessage.id, anchor: .top)
                     }
                 }
             }
             .onChange(of: viewModel.isLoadingResponse) { _, isLoading in
                 if isLoading {
                     withAnimation(.easeOut(duration: 0.3)) {
-                        proxy.scrollTo("loading", anchor: .bottom)
+                        proxy.scrollTo("loading", anchor: .top)
                     }
                 }
             }
