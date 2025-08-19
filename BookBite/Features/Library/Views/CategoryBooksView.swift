@@ -107,9 +107,17 @@ struct BooksList: View {
 struct BookRowView: View {
     let book: Book
     
+    private func httpsURL(from coverURL: String) -> String {
+        // Convert HTTP Google Books URLs to HTTPS
+        if coverURL.hasPrefix("http://books.google.com") {
+            return coverURL.replacingOccurrences(of: "http://", with: "https://")
+        }
+        return coverURL
+    }
+    
     var body: some View {
         HStack(spacing: 12) {
-            AsyncImage(url: URL(string: book.coverAssetName ?? "")) { phase in
+            AsyncImage(url: book.coverAssetName != nil ? URL(string: httpsURL(from: book.coverAssetName!)) : nil) { phase in
                 switch phase {
                 case .success(let image):
                     image
