@@ -12,3 +12,8 @@ protocol BookRepository {
     func fetchBooksByCategory(_ category: String, page: Int, limit: Int) async throws -> [Book]
     func clearCache()
 }
+
+protocol SummaryGenerationCapable {
+    func generateSummary(for bookId: String, style: Summary.SummaryStyle) async throws -> SummaryGenerationJob
+    func checkSummaryGenerationJob(jobId: String) async throws -> SummaryGenerationJob
+}

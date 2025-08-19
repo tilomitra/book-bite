@@ -93,7 +93,7 @@ async function generateSummaryForBook(bookId: string, title: string): Promise<Su
     // Generate extended summary if it doesn't exist
     if (!hasExtendedSummary) {
       console.log(`  🔥 Generating extended summary...`);
-      const extendedSummaryData = await openai.generateExtendedBookSummary(
+      const extendedSummaryData = await openai.generateExtendedSummary(
         book.title,
         book.authors,
         book.description || '',

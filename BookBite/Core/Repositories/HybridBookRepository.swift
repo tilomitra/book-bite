@@ -1,6 +1,6 @@
 import Foundation
 
-class HybridBookRepository: BookRepository {
+class HybridBookRepository: BookRepository, SummaryGenerationCapable {
     private let remoteRepository = RemoteBookRepository()
     
     init() {

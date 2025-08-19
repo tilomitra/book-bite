@@ -203,7 +203,7 @@ export class SearchController {
         );
 
         // Generate extended summary
-        const extendedSummaryData = await this.openaiService.generateExtendedBookSummary(
+        const extendedSummaryData = await this.openaiService.generateExtendedSummary(
           savedBook.title,
           savedBook.authors,
           savedBook.description || '',

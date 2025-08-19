@@ -317,20 +317,6 @@ struct ApplicationCard: View {
                 Text(point.action)
                     .font(.system(size: 15, weight: .medium))
                     .foregroundColor(.primary)
-                
-                if !point.tags.isEmpty {
-                    HStack {
-                        ForEach(point.tags, id: \.self) { tag in
-                            Text(tag)
-                                .font(.caption)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(Color.green.opacity(0.1))
-                                .foregroundColor(.green)
-                                .cornerRadius(6)
-                        }
-                    }
-                }
             }
             
             Spacer()
@@ -380,6 +366,7 @@ struct AnalysisContent: View {
                             .font(.body)
                             .foregroundColor(.primary.opacity(0.8))
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
                     .background(Color.red.opacity(0.1))
                     .cornerRadius(12)
@@ -418,6 +405,7 @@ struct AnalysisSection: View {
                 }
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background(color.opacity(0.1))
         .cornerRadius(12)

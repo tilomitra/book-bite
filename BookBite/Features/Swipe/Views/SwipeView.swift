@@ -157,13 +157,13 @@ struct SwipeCardView: View {
                     .font(.title2)
                     .fontWeight(.bold)
                     .multilineTextAlignment(.center)
-                    .lineLimit(2)
+                    .lineLimit(nil)
                 
                 Text(book.formattedAuthors)
                     .font(.title3)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
-                    .lineLimit(2)
+                    .lineLimit(nil)
                 
                 if !book.categories.isEmpty {
                     Text(book.formattedCategories)
@@ -173,12 +173,13 @@ struct SwipeCardView: View {
                         .background(Color.blue.opacity(0.1))
                         .foregroundColor(.blue)
                         .clipShape(Capsule())
-                        .lineLimit(1)
+                        .lineLimit(nil)
+                        .multilineTextAlignment(.center)
                 }
                 
                 if let description = book.description, !description.isEmpty {
                     ScrollView(.vertical, showsIndicators: false) {
-                        Text(description)
+                        Text(description.strippedHTML)
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)

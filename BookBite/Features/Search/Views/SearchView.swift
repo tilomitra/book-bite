@@ -72,7 +72,6 @@ struct SearchResultsList: View {
                 .onAppear {
                     onBookAppear(book)
                 }
-                .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
             }
             
             // Loading indicator at the bottom

@@ -278,17 +278,21 @@ struct CompactBookCard: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text(book.title)
                     .font(.system(size: 11, weight: .semibold))
-                    .lineLimit(2)
+                    .lineLimit(nil)
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.primary)
                 
                 Text(book.formattedAuthors)
                     .font(.system(size: 9))
-                    .lineLimit(1)
+                    .lineLimit(nil)
                     .foregroundColor(.secondary)
+                
+                // Add spacer to push content to top
+                Spacer(minLength: 0)
             }
-            .frame(width: 90, alignment: .leading)
+            .frame(width: 90, height: 60, alignment: .top)
         }
+        .frame(height: 199) // Fixed height: 135 (cover) + 4 (spacing) + 60 (text area)
     }
 }
 
@@ -304,13 +308,13 @@ struct FeaturedBookCard: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(book.title)
                     .font(.system(.caption, design: .default, weight: .semibold))
-                    .lineLimit(2)
+                    .lineLimit(nil)
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.primary)
                 
                 Text(book.formattedAuthors)
                     .font(.caption2)
-                    .lineLimit(1)
+                    .lineLimit(nil)
                     .foregroundColor(.secondary)
                 
                 if let nytRank = book.nytRank {
@@ -340,12 +344,17 @@ struct FeaturedBookCard: View {
                 // Categories
                 Text(book.formattedCategories)
                     .font(.caption2)
-                    .lineLimit(1)
+                    .lineLimit(nil)
                     .foregroundColor(.secondary)
+                
+                // Add spacer to push content to top
+                Spacer(minLength: 0)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .top)
+            .frame(height: 120)
         }
         .frame(maxWidth: 160)
+        .frame(height: 280) // Fixed height for consistent alignment
         .background(Color.clear)
     }
 }

@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-class RemoteBookRepository: BookRepository {
+class RemoteBookRepository: BookRepository, SummaryGenerationCapable {
     private let networkService = NetworkService.shared
     private let cacheService = CacheService.shared
     

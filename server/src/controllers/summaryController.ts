@@ -38,9 +38,10 @@ export class SummaryController {
       const job = await summaryService.createSummaryGenerationJob(bookId, style);
       
       return res.status(202).json({
-        message: 'Summary generation started',
-        jobId: job.id,
-        status: job.status
+        id: job.id,
+        bookId: bookId,
+        status: job.status,
+        message: 'Summary generation started'
       });
     } catch (error) {
       return next(error);

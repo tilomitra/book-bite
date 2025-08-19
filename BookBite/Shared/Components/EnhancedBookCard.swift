@@ -19,14 +19,14 @@ struct EnhancedBookCard: View {
                     .font(style.titleFont)
                     .fontWeight(.semibold)
                     .foregroundColor(DesignSystem.Colors.textPrimary)
-                    .lineLimit(2)
+                    .lineLimit(nil)
                     .multilineTextAlignment(.leading)
                 
                 // Author
                 Text(book.formattedAuthors)
                     .font(style.authorFont)
                     .foregroundColor(DesignSystem.Colors.textSecondary)
-                    .lineLimit(1)
+                    .lineLimit(nil)
                 
                 // NYT Bestseller Badge
                 if book.isNYTBestseller == true {

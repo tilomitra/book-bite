@@ -33,9 +33,15 @@ struct BookDetailView: View {
                 
                 // Loading or error states
                 if viewModel.isLoadingSummary {
-                    LoadingView()
-                        .frame(height: 200)
-                        .padding()
+                    VStack(spacing: 16) {
+                        if viewModel.isGeneratingSummary {
+                            GeneratingView(message: viewModel.generationMessage)
+                        } else {
+                            LoadingView()
+                        }
+                    }
+                    .frame(height: 200)
+                    .padding()
                 } else if let error = viewModel.summaryError {
                     ErrorView(error: error) {
                         Task {

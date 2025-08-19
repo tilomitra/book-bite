@@ -11,14 +11,14 @@ struct SearchResultRow: View {
                 Text(book.title)
                     .font(.headline)
                     .fontWeight(.semibold)
-                    .lineLimit(3)
+                    .lineLimit(nil)
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.primary)
                 
                 Text(book.formattedAuthors)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                    .lineLimit(3)
+                    .lineLimit(nil)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
                 
@@ -47,6 +47,7 @@ struct SearchResultRow: View {
                 .padding(.trailing, 4)
         }
         .padding(.vertical, 8)
+        .padding(.horizontal, 16)
         .contentShape(Rectangle())
     }
 }
