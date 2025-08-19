@@ -18,8 +18,11 @@ interface SummaryResult {
   bookId: string;
   title: string;
   success: boolean;
+  hasRegularSummary: boolean;
+  hasExtendedSummary: boolean;
   error?: string;
   duration?: number;
+  wordCount?: number;
 }
 
 async function findBooksWithoutSummaries(): Promise<BookWithoutSummary[]> {
@@ -71,27 +74,30 @@ async function generateSummaryForBook(book: BookWithoutSummary): Promise<Summary
   const startTime = Date.now();
   
   try {
-    console.log(`  🤖 Generating summary for: "${book.title}"`);
+    console.log(`  🤖 Generating summaries for: "${book.title}"`);
     
     // Double-check that no summary exists (race condition protection)
     const { data: existingSummary } = await supabase
       .from('summaries')
-      .select('id')
+      .select('id, extended_summary')
       .eq('book_id', book.id)
       .single();
 
     if (existingSummary) {
       console.log(`  📋 Summary now exists (likely created by another process), skipping`);
+      const hasExtended = !!(existingSummary.extended_summary && existingSummary.extended_summary.trim() !== '');
       return { 
         bookId: book.id, 
         title: book.title, 
         success: true,
+        hasRegularSummary: true,
+        hasExtendedSummary: hasExtended,
         duration: Date.now() - startTime
       };
     }
 
-    // Generate summary using OpenAI
-    console.log(`     📝 Calling OpenAI API...`);
+    // Generate regular summary using OpenAI
+    console.log(`     📝 Generating regular summary...`);
     const summaryData = await openai.generateBookSummary(
       book.title,
       book.authors || [],
@@ -100,33 +106,83 @@ async function generateSummaryForBook(book: BookWithoutSummary): Promise<Summary
       'full'
     );
 
-    console.log(`     💾 Saving to database...`);
-    // Save to database
-    const { error } = await supabase
+    console.log(`     💾 Saving regular summary to database...`);
+    // Save regular summary to database
+    const { data: savedSummary, error } = await supabase
       .from('summaries')
       .insert({
         book_id: book.id,
         ...summaryData
-      });
+      })
+      .select('id')
+      .single();
 
     if (error) {
-      console.error(`     ❌ Database save failed: ${error.message}`);
+      console.error(`     ❌ Regular summary save failed: ${error.message}`);
       return { 
         bookId: book.id, 
         title: book.title, 
-        success: false, 
-        error: `Database save failed: ${error.message}`,
+        success: false,
+        hasRegularSummary: false,
+        hasExtendedSummary: false,
+        error: `Regular summary save failed: ${error.message}`,
         duration: Date.now() - startTime
       };
     }
 
+    let hasExtendedSummary = false;
+    let extendedWordCount = 0;
+
+    // Add delay between regular and extended summary generation
+    console.log(`     ⏸️  Waiting 2 seconds before generating extended summary...`);
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    try {
+      // Generate extended summary
+      console.log(`     📖 Generating extended summary (using cheaper model)...`);
+      const extendedSummary = await openai.generateExtendedSummary(
+        book.title,
+        book.authors || [],
+        book.description || '',
+        book.categories || []
+      );
+
+      console.log(`     💾 Updating with extended summary...`);
+      // Update the summary with extended summary
+      const { error: extendedError } = await supabase
+        .from('summaries')
+        .update({
+          extended_summary: extendedSummary
+        })
+        .eq('id', savedSummary.id);
+
+      if (extendedError) {
+        console.error(`     ⚠️  Extended summary save failed: ${extendedError.message}`);
+        console.log(`     ✅ Regular summary saved, but extended summary failed`);
+      } else {
+        hasExtendedSummary = true;
+        extendedWordCount = extendedSummary.split(/\s+/).length;
+        console.log(`     ✅ Extended summary saved (~${extendedWordCount} words)`);
+      }
+    } catch (extendedError) {
+      const extendedErrorMessage = extendedError instanceof Error ? extendedError.message : 'Unknown error';
+      console.error(`     ⚠️  Extended summary generation failed: ${extendedErrorMessage}`);
+      console.log(`     ✅ Regular summary saved, but extended summary failed`);
+    }
+
     const duration = Date.now() - startTime;
-    console.log(`     ✅ Summary generated and saved (${Math.round(duration/1000)}s)`);
+    const summaryTypes = ['regular'];
+    if (hasExtendedSummary) summaryTypes.push('extended');
+    
+    console.log(`     ✅ Summary generation completed (${Math.round(duration/1000)}s, ${summaryTypes.join(' + ')})`);
     return { 
       bookId: book.id, 
       title: book.title, 
       success: true,
-      duration
+      hasRegularSummary: true,
+      hasExtendedSummary,
+      duration,
+      wordCount: extendedWordCount
     };
 
   } catch (error) {
@@ -136,7 +192,9 @@ async function generateSummaryForBook(book: BookWithoutSummary): Promise<Summary
     return { 
       bookId: book.id, 
       title: book.title, 
-      success: false, 
+      success: false,
+      hasRegularSummary: false,
+      hasExtendedSummary: false,
       error: errorMessage,
       duration
     };
@@ -155,6 +213,7 @@ async function generateMissingSummaries(options: {
   } = options;
 
   console.log('🚀 Starting missing summaries generation...');
+  console.log('📝 This will generate both regular and extended summaries');
   console.log(`⚙️  Batch size: ${batchSize} books`);
   console.log(`⏱️  Delay between batches: ${delayBetweenBatches/1000}s`);
   console.log(`📊 Max books to process: ${maxBooks}`);
@@ -232,16 +291,26 @@ async function generateMissingSummaries(options: {
   const failed = results.filter(r => !r.success);
   const totalDuration = results.reduce((sum, r) => sum + (r.duration || 0), 0);
   const averageDuration = results.length > 0 ? totalDuration / results.length : 0;
+  const regularSummariesCreated = results.filter(r => r.hasRegularSummary).length;
+  const extendedSummariesCreated = results.filter(r => r.hasExtendedSummary).length;
+  const totalWords = successful.reduce((sum, r) => sum + (r.wordCount || 0), 0);
+  const averageWords = extendedSummariesCreated > 0 ? totalWords / extendedSummariesCreated : 0;
 
   console.log('═'.repeat(80));
   console.log('📊 SUMMARY GENERATION REPORT');
   console.log('═'.repeat(80));
   console.log(`📚 Books found without summaries: ${totalFound}`);
   console.log(`🎯 Books processed: ${processedCount}`);
-  console.log(`✅ Summaries successfully generated: ${successful.length}`);
+  console.log(`✅ Books with summaries successfully generated: ${successful.length}`);
+  console.log(`📝 Regular summaries created: ${regularSummariesCreated}`);
+  console.log(`📖 Extended summaries created: ${extendedSummariesCreated}`);
   console.log(`❌ Generation failures: ${failed.length}`);
   console.log(`⏱️  Average generation time: ${Math.round(averageDuration/1000)}s`);
   console.log(`🕐 Total processing time: ${Math.round(totalDuration/1000)}s`);
+  if (totalWords > 0) {
+    console.log(`📝 Total words in extended summaries: ${totalWords.toLocaleString()}`);
+    console.log(`📖 Average words per extended summary: ${Math.round(averageWords)}`);
+  }
   
   if (failed.length > 0) {
     console.log('\n❌ Failed Summary Generations:');
@@ -257,7 +326,11 @@ async function generateMissingSummaries(options: {
     console.log('\n✅ Successfully Generated Summaries:');
     console.log('─'.repeat(40));
     successful.slice(0, 10).forEach((s, index) => { // Show first 10
-      console.log(`${index + 1}. "${s.title}" (${Math.round((s.duration || 0)/1000)}s)`);
+      const summaryTypes = [];
+      if (s.hasRegularSummary) summaryTypes.push('regular');
+      if (s.hasExtendedSummary) summaryTypes.push('extended');
+      const wordInfo = s.wordCount ? `, ${s.wordCount} words` : '';
+      console.log(`${index + 1}. "${s.title}" (${Math.round((s.duration || 0)/1000)}s, ${summaryTypes.join(' + ')}${wordInfo})`);
     });
     if (successful.length > 10) {
       console.log(`   ... and ${successful.length - 10} more`);
@@ -268,6 +341,7 @@ async function generateMissingSummaries(options: {
   
   if (successful.length > 0) {
     console.log('🎉 Summary generation completed successfully!');
+    console.log(`💰 Generated ${regularSummariesCreated} regular summaries and ${extendedSummariesCreated} extended summaries`);
   } else if (failed.length > 0) {
     console.log('⚠️ Summary generation completed with errors. Check the failed list above.');
   }
@@ -277,6 +351,8 @@ async function generateMissingSummaries(options: {
     processed: processedCount,
     successful: successful.length,
     failed: failed.length,
+    regularSummariesCreated,
+    extendedSummariesCreated,
     results
   };
 }
@@ -297,6 +373,7 @@ if (require.main === module) {
     console.error('❌ Invalid batch size. Must be a positive number.');
     console.log('Usage: tsx scripts/generate-missing-summaries.ts [batchSize] [maxBooks]');
     console.log('Example: tsx scripts/generate-missing-summaries.ts 3 50');
+    console.log('Note: Generates both regular summaries AND extended summaries');
     process.exit(1);
   }
   
@@ -304,6 +381,7 @@ if (require.main === module) {
     console.error('❌ Invalid max books. Must be a positive number.');
     console.log('Usage: tsx scripts/generate-missing-summaries.ts [batchSize] [maxBooks]');
     console.log('Example: tsx scripts/generate-missing-summaries.ts 3 50');
+    console.log('Note: Generates both regular summaries AND extended summaries');
     process.exit(1);
   }
 
@@ -318,3 +396,7 @@ if (require.main === module) {
 }
 
 export { generateMissingSummaries, findBooksWithoutSummaries };
+
+// Note: This script generates both regular summaries AND extended summaries
+// for books that don't have any summary in the database. It replaces the need
+// for separate scripts by creating complete summary records in one operation.

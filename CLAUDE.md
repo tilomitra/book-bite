@@ -64,64 +64,47 @@ cat server/supabase/schema.sql
 
 #### Data Population Scripts
 
-##### NYT Bestsellers Non-Fiction Books
+##### Comprehensive Book Population (Recommended)
 ```bash
-# Populate with all NYT non-fiction bestseller lists
-cd server && npm run populate-nyt
+# Populate books from all sources (Google Books + NYT) with default settings
+cd server && npm run populate-books
 
-# Process only high-priority lists (combined, hardcover, business, science, biography)
-cd server && npx tsx scripts/populate-nyt-bestsellers.ts --priority
+# Google Books only - 25 books per category, all priorities
+cd server && npm run populate-books-google
 
-# Process specific list
-cd server && npx tsx scripts/populate-nyt-bestsellers.ts --list business-books
+# NYT Bestsellers only - 15 books per list, all lists
+cd server && npm run populate-books-nyt
+
+# High priority categories only (Self-Help, Psychology, Business, History, Biography, etc.)
+cd server && npm run populate-books-high-priority
+
+# Custom options: [booksPerCategory] [priority] [source]
+cd server && npx tsx scripts/populate-books.ts 30 high google
+cd server && npx tsx scripts/populate-books.ts 15 medium nyt
+cd server && npx tsx scripts/populate-books.ts 50 all all
 ```
 
 **Features:**
-- Fetches from 16+ NYT non-fiction bestseller lists
-- Includes rank and weeks on list metadata
-- Automatic deduplication across lists
-- Enriches with Google Books metadata
-- AI-generated summaries + extended summaries
-- Rate limiting compliant with NYT API
+- **Unified script** combining Google Books API + NYT Bestsellers API
+- 35+ comprehensive non-fiction categories + 16+ NYT bestseller lists
+- Priority filtering (high/medium/low) for targeted content
+- Source filtering (google/nyt/all) for flexible data sourcing
+- Automatic deduplication across all sources
+- AI-generated summaries + extended summaries in one operation
+- Smart rate limiting and comprehensive progress tracking
+- Can generate 1,750+ books with full category coverage
 
-##### Category-Based Book Discovery (Recommended for Scale)
+##### Summary Generation
 ```bash
-# Get 50 books per category (all 35+ categories)
-cd server && npx tsx scripts/populate-books-by-category.ts 50
+# Generate summaries for books that don't have any summaries (regular + extended)
+cd server && npm run generate-summaries
 
-# Get 25 books per category, high priority categories only (13 categories: Self-Help, Psychology, Business, History, Biography, etc.)
-cd server && npx tsx scripts/populate-books-by-category.ts 25 high
-
-# Get 10 books per category, medium priority categories only (15 categories: Economics, Innovation, Biology, Philosophy, etc.)
-cd server && npx tsx scripts/populate-books-by-category.ts 10 medium
-
-# Get 5 books per category, low priority categories only (7 categories: Art, Music, Travel, Cooking)
-cd server && npx tsx scripts/populate-books-by-category.ts 5 low
-```
-
-**Features:**
-- Automatic discovery via Google Books API
-- 35+ comprehensive non-fiction categories
-- Automatic deduplication across categories  
-- AI-generated summaries + extended summaries
-- Smart rate limiting and progress tracking
-- Can generate 1,750+ books (50 per category × 35 categories)
-
-##### Manual Curated Book Population
-```bash
-# Populate with 75+ handpicked popular non-fiction books
-cd server && npx tsx scripts/populate-nonfiction-books.ts
-```
-
-**Features:**
-- Curated list of popular books (Atomic Habits, Sapiens, etc.)
-- Covers Self-Help, Biography, Science, Business, History, Health categories
-- Quality over quantity approach
-
-##### Extended Summary Generation
-```bash
-# Generate cost-effective extended summaries for existing books without them
+# Generate only extended summaries for books that have regular summaries but lack extended ones
 cd server && npm run generate-extended-summaries
+
+# Custom batch processing
+cd server && npx tsx scripts/generate-missing-summaries.ts 3 50  # 3 books per batch, max 50 books
+cd server && npx tsx scripts/generate-extended-summaries.ts 2 30  # 2 books per batch, max 30 books
 ```
 
 **Usage Notes:**

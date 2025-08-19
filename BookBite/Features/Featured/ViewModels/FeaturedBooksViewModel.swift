@@ -152,20 +152,36 @@ class FeaturedBooksViewModel: ObservableObject {
         
         // Create ordered genre list
         var orderedGenres: [(genre: String, books: [Book])] = []
+        var otherPicksBooks: [Book] = []
         
-        // Add primary genres first (if they have books)
+        // Add primary genres first (if they have 4+ books)
         for genre in primaryGenres {
             if let books = genreMap[genre], !books.isEmpty {
-                orderedGenres.append((genre: genre, books: books))
+                if books.count >= 4 {
+                    orderedGenres.append((genre: genre, books: books))
+                } else {
+                    // Add books to "Other Picks" if less than 4 books
+                    otherPicksBooks.append(contentsOf: books)
+                }
                 genreMap.removeValue(forKey: genre)
             }
         }
         
-        // Add any remaining genres
+        // Add any remaining genres (if they have 4+ books)
         for (genre, books) in genreMap.sorted(by: { $0.key < $1.key }) {
             if !books.isEmpty {
-                orderedGenres.append((genre: genre, books: books))
+                if books.count >= 4 {
+                    orderedGenres.append((genre: genre, books: books))
+                } else {
+                    // Add books to "Other Picks" if less than 4 books
+                    otherPicksBooks.append(contentsOf: books)
+                }
             }
+        }
+        
+        // Add "Other Picks" category if we have books for it
+        if !otherPicksBooks.isEmpty {
+            orderedGenres.append((genre: "Other Picks", books: otherPicksBooks))
         }
         
         booksByGenre = orderedGenres
