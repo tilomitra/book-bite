@@ -45,7 +45,7 @@ export class SearchController {
       const query = validation.data.q;
       
       // Search Google Books API
-      const searchResults = await this.googleBooksService.searchBooks(query, 20);
+      const searchResults = await this.googleBooksService.searchBooksAsBooks(query, 20);
       
       // Format results for frontend consumption
       const formattedResults = searchResults.map(book => ({

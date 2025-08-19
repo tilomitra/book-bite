@@ -193,7 +193,7 @@ export class BookService {
     if (source === 'all' || source === 'google') {
       try {
         const remainingLimit = limit - results.length;
-        const googleResults = await this.googleBooks.searchBooks(query, remainingLimit);
+        const googleResults = await this.googleBooks.searchBooksAsBooks(query, remainingLimit);
         
         // Filter out books we already have
         const existingISBNs = results.map(b => b.isbn13).filter(Boolean);
