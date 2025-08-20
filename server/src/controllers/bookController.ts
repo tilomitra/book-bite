@@ -214,7 +214,7 @@ export class BookController {
     }
   }
 
-  async getCategories(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getCategories(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const categories = await bookService.getCategories();
       res.json(categories);

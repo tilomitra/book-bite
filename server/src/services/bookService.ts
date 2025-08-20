@@ -443,7 +443,7 @@ export class BookService {
   }> {
     const offset = (page - 1) * limit;
 
-    const { data: allBooks, error: countError, count } = await supabase
+    const { data: allBooks, error: countError } = await supabase
       .from('books')
       .select('*', { count: 'exact', head: false })
       .order('popularity_rank', { ascending: true, nullsFirst: false })
@@ -453,7 +453,7 @@ export class BookService {
 
     const filteredBooks = allBooks?.filter(book => {
       if (!book.categories || !Array.isArray(book.categories)) return false;
-      return book.categories.some(cat => 
+      return book.categories.some((cat: string) => 
         this.normalizeCategory(cat).toLowerCase() === category.toLowerCase()
       );
     }) || [];

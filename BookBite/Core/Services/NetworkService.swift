@@ -33,7 +33,9 @@ class NetworkService: ObservableObject {
         let url: URL
         if endpoint.contains("?") {
             // If endpoint contains query parameters, construct URL manually
-            guard let fullURL = URL(string: "\(baseURL.absoluteString)/\(endpoint)") else {
+            // Don't add extra slash if baseURL already ends with one or endpoint starts with one
+            let separator = (baseURL.absoluteString.hasSuffix("/") || endpoint.hasPrefix("/")) ? "" : "/"
+            guard let fullURL = URL(string: "\(baseURL.absoluteString)\(separator)\(endpoint)") else {
                 throw NetworkError.invalidResponse
             }
             url = fullURL

@@ -225,7 +225,7 @@ export class SearchController {
           .from('extended_summaries')
           .insert({
             book_id: savedBook.id,
-            ...extendedSummaryData
+            content: extendedSummaryData
           })
           .select()
           .single();
