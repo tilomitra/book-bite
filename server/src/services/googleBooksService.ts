@@ -36,12 +36,13 @@ export class GoogleBooksService {
     this.apiKey = process.env.GOOGLE_BOOKS_API_KEY;
   }
 
-  async searchBooks(query: string, maxResults: number = 10): Promise<GoogleBookVolume[]> {
+  async searchBooks(query: string, maxResults: number = 10, orderBy: 'relevance' | 'newest' = 'relevance'): Promise<GoogleBookVolume[]> {
     try {
       const response = await axios.get(`${GOOGLE_BOOKS_API_BASE}/volumes`, {
         params: {
           q: query,
           maxResults,
+          orderBy,
           key: this.apiKey
         }
       });
@@ -58,9 +59,9 @@ export class GoogleBooksService {
   }
 
   // For compatibility with existing controllers that expect Book objects
-  async searchBooksAsBooks(query: string, maxResults: number = 10): Promise<Partial<Book>[]> {
+  async searchBooksAsBooks(query: string, maxResults: number = 10, orderBy: 'relevance' | 'newest' = 'relevance'): Promise<Partial<Book>[]> {
     try {
-      const volumes = await this.searchBooks(query, maxResults);
+      const volumes = await this.searchBooks(query, maxResults, orderBy);
       return volumes.map((item: GoogleBookVolume) => 
         this.transformGoogleBookToBook(item)
       );

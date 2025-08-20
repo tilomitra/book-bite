@@ -38,57 +38,57 @@ const NONFICTION_LISTS = [
 // Comprehensive categories for Google Books discovery
 const BOOK_CATEGORIES = [
   // Personal Development & Psychology  
-  { name: 'Self-Help', query: 'subject:self-help', priority: 'high', source: 'google' },
-  { name: 'Psychology', query: 'subject:psychology', priority: 'high', source: 'google' },
-  { name: 'Personal Development', query: 'personal development', priority: 'high', source: 'google' },
-  { name: 'Productivity', query: 'productivity habits', priority: 'medium', source: 'google' },
-  { name: 'Mindfulness', query: 'mindfulness meditation', priority: 'medium', source: 'google' },
+  { name: 'Self-Help', query: 'subject:self-help bestseller', priority: 'high', source: 'google' },
+  { name: 'Psychology', query: 'subject:psychology bestseller', priority: 'high', source: 'google' },
+  { name: 'Personal Development', query: 'personal development bestseller', priority: 'high', source: 'google' },
+  { name: 'Productivity', query: 'productivity habits bestseller', priority: 'medium', source: 'google' },
+  { name: 'Mindfulness', query: 'mindfulness meditation popular', priority: 'medium', source: 'google' },
   
   // Business & Economics
-  { name: 'Business', query: 'subject:business', priority: 'high', source: 'google' },
-  { name: 'Entrepreneurship', query: 'entrepreneurship startup', priority: 'high', source: 'google' },
-  { name: 'Economics', query: 'subject:economics', priority: 'medium', source: 'google' },
-  { name: 'Leadership', query: 'leadership management', priority: 'high', source: 'google' },
-  { name: 'Innovation', query: 'innovation disruption', priority: 'medium', source: 'google' },
-  { name: 'Marketing', query: 'marketing advertising', priority: 'medium', source: 'google' },
+  { name: 'Business', query: 'subject:business bestseller', priority: 'high', source: 'google' },
+  { name: 'Entrepreneurship', query: 'entrepreneurship startup bestseller', priority: 'high', source: 'google' },
+  { name: 'Economics', query: 'subject:economics bestseller', priority: 'medium', source: 'google' },
+  { name: 'Leadership', query: 'leadership management bestseller', priority: 'high', source: 'google' },
+  { name: 'Innovation', query: 'innovation disruption popular', priority: 'medium', source: 'google' },
+  { name: 'Marketing', query: 'marketing advertising bestseller', priority: 'medium', source: 'google' },
   
   // Science & Technology
-  { name: 'Science', query: 'subject:science', priority: 'high', source: 'google' },
-  { name: 'Technology', query: 'technology future', priority: 'high', source: 'google' },
-  { name: 'Biology', query: 'subject:biology', priority: 'medium', source: 'google' },
-  { name: 'Physics', query: 'subject:physics', priority: 'medium', source: 'google' },
-  { name: 'Medicine', query: 'subject:medicine', priority: 'medium', source: 'google' },
-  { name: 'Environment', query: 'environment climate', priority: 'medium', source: 'google' },
+  { name: 'Science', query: 'subject:science bestseller', priority: 'high', source: 'google' },
+  { name: 'Technology', query: 'technology future bestseller', priority: 'high', source: 'google' },
+  { name: 'Biology', query: 'subject:biology popular', priority: 'medium', source: 'google' },
+  { name: 'Physics', query: 'subject:physics bestseller', priority: 'medium', source: 'google' },
+  { name: 'Medicine', query: 'subject:medicine popular', priority: 'medium', source: 'google' },
+  { name: 'Environment', query: 'environment climate bestseller', priority: 'medium', source: 'google' },
   
   // History & Biography
-  { name: 'History', query: 'subject:history', priority: 'high', source: 'google' },
-  { name: 'Biography', query: 'subject:biography', priority: 'high', source: 'google' },
-  { name: 'Memoir', query: 'memoir autobiography', priority: 'high', source: 'google' },
-  { name: 'World War', query: 'world war history', priority: 'medium', source: 'google' },
-  { name: 'American History', query: 'american history', priority: 'medium', source: 'google' },
+  { name: 'History', query: 'subject:history bestseller', priority: 'high', source: 'google' },
+  { name: 'Biography', query: 'subject:biography bestseller', priority: 'high', source: 'google' },
+  { name: 'Memoir', query: 'memoir autobiography bestseller', priority: 'high', source: 'google' },
+  { name: 'World War', query: 'world war history bestseller', priority: 'medium', source: 'google' },
+  { name: 'American History', query: 'american history bestseller', priority: 'medium', source: 'google' },
   
   // Health & Wellness
-  { name: 'Health', query: 'subject:health', priority: 'high', source: 'google' },
-  { name: 'Nutrition', query: 'nutrition diet food', priority: 'medium', source: 'google' },
-  { name: 'Fitness', query: 'fitness exercise', priority: 'medium', source: 'google' },
-  { name: 'Mental Health', query: 'mental health therapy', priority: 'high', source: 'google' },
+  { name: 'Health', query: 'subject:health bestseller', priority: 'high', source: 'google' },
+  { name: 'Nutrition', query: 'nutrition diet food bestseller', priority: 'medium', source: 'google' },
+  { name: 'Fitness', query: 'fitness exercise popular', priority: 'medium', source: 'google' },
+  { name: 'Mental Health', query: 'mental health therapy bestseller', priority: 'high', source: 'google' },
   
   // Philosophy & Religion
-  { name: 'Philosophy', query: 'subject:philosophy', priority: 'medium', source: 'google' },
-  { name: 'Religion', query: 'subject:religion', priority: 'medium', source: 'google' },
-  { name: 'Spirituality', query: 'spirituality consciousness', priority: 'medium', source: 'google' },
+  { name: 'Philosophy', query: 'subject:philosophy bestseller', priority: 'medium', source: 'google' },
+  { name: 'Religion', query: 'subject:religion bestseller', priority: 'medium', source: 'google' },
+  { name: 'Spirituality', query: 'spirituality consciousness popular', priority: 'medium', source: 'google' },
   
   // Social Sciences
-  { name: 'Sociology', query: 'subject:sociology', priority: 'medium', source: 'google' },
-  { name: 'Politics', query: 'subject:politics', priority: 'medium', source: 'google' },
-  { name: 'Anthropology', query: 'subject:anthropology', priority: 'medium', source: 'google' },
-  { name: 'Education', query: 'subject:education', priority: 'medium', source: 'google' },
+  { name: 'Sociology', query: 'subject:sociology bestseller', priority: 'medium', source: 'google' },
+  { name: 'Politics', query: 'subject:politics bestseller', priority: 'medium', source: 'google' },
+  { name: 'Anthropology', query: 'subject:anthropology popular', priority: 'medium', source: 'google' },
+  { name: 'Education', query: 'subject:education bestseller', priority: 'medium', source: 'google' },
   
   // Arts & Culture
-  { name: 'Art', query: 'subject:art', priority: 'low', source: 'google' },
-  { name: 'Music', query: 'subject:music', priority: 'low', source: 'google' },
-  { name: 'Travel', query: 'subject:travel', priority: 'low', source: 'google' },
-  { name: 'Cooking', query: 'cooking recipes', priority: 'low', source: 'google' }
+  { name: 'Art', query: 'subject:art popular', priority: 'low', source: 'google' },
+  { name: 'Music', query: 'subject:music bestseller', priority: 'low', source: 'google' },
+  { name: 'Travel', query: 'subject:travel bestseller', priority: 'low', source: 'google' },
+  { name: 'Cooking', query: 'cooking recipes bestseller', priority: 'low', source: 'google' }
 ];
 
 // Add NYT lists as "categories"
@@ -348,7 +348,7 @@ class BookPopulator {
       console.log(chalk.blue(`📚 Searching Google Books for category: ${categoryName}`));
       console.log(chalk.gray(`   Query: "${query}"`));
 
-      const books = await this.googleBooksService.searchBooks(query, Math.min(maxBooks * 2, 40)); // Google Books API max is 40 results
+      const books = await this.googleBooksService.searchBooks(query, Math.min(maxBooks * 2, 40), 'relevance'); // Google Books API max is 40 results, order by relevance for popularity
       const booksToProcess = books.slice(0, maxBooks);
 
       for (const book of booksToProcess) {
