@@ -139,6 +139,26 @@ struct FeaturedSection: View {
 struct FeaturedDetailView: View {
     let books: [Book]
     
+    var sortedBooks: [Book] {
+        books.sorted { book1, book2 in
+            // First priority: books with popularity_score
+            if let score1 = book1.popularityScore, let score2 = book2.popularityScore {
+                return score1 > score2  // Higher scores first
+            }
+            
+            // Second priority: books with popularity_score over those without
+            if book1.popularityScore != nil && book2.popularityScore == nil {
+                return true
+            }
+            if book1.popularityScore == nil && book2.popularityScore != nil {
+                return false
+            }
+            
+            // Final fallback: alphabetical by title
+            return book1.title.localizedCaseInsensitiveCompare(book2.title) == .orderedAscending
+        }
+    }
+    
     var body: some View {
         ScrollView {
             LazyVGrid(
@@ -147,7 +167,7 @@ struct FeaturedDetailView: View {
                 ],
                 spacing: 20
             ) {
-                ForEach(books) { book in
+                ForEach(sortedBooks) { book in
                     NavigationLink(destination: BookDetailView(book: book)) {
                         FeaturedBookCard(book: book)
                     }
@@ -242,6 +262,26 @@ struct GenreDetailView: View {
     let genre: String
     let books: [Book]
     
+    var sortedBooks: [Book] {
+        books.sorted { book1, book2 in
+            // First priority: books with popularity_score
+            if let score1 = book1.popularityScore, let score2 = book2.popularityScore {
+                return score1 > score2  // Higher scores first
+            }
+            
+            // Second priority: books with popularity_score over those without
+            if book1.popularityScore != nil && book2.popularityScore == nil {
+                return true
+            }
+            if book1.popularityScore == nil && book2.popularityScore != nil {
+                return false
+            }
+            
+            // Final fallback: alphabetical by title
+            return book1.title.localizedCaseInsensitiveCompare(book2.title) == .orderedAscending
+        }
+    }
+    
     var body: some View {
         ScrollView {
             LazyVGrid(
@@ -250,7 +290,7 @@ struct GenreDetailView: View {
                 ],
                 spacing: 20
             ) {
-                ForEach(books) { book in
+                ForEach(sortedBooks) { book in
                     NavigationLink(destination: BookDetailView(book: book)) {
                         FeaturedBookCard(book: book)
                     }

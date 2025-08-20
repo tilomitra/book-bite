@@ -16,6 +16,7 @@ class LibraryViewModel: ObservableObject {
     
     private func setupCategories() {
         categories = [
+            BookCategory(name: "NYT Bestsellers", iconName: BookCategory.getCategoryIcon(for: "NYT Bestsellers")),
             BookCategory(name: "Self-Help", iconName: BookCategory.getCategoryIcon(for: "Self-Help")),
             BookCategory(name: "Psychology", iconName: BookCategory.getCategoryIcon(for: "Psychology")),
             BookCategory(name: "Business", iconName: BookCategory.getCategoryIcon(for: "Business")),
@@ -59,8 +60,20 @@ class LibraryViewModel: ObservableObject {
         do {
             // Try to fetch categories with counts from server
             if let serverCategories = try? await bookRepository.fetchCategories() {
-                // Use server-provided categories with accurate counts
-                categories = serverCategories
+                // Always ensure NYT Bestsellers is first, then add server categories (excluding duplicates)
+                let nytCategory = BookCategory(name: "NYT Bestsellers", iconName: BookCategory.getCategoryIcon(for: "NYT Bestsellers"))
+                
+                // Get NYT Bestsellers count
+                let nytBestsellerBooks = try? await bookRepository.fetchNYTBestsellerBooks()
+                let nytCategoryWithCount = BookCategory(
+                    name: nytCategory.name,
+                    iconName: nytCategory.iconName,
+                    bookCount: nytBestsellerBooks?.count ?? 0
+                )
+                
+                // Filter out NYT Bestsellers from server categories if it exists, and add our version first
+                let filteredServerCategories = serverCategories.filter { $0.name != "NYT Bestsellers" }
+                categories = [nytCategoryWithCount] + filteredServerCategories
             } else {
                 // Fallback: calculate counts locally if server endpoint fails
                 let categoryCounts = await fetchCategoryCounts()
@@ -87,7 +100,14 @@ class LibraryViewModel: ObservableObject {
         do {
             // For each category, fetch the actual books that would be shown
             for category in categories {
-                if let books = try? await bookRepository.fetchBooksByCategory(category.name, page: 1, limit: 1000) {
+                let books: [Book]?
+                if category.name == "NYT Bestsellers" {
+                    books = try? await bookRepository.fetchNYTBestsellerBooks()
+                } else {
+                    books = try? await bookRepository.fetchBooksByCategory(category.name, page: 1, limit: 1000)
+                }
+                
+                if let books = books {
                     counts[category.name] = books.count
                 }
             }
@@ -124,9 +144,34 @@ class CategoryBooksViewModel: ObservableObject {
         error = nil
         
         do {
-            // Load all books in the category (up to 1000 to get all of them)
-            let allBooks = try await bookRepository.fetchBooksByCategory(category.name, page: 1, limit: 1000)
-            books = allBooks
+            // Handle special case for NYT Bestsellers category
+            let allBooks: [Book]
+            if category.name == "NYT Bestsellers" {
+                allBooks = try await bookRepository.fetchNYTBestsellerBooks()
+            } else {
+                // Load all books in the category (up to 1000 to get all of them)
+                allBooks = try await bookRepository.fetchBooksByCategory(category.name, page: 1, limit: 1000)
+            }
+            
+            // Sort books by popularity_score (highest first), then by title as fallback
+            books = allBooks.sorted { book1, book2 in
+                // First priority: books with popularity_score
+                if let score1 = book1.popularityScore, let score2 = book2.popularityScore {
+                    return score1 > score2  // Higher scores first
+                }
+                
+                // Second priority: books with popularity_score over those without
+                if book1.popularityScore != nil && book2.popularityScore == nil {
+                    return true
+                }
+                if book1.popularityScore == nil && book2.popularityScore != nil {
+                    return false
+                }
+                
+                // Final fallback: alphabetical by title
+                return book1.title.localizedCaseInsensitiveCompare(book2.title) == .orderedAscending
+            }
+            
             hasMore = false  // We loaded all books, no more pagination needed
             isLoading = false
         } catch {

@@ -90,6 +90,7 @@ struct DesignSystem {
         
         static func categoryColor(for category: String) -> Color {
             switch category.lowercased() {
+            case "nyt bestsellers": return nytGold
             case "business": return businessColor
             case "self-help", "self help": return selfHelpColor
             case "biography": return biographyColor

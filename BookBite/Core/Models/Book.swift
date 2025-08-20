@@ -14,6 +14,7 @@ struct Book: Identifiable, Codable, Hashable {
     let description: String?
     let sourceAttribution: [String]
     let popularityRank: Int?
+    let popularityScore: Double?
     let isFeatured: Bool?
     let isNYTBestseller: Bool?
     let nytRank: Int?
@@ -26,6 +27,7 @@ struct Book: Identifiable, Codable, Hashable {
         case coverAssetName = "cover_url"
         case sourceAttribution = "source_attribution"
         case popularityRank = "popularity_rank"
+        case popularityScore = "popularity_score"
         case isFeatured = "is_featured"
         case isNYTBestseller = "is_nyt_bestseller"
         case nytRank = "nyt_rank"
@@ -47,6 +49,7 @@ struct Book: Identifiable, Codable, Hashable {
         description: String? = nil,
         sourceAttribution: [String] = [],
         popularityRank: Int? = nil,
+        popularityScore: Double? = nil,
         isFeatured: Bool? = false,
         isNYTBestseller: Bool? = false,
         nytRank: Int? = nil,
@@ -66,6 +69,7 @@ struct Book: Identifiable, Codable, Hashable {
         self.description = description
         self.sourceAttribution = sourceAttribution
         self.popularityRank = popularityRank
+        self.popularityScore = popularityScore
         self.isFeatured = isFeatured
         self.isNYTBestseller = isNYTBestseller
         self.nytRank = nytRank
@@ -89,6 +93,7 @@ struct Book: Identifiable, Codable, Hashable {
         description = try container.decodeIfPresent(String.self, forKey: .description)
         sourceAttribution = try container.decodeIfPresent([String].self, forKey: .sourceAttribution) ?? []
         popularityRank = try container.decodeIfPresent(Int.self, forKey: .popularityRank)
+        popularityScore = try container.decodeIfPresent(Double.self, forKey: .popularityScore)
         isFeatured = try container.decodeIfPresent(Bool.self, forKey: .isFeatured) ?? false
         isNYTBestseller = try container.decodeIfPresent(Bool.self, forKey: .isNYTBestseller) ?? false
         nytRank = try container.decodeIfPresent(Int.self, forKey: .nytRank)

@@ -61,6 +61,7 @@ struct BookCategory: Identifiable {
     
     static func getCategoryIcon(for name: String) -> String {
         switch name.lowercased() {
+        case "nyt bestsellers": return "star.fill"
         case "self-help", "personal development": return "person.fill.checkmark"
         case "psychology", "mental health": return "brain.head.profile"
         case "business", "entrepreneurship": return "briefcase.fill"
