@@ -19,7 +19,8 @@
     "populate-books-high-priority": "tsx scripts/populate-books.ts 25 high all",
     "generate-summaries": "tsx scripts/generate-missing-summaries.ts",
     "generate-extended-summaries": "tsx scripts/generate-extended-summaries.ts",
-    "update-book-covers": "tsx scripts/update-book-covers.ts"
+    "update-book-covers": "tsx scripts/update-book-covers.ts",
+    "update-popularity-scores": "tsx scripts/update-popularity-scores.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",

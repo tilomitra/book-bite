@@ -126,6 +126,11 @@ interface NYTListResponse {
   };
 }
 
+interface GoogleBookRatingInfo {
+  averageRating?: number;
+  ratingsCount?: number;
+}
+
 interface PopulationStats {
   totalCategories: number;
   processedCategories: number;
@@ -157,6 +162,41 @@ class BookPopulator {
     this.googleBooksService = new GoogleBooksService();
     this.bookService = new BookService();
     this.openAIService = new OpenAIService();
+  }
+
+  async fetchPopularityInfo(googleBook: any): Promise<GoogleBookRatingInfo> {
+    try {
+      if (!googleBook || !googleBook.volumeInfo) {
+        return { averageRating: 0, ratingsCount: 0 };
+      }
+
+      const volumeInfo = googleBook.volumeInfo;
+      return {
+        averageRating: volumeInfo.averageRating || 0,
+        ratingsCount: volumeInfo.ratingsCount || 0
+      };
+    } catch (error) {
+      console.log(chalk.yellow(`⚠️  Failed to extract popularity info: ${error}`));
+      return { averageRating: 0, ratingsCount: 0 };
+    }
+  }
+
+  calculatePopularityScore(averageRating: number, ratingsCount: number): number {
+    if (averageRating <= 0 || ratingsCount <= 0) return 0;
+    return averageRating * Math.log10(ratingsCount + 1);
+  }
+
+  addPopularityFields(bookData: any, popularityInfo: GoogleBookRatingInfo): any {
+    const averageRating = popularityInfo.averageRating || 0;
+    const ratingsCount = popularityInfo.ratingsCount || 0;
+    const popularityScore = this.calculatePopularityScore(averageRating, ratingsCount);
+
+    return {
+      ...bookData,
+      average_rating: averageRating,
+      ratings_count: ratingsCount,
+      popularity_score: popularityScore
+    };
   }
 
   async checkForDuplicates(bookData: any): Promise<boolean> {
@@ -271,6 +311,12 @@ class BookPopulator {
           if (googleBook) {
             bookData = await this.googleBooksService.extractBookData(googleBook);
             bookData.source_attribution = ['NYT Bestseller', 'Google Books'];
+            
+            // Add popularity scores from Google Books
+            const popularityInfo = await this.fetchPopularityInfo(googleBook);
+            bookData = this.addPopularityFields(bookData, popularityInfo);
+            
+            console.log(chalk.gray(`    📊 Popularity: ${popularityInfo.averageRating}/5 (${popularityInfo.ratingsCount} reviews) → Score: ${bookData.popularity_score.toFixed(2)}`));
           } else {
             // Create from NYT data only
             bookData = {
@@ -281,7 +327,10 @@ class BookPopulator {
               description: nytBook.description,
               cover_url: nytBook.book_image,
               categories: [categoryName.replace('NYT ', '')],
-              source_attribution: ['NYT Bestseller']
+              source_attribution: ['NYT Bestseller'],
+              average_rating: 0,
+              ratings_count: 0,
+              popularity_score: 0
             };
           }
 
@@ -361,8 +410,14 @@ class BookPopulator {
         }
 
         try {
-          const bookData = await this.googleBooksService.extractBookData(book);
+          let bookData = await this.googleBooksService.extractBookData(book);
           bookData.source_attribution = ['Google Books'];
+          
+          // Add popularity scores from Google Books
+          const popularityInfo = await this.fetchPopularityInfo(book);
+          bookData = this.addPopularityFields(bookData, popularityInfo);
+          
+          console.log(chalk.gray(`    📊 Popularity: ${popularityInfo.averageRating}/5 (${popularityInfo.ratingsCount} reviews) → Score: ${bookData.popularity_score.toFixed(2)}`));
           
           // Ensure the category is included
           if (!bookData.categories.includes(categoryName)) {
