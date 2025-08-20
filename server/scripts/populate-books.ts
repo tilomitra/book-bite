@@ -348,7 +348,7 @@ class BookPopulator {
       console.log(chalk.blue(`📚 Searching Google Books for category: ${categoryName}`));
       console.log(chalk.gray(`   Query: "${query}"`));
 
-      const books = await this.googleBooksService.searchBooks(query, maxBooks * 2); // Get extra to account for duplicates
+      const books = await this.googleBooksService.searchBooks(query, Math.min(maxBooks * 2, 40)); // Google Books API max is 40 results
       const booksToProcess = books.slice(0, maxBooks);
 
       for (const book of booksToProcess) {
