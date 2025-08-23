@@ -458,8 +458,32 @@ export class BookService {
       );
     }) || [];
 
-    const paginatedBooks = filteredBooks.slice(offset, offset + limit);
-    const total = filteredBooks.length;
+    // Sort books to prioritize those with cover images, while maintaining popularity order
+    const sortedBooks = filteredBooks.sort((a, b) => {
+      // First priority: books with cover images over those without
+      const aHasCover = !!(a.cover_url || a.cover_asset_name);
+      const bHasCover = !!(b.cover_url || b.cover_asset_name);
+      
+      if (aHasCover && !bHasCover) return -1;
+      if (!aHasCover && bHasCover) return 1;
+      
+      // Second priority: popularity rank (lower rank = higher priority)
+      if (a.popularity_rank && b.popularity_rank) {
+        return a.popularity_rank - b.popularity_rank;
+      }
+      if (a.popularity_rank && !b.popularity_rank) return -1;
+      if (!a.popularity_rank && b.popularity_rank) return 1;
+      
+      // Final fallback: creation date (newer first)
+      if (a.created_at && b.created_at) {
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      }
+      
+      return 0;
+    });
+
+    const paginatedBooks = sortedBooks.slice(offset, offset + limit);
+    const total = sortedBooks.length;
 
     return {
       books: paginatedBooks,
