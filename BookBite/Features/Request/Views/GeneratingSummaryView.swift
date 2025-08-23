@@ -12,7 +12,7 @@ struct GeneratingSummaryView: View {
             VStack(spacing: 16) {
                 // Book cover with loading animation
                 ZStack {
-                    AsyncImage(url: URL(string: bookResult.coverUrl ?? "")) { image in
+                    AsyncImage(url: URL.bookCover(from: bookResult.coverUrl)) { image in
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fit)

@@ -115,7 +115,7 @@ struct EnhancedBookCoverView: View {
                 .animation(DesignSystem.Animations.smooth, value: imageLoaded)
             
             // Book Cover Image
-            AsyncImage(url: book.coverAssetName != nil ? URL(string: book.coverAssetName!) : nil) { image in
+            AsyncImage(url: URL.bookCover(from: book.coverAssetName)) { image in
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fill)

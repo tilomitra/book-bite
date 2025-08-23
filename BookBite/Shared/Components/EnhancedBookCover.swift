@@ -31,7 +31,7 @@ struct EnhancedBookCover: View {
     }
     
     var body: some View {
-        AsyncImage(url: coverURL != nil ? URL(string: httpsURL) : nil) { phase in
+        AsyncImage(url: URL.bookCover(from: coverURL)) { phase in
             switch phase {
             case .success(let image):
                 image
@@ -52,14 +52,5 @@ struct EnhancedBookCover: View {
             RoundedRectangle(cornerRadius: 6)
                 .stroke(Color(UIColor.separator).opacity(0.2), lineWidth: 0.5)
         )
-    }
-    
-    private var httpsURL: String {
-        guard let coverURL = coverURL else { return "" }
-        // Convert HTTP Google Books URLs to HTTPS
-        if coverURL.hasPrefix("http://books.google.com") {
-            return coverURL.replacingOccurrences(of: "http://", with: "https://")
-        }
-        return coverURL
     }
 }

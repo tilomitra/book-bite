@@ -9,7 +9,7 @@ class ColorExtractor: ObservableObject {
     
     func extractColors(from imageURL: String?) async {
         guard let imageURL = imageURL,
-              let url = URL(string: httpsURL(from: imageURL)) else {
+              let url = URL.bookCover(from: imageURL) else {
             setDefaultColors()
             return
         }
@@ -26,13 +26,6 @@ class ColorExtractor: ObservableObject {
         } catch {
             setDefaultColors()
         }
-    }
-    
-    private func httpsURL(from url: String) -> String {
-        if url.hasPrefix("http://books.google.com") {
-            return url.replacingOccurrences(of: "http://", with: "https://")
-        }
-        return url
     }
     
     private func extractDominantColors(from image: UIImage) async -> ExtractedColors {
