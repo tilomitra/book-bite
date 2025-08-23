@@ -65,10 +65,26 @@ class NetworkService: ObservableObject {
     
     private func performRequestWithRetry<T: Codable>(_ request: URLRequest, retryCount: Int = 0) async throws -> T {
         do {
+            // Log outgoing request
+            if AppConfiguration.shared.isLoggingEnabled {
+                print("🌐 NetworkService: \(request.httpMethod ?? "GET") \(request.url?.absoluteString ?? "unknown")")
+                if let body = request.httpBody, let bodyString = String(data: body, encoding: .utf8) {
+                    print("📦 Body: \(bodyString)")
+                }
+            }
+            
             let (data, response) = try await session.data(for: request)
             
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw NetworkError.invalidResponse
+            }
+            
+            // Log response
+            if AppConfiguration.shared.isLoggingEnabled {
+                print("✅ NetworkService: Response \(httpResponse.statusCode)")
+                if let responseString = String(data: data, encoding: .utf8) {
+                    print("📥 Response: \(responseString.prefix(500))...")
+                }
             }
             
             // Handle different status codes
@@ -96,10 +112,22 @@ class NetworkService: ObservableObject {
                 }
                 return try decoder.decode(T.self, from: data)
             case 400...499:
+                if AppConfiguration.shared.isLoggingEnabled {
+                    print("❌ NetworkService: Client error \(httpResponse.statusCode)")
+                    if let errorString = String(data: data, encoding: .utf8) {
+                        print("🚨 Error details: \(errorString)")
+                    }
+                }
                 throw NetworkError.clientError(httpResponse.statusCode, data)
             case 500...599:
+                if AppConfiguration.shared.isLoggingEnabled {
+                    print("❌ NetworkService: Server error \(httpResponse.statusCode)")
+                }
                 throw NetworkError.serverError(httpResponse.statusCode)
             default:
+                if AppConfiguration.shared.isLoggingEnabled {
+                    print("❌ NetworkService: Unexpected status code \(httpResponse.statusCode)")
+                }
                 throw NetworkError.unexpectedStatusCode(httpResponse.statusCode)
             }
             

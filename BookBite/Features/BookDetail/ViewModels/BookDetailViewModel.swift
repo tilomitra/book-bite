@@ -68,6 +68,9 @@ class BookDetailViewModel: ObservableObject {
     }
     
     func generateSummary() async {
+        if AppConfiguration.shared.isLoggingEnabled {
+            print("📚 BookDetailViewModel: generateSummary called for book \(book.id)")
+        }
         await triggerSummaryGeneration()
     }
     
@@ -78,11 +81,22 @@ class BookDetailViewModel: ObservableObject {
     }
     
     private func triggerSummaryGeneration() async {
+        if AppConfiguration.shared.isLoggingEnabled {
+            print("📚 BookDetailViewModel: triggerSummaryGeneration started")
+        }
+        
         // Check if repository supports summary generation (both RemoteBookRepository and HybridBookRepository do)
         guard let summaryRepository = repository as? (any SummaryGenerationCapable) else {
+            if AppConfiguration.shared.isLoggingEnabled {
+                print("❌ BookDetailViewModel: Repository does not support SummaryGenerationCapable")
+            }
             summaryError = SummaryError.generationFailed
             isLoadingSummary = false
             return
+        }
+        
+        if AppConfiguration.shared.isLoggingEnabled {
+            print("✅ BookDetailViewModel: Repository supports SummaryGenerationCapable")
         }
         
         isLoadingSummary = true
@@ -91,9 +105,18 @@ class BookDetailViewModel: ObservableObject {
         summaryError = nil
         
         do {
+            if AppConfiguration.shared.isLoggingEnabled {
+                print("📚 BookDetailViewModel: Calling generateSummary API for book \(book.id)")
+            }
             let job = try await summaryRepository.generateSummary(for: book.id, style: .full)
+            if AppConfiguration.shared.isLoggingEnabled {
+                print("✅ BookDetailViewModel: Got job ID \(job.id), starting polling")
+            }
             await pollForSummaryCompletion(jobId: job.id)
         } catch {
+            if AppConfiguration.shared.isLoggingEnabled {
+                print("❌ BookDetailViewModel: Error generating summary: \(error)")
+            }
             summaryError = SummaryError.generationFailed
             isLoadingSummary = false
             isGeneratingSummary = false

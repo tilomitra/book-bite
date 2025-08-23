@@ -30,14 +30,21 @@ export class SummaryController {
       if (!regenerate) {
         const existingSummary = await summaryService.getSummaryByBookId(bookId);
         if (existingSummary) {
-          return res.json(existingSummary);
+          // Return a fake "completed" job for existing summaries
+          // This maintains consistency with the client's expected job-based flow
+          return res.json({
+            id: `existing-${bookId}`,
+            bookId: bookId,
+            status: 'completed',
+            message: 'Summary already exists'
+          });
         }
       }
       
       // Create a job for async generation
       const job = await summaryService.createSummaryGenerationJob(bookId, style);
       
-      return res.status(202).json({
+      return res.json({
         id: job.id,
         bookId: bookId,
         status: job.status,
