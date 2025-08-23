@@ -5,6 +5,7 @@ import Combine
 class FeaturedBooksViewModel: ObservableObject {
     @Published var featuredBooks: [Book] = []
     @Published var nytBestsellerBooks: [Book] = []
+    @Published var noteworthyBooks: [Book] = []
     @Published var booksByGenre: [(genre: String, books: [Book])] = []
     @Published var isLoading = false
     @Published var error: Error?
@@ -12,6 +13,7 @@ class FeaturedBooksViewModel: ObservableObject {
     
     private let bookRepository: BookRepository
     private var cancellables = Set<AnyCancellable>()
+    private var allPopularBooks: [Book] = []
     
     init(bookRepository: BookRepository) {
         self.bookRepository = bookRepository
@@ -72,6 +74,15 @@ class FeaturedBooksViewModel: ObservableObject {
             
             featuredBooks = featured
             nytBestsellerBooks = nytBooks
+            
+            // Store all popular books for the noteworthy section
+            allPopularBooks = (featured + nytBooks).filter { book in
+                // Include books with popularity score or NYT bestseller status
+                book.popularityScore != nil || book.isNYTBestseller == true
+            }
+            
+            // Select random noteworthy books
+            selectNoteworthyBooks()
             groupBooksByGenre()
         } catch {
             // Don't show cancellation errors to user - they're expected during rapid refreshes
@@ -84,6 +95,32 @@ class FeaturedBooksViewModel: ObservableObject {
         }
         
         isLoading = false
+    }
+    
+    private func selectNoteworthyBooks() {
+        // Select 8-10 random books from popular books
+        let numberOfBooks = Int.random(in: 8...10)
+        
+        // Sort by popularity score to get truly popular books
+        let sortedPopularBooks = allPopularBooks.sorted { book1, book2 in
+            // Prioritize books with higher popularity scores
+            if let score1 = book1.popularityScore, let score2 = book2.popularityScore {
+                return score1 > score2
+            }
+            // NYT bestsellers next
+            if book1.isNYTBestseller == true && book2.isNYTBestseller != true {
+                return true
+            }
+            if book1.isNYTBestseller != true && book2.isNYTBestseller == true {
+                return false
+            }
+            // Random for others
+            return Bool.random()
+        }
+        
+        // Take top popular books and shuffle them for variety
+        let topBooks = Array(sortedPopularBooks.prefix(min(30, sortedPopularBooks.count)))
+        noteworthyBooks = Array(topBooks.shuffled().prefix(numberOfBooks))
     }
     
     private func groupBooksByGenre() {
@@ -251,6 +288,10 @@ class FeaturedBooksViewModel: ObservableObject {
     }
     
     func refreshFeaturedBooks() async {
+        // Re-select noteworthy books for variety on refresh
+        if !allPopularBooks.isEmpty {
+            selectNoteworthyBooks()
+        }
         await loadFeaturedBooks()
     }
     
