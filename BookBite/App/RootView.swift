@@ -4,6 +4,13 @@ struct RootView: View {
     @EnvironmentObject var dependencies: DependencyContainer
     @StateObject private var onboardingService = DependencyContainer.shared.onboardingService
     @State private var showOnboarding = false
+    @State private var showDeepLinkBook = false
+    
+    let deepLinkBook: Book?
+    
+    init(deepLinkBook: Book? = nil) {
+        self.deepLinkBook = deepLinkBook
+    }
     
     var body: some View {
         TabView {
@@ -45,10 +52,22 @@ struct RootView: View {
                 showOnboarding = true
             }
         }
+        .onChange(of: deepLinkBook) { _, book in
+            if book != nil {
+                showDeepLinkBook = true
+            }
+        }
         .sheet(isPresented: $showOnboarding) {
             OnboardingView()
                 .environmentObject(onboardingService)
                 .interactiveDismissDisabled()
+        }
+        .sheet(isPresented: $showDeepLinkBook) {
+            if let book = deepLinkBook {
+                NavigationStack {
+                    BookDetailView(book: book)
+                }
+            }
         }
     }
 }

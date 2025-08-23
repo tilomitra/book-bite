@@ -59,24 +59,36 @@ struct BookDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Menu {
-                    Button(action: { showExportSheet = true }) {
-                        Label("Export Summary", systemImage: "square.and.arrow.up")
-                    }
-                    
-                    Button(action: { showComparisonView = true }) {
-                        Label("Compare Books", systemImage: "rectangle.split.2x1")
-                    }
-                    
+                HStack(spacing: 16) {
+                    // Share button
                     Button(action: {
-                        Task {
-                            await viewModel.regenerateSummary()
-                        }
+                        SharingService.shared.shareBook(viewModel.book)
                     }) {
-                        Label("Regenerate Summary", systemImage: "arrow.clockwise")
+                        Image(systemName: "square.and.arrow.up")
+                            .foregroundColor(.primary)
                     }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
+                    
+                    // More options menu
+                    Menu {
+                        Button(action: { showExportSheet = true }) {
+                            Label("Export Summary", systemImage: "square.and.arrow.up")
+                        }
+                        
+                        Button(action: { showComparisonView = true }) {
+                            Label("Compare Books", systemImage: "rectangle.split.2x1")
+                        }
+                        
+                        Button(action: {
+                            Task {
+                                await viewModel.regenerateSummary()
+                            }
+                        }) {
+                            Label("Regenerate Summary", systemImage: "arrow.clockwise")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .foregroundColor(.primary)
+                    }
                 }
             }
         }

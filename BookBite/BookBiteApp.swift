@@ -10,11 +10,21 @@ import SwiftUI
 @main
 struct BookBiteApp: App {
     @StateObject private var dependencies = DependencyContainer.shared
+    @State private var deepLinkBook: Book?
     
     var body: some Scene {
         WindowGroup {
-            RootView()
+            RootView(deepLinkBook: deepLinkBook)
                 .environmentObject(dependencies)
+                .onOpenURL { url in
+                    handleDeepLink(url)
+                }
+        }
+    }
+    
+    private func handleDeepLink(_ url: URL) {
+        if let book = dependencies.sharingService.handleIncomingURL(url) {
+            deepLinkBook = book
         }
     }
 }
