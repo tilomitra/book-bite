@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import UIKit
 
 class SharingService: ObservableObject {
     static let shared = SharingService()
@@ -44,20 +45,44 @@ class SharingService: ObservableObject {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let window = windowScene.windows.first else { return }
         
-        let shareText = generateShareText(for: book)
-        let activityViewController = UIActivityViewController(
-            activityItems: [shareText],
-            applicationActivities: nil
-        )
-        
-        // For iPad
-        if let popover = activityViewController.popoverPresentationController {
-            popover.sourceView = window
-            popover.sourceRect = CGRect(x: window.bounds.midX, y: window.bounds.midY, width: 0, height: 0)
-            popover.permittedArrowDirections = []
+        Task { @MainActor in
+            let shareText = generateShareText(for: book)
+            var activityItems: [Any] = [shareText]
+            
+            // Try to load and include the book cover image
+            if let coverImage = await loadBookCoverImage(for: book) {
+                activityItems.append(coverImage)
+            }
+            
+            let activityViewController = UIActivityViewController(
+                activityItems: activityItems,
+                applicationActivities: nil
+            )
+            
+            // For iPad
+            if let popover = activityViewController.popoverPresentationController {
+                popover.sourceView = window
+                popover.sourceRect = CGRect(x: window.bounds.midX, y: window.bounds.midY, width: 0, height: 0)
+                popover.permittedArrowDirections = []
+            }
+            
+            window.rootViewController?.present(activityViewController, animated: true)
+        }
+    }
+    
+    private func loadBookCoverImage(for book: Book) async -> UIImage? {
+        guard let coverURL = book.coverAssetName,
+              let url = URL.bookCover(from: coverURL) else {
+            return nil
         }
         
-        window.rootViewController?.present(activityViewController, animated: true)
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            return UIImage(data: data)
+        } catch {
+            print("Failed to load book cover image: \(error)")
+            return nil
+        }
     }
 }
 
