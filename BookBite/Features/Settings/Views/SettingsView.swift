@@ -2,8 +2,10 @@ import SwiftUI
 
 struct SettingsView: View {
     @ObservedObject private var dependencies = DependencyContainer.shared
+    @StateObject private var onboardingService = DependencyContainer.shared.onboardingService
     @State private var cacheInfo: CacheInfo?
     @State private var showingClearCacheAlert = false
+    @State private var showingOnboarding = false
     @State private var isRefreshing = false
     
     private let appConfig = AppConfiguration.shared
@@ -90,6 +92,28 @@ struct SettingsView: View {
                     Text("Cache improves performance by storing recently accessed data. Clearing cache will remove all cached book data.")
                 }
                 
+                // Help & Support Section
+                Section {
+                    Button(action: {
+                        showingOnboarding = true
+                    }) {
+                        HStack {
+                            Image(systemName: "questionmark.circle")
+                                .foregroundColor(.blue)
+                            Text("Show Onboarding")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
+                                .font(.caption)
+                        }
+                    }
+                } header: {
+                    Text("Help & Support")
+                } footer: {
+                    Text("Re-watch the app introduction to learn about BookBite's features.")
+                }
+                
                 // App Information
                 Section {
                     HStack {
@@ -129,6 +153,10 @@ struct SettingsView: View {
                 }
             } message: {
                 Text("This will remove all cached books and summaries. Content will be re-downloaded from the API as needed.")
+            }
+            .sheet(isPresented: $showingOnboarding) {
+                OnboardingView()
+                    .environmentObject(onboardingService)
             }
         }
     }

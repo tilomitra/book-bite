@@ -2,6 +2,8 @@ import SwiftUI
 
 struct RootView: View {
     @EnvironmentObject var dependencies: DependencyContainer
+    @StateObject private var onboardingService = DependencyContainer.shared.onboardingService
+    @State private var showOnboarding = false
     
     var body: some View {
         TabView {
@@ -37,6 +39,16 @@ struct RootView: View {
             .tabItem {
                 Label("Settings", systemImage: "gear")
             }
+        }
+        .onAppear {
+            if !onboardingService.hasCompletedOnboarding {
+                showOnboarding = true
+            }
+        }
+        .sheet(isPresented: $showOnboarding) {
+            OnboardingView()
+                .environmentObject(onboardingService)
+                .interactiveDismissDisabled()
         }
     }
 }

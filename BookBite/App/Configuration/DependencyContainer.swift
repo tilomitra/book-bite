@@ -14,6 +14,7 @@ class DependencyContainer: ObservableObject {
         networkService: NetworkService.shared,
         cacheService: CacheService.shared
     )
+    lazy var onboardingService = OnboardingService()
     
     private init() {}
     
