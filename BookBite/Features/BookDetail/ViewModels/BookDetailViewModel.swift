@@ -52,24 +52,23 @@ class BookDetailViewModel: ObservableObject {
         
         do {
             summary = try await repository.fetchSummary(for: book.id)
-            if summary == nil {
-                await triggerSummaryGeneration()
-            }
         } catch let error as NetworkError {
             if case .clientError(404, _) = error {
-                await triggerSummaryGeneration()
+                // 404 means no summary exists, this is not an error state
+                // We'll show the generate button instead
+                summaryError = nil
             } else {
                 summaryError = error
-                isLoadingSummary = false
             }
         } catch {
             summaryError = error
-            isLoadingSummary = false
         }
         
-        if summary != nil {
-            isLoadingSummary = false
-        }
+        isLoadingSummary = false
+    }
+    
+    func generateSummary() async {
+        await triggerSummaryGeneration()
     }
     
     func regenerateSummary() async {
@@ -86,8 +85,10 @@ class BookDetailViewModel: ObservableObject {
             return
         }
         
+        isLoadingSummary = true
         isGeneratingSummary = true
         generationMessage = "Generating summary..."
+        summaryError = nil
         
         do {
             let job = try await summaryRepository.generateSummary(for: book.id, style: .full)

@@ -3,8 +3,6 @@ import SwiftUI
 struct BookDetailView: View {
     @StateObject private var viewModel: BookDetailViewModel
     @StateObject private var colorExtractor = ColorExtractor()
-    @State private var showExportSheet = false
-    @State private var showComparisonView = false
     
     init(book: Book) {
         _viewModel = StateObject(wrappedValue: BookDetailViewModel(
@@ -52,6 +50,9 @@ struct BookDetailView: View {
                 } else if let summary = viewModel.summary {
                     // Extended summary section
                     summaryContent(summary)
+                } else {
+                    // No summary available - show generate button
+                    noSummaryView
                 }
             }
             }
@@ -59,44 +60,14 @@ struct BookDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                HStack(spacing: 16) {
-                    // Share button
-                    Button(action: {
-                        SharingService.shared.shareBook(viewModel.book)
-                    }) {
-                        Image(systemName: "square.and.arrow.up")
-                            .foregroundColor(.primary)
-                    }
-                    
-                    // More options menu
-                    Menu {
-                        Button(action: { showExportSheet = true }) {
-                            Label("Export Summary", systemImage: "square.and.arrow.up")
-                        }
-                        
-                        Button(action: { showComparisonView = true }) {
-                            Label("Compare Books", systemImage: "rectangle.split.2x1")
-                        }
-                        
-                        Button(action: {
-                            Task {
-                                await viewModel.regenerateSummary()
-                            }
-                        }) {
-                            Label("Regenerate Summary", systemImage: "arrow.clockwise")
-                        }
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
-                            .foregroundColor(.primary)
-                    }
+                // Share button
+                Button(action: {
+                    SharingService.shared.shareBook(viewModel.book)
+                }) {
+                    Image(systemName: "square.and.arrow.up")
+                        .foregroundColor(.primary)
                 }
             }
-        }
-        .sheet(isPresented: $showExportSheet) {
-            ExportOptionsSheet(book: viewModel.book, summary: viewModel.summary)
-        }
-        .sheet(isPresented: $showComparisonView) {
-            ComparisonView(firstBook: viewModel.book)
         }
         .task {
             await colorExtractor.extractColors(from: viewModel.book.coverAssetName)
@@ -156,6 +127,59 @@ struct BookDetailView: View {
         }
     }
     
+    var noSummaryView: some View {
+        VStack(spacing: 24) {
+            VStack(spacing: 16) {
+                Image(systemName: "doc.text.magnifyingglass")
+                    .font(.system(size: 50))
+                    .foregroundColor(.secondary.opacity(0.7))
+                
+                VStack(spacing: 8) {
+                    Text("No Summary Available")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                    
+                    Text("This book doesn't have an extended summary yet. Generate one to get key insights, ideas, and a detailed breakdown.")
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 20)
+                }
+            }
+            
+            Button(action: {
+                Task {
+                    await viewModel.generateSummary()
+                }
+            }) {
+                HStack(spacing: 8) {
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 16, weight: .medium))
+                    Text("Generate a summary")
+                        .font(.system(size: 16, weight: .semibold))
+                }
+                .foregroundColor(.white)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 12)
+                .background(
+                    LinearGradient(
+                        colors: [.blue, .purple],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .clipShape(Capsule())
+                .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
+            }
+            .buttonStyle(.plain)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 40)
+        .padding(.horizontal, 20)
+        .background(Color(UIColor.systemBackground))
+    }
+    
     func summaryContent(_ summary: Summary) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             // Hook section with clean design
@@ -194,7 +218,10 @@ struct BookDetailView: View {
                 summary: summary, 
                 book: viewModel.book,
                 dominantColor: colorExtractor.dominantColor,
-                secondaryColor: colorExtractor.secondaryColor
+                secondaryColor: colorExtractor.secondaryColor,
+                onGenerateSummary: {
+                    await viewModel.generateSummary()
+                }
             )
         }
     }

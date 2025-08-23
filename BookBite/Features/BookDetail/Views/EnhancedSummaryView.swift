@@ -5,6 +5,7 @@ struct EnhancedSummaryView: View {
     let book: Book
     let dominantColor: Color
     let secondaryColor: Color
+    let onGenerateSummary: () async -> Void
     @State private var selectedSection: SummarySection = .extended
     
     enum SummarySection: String, CaseIterable {
@@ -63,7 +64,7 @@ struct EnhancedSummaryView: View {
     var contentView: some View {
         switch selectedSection {
         case .extended:
-            ExtendedSummaryContent(summary: summary)
+            ExtendedSummaryContent(summary: summary, onGenerateSummary: onGenerateSummary)
         case .keyIdeas:
             KeyIdeasContent(summary: summary, accentColor: dominantColor)
         case .application:
@@ -124,6 +125,7 @@ struct PillButton: View {
 // Extended Summary Content
 struct ExtendedSummaryContent: View {
     let summary: Summary
+    let onGenerateSummary: () async -> Void
     @State private var textSize: CGFloat = 16
     
     var body: some View {
@@ -160,12 +162,56 @@ struct ExtendedSummaryContent: View {
                         .padding(.horizontal)
                         .textSelection(.enabled)
                 } else {
-                    EmptyStateView(
-                        icon: "doc.text",
-                        title: "Extended Summary Not Available",
-                        message: "This book doesn't have an extended summary yet."
-                    )
-                    .padding(.top, 40)
+                    // No extended summary available - show generate button
+                    VStack(spacing: 24) {
+                        VStack(spacing: 16) {
+                            Image(systemName: "doc.text.magnifyingglass")
+                                .font(.system(size: 50))
+                                .foregroundColor(.secondary.opacity(0.7))
+                            
+                            VStack(spacing: 8) {
+                                Text("Extended Summary Not Available")
+                                    .font(.title2)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.primary)
+                                
+                                Text("This book doesn't have an extended summary yet. Generate one to get key insights, ideas, and a detailed breakdown.")
+                                    .font(.body)
+                                    .foregroundColor(.secondary)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.horizontal, 20)
+                            }
+                        }
+                        
+                        Button(action: {
+                            Task {
+                                await onGenerateSummary()
+                            }
+                        }) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "sparkles")
+                                    .font(.system(size: 16, weight: .medium))
+                                Text("Generate a summary")
+                                    .font(.system(size: 16, weight: .semibold))
+                            }
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 12)
+                            .background(
+                                LinearGradient(
+                                    colors: [.blue, .purple],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .clipShape(Capsule())
+                            .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 40)
+                    .padding(.horizontal, 20)
                 }
                 
                 Spacer(minLength: 40)

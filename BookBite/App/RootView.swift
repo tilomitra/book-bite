@@ -21,11 +21,6 @@ struct RootView: View {
                 Label("Featured", systemImage: "star.fill")
             }
             
-            SwipeView()
-            .tabItem {
-                Label("Swipe", systemImage: "rectangle.stack.fill")
-            }
-            
             NavigationStack {
                 RequestView()
             }
@@ -40,11 +35,16 @@ struct RootView: View {
                 Label("Library", systemImage: "books.vertical")
             }
             
+            SwipeView()
+            .tabItem {
+                Label("Discover", systemImage: "rectangle.stack.fill")
+            }
+            
             NavigationStack {
-                SettingsView()
+                SearchView()
             }
             .tabItem {
-                Label("Settings", systemImage: "gear")
+                Label("Search", systemImage: "magnifyingglass")
             }
         }
         .onAppear {
