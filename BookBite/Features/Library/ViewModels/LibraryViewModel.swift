@@ -142,37 +142,82 @@ class CategoryBooksViewModel: ObservableObject {
         
         isLoading = true
         error = nil
+        currentPage = 1  // Reset to first page
         
         do {
             // Handle special case for NYT Bestsellers category
-            let allBooks: [Book]
             if category.name == "NYT Bestsellers" {
-                allBooks = try await bookRepository.fetchNYTBestsellerBooks()
+                let allBooks = try await bookRepository.fetchNYTBestsellerBooks()
+                
+                // Sort books by popularity_score (highest first), then by title as fallback
+                books = allBooks.sorted { book1, book2 in
+                    // First priority: books with popularity_score
+                    if let score1 = book1.popularityScore, let score2 = book2.popularityScore {
+                        return score1 > score2  // Higher scores first
+                    }
+                    
+                    // Second priority: books with popularity_score over those without
+                    if book1.popularityScore != nil && book2.popularityScore == nil {
+                        return true
+                    }
+                    if book1.popularityScore == nil && book2.popularityScore != nil {
+                        return false
+                    }
+                    
+                    // Final fallback: alphabetical by title
+                    return book1.title.localizedCaseInsensitiveCompare(book2.title) == .orderedAscending
+                }
+                
+                hasMore = false  // NYT Bestsellers are loaded all at once
             } else {
-                // Load all books in the category (up to 1000 to get all of them)
-                allBooks = try await bookRepository.fetchBooksByCategory(category.name, page: 1, limit: 1000)
-            }
-            
-            // Sort books by popularity_score (highest first), then by title as fallback
-            books = allBooks.sorted { book1, book2 in
-                // First priority: books with popularity_score
-                if let score1 = book1.popularityScore, let score2 = book2.popularityScore {
-                    return score1 > score2  // Higher scores first
+                // Load books with proper pagination for regular categories
+                var allBooks: [Book] = []
+                var pageToLoad = 1
+                var hasMorePages = true
+                
+                // Load all pages to get all books in the category
+                while hasMorePages {
+                    let fetchedBooks = try await bookRepository.fetchBooksByCategory(
+                        category.name,
+                        page: pageToLoad,
+                        limit: 100  // Use reasonable page size
+                    )
+                    
+                    if fetchedBooks.isEmpty {
+                        hasMorePages = false
+                    } else {
+                        allBooks.append(contentsOf: fetchedBooks)
+                        pageToLoad += 1
+                        
+                        // Safety check to prevent infinite loops (max 50 pages = 5000 books)
+                        if pageToLoad > 50 {
+                            hasMorePages = false
+                        }
+                    }
                 }
                 
-                // Second priority: books with popularity_score over those without
-                if book1.popularityScore != nil && book2.popularityScore == nil {
-                    return true
-                }
-                if book1.popularityScore == nil && book2.popularityScore != nil {
-                    return false
+                // Sort all fetched books
+                books = allBooks.sorted { book1, book2 in
+                    // First priority: books with popularity_score
+                    if let score1 = book1.popularityScore, let score2 = book2.popularityScore {
+                        return score1 > score2  // Higher scores first
+                    }
+                    
+                    // Second priority: books with popularity_score over those without
+                    if book1.popularityScore != nil && book2.popularityScore == nil {
+                        return true
+                    }
+                    if book1.popularityScore == nil && book2.popularityScore != nil {
+                        return false
+                    }
+                    
+                    // Final fallback: alphabetical by title
+                    return book1.title.localizedCaseInsensitiveCompare(book2.title) == .orderedAscending
                 }
                 
-                // Final fallback: alphabetical by title
-                return book1.title.localizedCaseInsensitiveCompare(book2.title) == .orderedAscending
+                hasMore = false  // All books loaded
             }
             
-            hasMore = false  // We loaded all books, no more pagination needed
             isLoading = false
         } catch {
             self.error = error
