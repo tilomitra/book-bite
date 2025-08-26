@@ -17,13 +17,12 @@ struct GeneratingSummaryView: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                     } placeholder: {
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.gray.opacity(0.3))
-                            .overlay(
-                                Image(systemName: "book.closed")
-                                    .font(.largeTitle)
-                                    .foregroundColor(.gray)
-                            )
+                        BookPlaceholderView.custom(
+                            width: 120,
+                            height: 160,
+                            cornerRadius: 12,
+                            showLoading: true
+                        )
                     }
                     .frame(width: 120, height: 160)
                     .clipShape(RoundedRectangle(cornerRadius: 12))

@@ -40,12 +40,6 @@ struct RootView: View {
                 Label("Discover", systemImage: "rectangle.stack.fill")
             }
             
-            NavigationStack {
-                SearchView()
-            }
-            .tabItem {
-                Label("Search", systemImage: "magnifyingglass")
-            }
         }
         .onAppear {
             if !onboardingService.hasCompletedOnboarding {

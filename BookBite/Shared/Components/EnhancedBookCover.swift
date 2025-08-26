@@ -5,29 +5,10 @@ struct EnhancedBookCover: View {
     @State private var isLoading = true
     
     private var placeholderView: some View {
-        ZStack {
-            Rectangle()
-                .fill(
-                    LinearGradient(
-                        gradient: Gradient(colors: [
-                            Color(UIColor.systemGray5),
-                            Color(UIColor.systemGray6)
-                        ]),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-            
-            if isLoading {
-                ProgressView()
-                    .scaleEffect(0.8)
-                    .tint(.secondary)
-            } else {
-                Image(systemName: "book.closed.fill")
-                    .font(.system(size: 30))
-                    .foregroundColor(.secondary.opacity(0.5))
-            }
-        }
+        BookPlaceholderView.flexible(
+            cornerRadius: 6,
+            showLoading: isLoading
+        )
     }
     
     var body: some View {

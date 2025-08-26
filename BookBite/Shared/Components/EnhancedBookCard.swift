@@ -127,15 +127,12 @@ struct EnhancedBookCoverView: View {
                         }
                     }
             } placeholder: {
-                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small)
-                    .fill(DesignSystem.Colors.surface)
-                    .frame(width: style.coverWidth, height: style.coverHeight)
-                    .overlay(
-                        Image(systemName: "book.closed")
-                            .font(.system(size: 24))
-                            .foregroundColor(DesignSystem.Colors.textTertiary)
-                    )
-                    .shimmerEffect()
+                BookPlaceholderView.flexible(
+                    cornerRadius: DesignSystem.CornerRadius.small,
+                    showLoading: true
+                )
+                .frame(width: style.coverWidth, height: style.coverHeight)
+                .shimmerEffect()
             }
             
             // NYT Bestseller Corner Badge

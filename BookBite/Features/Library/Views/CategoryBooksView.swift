@@ -118,21 +118,9 @@ struct BookRowView: View {
                         .frame(width: 60, height: 90)
                         .cornerRadius(8)
                 case .failure(_):
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(width: 60, height: 90)
-                        .overlay(
-                            Image(systemName: "book.closed")
-                                .foregroundColor(.gray)
-                        )
+                    BookPlaceholderView.small()
                 case .empty:
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.gray.opacity(0.1))
-                        .frame(width: 60, height: 90)
-                        .overlay(
-                            ProgressView()
-                                .scaleEffect(0.5)
-                        )
+                    BookPlaceholderView.small(showLoading: true)
                 @unknown default:
                     EmptyView()
                 }

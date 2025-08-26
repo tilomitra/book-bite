@@ -22,23 +22,11 @@ struct BookCoverView: View {
     }
     
     private var placeholderView: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 8)
-                .fill(
-                    LinearGradient(
-                        gradient: Gradient(colors: [
-                            Color.blue.opacity(0.8),
-                            Color.purple.opacity(0.8)
-                        ]),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-            
-            Image(systemName: "book.fill")
-                .font(.system(size: size.dimensions.width * 0.4))
-                .foregroundColor(.white.opacity(0.9))
-        }
+        BookPlaceholderView.custom(
+            width: size.dimensions.width,
+            height: size.dimensions.height,
+            cornerRadius: 8
+        )
     }
     
     var body: some View {

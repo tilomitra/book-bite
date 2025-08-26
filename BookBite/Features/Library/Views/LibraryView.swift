@@ -3,24 +3,57 @@ import SwiftUI
 struct LibraryView: View {
     @EnvironmentObject var dependencies: DependencyContainer
     @StateObject private var viewModel: LibraryViewModel
+    @StateObject private var searchViewModel: SearchViewModel
+    @State private var isSearchActive = false
     
     init() {
         _viewModel = StateObject(wrappedValue: LibraryViewModel(bookRepository: DependencyContainer.shared.bookRepository))
+        _searchViewModel = StateObject(wrappedValue: SearchViewModel(searchService: DependencyContainer.shared.searchService))
     }
     
     var body: some View {
         NavigationStack {
-            Group {
-                if viewModel.isLoading && viewModel.categories.isEmpty {
-                    LoadingView()
-                } else if let error = viewModel.error {
-                    CategoriesErrorView(error: error) {
+            VStack(spacing: 0) {
+                // Search Bar
+                LibrarySearchBarView(
+                    searchText: $searchViewModel.searchText,
+                    isActive: $isSearchActive,
+                    onSearchSubmit: {
                         Task {
-                            await viewModel.loadCategories()
+                            await searchViewModel.performSearch()
+                        }
+                    },
+                    onClear: {
+                        searchViewModel.clearSearch()
+                        isSearchActive = false
+                    }
+                )
+                
+                // Content Area
+                if isSearchActive || !searchViewModel.searchText.isEmpty {
+                    // Search Results
+                    SearchResultsContent(
+                        searchViewModel: searchViewModel,
+                        onDismissSearch: {
+                            isSearchActive = false
+                            searchViewModel.clearSearch()
+                        }
+                    )
+                } else {
+                    // Category Grid
+                    Group {
+                        if viewModel.isLoading && viewModel.categories.isEmpty {
+                            LoadingView()
+                        } else if let error = viewModel.error {
+                            CategoriesErrorView(error: error) {
+                                Task {
+                                    await viewModel.loadCategories()
+                                }
+                            }
+                        } else {
+                            CategoryGridView(categories: viewModel.categories)
                         }
                     }
-                } else {
-                    CategoryGridView(categories: viewModel.categories)
                 }
             }
             .navigationTitle("Library")
@@ -29,6 +62,11 @@ struct LibraryView: View {
         .onAppear {
             Task {
                 await viewModel.loadCategories()
+            }
+        }
+        .onChange(of: searchViewModel.searchText) { oldValue, newValue in
+            if !newValue.isEmpty {
+                isSearchActive = true
             }
         }
     }
@@ -99,5 +137,106 @@ struct CategoryCardButtonStyle: ButtonStyle {
                     impactFeedback.impactOccurred()
                 }
             }
+    }
+}
+
+// MARK: - Search Components
+
+struct LibrarySearchBarView: View {
+    @Binding var searchText: String
+    @Binding var isActive: Bool
+    let onSearchSubmit: () -> Void
+    let onClear: () -> Void
+    
+    var body: some View {
+        HStack {
+            HStack {
+                Image(systemName: "magnifyingglass")
+                    .foregroundColor(.secondary)
+                
+                TextField("Search by title, author, or topic", text: $searchText)
+                    .textFieldStyle(PlainTextFieldStyle())
+                    .onSubmit {
+                        onSearchSubmit()
+                    }
+                    .onTapGesture {
+                        isActive = true
+                    }
+                
+                if !searchText.isEmpty {
+                    Button(action: onClear) {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Color(UIColor.systemGray6))
+            .cornerRadius(10)
+            
+            if isActive && !searchText.isEmpty {
+                Button("Search") {
+                    onSearchSubmit()
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.small)
+            }
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+    }
+}
+
+struct SearchResultsContent: View {
+    @ObservedObject var searchViewModel: SearchViewModel
+    let onDismissSearch: () -> Void
+    
+    var body: some View {
+        Group {
+            if searchViewModel.isSearching {
+                LoadingView()
+            } else if let error = searchViewModel.searchError {
+                ErrorSearchView(error: error) {
+                    Task {
+                        await searchViewModel.performSearch()
+                    }
+                }
+            } else if searchViewModel.showEmptyState {
+                EmptySearchView(searchText: searchViewModel.searchText)
+            } else if searchViewModel.hasResults {
+                SearchResultsList(
+                    books: searchViewModel.searchResults,
+                    isLoadingMore: searchViewModel.isLoadingMore,
+                    hasMore: searchViewModel.hasMore,
+                    onBookAppear: searchViewModel.onBookAppear
+                )
+            } else {
+                InitialSearchViewLibrary()
+            }
+        }
+    }
+}
+
+struct InitialSearchViewLibrary: View {
+    var body: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "books.vertical.fill")
+                .font(.system(size: 60))
+                .foregroundColor(.secondary)
+            
+            Text("Search BookBite Library")
+                .font(.title2)
+                .fontWeight(.semibold)
+            
+            Text("Find amazing books by title, author, or topic")
+                .font(.body)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 40)
+            
+            Spacer()
+        }
+        .padding(.top, 100)
     }
 }
