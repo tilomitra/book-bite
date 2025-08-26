@@ -95,10 +95,10 @@ struct GeneratingSummaryView: View {
                     )
                     
                     StatusRow(
-                        icon: "doc.text",
+                        icon: "doc.text.magnifyingglass",
                         text: "Creating extended analysis",
                         color: .orange,
-                        isPending: true
+                        isAnimating: true
                     )
                 }
                 .padding(.horizontal)
@@ -110,7 +110,7 @@ struct GeneratingSummaryView: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
                 
-                Text("We're creating a comprehensive summary with key insights, actionable takeaways, and supporting evidence")
+                Text("We're creating a comprehensive summary with key insights, actionable takeaways, and an extended analysis for deep understanding")
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)

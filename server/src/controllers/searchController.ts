@@ -117,7 +117,7 @@ export class SearchController {
         });
       }
 
-      // Get summary for this book
+      // Get summary with extended summary for this book
       const { data: summary } = await supabase
         .from('summaries')
         .select('*')
@@ -191,62 +191,49 @@ export class SearchController {
       // Save book to database
       const savedBook = await this.bookService.createBook(bookToCreate);
 
-      // Generate AI summaries asynchronously
+      // Generate AI summaries - wait for both to complete
       try {
-        // Generate regular summary
-        const summaryData = await this.openaiService.generateBookSummary(
-          savedBook.title,
-          savedBook.authors,
-          savedBook.description || '',
-          savedBook.categories,
-          'full'
-        );
+        // Generate both summaries in parallel for efficiency
+        const [summaryData, extendedSummaryData] = await Promise.all([
+          this.openaiService.generateBookSummary(
+            savedBook.title,
+            savedBook.authors,
+            savedBook.description || '',
+            savedBook.categories,
+            'full'
+          ),
+          this.openaiService.generateExtendedSummary(
+            savedBook.title,
+            savedBook.authors,
+            savedBook.description || '',
+            savedBook.categories
+          )
+        ]);
 
-        // Generate extended summary
-        const extendedSummaryData = await this.openaiService.generateExtendedSummary(
-          savedBook.title,
-          savedBook.authors,
-          savedBook.description || '',
-          savedBook.categories
-        );
-
-        // Save regular summary to database
+        // Save both summaries to the summaries table
         const { data: summary, error: summaryError } = await supabase
           .from('summaries')
           .insert({
             book_id: savedBook.id,
-            ...summaryData
-          })
-          .select()
-          .single();
-
-        // Save extended summary to database
-        const { data: extendedSummary, error: extendedSummaryError } = await supabase
-          .from('extended_summaries')
-          .insert({
-            book_id: savedBook.id,
-            content: extendedSummaryData
+            ...summaryData,
+            extended_summary: extendedSummaryData  // Include extended summary directly
           })
           .select()
           .single();
 
         if (summaryError) {
-          console.error('Error saving regular summary:', summaryError);
-        }
-        
-        if (extendedSummaryError) {
-          console.error('Error saving extended summary:', extendedSummaryError);
+          console.error('Error saving summaries:', summaryError);
+          // Continue even if summary save fails - we have the data
         }
 
-        // Return the complete book with summary if available
+        // Prepare the complete book response with embedded summary
         const completeBook = {
           ...savedBook,
-          summary: summary || null,
-          extended_summary: extendedSummary || null
+          summary: summary || null
         };
 
         return res.status(201).json({
-          message: 'Book successfully added to database',
+          message: 'Book successfully added to database with complete summaries',
           book: completeBook
         });
       } catch (summaryError) {

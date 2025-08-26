@@ -73,7 +73,21 @@ class RequestViewModel: ObservableObject {
                     body: payload
                 )
                 
-                requestState = .bookRequested(response.book)
+                // Check if the book has a complete summary with extended content
+                if let summary = response.book.summary,
+                   summary.extendedSummary != nil && !summary.extendedSummary!.isEmpty {
+                    // Book has complete summaries, safe to navigate
+                    requestState = .bookRequested(response.book.book)
+                } else {
+                    // Book created but summaries might be incomplete
+                    // Still navigate but the detail view will handle missing summaries
+                    requestState = .bookRequested(response.book.book)
+                    
+                    // Log warning if extended summary is missing
+                    if response.book.summary?.extendedSummary == nil {
+                        print("⚠️ Book requested but extended summary not received")
+                    }
+                }
                 
             } catch {
                 let errorMessage = handleNetworkError(error)
@@ -93,7 +107,7 @@ class RequestViewModel: ObservableObject {
                     endpoint: "search/book/\(searchResult.googleBooksId)"
                 )
                 
-                requestState = .bookRequested(response.book)
+                requestState = .bookRequested(response.book.book)
                 
             } catch {
                 let errorMessage = handleNetworkError(error)
