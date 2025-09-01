@@ -96,6 +96,9 @@ server/yarn-debug.log*
 server/yarn-error.log*
 server/lerna-debug.log*
 server/.pnpm-debug.log*
+server/data/*
+server/scripts/populate-headway-books.ts
+server/scripts/headway-client-script.js
 
 # Runtime data
 server/pids
