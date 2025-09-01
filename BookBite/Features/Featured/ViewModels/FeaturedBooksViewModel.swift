@@ -195,7 +195,13 @@ class FeaturedBooksViewModel: ObservableObject {
         for genre in primaryGenres {
             if let books = genreMap[genre], !books.isEmpty {
                 if books.count >= 4 {
-                    orderedGenres.append((genre: genre, books: books))
+                    // Randomize books for Business, Self-Help, and Biography sections
+                    let shuffledBooks = if genre == "Business" || genre == "Self-Help" || genre == "Biography" {
+                        books.shuffled()
+                    } else {
+                        books
+                    }
+                    orderedGenres.append((genre: genre, books: shuffledBooks))
                 } else {
                     // Add books to "Other Picks" if less than 4 books
                     otherPicksBooks.append(contentsOf: books)
@@ -208,7 +214,13 @@ class FeaturedBooksViewModel: ObservableObject {
         for (genre, books) in genreMap.sorted(by: { $0.key < $1.key }) {
             if !books.isEmpty {
                 if books.count >= 4 {
-                    orderedGenres.append((genre: genre, books: books))
+                    // Randomize books for Business, Self-Help, and Biography sections
+                    let shuffledBooks = if genre == "Business" || genre == "Self-Help" || genre == "Biography" {
+                        books.shuffled()
+                    } else {
+                        books
+                    }
+                    orderedGenres.append((genre: genre, books: shuffledBooks))
                 } else {
                     // Add books to "Other Picks" if less than 4 books
                     otherPicksBooks.append(contentsOf: books)

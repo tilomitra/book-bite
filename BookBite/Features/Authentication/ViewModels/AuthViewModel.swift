@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import AuthenticationServices
 
 @MainActor
 class AuthViewModel: ObservableObject {
@@ -96,6 +97,20 @@ class AuthViewModel: ObservableObject {
         do {
             try await authService.resetPassword(email: email)
             resetEmailSent = true
+        } catch {
+            errorMessage = mapErrorMessage(error)
+        }
+        
+        isLoading = false
+    }
+    
+    func signInWithApple(_ credential: ASAuthorizationAppleIDCredential) async {
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            try await authService.signInWithApple(credential: credential)
+            clearForm()
         } catch {
             errorMessage = mapErrorMessage(error)
         }

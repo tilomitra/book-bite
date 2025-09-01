@@ -46,6 +46,32 @@ struct AuthenticationView: View {
                             SignUpView(viewModel: viewModel)
                         }
                         
+                        // Sign in with Apple - available for both tabs
+                        VStack(spacing: 16) {
+                            HStack {
+                                Rectangle()
+                                    .fill(Color.secondary.opacity(0.3))
+                                    .frame(height: 1)
+                                
+                                Text("or")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                
+                                Rectangle()
+                                    .fill(Color.secondary.opacity(0.3))
+                                    .frame(height: 1)
+                            }
+                            
+                            SignInWithAppleButton { credential in
+                                Task {
+                                    await viewModel.signInWithApple(credential)
+                                }
+                            }
+                            .frame(height: 50)
+                            .cornerRadius(10)
+                        }
+                        .padding(.horizontal)
+                        
                         // Error Message
                         if let errorMessage = viewModel.errorMessage {
                             Text(errorMessage)

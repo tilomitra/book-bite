@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import AuthenticationServices
 
 @MainActor
 class SupabaseAuthService: ObservableObject {
@@ -241,6 +242,110 @@ class SupabaseAuthService: ObservableObject {
     func updateProfile(displayName: String? = nil, bio: String? = nil) async throws {
         // Implementation would require current session token and user update endpoint
         throw AuthError.notImplemented
+    }
+    
+    func signInWithApple(credential: ASAuthorizationAppleIDCredential) async throws {
+        isLoading = true
+        errorMessage = nil
+        
+        defer { isLoading = false }
+        
+        print("🍎 [APPLE AUTH] Starting Sign in with Apple")
+        
+        // Extract Apple ID token
+        guard let identityToken = credential.identityToken,
+              let tokenString = String(data: identityToken, encoding: .utf8) else {
+            print("🍎 [APPLE AUTH] ERROR: Failed to get identity token")
+            throw AuthError.signInFailed("Failed to get Apple identity token")
+        }
+        
+        print("🍎 [APPLE AUTH] Got identity token")
+        
+        // Extract user info
+        let email = credential.email ?? ""
+        let fullName = credential.fullName
+        var displayName = ""
+        
+        if let fullName = fullName {
+            let firstName = fullName.givenName ?? ""
+            let lastName = fullName.familyName ?? ""
+            displayName = "\(firstName) \(lastName)".trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        
+        print("🍎 [APPLE AUTH] User info - Email: '\(email)', Name: '\(displayName)'")
+        
+        guard let url = URL(string: "\(supabaseURL)/auth/v1/token?grant_type=id_token") else {
+            print("🍎 [APPLE AUTH] ERROR: Invalid URL")
+            throw AuthError.invalidURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(supabaseAnonKey)", forHTTPHeaderField: "Authorization")
+        request.setValue(supabaseAnonKey, forHTTPHeaderField: "apikey")
+        
+        var body: [String: Any] = [
+            "provider": "apple",
+            "id_token": tokenString
+        ]
+        
+        // Include user metadata if available
+        if !email.isEmpty || !displayName.isEmpty {
+            var metadata: [String: String] = [:]
+            if !email.isEmpty {
+                metadata["email"] = email
+            }
+            if !displayName.isEmpty {
+                metadata["full_name"] = displayName
+            }
+            body["data"] = metadata
+        }
+        
+        print("🍎 [APPLE AUTH] Request body: \(body)")
+        
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        } catch {
+            print("🍎 [APPLE AUTH] ERROR: JSON serialization failed: \(error)")
+            throw error
+        }
+        
+        print("🍎 [APPLE AUTH] Making network request...")
+        let (data, response) = try await URLSession.shared.data(for: request)
+        print("🍎 [APPLE AUTH] Network request completed")
+        
+        if let httpResponse = response as? HTTPURLResponse {
+            print("🍎 [APPLE AUTH] HTTP Status: \(httpResponse.statusCode)")
+            
+            if httpResponse.statusCode == 200 {
+                let authResponse = try JSONDecoder().decode(SupabaseAuthResponse.self, from: data)
+                if let user = authResponse.user, let session = authResponse.session {
+                    let supabaseSession = SupabaseSession(
+                        user: user,
+                        accessToken: session.accessToken,
+                        refreshToken: session.refreshToken,
+                        expiresAt: Date().addingTimeInterval(TimeInterval(session.expiresIn))
+                    )
+                    
+                    // Save session
+                    if let sessionData = try? JSONEncoder().encode(supabaseSession) {
+                        userDefaults.set(sessionData, forKey: sessionKey)
+                    }
+                    
+                    authState = .authenticated(user)
+                    userDefaults.set(false, forKey: anonymousKey)
+                    
+                    print("🍎 [APPLE AUTH] Success! User authenticated: \(user.email ?? "Unknown")")
+                }
+            } else {
+                let errorResponse = try? JSONDecoder().decode(SupabaseError.self, from: data)
+                let message = errorResponse?.message ?? "Apple Sign In failed"
+                print("🍎 [APPLE AUTH] ERROR: \(message)")
+                errorMessage = message
+                throw AuthError.signInFailed(message)
+            }
+        }
     }
     
     // MARK: - Helper Methods
