@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-class RemoteBookRepository: BookRepository, SummaryGenerationCapable {
+class RemoteBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRepository {
     private let networkService = NetworkService.shared
     private let cacheService = CacheService.shared
     
@@ -141,6 +141,41 @@ class RemoteBookRepository: BookRepository, SummaryGenerationCapable {
         return response.books
     }
     
+    // MARK: - FavoriteRepository Implementation
+    
+    func checkFavoriteStatus(for bookId: String) async throws -> Bool {
+        struct FavoriteStatusResponse: Codable {
+            let is_favorite: Bool
+        }
+        
+        let response: FavoriteStatusResponse = try await networkService.get(endpoint: "user/favorites/\(bookId)")
+        return response.is_favorite
+    }
+    
+    func addToFavorites(_ bookId: String) async throws {
+        let body = ["book_id": bookId]
+        let _: EmptyResponse = try await networkService.post(endpoint: "user/favorites", body: body)
+    }
+    
+    func removeFromFavorites(_ bookId: String) async throws {
+        try await networkService.delete(endpoint: "user/favorites/\(bookId)")
+    }
+    
+    func fetchFavorites() async throws -> [Book] {
+        struct FavoritesResponse: Codable {
+            let favorites: [FavoriteItem]
+            
+            struct FavoriteItem: Codable {
+                let id: String
+                let created_at: String
+                let books: Book
+            }
+        }
+        
+        let response: FavoritesResponse = try await networkService.get(endpoint: "user/favorites")
+        return response.favorites.map { $0.books }
+    }
+    
     // MARK: - Cache Management
     
     func clearCache() {
@@ -197,4 +232,8 @@ private struct GenerateSummaryRequest: Codable {
 
 private struct ImportBookRequest: Codable {
     let isbn: String
+}
+
+private struct EmptyResponse: Codable {
+    // Empty struct for endpoints that don't return data
 }

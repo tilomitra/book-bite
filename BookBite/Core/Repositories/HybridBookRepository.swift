@@ -1,6 +1,6 @@
 import Foundation
 
-class HybridBookRepository: BookRepository, SummaryGenerationCapable {
+class HybridBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRepository {
     private let remoteRepository = RemoteBookRepository()
     
     init() {
@@ -61,6 +61,24 @@ class HybridBookRepository: BookRepository, SummaryGenerationCapable {
     
     func refreshSummary(bookId: String) async throws -> Summary? {
         return try await remoteRepository.refreshSummary(bookId: bookId)
+    }
+    
+    // MARK: - FavoriteRepository Implementation
+    
+    func checkFavoriteStatus(for bookId: String) async throws -> Bool {
+        return try await remoteRepository.checkFavoriteStatus(for: bookId)
+    }
+    
+    func addToFavorites(_ bookId: String) async throws {
+        try await remoteRepository.addToFavorites(bookId)
+    }
+    
+    func removeFromFavorites(_ bookId: String) async throws {
+        try await remoteRepository.removeFromFavorites(bookId)
+    }
+    
+    func fetchFavorites() async throws -> [Book] {
+        return try await remoteRepository.fetchFavorites()
     }
     
     // MARK: - Cache Management

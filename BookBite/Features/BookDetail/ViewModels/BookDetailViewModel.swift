@@ -26,6 +26,8 @@ class BookDetailViewModel: ObservableObject {
     @Published var isLoadingRating = false
     @Published var isGeneratingSummary = false
     @Published var generationMessage = "Generating summary..."
+    @Published var isFavorite = false
+    @Published var isLoadingFavorite = false
     
     private let repository: BookRepository
     private let ratingsService: RatingsService
@@ -39,6 +41,7 @@ class BookDetailViewModel: ObservableObject {
         Task {
             await loadSummary()
             await loadRating()
+            await loadFavoriteStatus()
         }
     }
     
@@ -214,5 +217,65 @@ class BookDetailViewModel: ObservableObject {
             info += " • \(publisher)"
         }
         return info
+    }
+    
+    // MARK: - Favorite Management
+    
+    func loadFavoriteStatus() async {
+        guard let favoriteRepository = repository as? FavoriteRepository else {
+            // If repository doesn't support favorites, assume not favorite
+            isFavorite = false
+            return
+        }
+        
+        isLoadingFavorite = true
+        
+        do {
+            isFavorite = try await favoriteRepository.checkFavoriteStatus(for: book.id)
+        } catch {
+            // On error, assume not favorite
+            isFavorite = false
+            if AppConfiguration.shared.isLoggingEnabled {
+                print("❌ Error loading favorite status: \(error)")
+            }
+        }
+        
+        isLoadingFavorite = false
+    }
+    
+    func toggleFavorite() async {
+        guard let favoriteRepository = repository as? FavoriteRepository else {
+            if AppConfiguration.shared.isLoggingEnabled {
+                print("❌ Repository does not support FavoriteRepository protocol")
+            }
+            return
+        }
+        
+        let previousState = isFavorite
+        isLoadingFavorite = true
+        
+        do {
+            if isFavorite {
+                try await favoriteRepository.removeFromFavorites(book.id)
+                isFavorite = false
+                if AppConfiguration.shared.isLoggingEnabled {
+                    print("✅ Removed book \(book.title) from favorites")
+                }
+            } else {
+                try await favoriteRepository.addToFavorites(book.id)
+                isFavorite = true
+                if AppConfiguration.shared.isLoggingEnabled {
+                    print("✅ Added book \(book.title) to favorites")
+                }
+            }
+        } catch {
+            // Revert state on error
+            isFavorite = previousState
+            if AppConfiguration.shared.isLoggingEnabled {
+                print("❌ Error toggling favorite status: \(error)")
+            }
+        }
+        
+        isLoadingFavorite = false
     }
 }

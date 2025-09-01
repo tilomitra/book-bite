@@ -13,6 +13,13 @@ protocol BookRepository {
     func clearCache()
 }
 
+protocol FavoriteRepository {
+    func checkFavoriteStatus(for bookId: String) async throws -> Bool
+    func addToFavorites(_ bookId: String) async throws
+    func removeFromFavorites(_ bookId: String) async throws
+    func fetchFavorites() async throws -> [Book]
+}
+
 protocol SummaryGenerationCapable {
     func generateSummary(for bookId: String, style: Summary.SummaryStyle) async throws -> SummaryGenerationJob
     func checkSummaryGenerationJob(jobId: String) async throws -> SummaryGenerationJob

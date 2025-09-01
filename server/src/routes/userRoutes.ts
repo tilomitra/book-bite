@@ -122,6 +122,38 @@ router.post('/favorites', authenticate, async (req, res) => {
 });
 
 /**
+ * GET /api/user/favorites/:bookId
+ * Check if a book is in user's favorites
+ */
+router.get('/favorites/:bookId', authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { bookId } = req.params;
+    
+    if (!bookId) {
+      return res.status(400).json({ error: 'Book ID is required' });
+    }
+    
+    const { data: favorite, error } = await supabase
+      .from('user_favorites')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('book_id', bookId)
+      .single();
+    
+    if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+      console.error('Error checking favorite status:', error);
+      return res.status(500).json({ error: 'Failed to check favorite status' });
+    }
+    
+    res.json({ is_favorite: !!favorite });
+  } catch (error) {
+    console.error('Check favorite error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
  * DELETE /api/user/favorites/:bookId
  * Remove a book from user's favorites
  */

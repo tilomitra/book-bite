@@ -5,6 +5,8 @@ struct BookDetailView: View {
     @StateObject private var colorExtractor = ColorExtractor()
     @State private var showingChatSheet = false
     @State private var showingSummarySheet = false
+    @State private var showingAuthSheet = false
+    @EnvironmentObject var authService: SupabaseAuthService
     
     init(book: Book) {
         _viewModel = StateObject(wrappedValue: BookDetailViewModel(
@@ -43,7 +45,20 @@ struct BookDetailView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                // Favorite button
+                Button(action: {
+                    handleFavoriteButtonTapped()
+                }) {
+                    if viewModel.isLoadingFavorite {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                    } else {
+                        Image(systemName: viewModel.isFavorite ? "star.fill" : "star")
+                            .foregroundColor(viewModel.isFavorite ? .yellow : .primary)
+                    }
+                }
+                
                 // Share button
                 Button(action: {
                     SharingService.shared.shareBook(viewModel.book)
@@ -87,6 +102,9 @@ struct BookDetailView: View {
             }
             .presentationDetents([.large])
             .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showingAuthSheet) {
+            AuthenticationView(authService: authService)
         }
     }
     
@@ -492,6 +510,21 @@ struct BookDetailView: View {
         .padding(.vertical, 40)
         .padding(.horizontal, 20)
         .background(Color(UIColor.systemBackground))
+    }
+    
+    // MARK: - Actions
+    
+    private func handleFavoriteButtonTapped() {
+        // Check if user is authenticated
+        if authService.authState.isAuthenticated {
+            // User is authenticated, proceed with favorite toggle
+            Task {
+                await viewModel.toggleFavorite()
+            }
+        } else {
+            // User is not authenticated, show authentication sheet
+            showingAuthSheet = true
+        }
     }
 }
 
