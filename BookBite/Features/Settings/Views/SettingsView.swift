@@ -79,8 +79,7 @@ struct SettingsView: View {
                             Text("Refresh Cache Info")
                             Spacer()
                             if isRefreshing {
-                                ProgressView()
-                                    .scaleEffect(0.8)
+                                ConsistentLoadingView(style: .inline)
                             }
                         }
                     }

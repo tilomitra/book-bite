@@ -3,6 +3,8 @@ import SwiftUI
 struct BookDetailView: View {
     @StateObject private var viewModel: BookDetailViewModel
     @StateObject private var colorExtractor = ColorExtractor()
+    @State private var showingChatSheet = false
+    @State private var showingSummarySheet = false
     
     init(book: Book) {
         _viewModel = StateObject(wrappedValue: BookDetailViewModel(
@@ -27,34 +29,16 @@ struct BookDetailView: View {
                     bookHeader
                         .padding(.horizontal)
                         .padding(.top)
-                        .padding(.bottom, 24)
+                        .padding(.bottom, 32)
+                    
+                    // Action buttons section
+                    actionButtonsSection
+                        .padding(.horizontal)
+                        .padding(.bottom, 32)
                 
-                // Loading or error states
-                if viewModel.isLoadingSummary {
-                    VStack(spacing: 16) {
-                        if viewModel.isGeneratingSummary {
-                            GeneratingView(message: viewModel.generationMessage)
-                        } else {
-                            LoadingView()
-                        }
-                    }
-                    .frame(height: 200)
-                    .padding()
-                } else if let error = viewModel.summaryError {
-                    ErrorView(error: error) {
-                        Task {
-                            await viewModel.loadSummary()
-                        }
-                    }
-                    .padding()
-                } else if let summary = viewModel.summary {
-                    // Extended summary section
-                    summaryContent(summary)
-                } else {
-                    // No summary available - show generate button
-                    noSummaryView
+                    // Summary preview or status
+                    summaryPreviewSection
                 }
-            }
             }
         }
         .navigationBarTitleDisplayMode(.inline)
@@ -71,6 +55,157 @@ struct BookDetailView: View {
         }
         .task {
             await colorExtractor.extractColors(from: viewModel.book.coverAssetName)
+        }
+        .sheet(isPresented: $showingChatSheet) {
+            NavigationView {
+                BookChatView(book: viewModel.book)
+                    .navigationTitle(viewModel.book.title)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Done") {
+                                showingChatSheet = false
+                            }
+                        }
+                    }
+            }
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showingSummarySheet) {
+            NavigationView {
+                summarySheetContent
+                    .navigationTitle(viewModel.book.title)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Done") {
+                                showingSummarySheet = false
+                            }
+                        }
+                    }
+            }
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
+        }
+    }
+    
+    var actionButtonsSection: some View {
+        VStack(spacing: 16) {
+            // Primary CTA - Chat with book
+            Button(action: {
+                showingChatSheet = true
+            }) {
+                HStack(spacing: 12) {
+                    Image(systemName: "message.circle.fill")
+                        .font(.system(size: 20, weight: .medium))
+                    
+                    Text("Chat with book")
+                        .font(.system(size: 18, weight: .semibold))
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .semibold))
+                }
+                .foregroundColor(.white)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 18)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.blue, Color.blue.opacity(0.8)],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                )
+                .shadow(color: .blue.opacity(0.3), radius: 12, x: 0, y: 6)
+            }
+            .buttonStyle(.plain)
+            
+            // Secondary CTA - Read Extended Summary
+            Button(action: {
+                showingSummarySheet = true
+            }) {
+                HStack(spacing: 12) {
+                    Image(systemName: "doc.text.fill")
+                        .font(.system(size: 20, weight: .medium))
+                    
+                    Text("Read")
+                        .font(.system(size: 18, weight: .semibold))
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .semibold))
+                }
+                .foregroundColor(.primary)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 18)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color(UIColor.secondarySystemBackground))
+                        .stroke(Color(UIColor.separator).opacity(0.5), lineWidth: 1)
+                )
+            }
+            .buttonStyle(.plain)
+        }
+    }
+    
+    var summaryPreviewSection: some View {
+        VStack(spacing: 20) {
+            if viewModel.isLoadingSummary {
+                VStack(spacing: 16) {
+                    if viewModel.isGeneratingSummary {
+                        GeneratingView(message: viewModel.generationMessage)
+                    } else {
+                        ConsistentLoadingView(style: .primary, message: "Loading summary...")
+                    }
+                }
+                .frame(height: 150)
+                .padding()
+            } else if let error = viewModel.summaryError {
+                ErrorView(error: error) {
+                    Task {
+                        await viewModel.loadSummary()
+                    }
+                }
+                .padding()
+            } else if let summary = viewModel.summary {
+                summaryPreview(summary)
+            } else {
+                noSummaryPreview
+            }
+        }
+        .background(Color(UIColor.systemBackground))
+    }
+    
+    var summarySheetContent: some View {
+        Group {
+            if let summary = viewModel.summary {
+                EnhancedSummaryView(
+                    summary: summary, 
+                    book: viewModel.book,
+                    dominantColor: colorExtractor.dominantColor,
+                    secondaryColor: colorExtractor.secondaryColor,
+                    onGenerateSummary: {
+                        await viewModel.generateSummary()
+                    }
+                )
+            } else if viewModel.isLoadingSummary {
+                VStack(spacing: 16) {
+                    if viewModel.isGeneratingSummary {
+                        GeneratingView(message: viewModel.generationMessage)
+                    } else {
+                        ConsistentLoadingView(style: .primary, message: "Loading summary...")
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                noSummaryView
+            }
         }
     }
     
@@ -127,6 +262,185 @@ struct BookDetailView: View {
         }
     }
     
+    func summaryPreview(_ summary: Summary) -> some View {
+        VStack(spacing: 20) {
+            summaryHookSection(summary)
+            keyIdeasSection(summary)
+            actionsSection(summary)
+        }
+    }
+    
+    @ViewBuilder
+    private func summaryHookSection(_ summary: Summary) -> some View {
+        if !summary.oneSentenceHook.isEmpty {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("What's inside?")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                    Spacer()
+                }
+                
+                Text(summary.oneSentenceHook)
+                    .font(.body)
+                    .foregroundColor(.primary.opacity(0.8))
+                    .italic()
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(UIColor.secondarySystemBackground))
+            )
+            .padding(.horizontal)
+        }
+    }
+    
+    @ViewBuilder
+    private func keyIdeasSection(_ summary: Summary) -> some View {
+        if !summary.keyIdeas.isEmpty {
+            keyIdeasContent(summary)
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color(UIColor.secondarySystemBackground))
+                )
+                .padding(.horizontal)
+        }
+    }
+    
+    private func keyIdeasContent(_ summary: Summary) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "lightbulb.fill")
+                    .foregroundColor(.orange)
+                    .font(.system(size: 16))
+                Text("Key Ideas")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                Spacer()
+            }
+            
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(Array(summary.keyIdeas.enumerated()), id: \.element.id) { index, idea in
+                    keyIdeaRow(index: index, idea: idea)
+                }
+            }
+        }
+    }
+    
+    private func keyIdeaRow(index: Int, idea: KeyIdea) -> some View {
+        HStack(alignment: .top, spacing: 8) {
+            Text("\(index + 1).")
+                .font(.callout)
+                .fontWeight(.semibold)
+                .foregroundColor(.secondary)
+                .frame(width: 20, alignment: .trailing)
+            
+            Text(idea.idea)
+                .font(.callout)
+                .foregroundColor(.primary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+    
+    @ViewBuilder
+    private func actionsSection(_ summary: Summary) -> some View {
+        if !summary.howToApply.isEmpty {
+            actionsContent(summary)
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color(UIColor.secondarySystemBackground))
+                )
+                .padding(.horizontal)
+        }
+    }
+    
+    private func actionsContent(_ summary: Summary) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.green)
+                    .font(.system(size: 16))
+                Text("Actions to Apply")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                Spacer()
+            }
+            
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(summary.howToApply, id: \.id) { action in
+                    actionRow(action: action)
+                }
+            }
+        }
+    }
+    
+    private func actionRow(action: ApplicationPoint) -> some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "arrow.right.circle.fill")
+                .font(.caption)
+                .foregroundColor(.green.opacity(0.7))
+                .frame(width: 20)
+            
+            Text(action.action)
+                .font(.callout)
+                .foregroundColor(.primary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+    
+    var noSummaryPreview: some View {
+        VStack(spacing: 20) {
+            VStack(spacing: 16) {
+                Image(systemName: "doc.text.magnifyingglass")
+                    .font(.system(size: 40))
+                    .foregroundColor(.secondary.opacity(0.7))
+                
+                VStack(spacing: 8) {
+                    Text("No Summary Available")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                    
+                    Text("Generate a summary to unlock key insights and detailed analysis.")
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 20)
+                }
+            }
+            
+            Button(action: {
+                Task {
+                    await viewModel.generateSummary()
+                }
+            }) {
+                HStack(spacing: 8) {
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 16, weight: .medium))
+                    Text("Generate Summary")
+                        .font(.system(size: 16, weight: .semibold))
+                }
+                .foregroundColor(.white)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 12)
+                .background(
+                    LinearGradient(
+                        colors: [.blue, .purple],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .clipShape(Capsule())
+                .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding()
+    }
+    
     var noSummaryView: some View {
         VStack(spacing: 24) {
             VStack(spacing: 16) {
@@ -179,50 +493,6 @@ struct BookDetailView: View {
         .padding(.horizontal, 20)
         .background(Color(UIColor.systemBackground))
     }
-    
-    func summaryContent(_ summary: Summary) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Hook section with clean design
-            if !summary.oneSentenceHook.isEmpty {
-                Text(summary.oneSentenceHook)
-                    .font(.callout)
-                    .italic()
-                    .foregroundColor(.primary.opacity(0.9))
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color(UIColor.systemGray6))
-            }
-            
-            // Rating section
-            if let rating = viewModel.rating {
-                VStack(alignment: .leading, spacing: 0) {
-                    HStack {
-                        Text("Reader Reviews")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                        Spacer()
-                    }
-                    .padding(.horizontal)
-                    .padding(.top, 20)
-                    .padding(.bottom, 12)
-                    
-                    BookRatingDisplayView(rating: rating, showSource: true, compact: false)
-                        .padding(.horizontal)
-                        .padding(.bottom, 20)
-                }
-                .background(Color(UIColor.systemBackground))
-            }
-            
-            // Replace SummaryTabView with new elegant design
-            EnhancedSummaryView(
-                summary: summary, 
-                book: viewModel.book,
-                dominantColor: colorExtractor.dominantColor,
-                secondaryColor: colorExtractor.secondaryColor,
-                onGenerateSummary: {
-                    await viewModel.generateSummary()
-                }
-            )
-        }
-    }
 }
+
+// StatView removed - now displaying key ideas and actions directly

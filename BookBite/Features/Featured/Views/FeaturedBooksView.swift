@@ -12,7 +12,7 @@ struct FeaturedBooksView: View {
         NavigationStack {
             VStack(spacing: 0) {
                 if viewModel.isLoading && viewModel.featuredBooks.isEmpty {
-                    LoadingView()
+                    ConsistentLoadingView(style: .primary, message: "Loading featured books...")
                 } else if let error = viewModel.error {
                     ErrorNYTView(error: error) {
                         Task {

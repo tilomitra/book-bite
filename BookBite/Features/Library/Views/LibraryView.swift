@@ -43,7 +43,7 @@ struct LibraryView: View {
                     // Category Grid
                     Group {
                         if viewModel.isLoading && viewModel.categories.isEmpty {
-                            LoadingView()
+                            ConsistentLoadingView(style: .primary, message: "Loading categories...")
                         } else if let error = viewModel.error {
                             CategoriesErrorView(error: error) {
                                 Task {
@@ -149,7 +149,8 @@ struct LibrarySearchBarView: View {
     let onClear: () -> Void
     
     var body: some View {
-        HStack {
+        HStack(spacing: 12) {
+            // Search text field
             HStack {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.secondary)
@@ -171,16 +172,23 @@ struct LibrarySearchBarView: View {
                 }
             }
             .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(Color(UIColor.systemGray6))
-            .cornerRadius(10)
+            .padding(.vertical, 10)
+            .background(Color(.systemGray6))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
             
-            if isActive && !searchText.isEmpty {
-                Button("Search") {
-                    onSearchSubmit()
+            // Search button - always visible when there's text
+            if !searchText.isEmpty {
+                Button(action: onSearchSubmit) {
+                    Text("Search")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? Color.gray : Color.blue)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.small)
+                .disabled(searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
         }
         .padding(.horizontal)
@@ -195,7 +203,7 @@ struct SearchResultsContent: View {
     var body: some View {
         Group {
             if searchViewModel.isSearching {
-                LoadingView()
+                ConsistentLoadingView(style: .primary, message: "Searching...")
             } else if let error = searchViewModel.searchError {
                 ErrorSearchView(error: error) {
                     Task {

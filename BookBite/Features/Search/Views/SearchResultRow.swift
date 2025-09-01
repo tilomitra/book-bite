@@ -4,23 +4,21 @@ struct SearchResultRow: View {
     let book: Book
     
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .top, spacing: 16) {
             BookCoverView(coverURL: book.coverAssetName, size: .small)
             
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text(book.title)
                     .font(.headline)
                     .fontWeight(.semibold)
-                    .lineLimit(nil)
+                    .lineLimit(2)
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.primary)
                 
                 Text(book.formattedAuthors)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                    .lineLimit(nil)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
+                    .lineLimit(1)
                 
                 Text(book.publishedYear != nil ? String(book.publishedYear!) : "")
                     .font(.caption)
@@ -40,14 +38,8 @@ struct SearchResultRow: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            
-            Image(systemName: "chevron.right")
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .padding(.trailing, 4)
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
         .contentShape(Rectangle())
     }
 }

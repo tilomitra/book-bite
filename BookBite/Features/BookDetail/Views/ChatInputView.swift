@@ -19,9 +19,7 @@ struct ChatInputView: View {
             
             Button(action: onSend) {
                 if isLoading {
-                    ProgressView()
-                        .scaleEffect(0.8)
-                        .frame(width: 20, height: 20)
+                    ConsistentLoadingView.button
                 } else {
                     Image(systemName: "arrow.up.circle.fill")
                         .font(.title2)

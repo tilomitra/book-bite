@@ -3,14 +3,14 @@ import SwiftUI
 struct RequestView: View {
     @StateObject private var viewModel = RequestViewModel()
     @Environment(\.dismiss) private var dismiss
+    @FocusState private var isSearchFieldFocused: Bool
     
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Search bar
-                SearchBarView(viewModel: viewModel)
-                    .padding(.horizontal)
-                    .padding(.top, 8)
+                // Search bar - always at top
+                SearchBarView(viewModel: viewModel, isSearchFieldFocused: $isSearchFieldFocused)
+                    .padding(.top, DesignSystem.Spacing.sm)
                 
                 // Error banner
                 if let error = viewModel.searchError {
@@ -23,7 +23,10 @@ struct RequestView: View {
                 Group {
                     switch viewModel.requestState {
                     case .idle:
-                        InitialRequestView()
+                        ScrollView {
+                            InitialRequestView()
+                        }
+                        .scrollDismissesKeyboard(.interactively)
                         
                     case .searching:
                         LoadingSearchView()
@@ -58,67 +61,81 @@ struct RequestView: View {
                 }
             }
             .navigationTitle("Request Books")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Request Books")
+                        .font(.headline)
+                        .opacity(isSearchFieldFocused ? 0 : 1)
+                }
+            }
+            .background(DesignSystem.Colors.background.ignoresSafeArea())
         }
     }
 }
 
 struct InitialRequestView: View {
     var body: some View {
-        VStack(spacing: 24) {
-            // Hero illustration
-            VStack(spacing: 16) {
+        VStack(spacing: 20) {
+            // Simple hero section
+            VStack(spacing: 12) {
                 Image(systemName: "plus.magnifyingglass")
-                    .font(.system(size: 60, weight: .light))
+                    .font(.system(size: 50, weight: .light))
                     .foregroundColor(.blue)
                 
-                VStack(spacing: 8) {
-                    Text("Request Any Book")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                    
-                    Text("Search for any book to add it to your library")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                }
+                Text("Request Any Book")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                
+                Text("Search for any book to add it to your library")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 20)
             }
+            .padding(.top, 20)
             
-            // How it works
-            VStack(spacing: 20) {
+            // Simplified how it works
+            VStack(spacing: 12) {
                 Text("How it works:")
                     .font(.headline)
-                    .padding(.bottom, 8)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 20)
                 
-                HowItWorksStep(
-                    number: "1",
-                    title: "Search",
-                    description: "Search for any book using the search bar above"
-                )
-                
-                HowItWorksStep(
-                    number: "2",
-                    title: "Select",
-                    description: "Choose the book you want from the search results"
-                )
-                
-                HowItWorksStep(
-                    number: "3",
-                    title: "AI Analysis",
-                    description: "Our AI generates a comprehensive summary with key insights"
-                )
-                
-                HowItWorksStep(
-                    number: "4",
-                    title: "Ready to Read",
-                    description: "The book is added to your library with intelligent summaries"
-                )
+                VStack(spacing: 8) {
+                    HowItWorksStep(
+                        number: "1",
+                        title: "Search",
+                        description: "Search for any book using the search bar above",
+                        color: .blue
+                    )
+                    
+                    HowItWorksStep(
+                        number: "2",
+                        title: "Select", 
+                        description: "Choose the book you want from the search results",
+                        color: .blue
+                    )
+                    
+                    HowItWorksStep(
+                        number: "3",
+                        title: "AI Analysis",
+                        description: "Our AI generates a comprehensive summary with key insights",
+                        color: .blue
+                    )
+                    
+                    HowItWorksStep(
+                        number: "4",
+                        title: "Ready to Read",
+                        description: "The book is added to your library with intelligent summaries",
+                        color: .blue
+                    )
+                }
+                .padding(.horizontal, 20)
             }
-            .padding(.horizontal, 20)
             
             Spacer()
         }
-        .padding(.top, 40)
     }
 }
 
@@ -126,18 +143,27 @@ struct HowItWorksStep: View {
     let number: String
     let title: String
     let description: String
+    let color: Color
+    
+    init(number: String, title: String, description: String, color: Color = DesignSystem.Colors.vibrantBlue) {
+        self.number = number
+        self.title = title
+        self.description = description
+        self.color = color
+    }
     
     var body: some View {
-        HStack(spacing: 16) {
-            // Step number
+        HStack(spacing: 12) {
+            // Simple step number
             Text(number)
                 .font(.headline)
                 .fontWeight(.bold)
                 .foregroundColor(.white)
-                .frame(width: 32, height: 32)
+                .frame(width: 28, height: 28)
                 .background(Circle().fill(.blue))
             
-            VStack(alignment: .leading, spacing: 4) {
+            // Compact content
+            VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.subheadline)
                     .fontWeight(.semibold)
@@ -154,16 +180,60 @@ struct HowItWorksStep: View {
 }
 
 struct LoadingSearchView: View {
+    @State private var isAnimating = false
+    
     var body: some View {
-        VStack(spacing: 20) {
-            ProgressView()
-                .scaleEffect(1.2)
+        VStack(spacing: DesignSystem.Spacing.lg) {
+            // Enhanced loading animation
+            ZStack {
+                // Outer pulsing circle
+                Circle()
+                    .stroke(DesignSystem.Colors.vibrantBlue.opacity(0.3), lineWidth: 2)
+                    .frame(width: 80, height: 80)
+                    .scaleEffect(isAnimating ? 1.2 : 1.0)
+                    .opacity(isAnimating ? 0.3 : 1.0)
+                
+                // Inner spinning circle
+                Circle()
+                    .trim(from: 0, to: 0.7)
+                    .stroke(
+                        LinearGradient(
+                            colors: [DesignSystem.Colors.vibrantBlue, DesignSystem.Colors.vibrantPurple],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        style: StrokeStyle(lineWidth: 3, lineCap: .round)
+                    )
+                    .frame(width: 60, height: 60)
+                    .rotationEffect(.degrees(isAnimating ? 360 : 0))
+                
+                // Center icon
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 24, weight: .medium))
+                    .foregroundColor(DesignSystem.Colors.vibrantBlue)
+            }
+            .onAppear {
+                withAnimation(
+                    Animation.easeInOut(duration: 1.5).repeatForever(autoreverses: true)
+                ) {
+                    isAnimating = true
+                }
+            }
             
-            Text("Searching books...")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+            VStack(spacing: DesignSystem.Spacing.xs) {
+                Text("Searching books...")
+                    .font(DesignSystem.Typography.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(DesignSystem.Colors.textPrimary)
+                
+                Text("Finding the perfect matches for you")
+                    .font(DesignSystem.Typography.subheadline)
+                    .foregroundColor(DesignSystem.Colors.textSecondary)
+            }
+            .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(DesignSystem.Colors.background)
     }
 }
 
@@ -368,43 +438,54 @@ struct ErrorBanner: View {
     let onDismiss: () -> Void
     
     var body: some View {
-        HStack {
+        HStack(spacing: DesignSystem.Spacing.sm) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundColor(.orange)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(DesignSystem.Colors.warning)
             
             Text(message)
-                .font(.subheadline)
-                .foregroundColor(.primary)
+                .font(DesignSystem.Typography.subheadline)
+                .foregroundColor(DesignSystem.Colors.textPrimary)
                 .lineLimit(2)
+                .multilineTextAlignment(.leading)
             
             Spacer()
             
             Button(action: onDismiss) {
                 Image(systemName: "xmark")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(DesignSystem.Colors.textSecondary)
             }
         }
-        .padding()
-        .background(Color.orange.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .padding(.horizontal)
-        .padding(.top, 8)
+        .padding(DesignSystem.Spacing.md)
+        .background(
+            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                .fill(DesignSystem.Colors.warning.opacity(0.1))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                .stroke(DesignSystem.Colors.warning.opacity(0.3), lineWidth: 1)
+        )
+        .padding(.horizontal, DesignSystem.Spacing.md)
+        .padding(.top, DesignSystem.Spacing.sm)
+        .transition(.move(edge: .top).combined(with: .opacity))
     }
 }
 
 struct SearchBarView: View {
     @ObservedObject var viewModel: RequestViewModel
+    @FocusState.Binding var isSearchFieldFocused: Bool
     
     var body: some View {
         HStack(spacing: 12) {
-            // Search text field
+            // Simple search text field
             HStack {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.secondary)
                 
                 TextField("Search for any book...", text: $viewModel.searchText)
                     .textFieldStyle(PlainTextFieldStyle())
+                    .focused($isSearchFieldFocused)
                     .onSubmit {
                         performSearch()
                     }
@@ -424,7 +505,7 @@ struct SearchBarView: View {
             .background(Color(.systemGray6))
             .clipShape(RoundedRectangle(cornerRadius: 10))
             
-            // Search button
+            // Simple search button
             Button(action: performSearch) {
                 Text("Search")
                     .font(.subheadline)
@@ -437,6 +518,7 @@ struct SearchBarView: View {
             }
             .disabled(viewModel.searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isSearching)
         }
+        .padding(.horizontal)
         .padding(.bottom, 8)
     }
     

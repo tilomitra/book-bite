@@ -14,13 +14,8 @@ struct ExportOptionsSheet: View {
         NavigationStack {
             VStack(spacing: 20) {
                 if isExporting {
-                    VStack(spacing: 16) {
-                        ProgressView()
-                            .scaleEffect(1.5)
-                        Text("Preparing export...")
-                            .font(.headline)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    ConsistentLoadingView(style: .primary, message: "Preparing export...")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     exportOptions
                 }

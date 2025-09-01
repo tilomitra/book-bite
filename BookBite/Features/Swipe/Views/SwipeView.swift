@@ -39,7 +39,7 @@ struct SwipeView: View {
                 }
                 
                 if viewModel.isLoading {
-                    LoadingView()
+                    ConsistentLoadingView(style: .primary, message: "Loading books...")
                 } else if let error = viewModel.error {
                     ErrorSwipeView(error: error) {
                         Task {

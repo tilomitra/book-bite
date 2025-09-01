@@ -35,11 +35,6 @@ struct RootView: View {
                 Label("Library", systemImage: "books.vertical")
             }
             
-            SwipeView()
-            .tabItem {
-                Label("Discover", systemImage: "rectangle.stack.fill")
-            }
-            
         }
         .onAppear {
             if !onboardingService.hasCompletedOnboarding {

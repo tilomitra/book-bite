@@ -86,12 +86,6 @@ struct BookChatView: View {
             Spacer()
             
             HStack(spacing: 16) {
-                Button("History") {
-                    showConversationHistory = true
-                }
-                .font(.caption)
-                .foregroundColor(.blue)
-                
                 if viewModel.hasMessages {
                     Button("New Chat") {
                         Task {

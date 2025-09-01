@@ -15,7 +15,7 @@ struct ConversationHistoryView: View {
         NavigationView {
             Group {
                 if isLoading {
-                    ProgressView("Loading conversations...")
+                    ConsistentLoadingView(style: .primary, message: "Loading conversations...")
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if conversations.isEmpty {
                     emptyStateView

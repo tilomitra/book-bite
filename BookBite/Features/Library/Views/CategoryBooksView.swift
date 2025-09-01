@@ -20,7 +20,7 @@ struct CategoryBooksView: View {
     var body: some View {
         VStack(spacing: 0) {
             if viewModel.isLoading && viewModel.books.isEmpty {
-                LoadingView()
+                ConsistentLoadingView(style: .primary, message: "Loading \(category.name) books...")
             } else if let error = viewModel.error {
                 ErrorBooksView(error: error) {
                     Task {
@@ -77,17 +77,8 @@ struct BooksList: View {
             }
             
             if isLoadingMore {
-                HStack {
-                    Spacer()
-                    ProgressView()
-                        .scaleEffect(0.8)
-                    Text("Loading more books...")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    Spacer()
-                }
-                .padding(.vertical, 8)
-                .listRowSeparator(.hidden)
+                ConsistentLoadingView(style: .pagination, message: "Loading more books...")
+                    .listRowSeparator(.hidden)
             } else if !hasMore && !books.isEmpty {
                 HStack {
                     Spacer()

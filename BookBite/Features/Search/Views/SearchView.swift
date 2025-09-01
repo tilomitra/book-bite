@@ -12,27 +12,57 @@ struct SearchView: View {
         NavigationStack {
             VStack(spacing: 0) {
                 // Search bar with button
-                HStack {
-                    TextField("Search by title, author, or topic", text: $viewModel.searchText)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .onSubmit {
-                            Task {
-                                await viewModel.performSearch()
+                HStack(spacing: 12) {
+                    // Search text field
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.secondary)
+                        
+                        TextField("Search by title, author, or topic", text: $viewModel.searchText)
+                            .textFieldStyle(PlainTextFieldStyle())
+                            .onSubmit {
+                                Task {
+                                    await viewModel.performSearch()
+                                }
+                            }
+                        
+                        if !viewModel.searchText.isEmpty {
+                            Button(action: {
+                                viewModel.searchText = ""
+                            }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(.secondary)
                             }
                         }
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .background(Color(.systemGray6))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
                     
-                    Button("Search") {
+                    // Search button
+                    Button(action: {
                         Task {
                             await viewModel.performSearch()
                         }
+                    }) {
+                        Text("Search")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 10)
+                            .background(viewModel.searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? Color.gray : Color.blue)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
-                    .buttonStyle(.borderedProminent)
+                    .disabled(viewModel.searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isSearching)
                 }
-                .padding()
+                .padding(.horizontal)
+                .padding(.vertical, 8)
                 
                 // Results area
                 if viewModel.isSearching {
-                    LoadingView()
+                    ConsistentLoadingView(style: .primary, message: "Searching for books...")
                 } else if let error = viewModel.searchError {
                     ErrorSearchView(error: error) {
                         Task {
@@ -69,6 +99,8 @@ struct SearchResultsList: View {
                 NavigationLink(destination: BookDetailView(book: book)) {
                     SearchResultRow(book: book)
                 }
+                .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+                .listRowSeparator(.visible)
                 .onAppear {
                     onBookAppear(book)
                 }
@@ -76,18 +108,9 @@ struct SearchResultsList: View {
             
             // Loading indicator at the bottom
             if isLoadingMore {
-                HStack {
-                    Spacer()
-                    ProgressView()
-                        .scaleEffect(0.8)
-                    Text("Loading more books...")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    Spacer()
-                }
-                .padding(.vertical, 8)
-                .listRowSeparator(.hidden)
-                .listRowInsets(EdgeInsets())
+                ConsistentLoadingView(style: .pagination)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets())
             } else if !hasMore && !books.isEmpty {
                 HStack {
                     Spacer()
