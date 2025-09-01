@@ -2,8 +2,10 @@ import SwiftUI
 
 struct OnboardingView: View {
     @State private var currentPage = 0
+    @State private var showingAuthentication = false
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var onboardingService: OnboardingService
+    @EnvironmentObject var authService: SupabaseAuthService
     
     private let onboardingData = [
         OnboardingPageData(
@@ -60,11 +62,19 @@ struct OnboardingView: View {
             .padding(.bottom, 50)
         }
         .background(Color(.systemBackground))
+        .sheet(isPresented: $showingAuthentication) {
+            AuthenticationView(authService: authService)
+        }
+        .onChange(of: authService.authState) { _, newState in
+            if newState.isAuthenticated || newState.isAnonymous {
+                dismiss()
+            }
+        }
     }
     
     private func completeOnboarding() {
         onboardingService.markOnboardingAsCompleted()
-        dismiss()
+        showingAuthentication = true
     }
 }
 

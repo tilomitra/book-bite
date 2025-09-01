@@ -165,3 +165,106 @@ CREATE POLICY "Chat messages are viewable by everyone" ON chat_messages
 
 CREATE POLICY "Anyone can create chat messages" ON chat_messages
     FOR INSERT WITH CHECK (true);
+
+-- Create user profiles table
+CREATE TABLE user_profiles (
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    email TEXT,
+    display_name TEXT,
+    bio TEXT,
+    avatar_url TEXT,
+    favorite_categories TEXT[],
+    reading_goal INTEGER,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+    deleted_at TIMESTAMP WITH TIME ZONE
+);
+
+-- Create user favorites table
+CREATE TABLE user_favorites (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    book_id UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+    UNIQUE(user_id, book_id)
+);
+
+-- Create user reading history table
+CREATE TABLE user_reading_history (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    book_id UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+    reading_time_minutes INTEGER DEFAULT 0,
+    completed BOOLEAN DEFAULT FALSE,
+    notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+    UNIQUE(user_id, book_id)
+);
+
+-- Create indexes for user tables
+CREATE INDEX idx_user_profiles_email ON user_profiles(email);
+CREATE INDEX idx_user_profiles_deleted_at ON user_profiles(deleted_at);
+CREATE INDEX idx_user_favorites_user_id ON user_favorites(user_id);
+CREATE INDEX idx_user_favorites_book_id ON user_favorites(book_id);
+CREATE INDEX idx_user_favorites_created_at ON user_favorites(created_at);
+CREATE INDEX idx_user_reading_history_user_id ON user_reading_history(user_id);
+CREATE INDEX idx_user_reading_history_book_id ON user_reading_history(book_id);
+CREATE INDEX idx_user_reading_history_completed ON user_reading_history(completed);
+
+-- Add triggers for user tables updated_at
+CREATE TRIGGER update_user_profiles_updated_at BEFORE UPDATE ON user_profiles
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_user_reading_history_updated_at BEFORE UPDATE ON user_reading_history
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Enable RLS for user tables
+ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_favorites ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_reading_history ENABLE ROW LEVEL SECURITY;
+
+-- Create RLS policies for user tables
+
+-- User profiles: Users can only access their own profile
+CREATE POLICY "Users can view own profile" ON user_profiles
+    FOR SELECT USING (auth.uid() = id);
+
+CREATE POLICY "Users can update own profile" ON user_profiles
+    FOR UPDATE USING (auth.uid() = id);
+
+CREATE POLICY "Users can insert own profile" ON user_profiles
+    FOR INSERT WITH CHECK (auth.uid() = id);
+
+-- User favorites: Users can only access their own favorites
+CREATE POLICY "Users can view own favorites" ON user_favorites
+    FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can manage own favorites" ON user_favorites
+    FOR ALL USING (auth.uid() = user_id);
+
+-- User reading history: Users can only access their own history
+CREATE POLICY "Users can view own reading history" ON user_reading_history
+    FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can manage own reading history" ON user_reading_history
+    FOR ALL USING (auth.uid() = user_id);
+
+-- Function to handle user profile creation
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.user_profiles (id, email, display_name)
+  VALUES (
+    NEW.id, 
+    NEW.email, 
+    COALESCE(NEW.raw_user_meta_data->>'display_name', NEW.email)
+  );
+  RETURN NEW;
+END;
+$$ language 'plpgsql' security definer;
+
+-- Trigger to create user profile when user signs up
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();

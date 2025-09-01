@@ -44,7 +44,9 @@
       "mcp__XcodeBuildMCP__list_devices",
       "mcp__XcodeBuildMCP__build_dev_proj",
       "Bash(security find-identity:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "mcp__supabase__search_docs",
+      "WebFetch(domain:supabase.com)"
     ],
     "deny": [],
     "ask": [],

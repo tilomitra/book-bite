@@ -16,6 +16,7 @@ class DependencyContainer: ObservableObject {
     )
     lazy var onboardingService = OnboardingService()
     lazy var sharingService = SharingService.shared
+    lazy var authService = SupabaseAuthService()
     
     private init() {}
     

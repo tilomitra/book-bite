@@ -10,6 +10,8 @@ final class OnboardingService: ObservableObject {
     }
     
     init() {
+        // For testing authentication flow, reset onboarding state
+        UserDefaults.standard.set(false, forKey: hasCompletedOnboardingKey)
         self.hasCompletedOnboarding = UserDefaults.standard.bool(forKey: hasCompletedOnboardingKey)
     }
     
