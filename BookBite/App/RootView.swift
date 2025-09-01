@@ -37,6 +37,14 @@ struct RootView: View {
                 Label("Library", systemImage: "books.vertical")
             }
             
+            NavigationStack {
+                SettingsView()
+                    .environmentObject(authService)
+            }
+            .tabItem {
+                Label("Settings", systemImage: "gearshape")
+            }
+            
         }
         .onAppear {
             if !onboardingService.hasCompletedOnboarding {
