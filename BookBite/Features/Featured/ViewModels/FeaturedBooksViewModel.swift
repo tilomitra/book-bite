@@ -124,7 +124,7 @@ class FeaturedBooksViewModel: ObservableObject {
     }
     
     private func groupBooksByGenre() {
-        // Create genre groups based on categories, excluding featured books to avoid duplicates
+        // Create genre groups based on categories
         var genreMap: [String: [Book]] = [:]
         
         // Predefined genre sections for NYT bestsellers to ensure consistent ordering
@@ -132,7 +132,7 @@ class FeaturedBooksViewModel: ObservableObject {
             "Business",
             "Self-Help",
             "Biography", 
-            "Science",
+            "Personal Development",
             "Psychology",
             "Health",
             "History",
@@ -145,16 +145,13 @@ class FeaturedBooksViewModel: ObservableObject {
             "Nature & Environment"
         ]
         
-        // Get featured book IDs to exclude from genre sections
-        let featuredBookIds = Set(featuredBooks.map { $0.id })
-        
         // Track which books have been assigned to prevent duplicates across genres
         var assignedBookIds = Set<String>()
         
         // Map books to their primary genre (first matching category only)
         for book in allBooks {
-            // Skip if this book is already featured or already assigned to a genre
-            if featuredBookIds.contains(book.id) || assignedBookIds.contains(book.id) {
+            // Skip if this book is already assigned to a genre
+            if assignedBookIds.contains(book.id) {
                 continue
             }
             
@@ -195,8 +192,8 @@ class FeaturedBooksViewModel: ObservableObject {
         for genre in primaryGenres {
             if let books = genreMap[genre], !books.isEmpty {
                 if books.count >= 4 {
-                    // Randomize books for Business, Self-Help, and Biography sections
-                    let shuffledBooks = if genre == "Business" || genre == "Self-Help" || genre == "Biography" {
+                    // Randomize books for Business, Self-Help, Biography, and Personal Development sections
+                    let shuffledBooks = if genre == "Business" || genre == "Self-Help" || genre == "Biography" || genre == "Personal Development" {
                         books.shuffled()
                     } else {
                         books
@@ -214,8 +211,8 @@ class FeaturedBooksViewModel: ObservableObject {
         for (genre, books) in genreMap.sorted(by: { $0.key < $1.key }) {
             if !books.isEmpty {
                 if books.count >= 4 {
-                    // Randomize books for Business, Self-Help, and Biography sections
-                    let shuffledBooks = if genre == "Business" || genre == "Self-Help" || genre == "Biography" {
+                    // Randomize books for Business, Self-Help, Biography, and Personal Development sections
+                    let shuffledBooks = if genre == "Business" || genre == "Self-Help" || genre == "Biography" || genre == "Personal Development" {
                         books.shuffled()
                     } else {
                         books
@@ -251,10 +248,10 @@ class FeaturedBooksViewModel: ObservableObject {
         } else if lowercased.contains("biography") || lowercased.contains("memoir") ||
                   lowercased.contains("life") && (lowercased.contains("story") || lowercased.contains("journey")) {
             return "Biography"
-        } else if lowercased.contains("science") || lowercased.contains("physics") ||
-                  lowercased.contains("biology") || lowercased.contains("chemistry") ||
-                  lowercased.contains("technology") || lowercased.contains("engineering") {
-            return "Science"
+        } else if lowercased.contains("personal development") || lowercased.contains("development") ||
+                  lowercased.contains("growth") || lowercased.contains("mindfulness") ||
+                  lowercased.contains("meditation") || lowercased.contains("wellness") {
+            return "Personal Development"
         } else if lowercased.contains("politics") || lowercased.contains("government") ||
                   lowercased.contains("democracy") || lowercased.contains("election") {
             return "Politics"

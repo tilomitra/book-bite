@@ -453,6 +453,36 @@ export class BookService {
 
     const filteredBooks = allBooks?.filter(book => {
       if (!book.categories || !Array.isArray(book.categories)) return false;
+      
+      // Special case: Self-Help category should include Personal Development books
+      if (category.toLowerCase() === 'self-help') {
+        return book.categories.some((cat: string) => {
+          const normalizedCat = this.normalizeCategory(cat).toLowerCase();
+          return normalizedCat === 'self-help' || normalizedCat === 'personal development';
+        });
+      }
+      
+      // Special case: Business category should include Business & Economics books
+      if (category.toLowerCase() === 'business') {
+        return book.categories.some((cat: string) => {
+          const normalizedCat = this.normalizeCategory(cat).toLowerCase();
+          return normalizedCat === 'business' || cat.toLowerCase().includes('business & economics');
+        });
+      }
+      
+      // Special case: Mindfulness category should include Mental Health, Wellness, Religion, and Health & Fitness books
+      if (category.toLowerCase() === 'mindfulness') {
+        return book.categories.some((cat: string) => {
+          const normalizedCat = this.normalizeCategory(cat).toLowerCase();
+          const lowerCat = cat.toLowerCase();
+          return normalizedCat === 'mindfulness' || 
+                 normalizedCat === 'mental health' || 
+                 lowerCat.includes('wellness') || 
+                 lowerCat.includes('religion') || 
+                 lowerCat.includes('health & fitness');
+        });
+      }
+      
       return book.categories.some((cat: string) => 
         this.normalizeCategory(cat).toLowerCase() === category.toLowerCase()
       );

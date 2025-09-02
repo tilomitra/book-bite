@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Bookbite-iOS-v1-1024x1024@1x.png",
+      "filename" : "Bookbite_V2-1024x1024@1x.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -13,7 +13,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "Bookbite-iOS-v1-1024x1024@1x.png",
+      "filename" : "Bookbite_V2-1024x1024@1x.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -25,7 +25,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "Bookbite-iOS-v1-1024x1024@1x.png",
+      "filename" : "Bookbite_V2-1024x1024@1x.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
