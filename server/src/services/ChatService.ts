@@ -170,6 +170,69 @@ export class ChatService {
     }
   }
 
+  async generateStreamingResponse(
+    conversationId: string, 
+    userMessage: string, 
+    bookContext: { book: Book; summary?: Summary },
+    onChunk: (chunk: string, isComplete: boolean) => void
+  ): Promise<void> {
+    // Save user message
+    await this.addMessage(conversationId, 'user', userMessage);
+
+    // Get conversation history
+    const messages = await this.getConversationMessages(conversationId);
+
+    // Build context prompt
+    const systemPrompt = this.buildSystemPrompt(bookContext);
+
+    // Prepare messages for OpenAI
+    const openaiMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+      { role: 'system', content: systemPrompt },
+      ...messages.map(msg => ({
+        role: msg.role as 'user' | 'assistant',
+        content: msg.content
+      }))
+    ];
+
+    try {
+      const stream = await this.openai.chat.completions.create({
+        model: 'gpt-4',
+        messages: openaiMessages,
+        max_tokens: 1000,
+        temperature: 0.7,
+        stream: true,
+      });
+
+      let fullResponse = '';
+      
+      for await (const chunk of stream) {
+        const content = chunk.choices[0]?.delta?.content || '';
+        if (content) {
+          fullResponse += content;
+          onChunk(content, false);
+        }
+      }
+
+      if (!fullResponse) {
+        throw new Error('No response from OpenAI');
+      }
+
+      // Save assistant response
+      await this.addMessage(conversationId, 'assistant', fullResponse);
+
+      // Auto-generate title for first message
+      if (messages.length === 1) { // Only user message exists
+        await this.generateConversationTitle(conversationId, userMessage);
+      }
+
+      // Send completion signal
+      onChunk('', true);
+    } catch (error) {
+      console.error('OpenAI API streaming error:', error);
+      throw new Error('Failed to generate response. Please try again.');
+    }
+  }
+
   private buildSystemPrompt(context: { book: Book; summary?: Summary }): string {
     const { book, summary } = context;
     
@@ -213,7 +276,14 @@ export class ChatService {
 4. If asked about topics unrelated to the book, gently redirect the conversation back to the book
 5. Keep responses concise but informative (aim for 2-4 paragraphs)
 6. Use a conversational, approachable tone
-7. When discussing applications, relate them to the book's teachings`;
+7. When discussing applications, relate them to the book's teachings
+8. **IMPORTANT: Always end your response with an actionable follow-up offer to encourage continued conversation. Use phrases like "Would you like me to..." or "How about I..." to offer specific help. Examples:**
+   - "Would you like me to explain how others have successfully applied these concepts?"
+   - "How about I share some practical exercises based on this chapter?"
+   - "Would you like me to dive deeper into any particular aspect of this idea?"
+   - "How about I suggest some ways to implement this in daily life?"
+   - "Would you like me to explore what the author says about common challenges with this approach?"
+   - "How about I explain how this concept connects to other ideas in the book?"`;
 
     return prompt;
   }

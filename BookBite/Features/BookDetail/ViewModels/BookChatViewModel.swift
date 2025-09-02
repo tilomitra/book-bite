@@ -8,11 +8,13 @@ class BookChatViewModel: ObservableObject {
     @Published var isLoadingResponse = false
     @Published var error: Error?
     @Published var inputText = ""
+    @Published var streamingMessage: String = ""
     
     private var currentConversation: ChatConversation?
     private let book: Book
     private let chatRepository: ChatRepository
     private var cancellables = Set<AnyCancellable>()
+    private var currentStreamingMessageId: String?
     
     init(book: Book, chatRepository: ChatRepository) {
         self.book = book
@@ -85,29 +87,81 @@ class BookChatViewModel: ObservableObject {
         )
         messages.append(userMessage)
         
+        // Create a placeholder for the assistant message
+        let assistantMessageId = UUID().uuidString
+        let assistantMessage = ChatMessage(
+            id: assistantMessageId,
+            conversationId: conversation.id,
+            role: .assistant,
+            content: "",
+            createdAt: Date(),
+            isPending: true
+        )
+        messages.append(assistantMessage)
+        currentStreamingMessageId = assistantMessageId
+        
         isLoadingResponse = true
         error = nil
+        streamingMessage = ""
         
         do {
-            let response = try await chatRepository.sendMessage(messageText, in: conversation.id, for: book.id)
-            
-            // Replace all messages with the server response (removes pending state)
-            messages = response.messages
-            
-            // Update conversation if title was generated
-            if let updatedConversation = response.conversation {
-                currentConversation = updatedConversation
+            // Run streaming on background task to prevent UI blocking
+            await withTaskGroup(of: Void.self) { group in
+                group.addTask { [weak self] in
+                    guard let self = self else { return }
+                    do {
+                        try await self.chatRepository.sendMessageStreaming(messageText, in: conversation.id, for: self.book.id) { chunk in
+                            Task { @MainActor [weak self] in
+                                guard let self = self else { return }
+                                self.streamingMessage += chunk
+                                
+                                // Update the assistant message content
+                                if let index = self.messages.firstIndex(where: { $0.id == assistantMessageId }) {
+                                    self.messages[index] = ChatMessage(
+                                        id: assistantMessageId,
+                                        conversationId: conversation.id,
+                                        role: .assistant,
+                                        content: self.streamingMessage,
+                                        createdAt: Date(),
+                                        isPending: false
+                                    )
+                                }
+                            }
+                        }
+                    } catch {
+                        Task { @MainActor [weak self] in
+                            guard let self = self else { return }
+                            self.error = error
+                            
+                            // Remove both pending messages on error
+                            self.messages.removeAll { $0.id == userMessage.id || $0.id == assistantMessageId }
+                        }
+                    }
+                }
             }
+            
+            // Mark user message as not pending after streaming completes
+            if let userIndex = messages.firstIndex(where: { $0.id == userMessage.id }) {
+                messages[userIndex] = ChatMessage(
+                    id: userMessage.id,
+                    conversationId: conversation.id,
+                    role: .user,
+                    content: messageText,
+                    createdAt: Date(),
+                    isPending: false
+                )
+            }
+            
         } catch {
             self.error = error
             
-            // Remove the pending user message on error
-            if let index = messages.firstIndex(where: { $0.id == userMessage.id }) {
-                messages.remove(at: index)
-            }
+            // Remove both pending messages on error
+            messages.removeAll { $0.id == userMessage.id || $0.id == assistantMessageId }
         }
         
         isLoadingResponse = false
+        streamingMessage = ""
+        currentStreamingMessageId = nil
     }
     
     func clearConversation() async {

@@ -5,6 +5,8 @@ struct BookChatView: View {
     @StateObject private var viewModel: BookChatViewModel
     @State private var showErrorAlert = false
     @State private var showConversationHistory = false
+    @State private var userHasScrolled = false
+    @State private var lastMessageCount = 0
     
     private let book: Book
     
@@ -112,8 +114,8 @@ struct BookChatView: View {
                         .id(message.id)
                     }
                     
-                    // Typing indicator for assistant response
-                    if viewModel.isLoadingResponse {
+                    // Show typing indicator only if no streaming content yet
+                    if viewModel.isLoadingResponse && viewModel.streamingMessage.isEmpty {
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack(spacing: 8) {
@@ -139,17 +141,38 @@ struct BookChatView: View {
                 }
                 .padding(.vertical)
             }
-            .onChange(of: viewModel.messages.count) { _, _ in
-                if let lastMessage = viewModel.messages.last {
-                    withAnimation(.easeOut(duration: 0.3)) {
-                        proxy.scrollTo(lastMessage.id, anchor: .top)
+            .simultaneousGesture(
+                DragGesture()
+                    .onChanged { _ in
+                        // User has started scrolling manually
+                        userHasScrolled = true
+                    }
+            )
+            .onChange(of: viewModel.messages.count) { oldCount, newCount in
+                // Reset scroll tracking when new messages are added (not during streaming)
+                if newCount > lastMessageCount {
+                    lastMessageCount = newCount
+                    userHasScrolled = false
+                    
+                    if let lastMessage = viewModel.messages.last {
+                        withAnimation(.easeOut(duration: 0.3)) {
+                            proxy.scrollTo(lastMessage.id, anchor: .top)
+                        }
                     }
                 }
             }
             .onChange(of: viewModel.isLoadingResponse) { _, isLoading in
-                if isLoading {
+                if isLoading && !userHasScrolled {
                     withAnimation(.easeOut(duration: 0.3)) {
                         proxy.scrollTo("loading", anchor: .top)
+                    }
+                }
+            }
+            .onChange(of: viewModel.streamingMessage) { _, _ in
+                // Only auto-scroll during streaming if user hasn't manually scrolled
+                if !userHasScrolled, let lastMessage = viewModel.messages.last {
+                    withAnimation(.easeOut(duration: 0.1)) {
+                        proxy.scrollTo(lastMessage.id, anchor: .top)
                     }
                 }
             }
