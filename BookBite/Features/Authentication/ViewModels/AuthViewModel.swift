@@ -126,8 +126,26 @@ class AuthViewModel: ObservableObject {
         errorMessage = nil
     }
     
-    private func mapErrorMessage(_ error: Error) -> String {
+    func mapErrorMessage(_ error: Error) -> String {
         let errorString = error.localizedDescription.lowercased()
+        
+        // Handle Sign in with Apple specific errors
+        if let authError = error as? ASAuthorizationError {
+            switch authError.code {
+            case .unknown:
+                return "Sign in with Apple is not available in the simulator. Please test on a physical device."
+            case .canceled:
+                return "Sign in was canceled"
+            case .invalidResponse:
+                return "Invalid response from Apple. Please try again."
+            case .notHandled:
+                return "Sign in request could not be handled"
+            case .failed:
+                return "Sign in with Apple failed. Please try again."
+            @unknown default:
+                return "Apple Sign in error: \(authError.localizedDescription)"
+            }
+        }
         
         if errorString.contains("invalid login") || errorString.contains("invalid email or password") {
             return "Invalid email or password"

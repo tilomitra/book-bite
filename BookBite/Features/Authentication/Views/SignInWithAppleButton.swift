@@ -3,6 +3,12 @@ import AuthenticationServices
 
 struct SignInWithAppleButton: UIViewRepresentable {
     let action: (ASAuthorizationAppleIDCredential) -> Void
+    let onError: ((Error) -> Void)?
+    
+    init(action: @escaping (ASAuthorizationAppleIDCredential) -> Void, onError: ((Error) -> Void)? = nil) {
+        self.action = action
+        self.onError = onError
+    }
     
     func makeUIView(context: Context) -> ASAuthorizationAppleIDButton {
         let button = ASAuthorizationAppleIDButton(type: .signIn, style: .black)
@@ -43,6 +49,27 @@ struct SignInWithAppleButton: UIViewRepresentable {
         
         func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
             print("Sign in with Apple failed: \(error)")
+            
+            // Handle simulator-specific error with user-friendly message
+            if let authError = error as? ASAuthorizationError {
+                switch authError.code {
+                case .unknown:
+                    print("⚠️ Sign in with Apple is not available in the iOS Simulator. Please test on a physical device.")
+                case .canceled:
+                    print("User canceled Sign in with Apple")
+                case .invalidResponse:
+                    print("Invalid response from Apple ID provider")
+                case .notHandled:
+                    print("Authorization request not handled")
+                case .failed:
+                    print("Authorization request failed")
+                @unknown default:
+                    print("Unknown Sign in with Apple error: \(authError.localizedDescription)")
+                }
+            }
+            
+            // Notify parent about the error
+            parent.onError?(error)
         }
         
         func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {

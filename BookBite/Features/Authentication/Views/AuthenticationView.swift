@@ -62,11 +62,16 @@ struct AuthenticationView: View {
                                     .frame(height: 1)
                             }
                             
-                            SignInWithAppleButton { credential in
-                                Task {
-                                    await viewModel.signInWithApple(credential)
+                            SignInWithAppleButton(
+                                action: { credential in
+                                    Task {
+                                        await viewModel.signInWithApple(credential)
+                                    }
+                                },
+                                onError: { error in
+                                    viewModel.errorMessage = viewModel.mapErrorMessage(error)
                                 }
-                            }
+                            )
                             .frame(height: 50)
                             .cornerRadius(10)
                         }
