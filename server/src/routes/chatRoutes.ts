@@ -172,6 +172,7 @@ router.post('/books/:bookId/chat/conversations/:conversationId/messages/stream',
   }
   
   // Note: No return needed here as the response is handled by the streaming callback
+  return;
 });
 
 // Get all conversations for a book

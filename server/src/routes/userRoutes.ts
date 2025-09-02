@@ -53,7 +53,7 @@ router.get('/favorites', authenticate, async (req, res) => {
       return res.status(500).json({ error: 'Failed to fetch favorites' });
     }
     
-    res.json({
+    return res.json({
       favorites: favorites || [],
       pagination: {
         page: Number(page),
@@ -63,7 +63,7 @@ router.get('/favorites', authenticate, async (req, res) => {
     });
   } catch (error) {
     console.error('Favorites fetch error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -114,10 +114,10 @@ router.post('/favorites', authenticate, async (req, res) => {
       return res.status(500).json({ error: 'Failed to add to favorites' });
     }
     
-    res.status(201).json(favorite);
+    return res.status(201).json(favorite);
   } catch (error) {
     console.error('Add favorite error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -146,10 +146,10 @@ router.get('/favorites/:bookId', authenticate, async (req, res) => {
       return res.status(500).json({ error: 'Failed to check favorite status' });
     }
     
-    res.json({ is_favorite: !!favorite });
+    return res.json({ is_favorite: !!favorite });
   } catch (error) {
     console.error('Check favorite error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -177,10 +177,10 @@ router.delete('/favorites/:bookId', authenticate, async (req, res) => {
       return res.status(500).json({ error: 'Failed to remove from favorites' });
     }
     
-    res.json({ message: 'Removed from favorites' });
+    return res.json({ message: 'Removed from favorites' });
   } catch (error) {
     console.error('Remove favorite error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -224,7 +224,7 @@ router.get('/reading-history', authenticate, async (req, res) => {
       return res.status(500).json({ error: 'Failed to fetch reading history' });
     }
     
-    res.json({
+    return res.json({
       history: history || [],
       pagination: {
         page: Number(page),
@@ -234,7 +234,7 @@ router.get('/reading-history', authenticate, async (req, res) => {
     });
   } catch (error) {
     console.error('Reading history fetch error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -315,10 +315,10 @@ router.post('/reading-history', authenticate, async (req, res) => {
       result = created;
     }
     
-    res.json(result);
+    return res.json(result);
   } catch (error) {
     console.error('Reading history error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -348,7 +348,7 @@ router.get('/recommendations', authenticate, async (req, res) => {
     // Extract unique categories from user's favorites
     const favoriteCategories = new Set<string>();
     userCategories?.forEach(fav => {
-      fav.books.categories?.forEach((cat: string) => favoriteCategories.add(cat));
+      (fav as any).books?.categories?.forEach((cat: string) => favoriteCategories.add(cat));
     });
     
     const categoryArray = Array.from(favoriteCategories);
@@ -387,7 +387,7 @@ router.get('/recommendations', authenticate, async (req, res) => {
     }
     
     const { data: recommendations, error } = await recommendationsQuery
-      .order('popularity_rank', { ascending: true, nullsLast: true })
+      .order('popularity_rank', { ascending: true, nullsFirst: false })
       .order('created_at', { ascending: false });
     
     if (error) {
@@ -395,13 +395,13 @@ router.get('/recommendations', authenticate, async (req, res) => {
       return res.status(500).json({ error: 'Failed to fetch recommendations' });
     }
     
-    res.json({
+    return res.json({
       recommendations: recommendations || [],
       based_on_categories: categoryArray
     });
   } catch (error) {
     console.error('Recommendations error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 

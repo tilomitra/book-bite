@@ -33,10 +33,10 @@ router.get('/profile', authenticate, async (req, res) => {
       return res.status(500).json({ error: 'Failed to fetch profile' });
     }
     
-    res.json(profile);
+    return res.json(profile);
   } catch (error) {
     console.error('Profile fetch error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -74,10 +74,10 @@ router.put('/profile', authenticate, async (req, res) => {
       return res.status(500).json({ error: 'Failed to update profile' });
     }
     
-    res.json(profile);
+    return res.json(profile);
   } catch (error) {
     console.error('Profile update error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -108,14 +108,14 @@ router.get('/stats', authenticate, async (req, res) => {
       0
     ) || 0;
     
-    res.json({
+    return res.json({
       books_read: booksRead,
       favorite_books: favoriteCount,
       total_reading_time_minutes: totalReadingTime
     });
   } catch (error) {
     console.error('Stats fetch error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -142,10 +142,10 @@ router.delete('/account', authenticate, async (req, res) => {
       return res.status(500).json({ error: 'Failed to delete account' });
     }
     
-    res.json({ message: 'Account deleted successfully' });
+    return res.json({ message: 'Account deleted successfully' });
   } catch (error) {
     console.error('Account deletion error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
