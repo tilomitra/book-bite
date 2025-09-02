@@ -14,7 +14,6 @@ struct SearchServiceTests {
         let repository = createMockRepository()
         let searchService = SearchService(repository: repository)
         
-        await searchService.loadAllBooks()
         searchService.search(query: "Manager")
         
         try await Task.sleep(nanoseconds: 100_000_000)
@@ -28,7 +27,6 @@ struct SearchServiceTests {
         let repository = createMockRepository()
         let searchService = SearchService(repository: repository)
         
-        await searchService.loadAllBooks()
         searchService.search(query: "Fournier")
         
         try await Task.sleep(nanoseconds: 100_000_000)
@@ -38,11 +36,10 @@ struct SearchServiceTests {
     }
     
     @Test("SearchService should handle empty query")
-    func testEmptyQuery() async throws {
+    func testSearchByEmptyQuery() async throws {
         let repository = createMockRepository()
         let searchService = SearchService(repository: repository)
         
-        await searchService.loadAllBooks()
         searchService.search(query: "")
         
         try await Task.sleep(nanoseconds: 100_000_000)
@@ -96,7 +93,8 @@ class MockBookRepository: BookRepository {
             limitations: "Test",
             citations: [],
             readTimeMinutes: 5,
-            style: .full
+            style: .full,
+            extendedSummary: "Extended test summary"
         )
     ]
     
@@ -121,5 +119,30 @@ class MockBookRepository: BookRepository {
             book.title.lowercased().contains(query.lowercased()) ||
             book.authors.contains { $0.lowercased().contains(query.lowercased()) }
         }
+    }
+    
+    func fetchFeaturedBooks() async throws -> [Book] {
+        return mockBooks.filter { $0.isFeatured == true }
+    }
+    
+    func fetchNYTBestsellerBooks() async throws -> [Book] {
+        return mockBooks.filter { $0.isNYTBestseller == true }
+    }
+    
+    func fetchCategories() async throws -> [BookCategory] {
+        return [
+            BookCategory(name: "Management", iconName: "briefcase", bookCount: 1),
+            BookCategory(name: "Programming", iconName: "laptopcomputer", bookCount: 1)
+        ]
+    }
+    
+    func fetchBooksByCategory(_ category: String, page: Int, limit: Int) async throws -> [Book] {
+        return mockBooks.filter { book in
+            book.categories.contains(category)
+        }
+    }
+    
+    func clearCache() {
+        // Mock implementation - no-op
     }
 }
