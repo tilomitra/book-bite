@@ -3,54 +3,70 @@ import SwiftUI
 struct RootView: View {
     @EnvironmentObject var dependencies: DependencyContainer
     @StateObject private var onboardingService = DependencyContainer.shared.onboardingService
-    @StateObject private var authService = DependencyContainer.shared.authService
+    @ObservedObject private var audioService = AudioPlaybackService.shared
     @State private var showOnboarding = false
-    @State private var showAuthentication = false
     @State private var showDeepLinkBook = false
-    
+    @State private var showFullAudioPlayer = false
+
     let deepLinkBook: Book?
-    
+
     init(deepLinkBook: Book? = nil) {
         self.deepLinkBook = deepLinkBook
     }
     
     var body: some View {
-        TabView {
-            NavigationStack {
-                FeaturedBooksView()
+        ZStack(alignment: .bottom) {
+            TabView {
+                NavigationStack {
+                    FeaturedBooksView()
+                }
+                .tabItem {
+                    Label("Featured", systemImage: "star.fill")
+                }
+
+                NavigationStack {
+                    RequestView()
+                }
+                .tabItem {
+                    Label("Request", systemImage: "plus.magnifyingglass")
+                }
+
+                NavigationStack {
+                    LibraryView()
+                }
+                .tabItem {
+                    Label("Library", systemImage: "books.vertical")
+                }
+
+                NavigationStack {
+                    SettingsView()
+                }
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape")
+                }
             }
-            .tabItem {
-                Label("Featured", systemImage: "star.fill")
+            // Add padding at bottom when mini player is visible
+            .safeAreaInset(edge: .bottom) {
+                if audioService.isActive {
+                    Color.clear.frame(height: 64)
+                }
             }
-            
-            NavigationStack {
-                RequestView()
+
+            // Mini audio player overlay
+            if audioService.isActive {
+                VStack(spacing: 0) {
+                    MiniAudioPlayer(
+                        audioService: audioService,
+                        showFullPlayer: $showFullAudioPlayer
+                    )
+                }
+                .transition(.move(edge: .bottom))
             }
-            .tabItem {
-                Label("Request", systemImage: "plus.magnifyingglass")
-            }
-            
-            NavigationStack {
-                LibraryView()
-            }
-            .tabItem {
-                Label("Library", systemImage: "books.vertical")
-            }
-            
-            NavigationStack {
-                SettingsView()
-                    .environmentObject(authService)
-            }
-            .tabItem {
-                Label("Settings", systemImage: "gearshape")
-            }
-            
         }
+        .animation(.easeInOut(duration: 0.25), value: audioService.isActive)
         .onAppear {
             if !onboardingService.hasCompletedOnboarding {
                 showOnboarding = true
-            } else if authService.authState == .unauthenticated {
-                showAuthentication = true
             }
         }
         .onChange(of: deepLinkBook) { _, book in
@@ -61,17 +77,7 @@ struct RootView: View {
         .sheet(isPresented: $showOnboarding) {
             OnboardingView()
                 .environmentObject(onboardingService)
-                .environmentObject(authService)
                 .interactiveDismissDisabled()
-        }
-        .sheet(isPresented: $showAuthentication) {
-            AuthenticationView(authService: authService)
-                .interactiveDismissDisabled()
-        }
-        .onChange(of: authService.authState) { _, newState in
-            if newState == .unauthenticated && onboardingService.hasCompletedOnboarding {
-                showAuthentication = true
-            }
         }
         .sheet(isPresented: $showDeepLinkBook) {
             if let book = deepLinkBook {
@@ -79,6 +85,11 @@ struct RootView: View {
                     BookDetailView(book: book)
                 }
             }
+        }
+        .sheet(isPresented: $showFullAudioPlayer) {
+            AudioPlayerView(audioService: audioService)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
         }
     }
 }

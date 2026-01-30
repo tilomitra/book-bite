@@ -3,16 +3,15 @@ import SwiftUI
 struct SettingsView: View {
     @ObservedObject private var dependencies = DependencyContainer.shared
     @StateObject private var onboardingService = DependencyContainer.shared.onboardingService
-    @EnvironmentObject var authService: SupabaseAuthService
     @State private var cacheInfo: CacheInfo?
+    @State private var offlineStorageInfo: OfflineStorageInfo?
     @State private var showingClearCacheAlert = false
     @State private var showingOnboarding = false
-    @State private var showingSignOutAlert = false
-    @State private var showingAuthentication = false
     @State private var isRefreshing = false
-    
+
     private let appConfig = AppConfiguration.shared
     private let cacheService = CacheService.shared
+    private let offlineStorage = OfflineStorageService.shared
     
     var body: some View {
         NavigationView {
@@ -93,60 +92,34 @@ struct SettingsView: View {
                 } footer: {
                     Text("Cache improves performance by storing recently accessed data. Clearing cache will remove all cached book data.")
                 }
-                
-                // Account Section
+
+                // Offline Access Section
                 Section {
-                    HStack {
-                        Text("Account Status")
-                        Spacer()
-                        Text(accountStatusText)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    if authService.isAuthenticated {
-                        if let user = authService.currentUser {
-                            HStack {
-                                Text("Email")
-                                Spacer()
-                                Text(user.email ?? "Unknown")
+                    NavigationLink(destination: DownloadedBooksView()) {
+                        HStack {
+                            Label("Downloaded Books", systemImage: "arrow.down.circle.fill")
+                            Spacer()
+                            if let info = offlineStorageInfo, info.bookCount > 0 {
+                                Text("\(info.bookCount)")
                                     .foregroundColor(.secondary)
                             }
-                            
-                            if let displayName = user.displayName {
-                                HStack {
-                                    Text("Name")
-                                    Spacer()
-                                    Text(displayName)
-                                        .foregroundColor(.secondary)
-                                }
-                            }
                         }
                     }
-                    
-                    if authService.isAuthenticated {
-                        Button("Sign Out") {
-                            showingSignOutAlert = true
+
+                    if let info = offlineStorageInfo {
+                        HStack {
+                            Text("Offline Storage:")
+                            Spacer()
+                            Text(info.formattedSize)
+                                .foregroundColor(.secondary)
                         }
-                        .foregroundColor(.red)
-                    } else {
-                        Button("Sign In") {
-                            showingAuthentication = true
-                        }
-                        .foregroundColor(.blue)
                     }
-                    
                 } header: {
-                    Text("Account")
+                    Text("Offline Access")
                 } footer: {
-                    if authService.isAuthenticated {
-                        Text("Sign out to return to the authentication screen.")
-                    } else if authService.isAnonymous {
-                        Text("You're browsing as a guest. Sign in to save your progress.")
-                    } else {
-                        Text("Sign in to access your account and save your progress.")
-                    }
+                    Text("Favorited books are automatically downloaded for offline reading.")
                 }
-                
+
                 // Help & Support Section
                 Section {
                     Button(action: {
@@ -200,6 +173,7 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             .onAppear {
                 refreshCacheInfo()
+                refreshOfflineStorageInfo()
             }
             .alert("Clear Cache", isPresented: $showingClearCacheAlert) {
                 Button("Cancel", role: .cancel) { }
@@ -212,19 +186,6 @@ struct SettingsView: View {
             .sheet(isPresented: $showingOnboarding) {
                 OnboardingView()
                     .environmentObject(onboardingService)
-                    .environmentObject(authService)
-            }
-            .sheet(isPresented: $showingAuthentication) {
-                AuthenticationView(authService: authService)
-                    .interactiveDismissDisabled(false)
-            }
-            .alert("Sign Out", isPresented: $showingSignOutAlert) {
-                Button("Cancel", role: .cancel) { }
-                Button("Sign Out", role: .destructive) {
-                    signOut()
-                }
-            } message: {
-                Text("Are you sure you want to sign out? You'll need to sign in again to access your account.")
             }
         }
     }
@@ -271,47 +232,29 @@ struct SettingsView: View {
         Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "Unknown"
     }
     
-    private var accountStatusText: String {
-        if authService.isAuthenticated {
-            return "Signed In"
-        } else if authService.isAnonymous {
-            return "Guest"
-        } else {
-            return "Not Signed In"
-        }
-    }
-    
     // MARK: - Actions
     
     private func refreshCacheInfo() {
         isRefreshing = true
-        
+
         Task {
             let info = cacheService.getCacheInfo()
-            
+
             await MainActor.run {
                 cacheInfo = info
                 isRefreshing = false
             }
         }
     }
-    
+
+    private func refreshOfflineStorageInfo() {
+        offlineStorageInfo = offlineStorage.getOfflineStorageInfo()
+    }
+
     private func clearCache() {
         cacheService.clearAllCache()
         dependencies.bookRepository.clearCache()
         refreshCacheInfo()
-    }
-    
-    private func signOut() {
-        Task {
-            do {
-                try await authService.signOut()
-            } catch {
-                print("Sign out error: \(error)")
-                // Even if the server call fails, we still want to clear local auth state
-                // The auth service should handle this internally
-            }
-        }
     }
 }
 

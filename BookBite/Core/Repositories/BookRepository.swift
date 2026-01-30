@@ -18,6 +18,7 @@ protocol FavoriteRepository {
     func addToFavorites(_ bookId: String) async throws
     func removeFromFavorites(_ bookId: String) async throws
     func fetchFavorites() async throws -> [Book]
+    func downloadFavoriteForOffline(_ book: Book) async throws
 }
 
 protocol SummaryGenerationCapable {

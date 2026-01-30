@@ -268,3 +268,45 @@ $$ language 'plpgsql' security definer;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- =====================================================
+-- Audio Summaries Feature
+-- =====================================================
+
+-- Add audio columns to summaries table
+ALTER TABLE summaries ADD COLUMN audio_url TEXT;
+ALTER TABLE summaries ADD COLUMN audio_duration_seconds INTEGER;
+ALTER TABLE summaries ADD COLUMN audio_file_size_bytes BIGINT;
+ALTER TABLE summaries ADD COLUMN audio_script TEXT;
+ALTER TABLE summaries ADD COLUMN audio_voice_id TEXT;
+ALTER TABLE summaries ADD COLUMN audio_generated_at TIMESTAMP WITH TIME ZONE;
+
+-- Create audio generation jobs table for tracking generation progress
+CREATE TABLE audio_generation_jobs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    book_id UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+    status VARCHAR(30) CHECK (status IN ('pending', 'script_generating', 'audio_generating', 'uploading', 'completed', 'failed')),
+    script TEXT,
+    error_message TEXT,
+    retry_count INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+-- Create indexes for audio_generation_jobs
+CREATE INDEX idx_audio_jobs_book_id ON audio_generation_jobs(book_id);
+CREATE INDEX idx_audio_jobs_status ON audio_generation_jobs(status);
+
+-- Add trigger for audio_generation_jobs updated_at
+CREATE TRIGGER update_audio_jobs_updated_at BEFORE UPDATE ON audio_generation_jobs
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Enable RLS for audio_generation_jobs
+ALTER TABLE audio_generation_jobs ENABLE ROW LEVEL SECURITY;
+
+-- Create RLS policies for audio_generation_jobs (admin-only management)
+CREATE POLICY "Audio jobs are viewable by everyone" ON audio_generation_jobs
+    FOR SELECT USING (true);
+
+CREATE POLICY "Only admins can manage audio jobs" ON audio_generation_jobs
+    FOR ALL USING (auth.jwt() ->> 'role' = 'admin');

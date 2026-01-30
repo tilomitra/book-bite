@@ -113,6 +113,35 @@ cd server && npx tsx scripts/generate-extended-summaries.ts 2 30  # 2 books per 
 - Scripts include automatic deduplication to prevent duplicates
 - Each book gets both regular summary and extended summary via AI
 
+##### Audio Summary Generation
+```bash
+# Generate audio for a specific book by ID
+cd server && npm run generate-audio -- --book-id <uuid>
+
+# Search for a book by title and generate audio
+cd server && npm run generate-audio -- --title "Atomic Habits"
+
+# List books without audio summaries
+cd server && npm run generate-audio -- --list-missing
+
+# Dry run - generate script only (for cost preview, no audio)
+cd server && npm run generate-audio -- --title "Deep Work" --dry-run
+
+# Force regenerate with custom voice
+cd server && npm run generate-audio -- --book-id <uuid> --force --voice-id EXAVITQu4vr4xnSDxMaL
+```
+
+**Available ElevenLabs Voices:**
+- `pNInz6obpgDQGcFmaJgB` - Adam (default) - Warm, conversational male
+- `EXAVITQu4vr4xnSDxMaL` - Bella - Warm, friendly female
+- `21m00Tcm4TlvDq8ikWAM` - Rachel - Calm, clear female
+- `ErXwobaYiN019PkySvjV` - Antoni - Well-rounded male
+
+**Cost Estimate:**
+- Script generation (GPT-4o): ~$0.06/book
+- Audio generation (ElevenLabs Turbo v2.5): ~$0.88/book
+- Total: ~$0.94 per book audio summary
+
 ## Architecture
 
 ### Project Structure
@@ -130,10 +159,11 @@ cd server && npx tsx scripts/generate-extended-summaries.ts 2 30  # 2 books per 
       - `LocalBookRepository.swift`: Bundled JSON data source
       - `RemoteBookRepository.swift`: Server API data source
       - `HybridBookRepository.swift`: Smart fallback between remote/local
-    - `Services/`: Business services (NetworkService, CacheService, etc.)
+    - `Services/`: Business services (NetworkService, CacheService, AudioPlaybackService, OfflineStorageService, etc.)
   - `Features/`: Feature-specific UI and ViewModels
     - `Search/`: Book search functionality
     - `BookDetail/`: Detailed book view with summaries
+    - `AudioPlayer/`: Full-screen audio player for audio summaries
     - `Settings/`: App settings and data source management
   - `Shared/`: Reusable UI components
   - `Resources/Fixtures/`: Bundled JSON data for offline use
@@ -200,7 +230,7 @@ cd server && npx tsx scripts/generate-extended-summaries.ts 2 30  # 2 books per 
 - **TypeScript**: 5.3+
 - **Database**: PostgreSQL via Supabase
 - **Queue**: Redis for background jobs
-- **APIs**: Google Books API, OpenAI API
+- **APIs**: Google Books API, OpenAI API, ElevenLabs API
 
 ## Environment Setup
 
@@ -217,6 +247,7 @@ SUPABASE_SERVICE_KEY=your_supabase_service_key
 # External APIs
 GOOGLE_BOOKS_API_KEY=your_google_books_api_key
 OPENAI_API_KEY=your_openai_api_key
+ELEVENLABS_API_KEY=your_elevenlabs_api_key
 
 # Queue
 REDIS_URL=redis://localhost:6379

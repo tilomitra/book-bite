@@ -12,6 +12,7 @@ import chatRoutes from './routes/chatRoutes';
 import ratingsRoutes from './routes/ratingsRoutes';
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
+import audioRoutes from './routes/audioRoutes';
 import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
@@ -60,6 +61,7 @@ app.use('/api/search', searchRoutes);
 app.use('/api', ratingsRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api', audioRoutes);
 
 // Error handling middleware
 app.use(errorHandler);

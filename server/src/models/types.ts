@@ -80,6 +80,14 @@ export const SummarySchema = z.object({
   read_time_minutes: z.number().int(),
   style: SummaryStyleSchema,
   extended_summary: z.string().nullable().optional(),
+  // Audio fields
+  audio_url: z.string().url().nullable().optional(),
+  audio_duration_seconds: z.number().int().nullable().optional(),
+  audio_file_size_bytes: z.number().int().nullable().optional(),
+  audio_script: z.string().nullable().optional(),
+  audio_voice_id: z.string().nullable().optional(),
+  audio_generated_at: z.date().nullable().optional(),
+  // LLM metadata
   llm_model: z.string().optional(),
   llm_version: z.string().optional(),
   generation_date: z.date().optional(),
@@ -105,6 +113,42 @@ export const SummaryJobSchema = z.object({
 });
 
 export type SummaryJob = z.infer<typeof SummaryJobSchema>;
+
+// Audio Job Status enum
+export const AudioJobStatusSchema = z.enum([
+  'pending',
+  'script_generating',
+  'audio_generating',
+  'uploading',
+  'completed',
+  'failed'
+]);
+export type AudioJobStatus = z.infer<typeof AudioJobStatusSchema>;
+
+// Audio Generation Job schema
+export const AudioGenerationJobSchema = z.object({
+  id: z.string().uuid().optional(),
+  book_id: z.string().uuid(),
+  status: AudioJobStatusSchema,
+  script: z.string().nullable().optional(),
+  error_message: z.string().nullable().optional(),
+  retry_count: z.number().int().default(0),
+  created_at: z.date().optional(),
+  updated_at: z.date().optional()
+});
+
+export type AudioGenerationJob = z.infer<typeof AudioGenerationJobSchema>;
+
+// ElevenLabs Voice schema
+export const ElevenLabsVoiceSchema = z.object({
+  voice_id: z.string(),
+  name: z.string(),
+  category: z.string().optional(),
+  description: z.string().optional(),
+  preview_url: z.string().url().optional()
+});
+
+export type ElevenLabsVoice = z.infer<typeof ElevenLabsVoiceSchema>;
 
 // Chat Message Role enum
 export const MessageRoleSchema = z.enum(['user', 'assistant']);

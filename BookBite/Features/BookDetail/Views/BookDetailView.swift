@@ -3,9 +3,11 @@ import SwiftUI
 struct BookDetailView: View {
     @StateObject private var viewModel: BookDetailViewModel
     @StateObject private var colorExtractor = ColorExtractor()
+    @ObservedObject private var audioService = AudioPlaybackService.shared
     @State private var showingChatSheet = false
     @State private var showingSummarySheet = false
     @State private var showingAuthSheet = false
+    @State private var showingAudioPlayer = false
     @EnvironmentObject var authService: SupabaseAuthService
     
     init(book: Book) {
@@ -46,6 +48,16 @@ struct BookDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
+                // Offline status indicator
+                if viewModel.isDownloadingForOffline {
+                    ProgressView()
+                        .scaleEffect(0.7)
+                } else if viewModel.isAvailableOffline {
+                    Image(systemName: "arrow.down.circle.fill")
+                        .foregroundColor(.green)
+                        .font(.caption)
+                }
+
                 // Favorite button
                 Button(action: {
                     handleFavoriteButtonTapped()
@@ -58,7 +70,7 @@ struct BookDetailView: View {
                             .foregroundColor(viewModel.isFavorite ? .yellow : .primary)
                     }
                 }
-                
+
                 // Share button
                 Button(action: {
                     SharingService.shared.shareBook(viewModel.book)
@@ -106,6 +118,11 @@ struct BookDetailView: View {
         .sheet(isPresented: $showingAuthSheet) {
             AuthenticationView(authService: authService)
         }
+        .sheet(isPresented: $showingAudioPlayer) {
+            AudioPlayerView(audioService: audioService)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+        }
     }
     
     var actionButtonsSection: some View {
@@ -117,12 +134,12 @@ struct BookDetailView: View {
                 HStack(spacing: 12) {
                     Image(systemName: "message.circle.fill")
                         .font(.system(size: 20, weight: .medium))
-                    
+
                     Text("Chat with book")
                         .font(.system(size: 18, weight: .semibold))
-                    
+
                     Spacer()
-                    
+
                     Image(systemName: "chevron.right")
                         .font(.system(size: 14, weight: .semibold))
                 }
@@ -142,7 +159,49 @@ struct BookDetailView: View {
                 .shadow(color: .blue.opacity(0.3), radius: 12, x: 0, y: 6)
             }
             .buttonStyle(.plain)
-            
+
+            // Listen to Audio Summary (if available)
+            if let summary = viewModel.summary, summary.hasAudio {
+                Button(action: {
+                    audioService.loadAudio(for: viewModel.book, summary: summary, autoPlay: true)
+                    showingAudioPlayer = true
+                }) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "headphones")
+                            .font(.system(size: 20, weight: .medium))
+
+                        Text("Listen")
+                            .font(.system(size: 18, weight: .semibold))
+
+                        Spacer()
+
+                        if let duration = summary.formattedAudioDuration {
+                            Text(duration)
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 14, weight: .semibold))
+                    }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 18)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.orange, Color.orange.opacity(0.8)],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                    )
+                    .shadow(color: .orange.opacity(0.3), radius: 12, x: 0, y: 6)
+                }
+                .buttonStyle(.plain)
+            }
+
             // Secondary CTA - Read Extended Summary
             Button(action: {
                 showingSummarySheet = true
@@ -150,12 +209,12 @@ struct BookDetailView: View {
                 HStack(spacing: 12) {
                     Image(systemName: "doc.text.fill")
                         .font(.system(size: 20, weight: .medium))
-                    
+
                     Text("Read")
                         .font(.system(size: 18, weight: .semibold))
-                    
+
                     Spacer()
-                    
+
                     Image(systemName: "chevron.right")
                         .font(.system(size: 14, weight: .semibold))
                 }

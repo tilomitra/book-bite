@@ -2,7 +2,8 @@ import Foundation
 
 class HybridBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRepository {
     private let remoteRepository = RemoteBookRepository()
-    
+    private let offlineStorage = OfflineStorageService.shared
+
     init() {
         // Simplified - no network monitoring needed
     }
@@ -22,11 +23,35 @@ class HybridBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
     }
     
     func fetchBook(by id: String) async throws -> Book? {
-        return try await remoteRepository.fetchBook(by: id)
+        // Try remote first
+        do {
+            return try await remoteRepository.fetchBook(by: id)
+        } catch {
+            // Fall back to offline storage if available
+            if let offlineBook = offlineStorage.getOfflineBook(id: id) {
+                if AppConfiguration.shared.isLoggingEnabled {
+                    print("📖 HybridBookRepository: Using offline book for \(id)")
+                }
+                return offlineBook
+            }
+            throw error
+        }
     }
-    
+
     func fetchSummary(for bookId: String) async throws -> Summary? {
-        return try await remoteRepository.fetchSummary(for: bookId)
+        // Try remote first
+        do {
+            return try await remoteRepository.fetchSummary(for: bookId)
+        } catch {
+            // Fall back to offline storage if available
+            if let offlineSummary = offlineStorage.getOfflineSummary(bookId: bookId) {
+                if AppConfiguration.shared.isLoggingEnabled {
+                    print("📖 HybridBookRepository: Using offline summary for book \(bookId)")
+                }
+                return offlineSummary
+            }
+            throw error
+        }
     }
     
     func searchBooks(query: String) async throws -> [Book] {
@@ -79,6 +104,10 @@ class HybridBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
     
     func fetchFavorites() async throws -> [Book] {
         return try await remoteRepository.fetchFavorites()
+    }
+
+    func downloadFavoriteForOffline(_ book: Book) async throws {
+        try await remoteRepository.downloadFavoriteForOffline(book)
     }
     
     // MARK: - Cache Management

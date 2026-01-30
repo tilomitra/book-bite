@@ -164,16 +164,45 @@ class RemoteBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
     func fetchFavorites() async throws -> [Book] {
         struct FavoritesResponse: Codable {
             let favorites: [FavoriteItem]
-            
+
             struct FavoriteItem: Codable {
                 let id: String
                 let created_at: String
                 let books: Book
             }
         }
-        
+
         let response: FavoritesResponse = try await networkService.get(endpoint: "user/favorites")
         return response.favorites.map { $0.books }
+    }
+
+    func downloadFavoriteForOffline(_ book: Book) async throws {
+        let offlineStorage = OfflineStorageService.shared
+
+        // Fetch summary if available (don't fail if not available)
+        var summary: Summary?
+        do {
+            summary = try await fetchSummary(for: book.id)
+        } catch {
+            if AppConfiguration.shared.isLoggingEnabled {
+                print("⚠️ RemoteBookRepository: Summary not available for offline download: \(error)")
+            }
+        }
+
+        // Save book and summary for offline
+        try offlineStorage.downloadBookForOffline(book, summary: summary)
+
+        // Download cover image if available
+        if let coverURL = book.coverAssetName, !coverURL.isEmpty {
+            do {
+                try await offlineStorage.downloadCoverImage(from: coverURL, for: book.id)
+            } catch {
+                if AppConfiguration.shared.isLoggingEnabled {
+                    print("⚠️ RemoteBookRepository: Cover image not available for offline download: \(error)")
+                }
+                // Don't fail - book is still usable without cover
+            }
+        }
     }
     
     // MARK: - Cache Management

@@ -28,6 +28,8 @@ class BookDetailViewModel: ObservableObject {
     @Published var generationMessage = "Generating summary..."
     @Published var isFavorite = false
     @Published var isLoadingFavorite = false
+    @Published var isDownloadingForOffline = false
+    @Published var isAvailableOffline = false
     
     private let repository: BookRepository
     private let ratingsService: RatingsService
@@ -37,11 +39,12 @@ class BookDetailViewModel: ObservableObject {
         self.book = book
         self.repository = repository
         self.ratingsService = DependencyContainer.shared.ratingsService
-        
+
         Task {
             await loadSummary()
             await loadRating()
             await loadFavoriteStatus()
+            loadOfflineStatus()
         }
     }
     
@@ -250,10 +253,10 @@ class BookDetailViewModel: ObservableObject {
             }
             return
         }
-        
+
         let previousState = isFavorite
         isLoadingFavorite = true
-        
+
         do {
             if isFavorite {
                 try await favoriteRepository.removeFromFavorites(book.id)
@@ -261,11 +264,19 @@ class BookDetailViewModel: ObservableObject {
                 if AppConfiguration.shared.isLoggingEnabled {
                     print("✅ Removed book \(book.title) from favorites")
                 }
+                // Note: We intentionally do NOT remove offline data when unfavoriting
+                // User may re-favorite later
             } else {
                 try await favoriteRepository.addToFavorites(book.id)
                 isFavorite = true
                 if AppConfiguration.shared.isLoggingEnabled {
                     print("✅ Added book \(book.title) to favorites")
+                }
+
+                // Trigger offline download in background (don't block/fail the favorite action)
+                let bookToDownload = book
+                Task {
+                    await downloadForOffline(book: bookToDownload, favoriteRepository: favoriteRepository)
                 }
             }
         } catch {
@@ -275,7 +286,32 @@ class BookDetailViewModel: ObservableObject {
                 print("❌ Error toggling favorite status: \(error)")
             }
         }
-        
+
         isLoadingFavorite = false
+    }
+
+    // MARK: - Offline Management
+
+    func loadOfflineStatus() {
+        isAvailableOffline = OfflineStorageService.shared.isBookDownloadedForOffline(book.id)
+    }
+
+    private func downloadForOffline(book: Book, favoriteRepository: FavoriteRepository) async {
+        isDownloadingForOffline = true
+
+        do {
+            try await favoriteRepository.downloadFavoriteForOffline(book)
+            isAvailableOffline = true
+            if AppConfiguration.shared.isLoggingEnabled {
+                print("✅ Book \(book.title) downloaded for offline access")
+            }
+        } catch {
+            // Log but don't fail - offline download is a nice-to-have
+            if AppConfiguration.shared.isLoggingEnabled {
+                print("⚠️ Failed to download book for offline: \(error)")
+            }
+        }
+
+        isDownloadingForOffline = false
     }
 }
