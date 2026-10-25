@@ -10,26 +10,39 @@ export interface AudioGenerationOptions {
   useSpeakerBoost?: boolean;
 }
 
-const DEFAULT_VOICE_ID = 'pNInz6obpgDQGcFmaJgB'; // Adam - warm, conversational male voice
+const DEFAULT_VOICE_ID = 'ZF6FPAbjXT4488VcRRnw'; // Custom voice selected for book summaries
 const DEFAULT_MODEL_ID = 'eleven_turbo_v2_5'; // Turbo v2.5 - best for long-form
 
 export class ElevenLabsService {
-  private client: AxiosInstance;
-  private apiKey: string;
+  private client: AxiosInstance | null = null;
+  private apiKey: string | null = null;
 
   constructor() {
-    if (!process.env.ELEVENLABS_API_KEY) {
-      throw new Error('ElevenLabs API key not configured');
+    // Lazy initialization - don't throw on construction
+    this.apiKey = process.env.ELEVENLABS_API_KEY || null;
+    if (this.apiKey) {
+      this.client = axios.create({
+        baseURL: 'https://api.elevenlabs.io/v1',
+        headers: {
+          'xi-api-key': this.apiKey,
+          'Content-Type': 'application/json'
+        }
+      });
     }
+  }
 
-    this.apiKey = process.env.ELEVENLABS_API_KEY;
-    this.client = axios.create({
-      baseURL: 'https://api.elevenlabs.io/v1',
-      headers: {
-        'xi-api-key': this.apiKey,
-        'Content-Type': 'application/json'
-      }
-    });
+  /**
+   * Check if the service is configured and ready to use
+   */
+  isConfigured(): boolean {
+    return this.client !== null && this.apiKey !== null;
+  }
+
+  private ensureConfigured(): AxiosInstance {
+    if (!this.client || !this.apiKey) {
+      throw new Error('ElevenLabs API key not configured. Set ELEVENLABS_API_KEY environment variable.');
+    }
+    return this.client;
   }
 
   /**
@@ -51,8 +64,9 @@ export class ElevenLabsService {
       useSpeakerBoost = true
     } = options;
 
+    const client = this.ensureConfigured();
     try {
-      const response = await this.client.post(
+      const response = await client.post(
         `/text-to-speech/${voiceId}`,
         {
           text,
@@ -88,8 +102,9 @@ export class ElevenLabsService {
    * @returns List of available voices
    */
   async getVoices(): Promise<ElevenLabsVoice[]> {
+    const client = this.ensureConfigured();
     try {
-      const response = await this.client.get('/voices');
+      const response = await client.get('/voices');
       return response.data.voices.map((voice: any) => ({
         voice_id: voice.voice_id,
         name: voice.name,
@@ -115,8 +130,9 @@ export class ElevenLabsService {
     characterCount: number;
     characterRemaining: number;
   }> {
+    const client = this.ensureConfigured();
     try {
-      const response = await this.client.get('/user/subscription');
+      const response = await client.get('/user/subscription');
       const { character_limit, character_count } = response.data;
       return {
         characterLimit: character_limit,

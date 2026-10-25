@@ -23,11 +23,37 @@ class NetworkService: ObservableObject {
     
     // MARK: - Generic Request Methods
     
+    /// Decoder for server/Supabase JSON; dates come as ISO8601, with or without fractional seconds
+    static func makeDecoder() -> JSONDecoder {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let container = try decoder.singleValueContainer()
+            let dateString = try container.decode(String.self)
+            
+            // Try ISO8601 with microseconds first (server format)
+            let microsecondsFormatter = ISO8601DateFormatter()
+            microsecondsFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            if let date = microsecondsFormatter.date(from: dateString) {
+                return date
+            }
+            
+            // Fallback to standard ISO8601
+            let standardFormatter = ISO8601DateFormatter()
+            if let date = standardFormatter.date(from: dateString) {
+                return date
+            }
+            
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date format: \(dateString)")
+        }
+        return decoder
+    }
+    
     func request<T: Codable>(
         endpoint: String,
         method: HTTPMethod = .GET,
         body: Data? = nil,
-        headers: [String: String]? = nil
+        headers: [String: String]? = nil,
+        timeout: TimeInterval = Configuration.timeoutInterval
     ) async throws -> T {
         // Handle query parameters in endpoint
         let url: URL
@@ -45,7 +71,7 @@ class NetworkService: ObservableObject {
         var request = URLRequest(url: url)
         
         request.httpMethod = method.rawValue
-        request.timeoutInterval = Configuration.timeoutInterval
+        request.timeoutInterval = timeout
         
         // Set default headers
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -90,27 +116,16 @@ class NetworkService: ObservableObject {
             // Handle different status codes
             switch httpResponse.statusCode {
             case 200...299:
-                let decoder = JSONDecoder()
-                decoder.dateDecodingStrategy = .custom { decoder in
-                    let container = try decoder.singleValueContainer()
-                    let dateString = try container.decode(String.self)
-                    
-                    // Try ISO8601 with microseconds first (server format)
-                    let microsecondsFormatter = ISO8601DateFormatter()
-                    microsecondsFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-                    if let date = microsecondsFormatter.date(from: dateString) {
-                        return date
+                // Empty bodies (e.g. 204 from DELETE) decode as an empty object
+                let payload = data.isEmpty ? Data("{}".utf8) : data
+                do {
+                    return try Self.makeDecoder().decode(T.self, from: payload)
+                } catch {
+                    if AppConfiguration.shared.isLoggingEnabled {
+                        print("❌ NetworkService: Decoding \(T.self) failed: \(error)")
                     }
-                    
-                    // Fallback to standard ISO8601
-                    let standardFormatter = ISO8601DateFormatter()
-                    if let date = standardFormatter.date(from: dateString) {
-                        return date
-                    }
-                    
-                    throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date format: \(dateString)")
+                    throw NetworkError.decodingError(error)
                 }
-                return try decoder.decode(T.self, from: data)
             case 400...499:
                 if AppConfiguration.shared.isLoggingEnabled {
                     print("❌ NetworkService: Client error \(httpResponse.statusCode)")
@@ -134,8 +149,10 @@ class NetworkService: ObservableObject {
         } catch let error as NetworkError {
             throw error
         } catch {
-            // Retry logic for network failures
-            if retryCount < Configuration.maxRetryAttempts {
+            // Only retry transient failures of idempotent requests; never retry cancellation
+            // or non-GET requests (a retried POST can create duplicates server-side)
+            let isCancelled = error is CancellationError || (error as? URLError)?.code == .cancelled
+            if !isCancelled && request.httpMethod == HTTPMethod.GET.rawValue && retryCount < Configuration.maxRetryAttempts {
                 let delay = Double(retryCount + 1)
                 try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
                 return try await performRequestWithRetry(request, retryCount: retryCount + 1)
@@ -150,9 +167,9 @@ class NetworkService: ObservableObject {
         return try await request(endpoint: endpoint, method: .GET, headers: headers)
     }
     
-    func post<T: Codable>(endpoint: String, body: Encodable, headers: [String: String]? = nil) async throws -> T {
+    func post<T: Codable>(endpoint: String, body: Encodable, headers: [String: String]? = nil, timeout: TimeInterval = Configuration.timeoutInterval) async throws -> T {
         let data = try JSONEncoder().encode(body)
-        return try await request(endpoint: endpoint, method: .POST, body: data, headers: headers)
+        return try await request(endpoint: endpoint, method: .POST, body: data, headers: headers, timeout: timeout)
     }
     
     func put<T: Codable>(endpoint: String, body: Encodable, headers: [String: String]? = nil) async throws -> T {
@@ -201,3 +218,11 @@ enum NetworkError: LocalizedError {
 }
 
 private struct EmptyResponse: Codable {}
+extension CharacterSet {
+    /// `.urlQueryAllowed` minus the characters that delimit or alter query values (`&`, `=`, `+`, `#`, `?`)
+    static let urlQueryValueAllowed: CharacterSet = {
+        var set = CharacterSet.urlQueryAllowed
+        set.remove(charactersIn: "&=+#?")
+        return set
+    }()
+}

@@ -183,29 +183,34 @@ struct EmptyBooksView: View {
 struct ErrorBooksView: View {
     let error: Error
     let retry: () -> Void
-    
+
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "wifi.slash")
                 .font(.system(size: 50))
-                .foregroundColor(.red)
-            
+                .foregroundColor(.primary.opacity(0.6))
+
             Text("Loading Error")
                 .font(.title3)
                 .fontWeight(.semibold)
-            
+
             Text("Unable to load books. \(error.localizedDescription)")
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
-            
-            Button("Try Again") {
-                retry()
+
+            Button(action: retry) {
+                Text("Try Again")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(Color(UIColor.systemBackground))
+                    .padding(.horizontal, 32)
+                    .padding(.vertical, 14)
+                    .background(Color.primary)
+                    .clipShape(Capsule())
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            
+
             Spacer()
         }
         .padding(.top, 100)

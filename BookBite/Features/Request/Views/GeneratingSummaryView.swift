@@ -34,12 +34,12 @@ struct GeneratingSummaryView: View {
                     
                     // Loading overlay
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.blue.opacity(0.1))
+                        .fill(Color.primary.opacity(0.08))
                         .frame(width: 120, height: 160)
                         .overlay(
                             ProgressView()
                                 .scaleEffect(1.2)
-                                .tint(.blue)
+                                .tint(.primary)
                         )
                 }
                 
@@ -66,7 +66,7 @@ struct GeneratingSummaryView: View {
                 HStack(spacing: 8) {
                     Image(systemName: "brain.head.profile")
                         .font(.title2)
-                        .foregroundColor(.blue)
+                        .foregroundColor(.primary)
                         .rotationEffect(.degrees(animationRotation))
                         .animation(
                             Animation.linear(duration: 2.0).repeatForever(autoreverses: false),
@@ -83,20 +83,20 @@ struct GeneratingSummaryView: View {
                     StatusRow(
                         icon: "checkmark.circle.fill",
                         text: "Book added to library",
-                        color: .green
+                        color: DesignSystem.Colors.badgeGreen
                     )
-                    
+
                     StatusRow(
                         icon: "sparkles",
                         text: "Generating intelligent summary",
-                        color: .blue,
+                        color: .primary,
                         isAnimating: true
                     )
-                    
+
                     StatusRow(
                         icon: "doc.text.magnifyingglass",
                         text: "Creating extended analysis",
-                        color: .orange,
+                        color: .primary,
                         isAnimating: true
                     )
                 }

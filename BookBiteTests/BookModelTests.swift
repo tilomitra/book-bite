@@ -12,11 +12,11 @@ struct BookModelTests {
             "title": "Test Book",
             "subtitle": "A Test Subtitle",
             "authors": ["Test Author"],
-            "publishedYear": 2023,
+            "published_year": 2023,
             "categories": ["Test Category"],
-            "coverAssetName": "test_cover",
+            "cover_url": "test_cover",
             "description": "Test description",
-            "sourceAttribution": ["Test Source"]
+            "source_attribution": ["Test Source"]
         }
         """
         
@@ -38,11 +38,11 @@ struct BookModelTests {
             "id": "test_002",
             "title": "Test Book 2",
             "authors": ["Author One", "Author Two", "Author Three"],
-            "publishedYear": 2023,
+            "published_year": 2023,
             "categories": ["Test"],
-            "coverAssetName": "test_cover",
+            "cover_url": "test_cover",
             "description": "Test description",
-            "sourceAttribution": ["Test Source"]
+            "source_attribution": ["Test Source"]
         }
         """
         
@@ -59,11 +59,11 @@ struct BookModelTests {
             "id": "test_003",
             "title": "Minimal Book",
             "authors": ["Test Author"],
-            "publishedYear": 2023,
+            "published_year": 2023,
             "categories": ["Test"],
-            "coverAssetName": "test_cover",
+            "cover_url": "test_cover",
             "description": "Test description",
-            "sourceAttribution": ["Test Source"]
+            "source_attribution": ["Test Source"]
         }
         """
         

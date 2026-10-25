@@ -158,39 +158,47 @@ struct AudioPlayerView: View {
     // MARK: - Controls
 
     private var controlsView: some View {
-        HStack(spacing: 40) {
-            // Skip backward
-            Button(action: { audioService.skipBackward() }) {
-                Image(systemName: "gobackward.15")
-                    .font(.system(size: 32))
-                    .foregroundColor(.primary)
+        VStack(spacing: 12) {
+            if let error = audioService.error {
+                Text(error.localizedDescription)
+                    .font(.footnote)
+                    .foregroundColor(DesignSystem.Colors.error)
+                    .multilineTextAlignment(.center)
             }
+            HStack(spacing: 40) {
+                // Skip backward
+                Button(action: { audioService.skipBackward() }) {
+                    Image(systemName: "gobackward.15")
+                        .font(.system(size: 32))
+                        .foregroundColor(.primary)
+                }
 
-            // Play/Pause
-            Button(action: { audioService.togglePlayPause() }) {
-                ZStack {
-                    Circle()
-                        .fill(Color.primary)
-                        .frame(width: 72, height: 72)
+                // Play/Pause
+                Button(action: { audioService.togglePlayPause() }) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.primary)
+                            .frame(width: 72, height: 72)
 
-                    if audioService.isLoading {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: Color(UIColor.systemBackground)))
-                    } else {
-                        Image(systemName: audioService.isPlaying ? "pause.fill" : "play.fill")
-                            .font(.system(size: 30))
-                            .foregroundColor(Color(UIColor.systemBackground))
-                            .offset(x: audioService.isPlaying ? 0 : 2)
+                        if audioService.isLoading {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: Color(UIColor.systemBackground)))
+                        } else {
+                            Image(systemName: audioService.isPlaying ? "pause.fill" : "play.fill")
+                                .font(.system(size: 30))
+                                .foregroundColor(Color(UIColor.systemBackground))
+                                .offset(x: audioService.isPlaying ? 0 : 2)
+                        }
                     }
                 }
-            }
-            .disabled(audioService.isLoading)
+                .disabled(audioService.isLoading)
 
-            // Skip forward
-            Button(action: { audioService.skipForward() }) {
-                Image(systemName: "goforward.15")
-                    .font(.system(size: 32))
-                    .foregroundColor(.primary)
+                // Skip forward
+                Button(action: { audioService.skipForward() }) {
+                    Image(systemName: "goforward.15")
+                        .font(.system(size: 32))
+                        .foregroundColor(.primary)
+                }
             }
         }
     }
@@ -222,11 +230,12 @@ struct AudioPlayerView: View {
             VStack(spacing: 4) {
                 if isDownloading {
                     ProgressView()
+                        .tint(.primary)
                         .frame(height: 18)
                 } else if downloadComplete || hasOfflineAudio {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 18))
-                        .foregroundColor(.green)
+                        .foregroundColor(DesignSystem.Colors.badgeGreen)
                 } else {
                     Image(systemName: "arrow.down.circle")
                         .font(.system(size: 18))
@@ -290,7 +299,8 @@ struct SpeedPickerView: View {
 
                             if rate == currentRate {
                                 Image(systemName: "checkmark")
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(.primary)
+                                    .fontWeight(.semibold)
                             }
                         }
                     }

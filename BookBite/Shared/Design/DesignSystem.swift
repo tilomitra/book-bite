@@ -2,131 +2,106 @@ import SwiftUI
 
 // MARK: - Design System
 struct DesignSystem {
-    
+
     // MARK: - Colors
     struct Colors {
-        // Primary Brand Colors
-        static let primary = Color("PrimaryColor")
-        static let secondary = Color("SecondaryColor")
-        static let accent = Color("AccentColor")
-        
-        // Playful Color Palette
-        static let vibrantBlue = Color(red: 0.2, green: 0.6, blue: 1.0)
-        static let vibrantPurple = Color(red: 0.6, green: 0.3, blue: 1.0)
-        static let vibrantPink = Color(red: 1.0, green: 0.3, blue: 0.7)
-        static let vibrantGreen = Color(red: 0.3, green: 0.8, blue: 0.5)
-        static let vibrantOrange = Color(red: 1.0, green: 0.6, blue: 0.2)
-        static let vibrantYellow = Color(red: 1.0, green: 0.8, blue: 0.2)
-        
+        // MARK: - Monochrome UI Colors
+        // Primary colors for buttons, icons, and UI elements
+        static let primary = Color.primary
+        static let secondary = Color.secondary
+        static let accent = Color.primary
+
+        // Monochrome Palette for UI elements
+        static let monoDark = Color(white: 0.15)
+        static let monoMedium = Color(white: 0.45)
+        static let monoLight = Color(white: 0.75)
+        static let monoLighter = Color(white: 0.92)
+
+        // Legacy color references (now monochrome)
+        static let vibrantBlue = monoMedium
+        static let vibrantPurple = monoMedium
+        static let vibrantPink = monoMedium
+        static let vibrantGreen = monoMedium
+        static let vibrantOrange = monoMedium
+        static let vibrantYellow = monoMedium
+
         // Neutral Colors
         static let background = Color("BackgroundColor")
         static let surface = Color("SurfaceColor")
         static let cardBackground = Color("CardBackground")
-        
+
         // Text Colors
         static let textPrimary = Color("TextPrimary")
         static let textSecondary = Color("TextSecondary")
         static let textTertiary = Color("TextTertiary")
-        
-        // Semantic Colors
-        static let success = vibrantGreen
-        static let warning = vibrantOrange
-        static let error = vibrantPink
-        static let info = vibrantBlue
-        
-        // NYT Bestseller Colors
+
+        // MARK: - Badge Colors (preserved for visual hierarchy)
+        // These are the only colored elements besides book covers
+        static let badgeGreen = Color(red: 0.2, green: 0.78, blue: 0.35)
+        static let badgeOrange = Color(red: 1.0, green: 0.58, blue: 0.0)
+        static let badgeYellow = Color(red: 0.95, green: 0.77, blue: 0.06)
+        static let badgeRed = Color(red: 1.0, green: 0.27, blue: 0.23)
+
+        // Semantic Colors (for badges and status indicators only)
+        static let success = badgeGreen
+        static let warning = badgeOrange
+        static let error = badgeRed
+        static let info = monoMedium
+
+        // NYT Bestseller Badge Colors (preserved)
         static let nytGold = Color(red: 1.0, green: 0.84, blue: 0.0)
         static let nytGoldAccent = Color(red: 0.8, green: 0.65, blue: 0.0)
-        
-        // Genre/Category Colors
-        static let businessColor = vibrantBlue
-        static let selfHelpColor = vibrantGreen
-        static let biographyColor = vibrantPurple
-        static let scienceColor = vibrantOrange
-        static let politicsColor = Color(red: 0.8, green: 0.2, blue: 0.3)
-        static let healthColor = Color(red: 0.2, green: 0.8, blue: 0.6)
-        static let historyColor = Color(red: 0.6, green: 0.4, blue: 0.2)
-        static let psychologyColor = vibrantPink
-        static let technologyColor = Color(red: 0.3, green: 0.5, blue: 0.9)
-        static let philosophyColor = Color(red: 0.5, green: 0.3, blue: 0.7)
-        static let economicsColor = Color(red: 0.2, green: 0.7, blue: 0.5)
-        static let leadershipColor = Color(red: 0.9, green: 0.5, blue: 0.2)
-        static let entrepreneurshipColor = Color(red: 0.7, green: 0.4, blue: 0.9)
-        static let memoirColor = Color(red: 0.6, green: 0.2, blue: 0.8)
-        static let educationColor = Color(red: 0.4, green: 0.6, blue: 0.8)
-        static let artColor = Color(red: 0.9, green: 0.3, blue: 0.5)
-        static let musicColor = Color(red: 0.7, green: 0.2, blue: 0.6)
-        static let travelColor = Color(red: 0.3, green: 0.7, blue: 0.8)
-        static let cookingColor = Color(red: 0.8, green: 0.6, blue: 0.3)
-        static let nutritionColor = Color(red: 0.4, green: 0.8, blue: 0.4)
-        static let fitnessColor = Color(red: 0.9, green: 0.4, blue: 0.3)
-        static let mentalHealthColor = Color(red: 0.5, green: 0.7, blue: 0.9)
-        static let innovationColor = Color(red: 0.8, green: 0.3, blue: 0.8)
-        static let marketingColor = Color(red: 0.6, green: 0.5, blue: 0.9)
-        static let productivityColor = Color(red: 0.3, green: 0.8, blue: 0.7)
-        static let mindfulnessColor = Color(red: 0.4, green: 0.6, blue: 0.9)
-        static let biologyColor = Color(red: 0.3, green: 0.7, blue: 0.4)
-        static let physicsColor = Color(red: 0.5, green: 0.4, blue: 0.8)
-        static let medicineColor = Color(red: 0.7, green: 0.3, blue: 0.5)
-        static let environmentColor = Color(red: 0.2, green: 0.6, blue: 0.4)
-        static let spiritualityColor = Color(red: 0.6, green: 0.4, blue: 0.8)
-        static let sociologyColor = Color(red: 0.5, green: 0.6, blue: 0.7)
-        static let anthropologyColor = Color(red: 0.7, green: 0.5, blue: 0.6)
-        static let personalDevelopmentColor = Color(red: 0.4, green: 0.7, blue: 0.6)
-        
+
+        // Star Rating Color (preserved for ratings display)
+        static let starColor = Color(red: 1.0, green: 0.58, blue: 0.0)
+
+        // Genre/Category Colors (now monochrome for tags)
+        static let genreTagColor = monoMedium
+        static let businessColor = monoMedium
+        static let selfHelpColor = monoMedium
+        static let biographyColor = monoMedium
+        static let scienceColor = monoMedium
+        static let politicsColor = monoMedium
+        static let healthColor = monoMedium
+        static let historyColor = monoMedium
+        static let psychologyColor = monoMedium
+        static let technologyColor = monoMedium
+        static let philosophyColor = monoMedium
+        static let economicsColor = monoMedium
+        static let leadershipColor = monoMedium
+        static let entrepreneurshipColor = monoMedium
+        static let memoirColor = monoMedium
+        static let educationColor = monoMedium
+        static let artColor = monoMedium
+        static let musicColor = monoMedium
+        static let travelColor = monoMedium
+        static let cookingColor = monoMedium
+        static let nutritionColor = monoMedium
+        static let fitnessColor = monoMedium
+        static let mentalHealthColor = monoMedium
+        static let innovationColor = monoMedium
+        static let marketingColor = monoMedium
+        static let productivityColor = monoMedium
+        static let mindfulnessColor = monoMedium
+        static let biologyColor = monoMedium
+        static let physicsColor = monoMedium
+        static let medicineColor = monoMedium
+        static let environmentColor = monoMedium
+        static let spiritualityColor = monoMedium
+        static let sociologyColor = monoMedium
+        static let anthropologyColor = monoMedium
+        static let personalDevelopmentColor = monoMedium
+
         static func genreColor(for genre: String) -> Color {
-            switch genre.lowercased() {
-            case "business": return businessColor
-            case "self-help", "self help": return selfHelpColor
-            case "biography": return biographyColor
-            case "science": return scienceColor
-            case "politics": return politicsColor
-            case "health", "wellness": return healthColor
-            case "history": return historyColor
-            case "psychology": return psychologyColor
-            default: return vibrantBlue
-            }
+            // All genres now use monochrome
+            return genreTagColor
         }
-        
+
         static func categoryColor(for category: String) -> Color {
+            // Only NYT Bestsellers gets gold, everything else is monochrome
             switch category.lowercased() {
             case "nyt bestsellers": return nytGold
-            case "business": return businessColor
-            case "self-help", "self help": return selfHelpColor
-            case "biography": return biographyColor
-            case "science": return scienceColor
-            case "politics": return politicsColor
-            case "health", "wellness": return healthColor
-            case "history", "american history": return historyColor
-            case "psychology": return psychologyColor
-            case "technology": return technologyColor
-            case "philosophy": return philosophyColor
-            case "economics": return economicsColor
-            case "leadership": return leadershipColor
-            case "entrepreneurship": return entrepreneurshipColor
-            case "memoir": return memoirColor
-            case "education": return educationColor
-            case "art": return artColor
-            case "music": return musicColor
-            case "travel": return travelColor
-            case "cooking": return cookingColor
-            case "nutrition": return nutritionColor
-            case "fitness": return fitnessColor
-            case "mental health": return mentalHealthColor
-            case "innovation": return innovationColor
-            case "marketing": return marketingColor
-            case "productivity": return productivityColor
-            case "mindfulness": return mindfulnessColor
-            case "biology": return biologyColor
-            case "physics": return physicsColor
-            case "medicine": return medicineColor
-            case "environment": return environmentColor
-            case "spirituality", "religion": return spiritualityColor
-            case "sociology": return sociologyColor
-            case "anthropology": return anthropologyColor
-            case "personal development": return personalDevelopmentColor
-            case "world war": return historyColor
-            default: return vibrantBlue
+            default: return genreTagColor
             }
         }
     }
@@ -175,10 +150,11 @@ struct DesignSystem {
     
     // MARK: - Shadows
     struct Shadow {
-        static let small = (color: Color.black.opacity(0.1), radius: CGFloat(2), x: CGFloat(0), y: CGFloat(1))
-        static let medium = (color: Color.black.opacity(0.15), radius: CGFloat(4), x: CGFloat(0), y: CGFloat(2))
-        static let large = (color: Color.black.opacity(0.2), radius: CGFloat(8), x: CGFloat(0), y: CGFloat(4))
-        static let nytGlow = (color: Colors.nytGold.opacity(0.3), radius: CGFloat(6), x: CGFloat(0), y: CGFloat(0))
+        static let small = (color: Color.black.opacity(0.08), radius: CGFloat(2), x: CGFloat(0), y: CGFloat(1))
+        static let medium = (color: Color.black.opacity(0.12), radius: CGFloat(6), x: CGFloat(0), y: CGFloat(3))
+        static let large = (color: Color.black.opacity(0.16), radius: CGFloat(12), x: CGFloat(0), y: CGFloat(6))
+        // NYT cards now use subtle black shadow instead of gold glow
+        static let nytGlow = (color: Color.black.opacity(0.12), radius: CGFloat(8), x: CGFloat(0), y: CGFloat(4))
     }
     
     // MARK: - Animations
@@ -211,13 +187,13 @@ extension View {
             .clipShape(RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium))
             .overlay(
                 RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
-                    .stroke(DesignSystem.Colors.nytGold.opacity(0.3), lineWidth: 1)
+                    .stroke(Color.primary.opacity(0.1), lineWidth: 1)
             )
             .shadow(
-                color: DesignSystem.Shadow.nytGlow.color,
-                radius: DesignSystem.Shadow.nytGlow.radius,
-                x: DesignSystem.Shadow.nytGlow.x,
-                y: DesignSystem.Shadow.nytGlow.y
+                color: DesignSystem.Shadow.medium.color,
+                radius: DesignSystem.Shadow.medium.radius,
+                x: DesignSystem.Shadow.medium.x,
+                y: DesignSystem.Shadow.medium.y
             )
     }
     
@@ -226,11 +202,11 @@ extension View {
             .padding(DesignSystem.Spacing.md)
             .background(
                 RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large)
-                    .fill(color.opacity(0.08))
+                    .fill(Color.primary.opacity(0.03))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large)
-                    .stroke(color.opacity(0.2), lineWidth: 1)
+                    .stroke(Color.primary.opacity(0.08), lineWidth: 1)
             )
     }
     

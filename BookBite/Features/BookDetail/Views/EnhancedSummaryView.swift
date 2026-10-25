@@ -194,18 +194,12 @@ struct ExtendedSummaryContent: View {
                                 Text("Generate a summary")
                                     .font(.system(size: 16, weight: .semibold))
                             }
-                            .foregroundColor(.white)
+                            .foregroundColor(Color(UIColor.systemBackground))
                             .padding(.horizontal, 24)
-                            .padding(.vertical, 12)
-                            .background(
-                                LinearGradient(
-                                    colors: [.blue, .purple],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
+                            .padding(.vertical, 14)
+                            .background(Color.primary)
                             .clipShape(Capsule())
-                            .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
+                            .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 4)
                         }
                         .buttonStyle(.plain)
                     }
@@ -330,17 +324,17 @@ struct ApplicationContent: View {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
                             Image(systemName: "person.2")
-                                .foregroundColor(.green)
+                                .foregroundColor(.primary)
                             Text("Who Should Read This")
                                 .font(.headline)
                         }
-                        
+
                         Text(summary.whoShouldRead)
                             .font(.body)
                             .foregroundColor(.primary.opacity(0.8))
                     }
                     .padding()
-                    .background(Color.green.opacity(0.1))
+                    .background(Color.primary.opacity(0.06))
                     .cornerRadius(12)
                 }
             }
@@ -352,11 +346,11 @@ struct ApplicationContent: View {
 struct ApplicationCard: View {
     let point: ApplicationPoint
     let index: Int
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(.green)
+                .foregroundColor(.primary)
                 .font(.system(size: 20))
             
             VStack(alignment: .leading, spacing: 8) {
@@ -385,36 +379,36 @@ struct AnalysisContent: View {
                     AnalysisSection(
                         title: "Common Pitfalls",
                         icon: "exclamationmark.triangle",
-                        color: .orange,
+                        color: .primary,
                         items: summary.commonPitfalls
                     )
                 }
-                
+
                 if !summary.critiques.isEmpty {
                     AnalysisSection(
                         title: "Critical Perspectives",
                         icon: "quote.bubble",
-                        color: .purple,
+                        color: .primary,
                         items: summary.critiques
                     )
                 }
-                
+
                 if !summary.limitations.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
                             Image(systemName: "info.circle")
-                                .foregroundColor(.red)
+                                .foregroundColor(.primary.opacity(0.7))
                             Text("Limitations")
                                 .font(.headline)
                         }
-                        
+
                         Text(summary.limitations)
                             .font(.body)
                             .foregroundColor(.primary.opacity(0.8))
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
-                    .background(Color.red.opacity(0.1))
+                    .background(Color.primary.opacity(0.06))
                     .cornerRadius(12)
                 }
             }
@@ -499,8 +493,8 @@ struct ReferenceCard: View {
                 
                 Spacer()
                 
-                if let url = citation.url {
-                    Link(destination: URL(string: url)!) {
+                if let urlString = citation.url, let url = URL(string: urlString) {
+                    Link(destination: url) {
                         Image(systemName: "link")
                             .font(.caption)
                             .foregroundColor(.accentColor)

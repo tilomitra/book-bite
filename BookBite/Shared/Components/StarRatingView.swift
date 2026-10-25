@@ -36,13 +36,13 @@ struct StarRatingView: View {
     
     private func starColor(for index: Int) -> Color {
         let threshold = Double(index)
-        
+
         if rating >= threshold {
-            return .orange
+            return DesignSystem.Colors.starColor
         } else if rating >= threshold - 0.5 {
-            return .orange
+            return DesignSystem.Colors.starColor
         } else {
-            return .gray.opacity(0.3)
+            return .gray.opacity(0.25)
         }
     }
 }
@@ -117,7 +117,7 @@ struct BookRatingDisplayView: View {
 struct RatingDistributionView: View {
     let distribution: BookRating.RatingDistribution
     let totalCount: Int
-    
+
     var body: some View {
         VStack(spacing: 4) {
             ForEach([5, 4, 3, 2, 1], id: \.self) { star in
@@ -125,15 +125,15 @@ struct RatingDistributionView: View {
                     Text("\(star)")
                         .font(.caption2)
                         .frame(width: 12)
-                    
+
                     Image(systemName: "star.fill")
                         .font(.caption2)
-                        .foregroundColor(.orange)
-                    
+                        .foregroundColor(DesignSystem.Colors.starColor)
+
                     ProgressView(value: Double(count(for: star)), total: Double(totalCount))
-                        .progressViewStyle(LinearProgressViewStyle(tint: .orange))
+                        .progressViewStyle(LinearProgressViewStyle(tint: DesignSystem.Colors.starColor))
                         .frame(height: 4)
-                    
+
                     Text("\(count(for: star))")
                         .font(.caption2)
                         .foregroundColor(.secondary)

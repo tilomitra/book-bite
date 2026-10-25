@@ -7,13 +7,13 @@ struct ApplicationPointRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(.green)
+                .foregroundColor(.primary)
                 .font(.title3)
-            
+
             VStack(alignment: .leading, spacing: 6) {
                 Text(point.action)
                     .font(.body)
-                
+
                 if !point.tags.isEmpty {
                     HStack(spacing: 6) {
                         ForEach(point.tags, id: \.self) { tag in
@@ -21,7 +21,7 @@ struct ApplicationPointRow: View {
                                 .font(.caption2)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
-                                .background(Color.green.opacity(0.15))
+                                .background(Color.primary.opacity(0.1))
                                 .cornerRadius(4)
                         }
                     }

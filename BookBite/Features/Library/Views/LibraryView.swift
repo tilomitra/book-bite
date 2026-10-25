@@ -12,7 +12,7 @@ struct LibraryView: View {
     }
     
     var body: some View {
-        NavigationStack {
+        Group {
             VStack(spacing: 0) {
                 // Search Bar
                 LibrarySearchBarView(
@@ -97,29 +97,34 @@ struct CategoryGridView: View {
 struct CategoriesErrorView: View {
     let error: Error
     let retry: () -> Void
-    
+
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 50))
-                .foregroundColor(.red)
-            
+                .foregroundColor(.primary.opacity(0.6))
+
             Text("Unable to Load Categories")
                 .font(.title3)
                 .fontWeight(.semibold)
-            
+
             Text(error.localizedDescription)
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
-            
-            Button("Try Again") {
-                retry()
+
+            Button(action: retry) {
+                Text("Try Again")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(Color(UIColor.systemBackground))
+                    .padding(.horizontal, 32)
+                    .padding(.vertical, 14)
+                    .background(Color.primary)
+                    .clipShape(Capsule())
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            
+
             Spacer()
         }
         .padding(.top, 100)
@@ -181,12 +186,12 @@ struct LibrarySearchBarView: View {
                 Button(action: onSearchSubmit) {
                     Text("Search")
                         .font(.subheadline)
-                        .fontWeight(.medium)
-                        .foregroundColor(.white)
+                        .fontWeight(.semibold)
+                        .foregroundColor(Color(UIColor.systemBackground))
                         .padding(.horizontal, 16)
                         .padding(.vertical, 10)
-                        .background(searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? Color.gray : Color.blue)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .background(searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? Color.gray : Color.primary)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
                 .disabled(searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }

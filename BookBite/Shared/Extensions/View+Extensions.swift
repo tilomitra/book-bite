@@ -21,7 +21,8 @@ extension View {
 }
 
 extension Color {
-    static let confidenceHigh = Color.green
-    static let confidenceMedium = Color.orange
-    static let confidenceLow = Color.yellow
+    // Badge colors - preserved for semantic meaning
+    static let confidenceHigh = DesignSystem.Colors.badgeGreen
+    static let confidenceMedium = DesignSystem.Colors.badgeOrange
+    static let confidenceLow = DesignSystem.Colors.badgeYellow
 }

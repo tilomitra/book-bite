@@ -118,7 +118,14 @@ class BookDetailViewModel: ObservableObject {
             if AppConfiguration.shared.isLoggingEnabled {
                 print("✅ BookDetailViewModel: Got job ID \(job.id), starting polling")
             }
-            await pollForSummaryCompletion(jobId: job.id)
+            if job.status == .completed {
+                // Summary already exists: load it directly instead of polling
+                summary = try await repository.fetchSummary(for: book.id)
+                isLoadingSummary = false
+                isGeneratingSummary = false
+            } else {
+                await pollForSummaryCompletion(jobId: job.id)
+            }
         } catch {
             if AppConfiguration.shared.isLoggingEnabled {
                 print("❌ BookDetailViewModel: Error generating summary: \(error)")
@@ -211,7 +218,7 @@ class BookDetailViewModel: ObservableObject {
     
     var readingTime: String {
         guard let summary = summary else { return "Calculating..." }
-        return "\(summary.readTimeMinutes) min read"
+        return "\(summary.summaryReadTimeMinutes) min read"
     }
     
     var publicationInfo: String {

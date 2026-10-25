@@ -40,8 +40,8 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction) {
     return res.status(401).json({ error: 'Not authenticated' });
   }
   
-  // Check if user has admin role in user metadata
-  const userRole = req.user.user_metadata?.role || req.user.app_metadata?.role;
+  // Only trust app_metadata: user_metadata is writable by the user themselves
+  const userRole = req.user.app_metadata?.role;
   
   if (userRole !== 'admin') {
     return res.status(403).json({ error: 'Admin access required' });

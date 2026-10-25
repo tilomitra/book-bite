@@ -3,9 +3,9 @@ import SwiftUI
 // MARK: - Color Assets Extension
 // This provides fallback colors when Asset Catalog colors aren't available
 extension Color {
-    static let primaryColor = Color(red: 0.2, green: 0.6, blue: 1.0)
-    static let secondaryColor = Color(red: 0.6, green: 0.3, blue: 1.0)
-    static let accentColor = Color(red: 1.0, green: 0.6, blue: 0.2)
+    static let primaryColor = Color.primary
+    static let secondaryColor = Color.secondary
+    static let accentColor = Color.primary
     
     static let backgroundColor = Color(UIColor.systemBackground)
     static let surfaceColor = Color(UIColor.secondarySystemBackground)

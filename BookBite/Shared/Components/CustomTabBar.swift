@@ -44,43 +44,34 @@ struct CustomTabBarButton: View {
     let tab: TabItem
     let isSelected: Bool
     let action: () -> Void
-    
+
     @State private var isPressed = false
-    
+
     var body: some View {
         Button(action: action) {
             VStack(spacing: DesignSystem.Spacing.xs) {
                 ZStack {
-                    // Background circle for selected state
+                    // Background circle for selected state - monochrome
                     Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: isSelected ? [
-                                    tab.color,
-                                    tab.color.opacity(0.7)
-                                ] : [Color.clear],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 40, height: 40)
+                        .fill(Color.primary)
+                        .frame(width: 44, height: 44)
                         .scaleEffect(isSelected ? 1.0 : 0.1)
                         .opacity(isSelected ? 1.0 : 0.0)
                         .animation(DesignSystem.Animations.bouncy, value: isSelected)
-                    
-                    // Icon
+
+                    // Icon - monochrome
                     Image(systemName: isSelected ? tab.iconFilled : tab.icon)
-                        .font(.system(size: 20, weight: .medium))
-                        .foregroundColor(isSelected ? .white : DesignSystem.Colors.textSecondary)
+                        .font(.system(size: 22, weight: .medium))
+                        .foregroundColor(isSelected ? Color(UIColor.systemBackground) : DesignSystem.Colors.textSecondary)
                         .scaleEffect(isSelected ? 1.1 : 1.0)
                         .animation(DesignSystem.Animations.spring, value: isSelected)
                 }
-                
-                // Label
+
+                // Label - monochrome
                 Text(tab.title)
                     .font(DesignSystem.Typography.caption2)
-                    .fontWeight(isSelected ? .semibold : .medium)
-                    .foregroundColor(isSelected ? tab.color : DesignSystem.Colors.textSecondary)
+                    .fontWeight(isSelected ? .bold : .medium)
+                    .foregroundColor(isSelected ? .primary : DesignSystem.Colors.textSecondary)
                     .scaleEffect(isSelected ? 1.05 : 1.0)
                     .animation(DesignSystem.Animations.smooth, value: isSelected)
             }
@@ -93,13 +84,13 @@ struct CustomTabBarButton: View {
             withAnimation(DesignSystem.Animations.quick) {
                 isPressed = true
             }
-            
+
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 withAnimation(DesignSystem.Animations.quick) {
                     isPressed = false
                 }
             }
-            
+
             action()
         }
     }
@@ -109,37 +100,32 @@ struct TabItem {
     let title: String
     let icon: String
     let iconFilled: String
-    let color: Color
 }
 
 // MARK: - Tab Items Configuration
 extension TabItem {
     static let nytBest = TabItem(
-        title: "NYT Best",
+        title: "Featured",
         icon: "star",
-        iconFilled: "star.fill",
-        color: DesignSystem.Colors.nytGold
+        iconFilled: "star.fill"
     )
-    
+
     static let swipe = TabItem(
-        title: "Swipe",
+        title: "Discover",
         icon: "rectangle.stack",
-        iconFilled: "rectangle.stack.fill",
-        color: DesignSystem.Colors.vibrantPurple
+        iconFilled: "rectangle.stack.fill"
     )
-    
+
     static let search = TabItem(
         title: "Search",
         icon: "magnifyingglass",
-        iconFilled: "magnifyingglass",
-        color: DesignSystem.Colors.vibrantBlue
+        iconFilled: "magnifyingglass"
     )
-    
+
     static let settings = TabItem(
         title: "Settings",
-        icon: "gear",
-        iconFilled: "gear",
-        color: DesignSystem.Colors.vibrantGreen
+        icon: "gearshape",
+        iconFilled: "gearshape.fill"
     )
 }
 

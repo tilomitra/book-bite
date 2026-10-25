@@ -12,7 +12,7 @@ struct KeyIdeaRow: View {
                 HStack(alignment: .top, spacing: 12) {
                     Text("\(index).")
                         .font(.headline)
-                        .foregroundColor(.blue)
+                        .foregroundColor(.primary)
                         .frame(width: 30, alignment: .leading)
 
                     VStack(alignment: .leading, spacing: 8) {

@@ -48,17 +48,17 @@ struct GoogleBookSearchResultRow: View {
                         if result.inDatabase {
                             Image(systemName: "checkmark.circle.fill")
                                 .font(.caption2)
-                                .foregroundColor(.green)
+                                .foregroundColor(DesignSystem.Colors.badgeGreen)
                             Text("In Library")
                                 .font(.caption)
-                                .foregroundColor(.green)
+                                .foregroundColor(DesignSystem.Colors.badgeGreen)
                         } else {
                             Image(systemName: "plus.circle")
                                 .font(.caption2)
-                                .foregroundColor(.blue)
+                                .foregroundColor(.primary)
                             Text("Add to Library")
                                 .font(.caption)
-                                .foregroundColor(.blue)
+                                .foregroundColor(.primary)
                         }
                     }
                     .padding(.top, 4)

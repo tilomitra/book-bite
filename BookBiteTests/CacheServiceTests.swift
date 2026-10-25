@@ -2,6 +2,8 @@ import Testing
 import Foundation
 @testable import BookBite
 
+// Tests share CacheService.shared and call clearAllCache(), so they must not run in parallel
+@Suite(.serialized)
 struct CacheServiceTests {
     
     func createTestBook(id: String = "test-book") -> Book {
@@ -35,7 +37,11 @@ struct CacheServiceTests {
             citations: [],
             readTimeMinutes: 10,
             style: .full,
-            extendedSummary: "Extended test summary"
+            extendedSummary: "Extended test summary",
+            audioUrl: nil,
+            audioDurationSeconds: nil,
+            audioFileSizeBytes: nil,
+            audioVoiceId: nil
         )
     }
     

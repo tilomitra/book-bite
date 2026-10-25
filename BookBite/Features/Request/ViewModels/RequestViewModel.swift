@@ -32,7 +32,7 @@ class RequestViewModel: ObservableObject {
         searchTask = Task {
             do {
                 let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
-                let encodedQuery = trimmedQuery.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? trimmedQuery
+                let encodedQuery = trimmedQuery.addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? trimmedQuery
                 
                 let response: GoogleBookSearchResponse = try await networkService.get(
                     endpoint: "search/books?q=\(encodedQuery)"
@@ -68,9 +68,11 @@ class RequestViewModel: ObservableObject {
             do {
                 let payload = BookRequestPayload(googleBooksId: searchResult.googleBooksId)
                 
+                // The server generates both summaries with the LLM before responding, which can take a while
                 let response: BookRequestResponse = try await networkService.post(
                     endpoint: "search/request",
-                    body: payload
+                    body: payload,
+                    timeout: 180
                 )
                 
                 // Check if the book has a complete summary with extended content
@@ -89,6 +91,16 @@ class RequestViewModel: ObservableObject {
                     }
                 }
                 
+            } catch NetworkError.clientError(409, let data) {
+                // Someone already requested this book: open the existing copy instead of erroring
+                struct ConflictResponse: Codable { let book: Book }
+                if let existing = try? NetworkService.makeDecoder().decode(ConflictResponse.self, from: data) {
+                    requestState = .bookRequested(existing.book)
+                } else {
+                    let errorMessage = handleNetworkError(NetworkError.clientError(409, data))
+                    searchError = errorMessage
+                    requestState = .error(errorMessage)
+                }
             } catch {
                 let errorMessage = handleNetworkError(error)
                 searchError = errorMessage

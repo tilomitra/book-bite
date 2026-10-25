@@ -5,14 +5,20 @@ import { z } from 'zod';
 
 const bookService = new BookService();
 
+// Clamp ?page= / ?limit= to sane integers (NaN/0 break the range math; PostgREST caps responses at 1000 rows)
+function parsePagination(page: unknown, limit: unknown, defaultLimit: number) {
+  const p = Math.max(1, Math.floor(Number(page)) || 1);
+  const l = Math.min(1000, Math.max(1, Math.floor(Number(limit)) || defaultLimit));
+  return { page: p, limit: l };
+}
+
 export class BookController {
   async getAllBooks(req: Request, res: Response, next: NextFunction) {
     try {
-      const { page = 1, limit = 20, search } = req.query;
+      const { page, limit, search } = req.query;
       
       const books = await bookService.getAllBooks({
-        page: Number(page),
-        limit: Number(limit),
+        ...parsePagination(page, limit, 20),
         search: search as string
       });
       
@@ -24,11 +30,10 @@ export class BookController {
 
   async getFeaturedBooks(req: Request, res: Response, next: NextFunction) {
     try {
-      const { page = 1, limit = 100, fresh = false } = req.query;
+      const { page, limit, fresh = false } = req.query;
       
       const books = await bookService.getFeaturedBooks({
-        page: Number(page),
-        limit: Number(limit),
+        ...parsePagination(page, limit, 100),
         fresh: fresh === 'true'
       });
       
@@ -40,11 +45,10 @@ export class BookController {
 
   async getNYTBestsellerBooks(req: Request, res: Response, next: NextFunction) {
     try {
-      const { page = 1, limit = 100, fresh = false } = req.query;
+      const { page, limit, fresh = false } = req.query;
       
       const books = await bookService.getNYTBestsellerBooks({
-        page: Number(page),
-        limit: Number(limit),
+        ...parsePagination(page, limit, 100),
         fresh: fresh === 'true'
       });
       
@@ -72,14 +76,12 @@ export class BookController {
 
   async searchBooks(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { q, source = 'all', page = 1, limit = 20 } = req.query;
+      const { q, source = 'all' } = req.query;
+      const { page, limit } = parsePagination(req.query.page, req.query.limit, 20);
       
       // If no search query provided, return all books with pagination
       if (!q || (q as string).trim() === '') {
-        const result = await bookService.getAllBooks({
-          page: Number(page),
-          limit: Number(limit)
-        });
+        const result = await bookService.getAllBooks({ page, limit });
         res.json({
           results: result.books,
           pagination: {
@@ -96,10 +98,7 @@ export class BookController {
       const result = await bookService.searchBooks(
         q as string, 
         source as string,
-        {
-          page: Number(page),
-          limit: Number(limit)
-        }
+        { page, limit }
       );
       
       res.json({
@@ -226,7 +225,7 @@ export class BookController {
   async getBooksByCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { category } = req.params;
-      const { page = 1, limit = 20 } = req.query;
+      const { page, limit } = parsePagination(req.query.page, req.query.limit, 20);
       
       if (!category) {
         res.status(400).json({ error: 'Category is required' });
@@ -235,8 +234,8 @@ export class BookController {
       
       const books = await bookService.getBooksByCategory(
         category,
-        Number(page),
-        Number(limit)
+        page,
+        limit
       );
       
       res.json(books);

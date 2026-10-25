@@ -54,7 +54,7 @@ struct BookDetailView: View {
                         .scaleEffect(0.7)
                 } else if viewModel.isAvailableOffline {
                     Image(systemName: "arrow.down.circle.fill")
-                        .foregroundColor(.green)
+                        .foregroundColor(DesignSystem.Colors.badgeGreen)
                         .font(.caption)
                 }
 
@@ -67,7 +67,7 @@ struct BookDetailView: View {
                             .scaleEffect(0.8)
                     } else {
                         Image(systemName: viewModel.isFavorite ? "star.fill" : "star")
-                            .foregroundColor(viewModel.isFavorite ? .yellow : .primary)
+                            .foregroundColor(viewModel.isFavorite ? DesignSystem.Colors.nytGold : .primary)
                     }
                 }
 
@@ -143,20 +143,14 @@ struct BookDetailView: View {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 14, weight: .semibold))
                 }
-                .foregroundColor(.white)
+                .foregroundColor(Color(UIColor.systemBackground))
                 .padding(.horizontal, 24)
                 .padding(.vertical, 18)
                 .background(
                     RoundedRectangle(cornerRadius: 16)
-                        .fill(
-                            LinearGradient(
-                                colors: [Color.blue, Color.blue.opacity(0.8)],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
+                        .fill(Color.primary)
                 )
-                .shadow(color: .blue.opacity(0.3), radius: 12, x: 0, y: 6)
+                .shadow(color: Color.black.opacity(0.15), radius: 12, x: 0, y: 6)
             }
             .buttonStyle(.plain)
 
@@ -178,26 +172,20 @@ struct BookDetailView: View {
                         if let duration = summary.formattedAudioDuration {
                             Text(duration)
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.white.opacity(0.8))
+                                .foregroundColor(.primary.opacity(0.6))
                         }
 
                         Image(systemName: "chevron.right")
                             .font(.system(size: 14, weight: .semibold))
                     }
-                    .foregroundColor(.white)
+                    .foregroundColor(.primary)
                     .padding(.horizontal, 24)
                     .padding(.vertical, 18)
                     .background(
                         RoundedRectangle(cornerRadius: 16)
-                            .fill(
-                                LinearGradient(
-                                    colors: [Color.orange, Color.orange.opacity(0.8)],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
+                            .fill(Color(UIColor.secondarySystemBackground))
+                            .stroke(Color(UIColor.separator).opacity(0.5), lineWidth: 1)
                     )
-                    .shadow(color: .orange.opacity(0.3), radius: 12, x: 0, y: 6)
                 }
                 .buttonStyle(.plain)
             }
@@ -390,7 +378,7 @@ struct BookDetailView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "lightbulb.fill")
-                    .foregroundColor(.orange)
+                    .foregroundColor(.primary)
                     .font(.system(size: 16))
                 Text("Key Ideas")
                     .font(.headline)
@@ -438,7 +426,7 @@ struct BookDetailView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.green)
+                    .foregroundColor(.primary)
                     .font(.system(size: 16))
                 Text("Actions to Apply")
                     .font(.headline)
@@ -458,9 +446,9 @@ struct BookDetailView: View {
         HStack(alignment: .top, spacing: 8) {
             Image(systemName: "arrow.right.circle.fill")
                 .font(.caption)
-                .foregroundColor(.green.opacity(0.7))
+                .foregroundColor(.primary.opacity(0.5))
                 .frame(width: 20)
-            
+
             Text(action.action)
                 .font(.callout)
                 .foregroundColor(.primary)
@@ -500,24 +488,18 @@ struct BookDetailView: View {
                     Text("Generate Summary")
                         .font(.system(size: 16, weight: .semibold))
                 }
-                .foregroundColor(.white)
+                .foregroundColor(Color(UIColor.systemBackground))
                 .padding(.horizontal, 24)
-                .padding(.vertical, 12)
-                .background(
-                    LinearGradient(
-                        colors: [.blue, .purple],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
+                .padding(.vertical, 14)
+                .background(Color.primary)
                 .clipShape(Capsule())
-                .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
+                .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 4)
             }
             .buttonStyle(.plain)
         }
         .padding()
     }
-    
+
     var noSummaryView: some View {
         VStack(spacing: 24) {
             VStack(spacing: 16) {
@@ -550,18 +532,12 @@ struct BookDetailView: View {
                     Text("Generate a summary")
                         .font(.system(size: 16, weight: .semibold))
                 }
-                .foregroundColor(.white)
+                .foregroundColor(Color(UIColor.systemBackground))
                 .padding(.horizontal, 24)
-                .padding(.vertical, 12)
-                .background(
-                    LinearGradient(
-                        colors: [.blue, .purple],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
+                .padding(.vertical, 14)
+                .background(Color.primary)
                 .clipShape(Capsule())
-                .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
+                .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 4)
             }
             .buttonStyle(.plain)
         }

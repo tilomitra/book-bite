@@ -18,6 +18,8 @@ import { errorHandler } from './middleware/errorHandler';
 dotenv.config();
 
 const app = express();
+// Behind Render's proxy: use X-Forwarded-For so rate limits are per client, not per proxy
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
 // Security middleware

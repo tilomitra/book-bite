@@ -40,7 +40,7 @@ struct SearchView: View {
                     .background(Color(.systemGray6))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                     
-                    // Search button
+                    // Search button - monochrome
                     Button(action: {
                         Task {
                             await viewModel.performSearch()
@@ -48,12 +48,12 @@ struct SearchView: View {
                     }) {
                         Text("Search")
                             .font(.subheadline)
-                            .fontWeight(.medium)
-                            .foregroundColor(.white)
+                            .fontWeight(.semibold)
+                            .foregroundColor(Color(UIColor.systemBackground))
                             .padding(.horizontal, 16)
                             .padding(.vertical, 10)
-                            .background(viewModel.searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? Color.gray : Color.blue)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .background(viewModel.searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? Color.gray : Color.primary)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
                     .disabled(viewModel.searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isSearching)
                 }
@@ -177,29 +177,35 @@ struct EmptySearchView: View {
 struct ErrorSearchView: View {
     let error: Error
     let retry: () -> Void
-    
+
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "wifi.slash")
                 .font(.system(size: 50))
-                .foregroundColor(.red)
-            
+                .foregroundColor(.primary.opacity(0.6))
+
             Text("Search Error")
                 .font(.title3)
                 .fontWeight(.semibold)
-            
+
             Text("Unable to search books. Error: \(error.localizedDescription)")
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
-            
-            Button("Try Again") {
-                retry()
+
+            Button(action: retry) {
+                Text("Try Again")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(Color(UIColor.systemBackground))
+                    .padding(.horizontal, 32)
+                    .padding(.vertical, 14)
+                    .background(Color.primary)
+                    .clipShape(Capsule())
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            
+            .padding(.top, 8)
+
             Spacer()
         }
         .padding(.top, 100)

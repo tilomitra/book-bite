@@ -14,30 +14,10 @@ struct SwipeView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                // Background gradient based on swipe direction
-                if dragOffset.width > 20 {
-                    // Right swipe - green gradient
-                    LinearGradient(
-                        gradient: Gradient(colors: [Color.green.opacity(0.1), Color.green.opacity(0.3)]),
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                    .opacity(min(1.0, abs(dragOffset.width) / 150.0))
+                // Background - clean monochrome
+                Color(.systemGroupedBackground)
                     .ignoresSafeArea()
-                } else if dragOffset.width < -20 {
-                    // Left swipe - red gradient
-                    LinearGradient(
-                        gradient: Gradient(colors: [Color.red.opacity(0.3), Color.red.opacity(0.1)]),
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                    .opacity(min(1.0, abs(dragOffset.width) / 150.0))
-                    .ignoresSafeArea()
-                } else {
-                    Color(.systemGroupedBackground)
-                        .ignoresSafeArea()
-                }
-                
+
                 if viewModel.isLoading {
                     ConsistentLoadingView(style: .primary, message: "Loading books...")
                 } else if let error = viewModel.error {
@@ -169,10 +149,14 @@ struct SwipeCardView: View {
                     Text(book.formattedCategories)
                         .font(.caption)
                         .padding(.horizontal, 12)
-                        .padding(.vertical, 4)
-                        .background(Color.blue.opacity(0.1))
-                        .foregroundColor(.blue)
+                        .padding(.vertical, 5)
+                        .background(Color.primary.opacity(0.06))
+                        .foregroundColor(.secondary)
                         .clipShape(Capsule())
+                        .overlay(
+                            Capsule()
+                                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
+                        )
                         .lineLimit(nil)
                         .multilineTextAlignment(.center)
                 }
@@ -217,79 +201,79 @@ struct SwipeCardView: View {
 struct SwipeIndicator: View {
     enum IndicatorType {
         case like, pass
-        
-        var color: Color {
-            switch self {
-            case .like: return .green
-            case .pass: return .red
-            }
-        }
-        
+
         var text: String {
             switch self {
             case .like: return "READ MORE"
             case .pass: return "NEXT"
             }
         }
-        
+
         var icon: String {
             switch self {
-            case .like: return "heart.fill"
-            case .pass: return "xmark"
+            case .like: return "arrow.right.circle.fill"
+            case .pass: return "arrow.left.circle.fill"
             }
         }
     }
-    
+
     let type: IndicatorType
-    
+
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: type.icon)
-                .font(.system(size: 30, weight: .bold))
-            
+                .font(.system(size: 36, weight: .bold))
+
             Text(type.text)
                 .font(.caption)
                 .fontWeight(.bold)
         }
-        .foregroundColor(type.color)
-        .padding(16)
-        .background(type.color.opacity(0.1))
+        .foregroundColor(.primary)
+        .padding(20)
+        .background(Color(UIColor.systemBackground).opacity(0.95))
         .clipShape(Circle())
         .overlay(
             Circle()
-                .stroke(type.color, lineWidth: 3)
+                .stroke(Color.primary.opacity(0.2), lineWidth: 2)
         )
+        .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
     }
 }
 
 struct SwipeInstructionsView: View {
     var body: some View {
-        HStack(spacing: 30) {
+        HStack(spacing: 24) {
             HStack(spacing: 6) {
                 Image(systemName: "arrow.left")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.primary)
+
+                Text("Skip")
                     .font(.caption)
-                    .foregroundColor(.red)
-                
-                Text("Next")
-                    .font(.caption2)
+                    .fontWeight(.medium)
                     .foregroundColor(.secondary)
             }
-            
+
             HStack(spacing: 6) {
-                Image(systemName: "arrow.right")
-                    .font(.caption)
-                    .foregroundColor(.green)
-                
                 Text("Read More")
-                    .font(.caption2)
+                    .font(.caption)
+                    .fontWeight(.medium)
                     .foregroundColor(.secondary)
+
+                Image(systemName: "arrow.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.primary)
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
-        .background(Color(.systemBackground).opacity(0.9))
+        .padding(.horizontal, 20)
+        .padding(.vertical, 10)
+        .background(Color(.systemBackground).opacity(0.95))
         .clipShape(Capsule())
-        .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 1)
+        .overlay(
+            Capsule()
+                .stroke(Color.primary.opacity(0.1), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 2)
     }
 }
 
@@ -319,29 +303,35 @@ struct EmptySwipeView: View {
 struct ErrorSwipeView: View {
     let error: Error
     let retry: () -> Void
-    
+
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "wifi.slash")
                 .font(.system(size: 50))
-                .foregroundColor(.red)
-            
+                .foregroundColor(.primary.opacity(0.6))
+
             Text("Connection Error")
                 .font(.title3)
                 .fontWeight(.semibold)
-            
+
             Text("Unable to load books. Please check your internet connection and try again.")
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
-            
-            Button("Try Again") {
-                retry()
+
+            Button(action: retry) {
+                Text("Try Again")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(Color(UIColor.systemBackground))
+                    .padding(.horizontal, 32)
+                    .padding(.vertical, 14)
+                    .background(Color.primary)
+                    .clipShape(Capsule())
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            
+            .padding(.top, 8)
+
             Spacer()
         }
         .padding(.top, 100)

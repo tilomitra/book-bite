@@ -37,8 +37,8 @@ struct ConsistentLoadingView: View {
         VStack(spacing: 16) {
             ProgressView()
                 .scaleEffect(1.2)
-                .tint(.blue)
-            
+                .tint(.primary)
+
             if let message = message {
                 Text(message)
                     .font(.callout)
@@ -51,14 +51,14 @@ struct ConsistentLoadingView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-    
+
     // Inline loading for smaller areas
     private var inlineLoadingView: some View {
         HStack(spacing: 8) {
             ProgressView()
                 .scaleEffect(0.8)
-                .tint(.blue)
-            
+                .tint(.primary)
+
             if let message = message {
                 Text(message)
                     .font(.caption)
@@ -66,14 +66,14 @@ struct ConsistentLoadingView: View {
             }
         }
     }
-    
+
     // Pagination loading for loading more content
     private var paginationLoadingView: some View {
         HStack(spacing: 12) {
             Spacer()
             ProgressView()
                 .scaleEffect(0.8)
-                .tint(.blue)
+                .tint(.primary)
             Text(message ?? "Loading more...")
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -81,26 +81,26 @@ struct ConsistentLoadingView: View {
         }
         .padding(.vertical, 12)
     }
-    
+
     // Button loading indicator
     private var buttonLoadingView: some View {
         ProgressView()
             .scaleEffect(0.7)
-            .tint(.white)
+            .tint(Color(UIColor.systemBackground))
             .frame(width: 20, height: 20)
     }
-    
+
     // Full screen loading overlay
     private var fullScreenLoadingView: some View {
         ZStack {
             Color.black.opacity(0.3)
                 .ignoresSafeArea()
-            
+
             VStack(spacing: 20) {
                 ProgressView()
                     .scaleEffect(1.5)
-                    .tint(.blue)
-                
+                    .tint(.primary)
+
                 if let message = message {
                     Text(message)
                         .font(.headline)
@@ -109,8 +109,8 @@ struct ConsistentLoadingView: View {
             }
             .padding(40)
             .background(Color(UIColor.systemBackground))
-            .cornerRadius(16)
-            .shadow(radius: 10)
+            .cornerRadius(20)
+            .shadow(color: .black.opacity(0.15), radius: 20, x: 0, y: 10)
         }
     }
 }

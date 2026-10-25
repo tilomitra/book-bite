@@ -30,6 +30,8 @@ class AudioPlaybackService: NSObject, ObservableObject {
     private var timeObserver: Any?
     private var statusObserver: NSKeyValueObservation?
     private var cancellables = Set<AnyCancellable>()
+    private var artwork: MPMediaItemArtwork?
+    private var artworkTask: Task<Void, Never>?
 
     // Playback rate options
     static let playbackRates: [Float] = [0.75, 1.0, 1.25, 1.5, 1.75, 2.0]
@@ -128,20 +130,25 @@ class AudioPlaybackService: NSObject, ObservableObject {
         nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentTime
         nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = duration
         nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? playbackRate : 0.0
-
-        // Load cover image asynchronously
-        if let coverURL = book.coverAssetName, let url = URL(string: coverURL) {
-            Task {
-                if let (data, _) = try? await URLSession.shared.data(from: url),
-                   let image = UIImage(data: data) {
-                    var info = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
-                    info[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in image }
-                    MPNowPlayingInfoCenter.default().nowPlayingInfo = info
-                }
-            }
+        if let artwork {
+            nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
         }
 
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+    }
+
+    /// Download the cover once per book; updateNowPlayingInfo runs every 0.5s and reuses it
+    private func loadArtwork(for book: Book) {
+        artworkTask?.cancel()
+        artwork = nil
+        guard let coverURL = book.coverAssetName, let url = URL(string: coverURL) else { return }
+        artworkTask = Task { [weak self] in
+            guard let (data, _) = try? await URLSession.shared.data(from: url),
+                  let image = UIImage(data: data),
+                  !Task.isCancelled else { return }
+            self?.artwork = MPMediaItemArtwork(boundsSize: image.size) { _ in image }
+            self?.updateNowPlayingInfo()
+        }
     }
 
     // MARK: - Playback Control
@@ -160,6 +167,7 @@ class AudioPlaybackService: NSObject, ObservableObject {
         error = nil
         currentBook = book
         currentSummary = summary
+        loadArtwork(for: book)
 
         // Check for offline audio first
         if let offlineURL = OfflineStorageService.shared.getOfflineAudioURL(bookId: book.id) {
@@ -172,7 +180,7 @@ class AudioPlaybackService: NSObject, ObservableObject {
     private func setupPlayer(with url: URL, autoPlay: Bool) {
         playerItem = AVPlayerItem(url: url)
         player = AVPlayer(playerItem: playerItem)
-        player?.rate = playbackRate
+        // Don't set rate here: a non-zero rate starts playback even when autoPlay is false
 
         // Observe player item status
         statusObserver = playerItem?.observe(\.status, options: [.new]) { [weak self] item, _ in
@@ -228,6 +236,10 @@ class AudioPlaybackService: NSObject, ObservableObject {
     }
 
     func play() {
+        // Restart from the beginning after the summary finished
+        if duration > 0 && currentTime >= duration {
+            seek(to: 0)
+        }
         player?.rate = playbackRate
         isPlaying = true
         updateNowPlayingInfo()
@@ -270,6 +282,8 @@ class AudioPlaybackService: NSObject, ObservableObject {
         currentBook = nil
         currentSummary = nil
         error = nil
+        artworkTask?.cancel()
+        artwork = nil
 
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
     }

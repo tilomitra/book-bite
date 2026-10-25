@@ -77,7 +77,7 @@ class RemoteBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
     
     func searchBooks(query: String) async throws -> [Book] {
         // For search, always go to server for fresh results
-        let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? query
+        let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? query
         let response: SearchResponse = try await networkService.get(endpoint: "books/search?q=\(encodedQuery)")
         
         return response.results
@@ -143,22 +143,31 @@ class RemoteBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
     
     // MARK: - FavoriteRepository Implementation
     
+    /// /user/* routes require the signed-in user's Supabase access token
+    @MainActor
+    private func authHeaders() async throws -> [String: String] {
+        guard let token = try await DependencyContainer.shared.authService.getAccessToken() else {
+            throw NetworkError.clientError(401, Data())
+        }
+        return ["Authorization": "Bearer \(token)"]
+    }
+    
     func checkFavoriteStatus(for bookId: String) async throws -> Bool {
         struct FavoriteStatusResponse: Codable {
             let is_favorite: Bool
         }
         
-        let response: FavoriteStatusResponse = try await networkService.get(endpoint: "user/favorites/\(bookId)")
+        let response: FavoriteStatusResponse = try await networkService.get(endpoint: "user/favorites/\(bookId)", headers: await authHeaders())
         return response.is_favorite
     }
     
     func addToFavorites(_ bookId: String) async throws {
         let body = ["book_id": bookId]
-        let _: EmptyResponse = try await networkService.post(endpoint: "user/favorites", body: body)
+        let _: EmptyResponse = try await networkService.post(endpoint: "user/favorites", body: body, headers: await authHeaders())
     }
     
     func removeFromFavorites(_ bookId: String) async throws {
-        try await networkService.delete(endpoint: "user/favorites/\(bookId)")
+        try await networkService.delete(endpoint: "user/favorites/\(bookId)", headers: await authHeaders())
     }
     
     func fetchFavorites() async throws -> [Book] {
@@ -172,7 +181,7 @@ class RemoteBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
             }
         }
 
-        let response: FavoritesResponse = try await networkService.get(endpoint: "user/favorites")
+        let response: FavoritesResponse = try await networkService.get(endpoint: "user/favorites", headers: await authHeaders())
         return response.favorites.map { $0.books }
     }
 
@@ -243,7 +252,7 @@ private struct SearchResponse: Codable {
 
 struct SummaryGenerationJob: Codable {
     let id: String
-    let bookId: String
+    let bookId: String?
     let status: JobStatus
     let message: String?
     

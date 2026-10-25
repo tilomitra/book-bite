@@ -7,14 +7,14 @@ struct MiniAudioPlayer: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Progress bar at top
+            // Progress bar at top - monochrome
             GeometryReader { geometry in
                 Rectangle()
-                    .fill(Color.blue)
+                    .fill(Color.primary)
                     .frame(width: geometry.size.width * audioService.progress, height: 2)
             }
             .frame(height: 2)
-            .background(Color.gray.opacity(0.2))
+            .background(Color.primary.opacity(0.15))
 
             // Main content
             HStack(spacing: 12) {

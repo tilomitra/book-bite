@@ -14,7 +14,7 @@ struct EnhancedSearchView: View {
                 LinearGradient(
                     colors: [
                         DesignSystem.Colors.background,
-                        DesignSystem.Colors.vibrantBlue.opacity(0.05)
+                        Color.primary.opacity(0.03)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
@@ -82,7 +82,7 @@ struct SearchHeaderView: View {
             HStack(spacing: DesignSystem.Spacing.sm) {
                 HStack(spacing: DesignSystem.Spacing.sm) {
                     Image(systemName: "magnifyingglass")
-                        .foregroundColor(isSearchFocused ? DesignSystem.Colors.vibrantBlue : DesignSystem.Colors.textSecondary)
+                        .foregroundColor(isSearchFocused ? .primary : DesignSystem.Colors.textSecondary)
                         .animation(DesignSystem.Animations.smooth, value: isSearchFocused)
                     
                     TextField("Search titles, authors, or topics", text: $searchText)
@@ -108,12 +108,12 @@ struct SearchHeaderView: View {
                     RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
                         .fill(DesignSystem.Colors.cardBackground)
                         .stroke(
-                            isSearchFocused ? DesignSystem.Colors.vibrantBlue : Color.clear,
+                            isSearchFocused ? Color.primary : Color.clear,
                             lineWidth: 2
                         )
                         .shadow(
-                            color: isSearchFocused ? 
-                                DesignSystem.Colors.vibrantBlue.opacity(0.2) : 
+                            color: isSearchFocused ?
+                                Color.primary.opacity(0.2) :
                                 DesignSystem.Shadow.small.color,
                             radius: isSearchFocused ? 6 : 2,
                             x: 0,
@@ -130,11 +130,11 @@ struct SearchHeaderView: View {
                 }) {
                     Image(systemName: showFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
                         .font(.system(size: 20, weight: .medium))
-                        .foregroundColor(showFilters ? DesignSystem.Colors.vibrantBlue : DesignSystem.Colors.textSecondary)
+                        .foregroundColor(showFilters ? .primary : DesignSystem.Colors.textSecondary)
                         .frame(width: 44, height: 44)
                         .background(
                             Circle()
-                                .fill(showFilters ? DesignSystem.Colors.vibrantBlue.opacity(0.1) : DesignSystem.Colors.cardBackground)
+                                .fill(showFilters ? Color.primary.opacity(0.1) : DesignSystem.Colors.cardBackground)
                         )
                 }
                 .bounceOnTap()
@@ -154,8 +154,8 @@ struct SearchHeaderView: View {
                                     .font(DesignSystem.Typography.footnote)
                                     .fontWeight(.medium)
                                     .foregroundColor(
-                                        selectedSource == source ? 
-                                            .white : 
+                                        selectedSource == source ?
+                                            Color(UIColor.systemBackground) :
                                             DesignSystem.Colors.textPrimary
                                     )
                                     .padding(.horizontal, DesignSystem.Spacing.md)
@@ -163,8 +163,8 @@ struct SearchHeaderView: View {
                                     .background(
                                         Capsule()
                                             .fill(
-                                                selectedSource == source ? 
-                                                    DesignSystem.Colors.vibrantBlue : 
+                                                selectedSource == source ?
+                                                    Color.primary :
                                                     DesignSystem.Colors.cardBackground
                                             )
                                     )
@@ -210,30 +210,30 @@ struct SearchResultsView: View {
 // MARK: - Search States
 struct SearchLoadingView: View {
     @State private var isAnimating = false
-    
+
     var body: some View {
         VStack(spacing: DesignSystem.Spacing.lg) {
             // Animated search icon
             ZStack {
                 Circle()
-                    .stroke(DesignSystem.Colors.vibrantBlue.opacity(0.2), lineWidth: 4)
+                    .stroke(Color.primary.opacity(0.2), lineWidth: 4)
                     .frame(width: 80, height: 80)
-                
+
                 Circle()
                     .trim(from: 0, to: 0.3)
-                    .stroke(DesignSystem.Colors.vibrantBlue, lineWidth: 4)
+                    .stroke(Color.primary, lineWidth: 4)
                     .frame(width: 80, height: 80)
                     .rotationEffect(.degrees(isAnimating ? 360 : 0))
                     .animation(
                         Animation.linear(duration: 1.5).repeatForever(autoreverses: false),
                         value: isAnimating
                     )
-                
+
                 Image(systemName: "magnifyingglass")
                     .font(.system(size: 24, weight: .medium))
-                    .foregroundColor(DesignSystem.Colors.vibrantBlue)
+                    .foregroundColor(.primary)
             }
-            
+
             Text("Searching...")
                 .font(DesignSystem.Typography.title3)
                 .foregroundColor(DesignSystem.Colors.textPrimary)
@@ -250,7 +250,7 @@ struct SearchInitialView: View {
         VStack(spacing: DesignSystem.Spacing.lg) {
             Image(systemName: "books.vertical.fill")
                 .font(.system(size: 60))
-                .foregroundColor(DesignSystem.Colors.vibrantBlue)
+                .foregroundColor(.primary)
             
             VStack(spacing: DesignSystem.Spacing.sm) {
                 Text("Discover Books")
@@ -321,12 +321,12 @@ struct SearchErrorView: View {
             
             Button("Try Again", action: onRetry)
                 .font(DesignSystem.Typography.headline)
-                .foregroundColor(.white)
+                .foregroundColor(Color(UIColor.systemBackground))
                 .padding(.horizontal, DesignSystem.Spacing.lg)
                 .padding(.vertical, DesignSystem.Spacing.md)
                 .background(
                     Capsule()
-                        .fill(DesignSystem.Colors.vibrantBlue)
+                        .fill(Color.primary)
                 )
                 .bounceOnTap()
         }

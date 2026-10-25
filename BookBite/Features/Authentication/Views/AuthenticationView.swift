@@ -17,11 +17,11 @@ struct AuthenticationView: View {
                 VStack(spacing: 16) {
                     Image(systemName: "books.vertical.fill")
                         .font(.system(size: 60))
-                        .foregroundColor(.orange)
-                    
+                        .foregroundColor(.primary)
+
                     Text("Welcome to BookBite")
                         .font(.system(size: 28, weight: .bold, design: .rounded))
-                    
+
                     Text("Sign in to save your reading progress")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
@@ -81,7 +81,7 @@ struct AuthenticationView: View {
                         if let errorMessage = viewModel.errorMessage {
                             Text(errorMessage)
                                 .font(.caption)
-                                .foregroundColor(.red)
+                                .foregroundColor(DesignSystem.Colors.badgeRed)
                                 .padding(.horizontal)
                                 .multilineTextAlignment(.center)
                         }
@@ -101,7 +101,7 @@ struct AuthenticationView: View {
                             }) {
                                 Text("Continue as Guest")
                                     .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(.primary)
                             }
                             
                             Text("You can create an account anytime to save your progress")
@@ -172,7 +172,7 @@ struct SignInView: View {
                     viewModel.showingForgotPassword = true
                 }
                 .font(.caption)
-                .foregroundColor(.blue)
+                .foregroundColor(.primary)
             }
             
             // Sign In Button
@@ -194,7 +194,7 @@ struct SignInView: View {
                         .frame(height: 50)
                 }
             }
-            .background(viewModel.canSignIn ? Color.blue : Color.gray)
+            .background(viewModel.canSignIn ? Color.primary : Color.gray)
             .cornerRadius(10)
             .disabled(!viewModel.canSignIn)
         }
@@ -280,16 +280,16 @@ struct SignUpView: View {
                 HStack(spacing: 4) {
                     Image(systemName: viewModel.isValidPassword ? "checkmark.circle.fill" : "circle")
                         .font(.caption)
-                        .foregroundColor(viewModel.isValidPassword ? .green : .secondary)
+                        .foregroundColor(viewModel.isValidPassword ? DesignSystem.Colors.badgeGreen : .secondary)
                     Text("At least 6 characters")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 HStack(spacing: 4) {
                     Image(systemName: viewModel.passwordsMatch && !viewModel.password.isEmpty ? "checkmark.circle.fill" : "circle")
                         .font(.caption)
-                        .foregroundColor(viewModel.passwordsMatch && !viewModel.password.isEmpty ? .green : .secondary)
+                        .foregroundColor(viewModel.passwordsMatch && !viewModel.password.isEmpty ? DesignSystem.Colors.badgeGreen : .secondary)
                     Text("Passwords match")
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -316,7 +316,7 @@ struct SignUpView: View {
                         .frame(height: 50)
                 }
             }
-            .background(viewModel.canSignUp ? Color.green : Color.gray)
+            .background(viewModel.canSignUp ? Color.primary : Color.gray)
             .cornerRadius(10)
             .disabled(!viewModel.canSignUp)
         }
@@ -350,8 +350,8 @@ struct ForgotPasswordView: View {
                 VStack(spacing: 16) {
                     Image(systemName: "envelope.badge")
                         .font(.system(size: 50))
-                        .foregroundColor(.blue)
-                    
+                        .foregroundColor(.primary)
+
                     Text("Reset Password")
                         .font(.title2)
                         .fontWeight(.bold)
@@ -368,25 +368,25 @@ struct ForgotPasswordView: View {
                     VStack(spacing: 16) {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.system(size: 50))
-                            .foregroundColor(.green)
-                        
+                            .foregroundColor(DesignSystem.Colors.badgeGreen)
+
                         Text("Check your email")
                             .font(.headline)
-                        
+
                         Text("We've sent a password reset link to \(viewModel.email)")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
-                        
+
                         Button("Done") {
                             dismiss()
                         }
                         .font(.system(size: 17, weight: .semibold))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color(UIColor.systemBackground))
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)
-                        .background(Color.blue)
+                        .background(Color.primary)
                         .cornerRadius(10)
                         .padding(.horizontal)
                     }
@@ -403,7 +403,7 @@ struct ForgotPasswordView: View {
                         if let errorMessage = viewModel.errorMessage {
                             Text(errorMessage)
                                 .font(.caption)
-                                .foregroundColor(.red)
+                                .foregroundColor(DesignSystem.Colors.badgeRed)
                                 .multilineTextAlignment(.center)
                         }
                         
@@ -425,7 +425,7 @@ struct ForgotPasswordView: View {
                                     .frame(height: 50)
                             }
                         }
-                        .background(viewModel.isValidEmail ? Color.blue : Color.gray)
+                        .background(viewModel.isValidEmail ? Color.primary : Color.gray)
                         .cornerRadius(10)
                         .disabled(!viewModel.isValidEmail || viewModel.isLoading)
                     }

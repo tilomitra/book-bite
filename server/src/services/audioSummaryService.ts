@@ -95,61 +95,63 @@ Avoid jargon, complex sentence structures, and anything that sounds "written" ra
       .map((point, i) => `${i + 1}. ${point.action}`)
       .join('\n');
 
-    return `Create an engaging audio summary script for the book "${book.title}" by ${book.authors.join(', ')}.
+    return `Create an audio summary script for "${book.title}" by ${book.authors.join(', ')}.
 
-BOOK INFORMATION:
-- Title: ${book.title}
-- Authors: ${book.authors.join(', ')}
-- Categories: ${book.categories?.join(', ') || 'Non-fiction'}
-- Description: ${book.description || 'Not available'}
-
-EXISTING SUMMARY DATA:
+SOURCE MATERIAL:
 - Hook: ${summary.one_sentence_hook}
 - Key Ideas:
 ${keyIdeasText}
 - How to Apply:
 ${applicationText}
-- Who Should Read: ${summary.who_should_read}
 - Extended Summary: ${summary.extended_summary || 'Not available'}
 
 TARGET LENGTH: Approximately 1500 words (about 10 minutes of audio)
 
+CRITICAL PRIORITY: Focus 90% of the script on the ACTUAL IDEAS and PRACTICAL APPLICATIONS from the book. Do NOT spend time on:
+- The author's background, credentials, or personal story
+- How popular or successful the book is
+- Publishing history or sales figures
+- Generic statements about why the topic matters
+- Lengthy introductions or context-setting
+
 STRUCTURE YOUR SCRIPT AS FOLLOWS:
 
-[INTRO - ~150 words]
-Start with a warm, engaging greeting. Introduce the book and its author with enthusiasm.
-Create a hook that makes listeners want to keep listening.
-Example tone: "Hey there! Today we're diving into one of the most transformative books on [topic]..."
+[HOOK - ~50 words]
+Jump straight into the most compelling idea from the book. Start with something like:
+"Here's a question: [provocative question related to the book's core idea]" or
+"What if [counterintuitive premise from the book]?"
 
-[CONTEXT - ~150 words]
-Explain why this book matters and what makes it unique.
-Share brief background on the author's credibility or story if relevant.
-Set up the listener's expectations for what they'll learn.
+[CORE IDEAS - ~1100 words]
+This is the heart of the summary. For each major concept from the book:
+1. State the idea clearly and concisely
+2. Explain HOW it works with a specific example or analogy
+3. Share any memorable frameworks, models, or formulas the author presents
+4. Connect it to the next idea with a natural transition
 
-[CORE IDEAS - ~900 words]
-Cover the 3-5 most important concepts from the book.
-Use natural transitions between ideas like "Now here's where it gets really interesting..." or "But wait, there's more to this..."
-Include specific examples, anecdotes, or analogies that make abstract concepts concrete.
-Use rhetorical questions to keep listeners engaged: "Have you ever wondered why...?"
+Focus on:
+- The author's unique insights and frameworks
+- Specific techniques, strategies, or methods
+- Concrete examples that illustrate the concepts
+- Any surprising research findings or data points mentioned
 
-[PRACTICAL TAKEAWAYS - ~200 words]
-Summarize the actionable applications clearly.
-Use phrases like "So what can you actually do with this?" or "Here's where the rubber meets the road..."
-Make the applications feel achievable and relevant.
+[PRACTICAL APPLICATIONS - ~300 words]
+Give listeners specific, actionable steps they can implement immediately:
+- What exactly should they do differently starting today?
+- What's the first small step to apply each key concept?
+- What common mistakes should they avoid?
+Make these concrete and specific, not vague advice.
 
-[OUTRO - ~100 words]
-Recap the key message in one memorable sentence.
-End with encouragement and a call to action.
-Sign off warmly: "Thanks for listening! If you found this helpful, consider picking up the full book..."
+[CLOSING - ~50 words]
+End with the single most important takeaway - the one thing listeners should remember. Keep it brief and memorable.
 
-WRITING GUIDELINES:
-- Write exactly as it should be spoken - use contractions, casual phrases, natural pauses
-- Avoid parenthetical asides, citations, or anything that sounds academic
-- Use short, punchy sentences mixed with longer flowing ones for rhythm
-- Include verbal transitions: "Now," "So," "Here's the thing," "What's fascinating is..."
-- Don't use bullet points or numbered lists - weave everything into flowing prose
-- Don't include stage directions like [pause] - write naturally and the speaker will add appropriate pauses
-- Don't start with "Welcome to..." - start with something more conversational and unique
+WRITING STYLE:
+- Conversational but substantive - like explaining ideas to a smart friend
+- Use contractions and natural speech patterns
+- Short, punchy sentences mixed with longer explanatory ones
+- No bullet points - weave everything into flowing prose
+- No filler phrases like "let's dive in" or "here's the thing"
+- No meta-commentary about the book or summary itself
+- Get to the point quickly - every sentence should add value
 
 OUTPUT: Write the complete audio script as continuous flowing text, ready to be spoken aloud.`;
   }

@@ -51,7 +51,18 @@ class SearchService: ObservableObject {
         
         do {
             // Use the search API endpoint which now supports pagination
-            guard let url = URL(string: "\(AppConfiguration.shared.baseServerURL)/books/search?q=\(query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&page=\(page)&limit=\(pageSize)") else {
+            // source=local: Google-only results have no database id, so their detail/summary calls would fail
+            var components = URLComponents(string: "\(AppConfiguration.shared.baseServerURL)/books/search")
+            components?.queryItems = [
+                URLQueryItem(name: "q", value: query),
+                URLQueryItem(name: "source", value: "local"),
+                URLQueryItem(name: "page", value: String(page)),
+                URLQueryItem(name: "limit", value: String(pageSize))
+            ]
+            // URLComponents leaves "+" unescaped, which servers decode as a space
+            let encodedQuery = components?.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+            components?.percentEncodedQuery = encodedQuery
+            guard let url = components?.url else {
                 throw URLError(.badURL)
             }
             

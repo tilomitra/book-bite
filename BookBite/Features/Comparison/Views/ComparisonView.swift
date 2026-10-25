@@ -76,7 +76,7 @@ struct ComparisonView: View {
                 .multilineTextAlignment(.center)
             
             if let summary = summary {
-                Text("\(summary.readTimeMinutes) min")
+                Text("\(summary.summaryReadTimeMinutes) min")
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
@@ -117,7 +117,7 @@ struct ComparisonView: View {
             if !viewModel.findCommonThemes().isEmpty {
                 Label("\(viewModel.findCommonThemes().count) Common Themes", systemImage: "link")
                     .font(.caption)
-                    .foregroundColor(.blue)
+                    .foregroundColor(.primary)
             }
         }
         .padding(.horizontal)
@@ -210,9 +210,13 @@ struct ComparisonView: View {
             
             Button(action: { showBookPicker = true }) {
                 Label("Choose Book", systemImage: "plus.circle.fill")
-                    .fontWeight(.medium)
+                    .fontWeight(.semibold)
+                    .foregroundColor(Color(UIColor.systemBackground))
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 12)
+                    .background(Color.primary)
+                    .clipShape(Capsule())
             }
-            .buttonStyle(.borderedProminent)
             
             Spacer()
         }
@@ -223,24 +227,24 @@ struct ComparisonView: View {
 struct ComparisonIdeaRow: View {
     let idea: KeyIdea
     let isUnique: Bool
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
             if isUnique {
                 Image(systemName: "star.fill")
                     .font(.caption)
-                    .foregroundColor(.yellow)
+                    .foregroundColor(.primary)
             }
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(idea.idea)
                     .font(.body)
-                
+
                 ConfidenceBadge(confidence: idea.confidence)
             }
         }
         .padding(8)
-        .background(isUnique ? Color.yellow.opacity(0.1) : Color.secondary.opacity(0.05))
+        .background(isUnique ? Color.primary.opacity(0.08) : Color.secondary.opacity(0.05))
         .cornerRadius(8)
     }
 }

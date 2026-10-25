@@ -31,7 +31,7 @@ struct SettingsView: View {
                         
                         HStack {
                             Image(systemName: "wifi")
-                                .foregroundColor(.green)
+                                .foregroundColor(.primary)
                             Text("Online (API Only)")
                                 .foregroundColor(.secondary)
                             Spacer()
@@ -74,7 +74,7 @@ struct SettingsView: View {
                     Button("Clear Cache") {
                         showingClearCacheAlert = true
                     }
-                    .foregroundColor(.red)
+                    .foregroundColor(.primary)
                     
                     Button(action: refreshCacheInfo) {
                         HStack {
@@ -127,7 +127,7 @@ struct SettingsView: View {
                     }) {
                         HStack {
                             Image(systemName: "questionmark.circle")
-                                .foregroundColor(.blue)
+                                .foregroundColor(.primary)
                             Text("Show Onboarding")
                                 .foregroundColor(.primary)
                             Spacer()
@@ -163,7 +163,7 @@ struct SettingsView: View {
                             Text("Debug Mode")
                             Spacer()
                             Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.green)
+                                .foregroundColor(.primary)
                         }
                     }
                 } header: {

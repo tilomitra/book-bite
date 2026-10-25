@@ -12,23 +12,28 @@ export function errorHandler(
   let status = 500;
   let message = 'Internal server error';
 
+  const errMessage = err?.message || '';
+
   // Handle specific error types
-  if (err.message.includes('not found')) {
-    status = 404;
-    message = err.message;
-  } else if (err.message.includes('Invalid') || err.message.includes('required')) {
+  if (errMessage.includes('invalid input syntax for type uuid')) {
     status = 400;
-    message = err.message;
-  } else if (err.message.includes('Unauthorized') || err.message.includes('token')) {
+    message = 'Invalid id';
+  } else if (errMessage.includes('not found')) {
+    status = 404;
+    message = errMessage;
+  } else if (errMessage.includes('Invalid') || errMessage.includes('required')) {
+    status = 400;
+    message = errMessage;
+  } else if (errMessage.includes('Unauthorized') || errMessage.includes('jwt')) {
     status = 401;
-    message = err.message;
-  } else if (err.message.includes('Forbidden') || err.message.includes('permission')) {
+    message = errMessage;
+  } else if (errMessage.includes('Forbidden') || errMessage.includes('permission')) {
     status = 403;
-    message = err.message;
+    message = errMessage;
   }
 
   res.status(status).json({
     error: message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    ...(process.env.DEBUG_ERRORS === 'true' && { stack: err?.stack })
   });
 }

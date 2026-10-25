@@ -118,7 +118,7 @@ struct DownloadedBookRow: View {
                     if offlineBook.hasSummary {
                         Label("Summary", systemImage: "doc.text.fill")
                             .font(.caption)
-                            .foregroundColor(.green)
+                            .foregroundColor(DesignSystem.Colors.badgeGreen)
                     }
                 }
             }
@@ -127,7 +127,7 @@ struct DownloadedBookRow: View {
 
             // Offline indicator
             Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(.green)
+                .foregroundColor(DesignSystem.Colors.badgeGreen)
                 .font(.title3)
         }
         .padding(.vertical, 4)

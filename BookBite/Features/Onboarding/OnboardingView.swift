@@ -10,19 +10,19 @@ struct OnboardingView: View {
             title: "Discover Your Next\nGreat Read",
             subtitle: "Explore thousands of books with AI-powered summaries to find your perfect match.",
             imageName: "books.vertical.fill",
-            primaryColor: .orange
+            primaryColor: .primary
         ),
         OnboardingPageData(
             title: "Smart Summaries\nMade Simple",
             subtitle: "Get comprehensive book insights and key takeaways to make informed reading decisions.",
             imageName: "brain.head.profile",
-            primaryColor: .blue
+            primaryColor: .primary
         ),
         OnboardingPageData(
             title: "Start Your Reading\nJourney Today",
             subtitle: "Join readers discovering their next favorite book with BookBite.",
             imageName: "star.fill",
-            primaryColor: .green
+            primaryColor: .primary
         )
     ]
     
@@ -114,10 +114,10 @@ struct OnboardingPageView: View {
             Button(action: onGetStarted) {
                 Text(isLastPage ? "Get Started" : "Get Started")
                     .font(.system(size: 17, weight: .semibold))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color(UIColor.systemBackground))
                     .frame(maxWidth: .infinity)
                     .frame(height: 50)
-                    .background(data.primaryColor)
+                    .background(Color.primary)
                     .cornerRadius(25)
             }
             .padding(.horizontal, 32)

@@ -95,7 +95,7 @@ struct BookChatView: View {
                         }
                     }
                     .font(.caption)
-                    .foregroundColor(.blue)
+                    .foregroundColor(.primary)
                 }
             }
         }
@@ -231,23 +231,23 @@ struct BookChatView: View {
 struct SuggestedQuestionButton: View {
     let title: String
     let action: () -> Void
-    
+
     init(_ title: String, action: @escaping () -> Void) {
         self.title = title
         self.action = action
     }
-    
+
     var body: some View {
         Button(action: action) {
             Text(title)
                 .font(.caption)
-                .foregroundColor(.blue)
+                .foregroundColor(.primary)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .background(
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.blue.opacity(0.3), lineWidth: 1)
-                        .background(Color.blue.opacity(0.05))
+                        .stroke(Color.primary.opacity(0.2), lineWidth: 1)
+                        .background(Color.primary.opacity(0.05).clipShape(RoundedRectangle(cornerRadius: 16)))
                 )
         }
         .buttonStyle(.plain)

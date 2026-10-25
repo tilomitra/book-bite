@@ -46,6 +46,14 @@ struct Summary: Identifiable, Codable {
         case full
     }
 
+    /// Minutes to read the summary itself (~200 wpm). The stored read_time_minutes is an LLM
+    /// estimate that is often the length of the whole book (e.g. 300), so prefer the real text.
+    var summaryReadTimeMinutes: Int {
+        guard let text = extendedSummary, !text.isEmpty else { return readTimeMinutes }
+        let words = text.split(whereSeparator: { $0.isWhitespace }).count
+        return max(1, Int((Double(words) / 200.0).rounded(.up)))
+    }
+
     /// Returns true if audio summary is available
     var hasAudio: Bool {
         audioUrl != nil && !audioUrl!.isEmpty
@@ -60,12 +68,50 @@ struct Summary: Identifiable, Codable {
     }
 }
 
+// Lenient decoding: the DB columns behind these fields are nullable and LLM output varies,
+// so a single missing field must not make the whole summary fail to load.
+extension Summary {
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(String.self, forKey: .id)
+        bookId = try c.decode(String.self, forKey: .bookId)
+        oneSentenceHook = try c.decodeIfPresent(String.self, forKey: .oneSentenceHook) ?? ""
+        keyIdeas = try c.decodeIfPresent([KeyIdea].self, forKey: .keyIdeas) ?? []
+        howToApply = try c.decodeIfPresent([ApplicationPoint].self, forKey: .howToApply) ?? []
+        commonPitfalls = try c.decodeIfPresent([String].self, forKey: .commonPitfalls) ?? []
+        critiques = try c.decodeIfPresent([String].self, forKey: .critiques) ?? []
+        whoShouldRead = try c.decodeIfPresent(String.self, forKey: .whoShouldRead) ?? ""
+        limitations = try c.decodeIfPresent(String.self, forKey: .limitations) ?? ""
+        citations = try c.decodeIfPresent([Citation].self, forKey: .citations) ?? []
+        readTimeMinutes = try c.decodeIfPresent(Int.self, forKey: .readTimeMinutes) ?? 0
+        style = (try? c.decodeIfPresent(SummaryStyle.self, forKey: .style)) ?? .full
+        extendedSummary = try c.decodeIfPresent(String.self, forKey: .extendedSummary)
+        audioUrl = try c.decodeIfPresent(String.self, forKey: .audioUrl)
+        audioDurationSeconds = try c.decodeIfPresent(Int.self, forKey: .audioDurationSeconds)
+        audioFileSizeBytes = try c.decodeIfPresent(Int.self, forKey: .audioFileSizeBytes)
+        audioVoiceId = try c.decodeIfPresent(String.self, forKey: .audioVoiceId)
+    }
+}
+
 struct KeyIdea: Identifiable, Codable {
     let id: String
     let idea: String
     let tags: [String]
     let confidence: Confidence
     let sources: [String]
+}
+
+extension KeyIdea {
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = (try? c.decode(String.self, forKey: .id)) ?? UUID().uuidString
+        idea = try c.decode(String.self, forKey: .idea)
+        tags = try c.decodeIfPresent([String].self, forKey: .tags) ?? []
+        // Unknown/odd casing from the LLM falls back to medium
+        let rawConfidence = (try? c.decodeIfPresent(String.self, forKey: .confidence)) ?? nil
+        confidence = rawConfidence.flatMap { Confidence(rawValue: $0.lowercased()) } ?? .medium
+        sources = try c.decodeIfPresent([String].self, forKey: .sources) ?? []
+    }
 }
 
 struct ApplicationPoint: Identifiable, Codable {

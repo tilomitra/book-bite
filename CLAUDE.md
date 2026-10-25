@@ -1,268 +1,109 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for Claude Code when working in this repository. Keep it accurate: update it whenever the architecture, commands, or gotchas change.
 
-## Project Overview
+## What this is
 
-BookBite is a full-stack application consisting of:
-- **iOS App**: Native SwiftUI application for iOS 18.5+ using Xcode 16.4 and Swift 5.0
-- **Node.js Server**: Express/TypeScript backend with Supabase database and AI integration
+BookBite shows AI-generated non-fiction book summaries (one-sentence hook, key ideas, how-to-apply, extended summary, audio summary, chat-with-the-book).
 
-## Common Development Commands
+- **iOS app** (`BookBite/`): SwiftUI, MVVM, iOS 18.5+ deployment target, bundle id `tilo.BookBite`. Built with Xcode 26 (iOS 26 simulator SDK).
+- **Server** (`server/`): Express + TypeScript, Supabase (Postgres) for data, OpenAI for summaries/chat, ElevenLabs for audio, Bull/Redis for the summary job queue.
+- The app is **remote-only**: all books/summaries come from the server. There is no bundled data or offline-first mode (only per-book offline downloads via `OfflineStorageService`). `HybridBookRepository` is just a wrapper around `RemoteBookRepository`.
 
-### iOS App Commands
+## Running it locally (do this first)
 
-#### Building and Running
 ```bash
-# Build the iOS project
-xcodebuild -project BookBite.xcodeproj -scheme BookBite build
+# 1. Server (needs server/.env; Redis must be running for summary jobs)
+cd server && npm install && PORT=3001 npx tsx src/index.ts   # dev: npm run dev (port 3000)
 
-# Clean build folder
-xcodebuild clean -project BookBite.xcodeproj -scheme BookBite
+# 2. iOS: build, install, launch pointing at the local server
+xcodebuild -project BookBite.xcodeproj -scheme BookBite \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath /tmp/bb-dd build
+xcrun simctl boot 'iPhone 17 Pro'
+xcrun simctl install booted /tmp/bb-dd/Build/Products/Debug-iphonesimulator/BookBite.app
+SIMCTL_CHILD_BOOKBITE_SERVER_URL=http://localhost:3001/api xcrun simctl launch booted tilo.BookBite
 ```
 
-#### Testing
+### Known environment gotchas
+- **Port 3000 is often taken** on this machine by another project's Next.js dev server. Don't kill it — run BookBite on 3001 and pass `BOOKBITE_SERVER_URL` (Debug builds read it; default `http://localhost:3000/api`). Release builds use `https://book-bite.onrender.com/api`.
+- **Supabase project `yjejgiltdbuombrzdtbv` (free tier) pauses when idle.** Symptom: every DB-backed endpoint 500s with a Cloudflare "521 Web server is down" HTML page in the error. Only the user can restore it (Supabase dashboard); the Supabase MCP here is not authorized and there is no `supabase` CLI.
+- **Render deploy (`book-bite.onrender.com`) is suspended**, so release builds have no backend.
+- **No iOS simulator runtime may be installed** after Xcode updates (`xcrun simctl list runtimes` empty). Fix: `xcodebuild -downloadPlatform iOS` (~8 GB, run in background).
+- `xcodebuild test` can shut the simulator down; re-boot it before installing/launching.
+- `tsx` server startup takes several seconds; wait for `Server running on` before curling.
+
+## Commands
+
+### iOS
 ```bash
-# Run all iOS tests
-xcodebuild test -project BookBite.xcodeproj -scheme BookBite -destination 'platform=iOS Simulator,name=iPhone 15'
-
-# Run specific test
-xcodebuild test -project BookBite.xcodeproj -scheme BookBite -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:BookBiteTests/TestClassName/testMethodName
+xcodebuild -project BookBite.xcodeproj -scheme BookBite -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
+xcodebuild test -project BookBite.xcodeproj -scheme BookBite -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -only-testing:BookBiteTests
+# single test: -only-testing:BookBiteTests/SearchServiceTests/testSearchByTitle
 ```
-
-### Server Commands
-
-#### Development
-```bash
-# Start development server with hot reload
-cd server && npm run dev
-
-# Build TypeScript to JavaScript
-cd server && npm run build
-
-# Start production server
-cd server && npm start
-```
-
-#### Testing and Quality
-```bash
-# Run server tests
-cd server && npm test
-
-# Run ESLint
-cd server && npm run lint
-
-# Install dependencies
-cd server && npm install
-```
-
-#### Database Management
-```bash
-# Run Supabase schema (copy contents to Supabase SQL editor)
-cat server/supabase/schema.sql
-```
-
-#### Data Population Scripts
-
-##### Comprehensive Book Population (Recommended)
-```bash
-# Populate books from all sources (Google Books + NYT) with default settings
-cd server && npm run populate-books
-
-# Google Books only - 25 books per category, all priorities
-cd server && npm run populate-books-google
-
-# NYT Bestsellers only - 15 books per list, all lists
-cd server && npm run populate-books-nyt
-
-# High priority categories only (Self-Help, Psychology, Business, History, Biography, etc.)
-cd server && npm run populate-books-high-priority
-
-# Custom options: [booksPerCategory] [priority] [source]
-cd server && npx tsx scripts/populate-books.ts 30 high google
-cd server && npx tsx scripts/populate-books.ts 15 medium nyt
-cd server && npx tsx scripts/populate-books.ts 50 all all
-```
-
-**Features:**
-- **Unified script** combining Google Books API + NYT Bestsellers API
-- 35+ comprehensive non-fiction categories + 16+ NYT bestseller lists
-- Priority filtering (high/medium/low) for targeted content
-- Source filtering (google/nyt/all) for flexible data sourcing
-- Automatic deduplication across all sources
-- AI-generated summaries + extended summaries in one operation
-- Smart rate limiting and comprehensive progress tracking
-- Can generate 1,750+ books with full category coverage
-
-##### Summary Generation
-```bash
-# Generate summaries for books that don't have any summaries (regular + extended)
-cd server && npm run generate-summaries
-
-# Generate only extended summaries for books that have regular summaries but lack extended ones
-cd server && npm run generate-extended-summaries
-
-# Custom batch processing
-cd server && npx tsx scripts/generate-missing-summaries.ts 3 50  # 3 books per batch, max 50 books
-cd server && npx tsx scripts/generate-extended-summaries.ts 2 30  # 2 books per batch, max 30 books
-```
-
-**Usage Notes:**
-- Always start with high priority categories for best content quality
-- Monitor API usage to stay within rate limits
-- Scripts include automatic deduplication to prevent duplicates
-- Each book gets both regular summary and extended summary via AI
-
-##### Audio Summary Generation
-```bash
-# Generate audio for a specific book by ID
-cd server && npm run generate-audio -- --book-id <uuid>
-
-# Search for a book by title and generate audio
-cd server && npm run generate-audio -- --title "Atomic Habits"
-
-# List books without audio summaries
-cd server && npm run generate-audio -- --list-missing
-
-# Dry run - generate script only (for cost preview, no audio)
-cd server && npm run generate-audio -- --title "Deep Work" --dry-run
-
-# Force regenerate with custom voice
-cd server && npm run generate-audio -- --book-id <uuid> --force --voice-id EXAVITQu4vr4xnSDxMaL
-```
-
-**Available ElevenLabs Voices:**
-- `pNInz6obpgDQGcFmaJgB` - Adam (default) - Warm, conversational male
-- `EXAVITQu4vr4xnSDxMaL` - Bella - Warm, friendly female
-- `21m00Tcm4TlvDq8ikWAM` - Rachel - Calm, clear female
-- `ErXwobaYiN019PkySvjV` - Antoni - Well-rounded male
-
-**Cost Estimate:**
-- Script generation (GPT-4o): ~$0.06/book
-- Audio generation (ElevenLabs Turbo v2.5): ~$0.88/book
-- Total: ~$0.94 per book audio summary
-
-## Architecture
-
-### Project Structure
-
-#### iOS App (`/`)
-- **BookBite/**: Main app source code
-  - `App/`: App configuration and dependency injection
-    - `BookBiteApp.swift`: App entry point with @main attribute
-    - `RootView.swift`: Main tab-based navigation
-    - `Configuration/`: App config and dependency container
-  - `Core/`: Business logic and data layer
-    - `Models/`: Data models (Book, Summary, Confidence)
-    - `Repositories/`: Data access layer with protocol abstraction
-      - `BookRepository.swift`: Protocol definition
-      - `LocalBookRepository.swift`: Bundled JSON data source
-      - `RemoteBookRepository.swift`: Server API data source
-      - `HybridBookRepository.swift`: Smart fallback between remote/local
-    - `Services/`: Business services (NetworkService, CacheService, AudioPlaybackService, OfflineStorageService, etc.)
-  - `Features/`: Feature-specific UI and ViewModels
-    - `Search/`: Book search functionality
-    - `BookDetail/`: Detailed book view with summaries
-    - `AudioPlayer/`: Full-screen audio player for audio summaries
-    - `Settings/`: App settings and data source management
-  - `Shared/`: Reusable UI components
-  - `Resources/Fixtures/`: Bundled JSON data for offline use
-- **BookBiteTests/**: Unit tests using Swift Testing framework
-- **BookBiteUITests/**: UI tests using XCTest framework
-
-#### Server (`/server`)
-- **src/**: TypeScript server source code
-  - `config/`: Configuration files (Supabase connection)
-  - `controllers/`: Request handlers for books and summaries
-  - `middleware/`: Authentication, error handling, rate limiting
-  - `models/`: TypeScript types and Zod schemas
-  - `routes/`: Express route definitions
-  - `services/`: Business logic (GoogleBooksService, OpenAIService, etc.)
-- **supabase/**: Database schema and migrations
-
-### Key Implementation Details
-
-#### iOS App
-- Repository pattern with protocol abstraction enables switching between data sources
-- Three data source modes: Local (bundled), Remote (server-only), Hybrid (smart fallback)
-- Comprehensive caching for offline support with automatic cache management
-- Network monitoring for automatic online/offline detection
-- SwiftUI with MVVM architecture and Combine for reactive programming
-
-#### Server
-- Express.js with TypeScript for type safety
-- Supabase (PostgreSQL) for database with row-level security
-- Google Books API integration for book metadata enrichment
-- OpenAI API for AI-generated book summaries
-- Bull job queue with Redis for async summary generation
-- JWT authentication with role-based access control (admin/public)
-- Comprehensive error handling and request validation with Zod
-
-### Development Patterns
-
-#### iOS Development
-- SwiftUI views follow single responsibility principle
-- Use repository pattern for data access abstraction
-- ViewModels handle business logic and state management
-- Dependency injection via DependencyContainer
-- Async/await for all network operations
-- Proper error handling with user-friendly messages
-
-#### Server Development  
-- Controllers handle HTTP requests/responses only
-- Services contain business logic and external API integration
-- Models define TypeScript types with Zod validation
-- Async/await throughout for database and external API calls
-- Proper HTTP status codes and error responses
-- Background job processing for expensive operations
-
-## Build Configuration
-
-### iOS App
-- **Bundle ID**: `tilo.BookBite`
-- **Minimum iOS**: 18.5
-- **Supported Devices**: iPhone and iPad
-- **Swift Version**: 5.0
-- **Xcode Version**: 16.4
+Unit tests use Swift Testing (`@Test`, `#expect`); 50 tests, all should pass. UI tests (`BookBiteUITests`) are XCTest templates.
 
 ### Server
-- **Node.js**: 20+ (ES2022 support)
-- **TypeScript**: 5.3+
-- **Database**: PostgreSQL via Supabase
-- **Queue**: Redis for background jobs
-- **APIs**: Google Books API, OpenAI API, ElevenLabs API
-
-## Environment Setup
-
-### Required Environment Variables (Server)
 ```bash
-# Server
-PORT=3000
-NODE_ENV=development
-
-# Database
-SUPABASE_URL=your_supabase_project_url
-SUPABASE_SERVICE_KEY=your_supabase_service_key
-
-# External APIs
-GOOGLE_BOOKS_API_KEY=your_google_books_api_key
-OPENAI_API_KEY=your_openai_api_key
-ELEVENLABS_API_KEY=your_elevenlabs_api_key
-
-# Queue
-REDIS_URL=redis://localhost:6379
+cd server
+npm run dev        # tsx watch
+npm run build      # tsc
+npx tsc --noEmit   # type-check
+npm test           # jest (basic smoke tests)
+npm run lint       # eslint, config in server/.eslintrc.cjs
 ```
 
-### iOS App Configuration
-- Update `AppConfiguration.swift` with your server URL
-- Choose data source mode (Local/Remote/Hybrid)
-- Configure cache settings and timeouts
+### Data scripts (`server/scripts/`, all call services directly, cost real API money)
+```bash
+npm run populate-books                      # Google Books + NYT, with AI summaries
+npx tsx scripts/populate-books.ts 30 high google   # [booksPerCategory] [priority] [source]
+npm run generate-summaries                  # books missing summaries
+npm run generate-extended-summaries
+npm run generate-audio -- --title "Atomic Habits"   # or --book-id <uuid>, --list-missing, --dry-run, --force --voice-id <id>
+npm run update-book-covers / update-popularity-scores / populate-headway-books
+```
+Audio ≈ $0.94/book (GPT-4o script + ElevenLabs Turbo v2.5). Default voice Adam `pNInz6obpgDQGcFmaJgB`; others: Bella `EXAVITQu4vr4xnSDxMaL`, Rachel `21m00Tcm4TlvDq8ikWAM`, Antoni `ErXwobaYiN019PkySvjV`.
 
-## Data Sources
+### Database
+Schema: `server/supabase/schema.sql` plus loose SQL files in `server/supabase/` (featured/NYT/extended-summary columns). Apply via the Supabase SQL editor; `migrations/` is empty. ~1,650 books.
 
-The app supports three data source modes:
-- **Local**: Uses bundled JSON files (offline-first, limited content)
-- **Remote**: Uses server API exclusively (requires internet)
-- **Hybrid**: Smart fallback between server and local (recommended)
+## iOS architecture
 
-Switch modes in Settings app or via `AppConfiguration.currentDataSource`.
+- `App/`: `BookBiteApp` (entry), `RootView` (system `TabView`: Featured, Request, Library, Settings — **each tab is already wrapped in a `NavigationStack`; don't add another inside tab root views**), `Configuration/AppConfiguration` (server URL, flags), `DependencyContainer` (`@MainActor` singleton: repositories, `authService`, `searchService`, `onboardingService`).
+- `Core/Repositories`: `BookRepository` protocol; `RemoteBookRepository` does all API calls (books, summaries, summary-generation jobs, favorites). Favorites send the Supabase access token from `SupabaseAuthService.getAccessToken()`.
+- `Core/Services`:
+  - `NetworkService`: generic `get/post/put/delete`. Use `NetworkService.makeDecoder()` for any server/Supabase JSON (ISO8601 dates with or without fractional seconds). Retries only transient failures of GET requests; decoding failures throw `.decodingError` immediately; POST takes a `timeout:` (book request uses 180s because the server runs the LLM synchronously).
+  - `SearchService`: hits `/books/search?source=local` directly with `URLSession.shared` (not via the repository); tests stub it with a `URLProtocol`.
+  - `SupabaseAuthService`: talks to Supabase Auth REST directly; session persisted in UserDefaults. Sign-in is optional (anonymous use is allowed).
+  - `AudioPlaybackService` (shared, `@MainActor`): AVPlayer + lock-screen controls; `MiniAudioPlayer` overlay in `RootView`.
+  - `CacheService`, `OfflineStorageService`, `ExportService` (PDF/text), `RatingsService`, `OnboardingService`.
+- `Core/Models`: `Book` and `Summary` use snake_case `CodingKeys` matching the DB columns. `Summary`/`KeyIdea` have lenient `init(from:)` (nullable columns, unknown confidence → `.medium`). Use `summary.summaryReadTimeMinutes` for display; the stored `read_time_minutes` is an unreliable LLM guess (often the whole book's length).
+- `Features/<Feature>/{Views,ViewModels}`: Featured, Library (+ search), Request (Google Books search → request new book), BookDetail (summary tabs, chat, audio), AudioPlayer, Settings, Onboarding, Authentication, Comparison, Export, Swipe.
+- `Shared/Design/DesignSystem.swift`: a monochrome redesign is in progress. `vibrant*` colors are aliases of `monoMedium`; colored accents are limited to badges, stars, and book covers.
+
+## Server architecture
+
+`src/index.ts` → routes → controllers (HTTP only) → services (business logic, Supabase/API calls). Zod schemas/types in `src/models/types.ts`. All handlers wrap in try/catch and call `next(err)`; `middleware/errorHandler.ts` maps messages to status codes (invalid uuid → 400, "not found" → 404). Stack traces only when `DEBUG_ERRORS=true`.
+
+Routes (prefix `/api`):
+- `books`: `/`, `/featured`, `/nyt-bestsellers`, `/search`, `/categories`, `/category/:category`, `/:id`, `/:id/cover`; admin POST/PUT/DELETE.
+- `summaries`: `/book/:bookId`, `POST /book/:bookId/generate` (public, rate-limited 20/h/IP), `/job/:jobId`; admin list/update/delete.
+- `search`: `/books` (Google Books), `/book/:googleBooksId`, `POST /request` (adds book + generates summaries synchronously; 409 with `{book}` if it exists).
+- `books/:bookId/chat/...` (conversations, messages, SSE streaming), `books/:bookId/ratings`, `isbn/:isbn/ratings`.
+- `user/*` (favorites, reading-history, recommendations) and `auth/*` (profile, stats, account) require `Authorization: Bearer <supabase jwt>`.
+- `audio/book/:bookId`, `audio/job/:jobId` public; `audio/.../generate`, `audio/missing`, `audio/quota` admin-only.
+
+Behaviour worth knowing:
+- Admin = Supabase JWT with `app_metadata.role === 'admin'` (never trust `user_metadata`, users can write it).
+- PostgREST returns at most 1000 rows per request; `BookService.fetchAllBooks()` pages through for categories. `?limit` is clamped to 1–1000, `?page` ≥ 1.
+- Search fetches all matches' ids/titles, ranks title-exact > title-prefix > title-contains > subtitle > description, then loads the page. Search terms are sanitized for PostgREST `.or()` (commas/parens break it). Google Books results (non-UUID ids) are appended only for `source=all|google` after local results run out.
+- Summary generation: `generate` returns `{id, bookId, status}`; if a summary exists it returns `id: "existing-<bookId>", status: "completed"` and the app fetches the summary directly. `/job/:jobId` returns the same camelCase shape. The Bull worker updates the DB job via `job.data.jobId`. `getSummaryByBookId` takes the newest row (regeneration can create duplicates).
+- `app.set('trust proxy', 1)` for Render.
+
+## Environment (`server/.env`, see `.env.example`)
+`PORT`, `NODE_ENV`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_KEY`, `GOOGLE_BOOKS_API_KEY`, `NYT_API_KEY`, `OPENAI_API_KEY`, `ELEVENLABS_API_KEY`, `REDIS_URL`, `RATE_LIMIT_WINDOW_MS`, `RATE_LIMIT_MAX_REQUESTS`, `CORS_ORIGIN`, optional `DEBUG_ERRORS`.
+
+## Known open issues
+- Featured view only loads the first 100 of ~216 featured books (default `limit=100`).
+- Some covers (Open Library) load slowly via redirects; makeheadway.com covers are hotlinked.
+- `BookDetailViewModel` polling `Task` captures `self` strongly (bounded to 5 min).
+- `SearchService` bypasses the injected repository.

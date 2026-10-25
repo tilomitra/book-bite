@@ -89,13 +89,13 @@ struct ApplicationTab: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Who Should Read This")
                         .font(.headline)
-                    
+
                     Text(summary.whoShouldRead)
                         .font(.body)
                         .foregroundColor(.primary.opacity(0.9))
                 }
                 .padding()
-                .background(Color.green.opacity(0.1))
+                .background(Color.primary.opacity(0.06))
                 .cornerRadius(12)
                 .padding(.horizontal)
                 .padding(.top, 20)
@@ -117,54 +117,54 @@ struct AnalysisTab: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Common Pitfalls")
                             .font(.headline)
-                        
+
                         ForEach(Array(summary.commonPitfalls.enumerated()), id: \.offset) { index, pitfall in
                             HStack(alignment: .top, spacing: 8) {
                                 Image(systemName: "exclamationmark.triangle.fill")
-                                    .foregroundColor(.orange)
+                                    .foregroundColor(.primary.opacity(0.7))
                                     .font(.caption)
-                                
+
                                 Text(pitfall)
                                     .font(.body)
                             }
                         }
                     }
                     .padding()
-                    .background(Color.orange.opacity(0.1))
+                    .background(Color.primary.opacity(0.06))
                     .cornerRadius(12)
                 }
-                
+
                 if !summary.critiques.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Critical Perspectives")
                             .font(.headline)
-                        
+
                         ForEach(Array(summary.critiques.enumerated()), id: \.offset) { index, critique in
                             HStack(alignment: .top, spacing: 8) {
                                 Image(systemName: "quote.bubble")
-                                    .foregroundColor(.purple)
+                                    .foregroundColor(.primary.opacity(0.7))
                                     .font(.caption)
-                                
+
                                 Text(critique)
                                     .font(.body)
                             }
                         }
                     }
                     .padding()
-                    .background(Color.purple.opacity(0.1))
+                    .background(Color.primary.opacity(0.06))
                     .cornerRadius(12)
                 }
-                
+
                 if !summary.limitations.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Limitations")
                             .font(.headline)
-                        
+
                         Text(summary.limitations)
                             .font(.body)
                     }
                     .padding()
-                    .background(Color.red.opacity(0.1))
+                    .background(Color.primary.opacity(0.06))
                     .cornerRadius(12)
                 }
             }

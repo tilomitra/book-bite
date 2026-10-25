@@ -16,15 +16,7 @@ class SupabaseAuthService: ObservableObject {
     private let sessionKey = "supabaseSession"
     
     init() {
-        // Reset state for testing - completely clear all auth state
-        userDefaults.removeObject(forKey: sessionKey)
-        userDefaults.removeObject(forKey: anonymousKey)
-        print("🔑 [AUTH] Cleared all authentication state")
-        
-        // Start with unauthenticated state
-        authState = .unauthenticated
-        
-        // Check initial auth state
+        // Restore any saved session / anonymous choice
         Task {
             await checkAuthState()
         }
@@ -82,7 +74,7 @@ class SupabaseAuthService: ObservableObject {
         
         if let httpResponse = response as? HTTPURLResponse {
             if httpResponse.statusCode == 200 {
-                let authResponse = try JSONDecoder().decode(SupabaseAuthResponse.self, from: data)
+                let authResponse = try NetworkService.makeDecoder().decode(SupabaseAuthResponse.self, from: data)
                 if let user = authResponse.user, let session = authResponse.session {
                     let supabaseSession = SupabaseSession(
                         user: user,
@@ -115,21 +107,19 @@ class SupabaseAuthService: ObservableObject {
         defer { isLoading = false }
         
         print("🔑 [AUTH] Sign in attempt with email: '\(email)'")
-        print("🔑 [AUTH] URL: \(supabaseURL)/auth/v1/token")
-        
-        guard let url = URL(string: "\(supabaseURL)/auth/v1/token") else {
+        print("🔑 [AUTH] URL: \(supabaseURL)/auth/v1/token?grant_type=password")
+
+        guard let url = URL(string: "\(supabaseURL)/auth/v1/token?grant_type=password") else {
             print("🔑 [AUTH] ERROR: Invalid URL")
             throw AuthError.invalidURL
         }
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(supabaseAnonKey)", forHTTPHeaderField: "Authorization")
         request.setValue(supabaseAnonKey, forHTTPHeaderField: "apikey")
-        
+
         let body = [
-            "grant_type": "password",
             "email": email,
             "password": password
         ]
@@ -147,10 +137,11 @@ class SupabaseAuthService: ObservableObject {
         print("🔑 [AUTH] Making network request...")
         let (data, response) = try await URLSession.shared.data(for: request)
         print("🔑 [AUTH] Network request completed")
-        
+
         if let httpResponse = response as? HTTPURLResponse {
+            print("🔑 [AUTH] HTTP Status Code: \(httpResponse.statusCode)")
             if httpResponse.statusCode == 200 {
-                let authResponse = try JSONDecoder().decode(SupabaseAuthResponse.self, from: data)
+                let authResponse = try NetworkService.makeDecoder().decode(SupabaseAuthResponse.self, from: data)
                 if let user = authResponse.user, let session = authResponse.session {
                     let supabaseSession = SupabaseSession(
                         user: user,
@@ -182,13 +173,16 @@ class SupabaseAuthService: ObservableObject {
         
         defer { isLoading = false }
         
+        // Read the session before clearing it so the server-side logout can use its token
+        let savedSessionData = userDefaults.data(forKey: sessionKey)
+        
         // Clear local session
         userDefaults.removeObject(forKey: sessionKey)
         userDefaults.set(false, forKey: anonymousKey)
         authState = .unauthenticated
         
         // Optionally call Supabase signout endpoint
-        if let sessionData = userDefaults.data(forKey: sessionKey),
+        if let sessionData = savedSessionData,
            let session = try? JSONDecoder().decode(SupabaseSession.self, from: sessionData),
            let url = URL(string: "\(supabaseURL)/auth/v1/logout") {
             
@@ -319,7 +313,7 @@ class SupabaseAuthService: ObservableObject {
             print("🍎 [APPLE AUTH] HTTP Status: \(httpResponse.statusCode)")
             
             if httpResponse.statusCode == 200 {
-                let authResponse = try JSONDecoder().decode(SupabaseAuthResponse.self, from: data)
+                let authResponse = try NetworkService.makeDecoder().decode(SupabaseAuthResponse.self, from: data)
                 if let user = authResponse.user, let session = authResponse.session {
                     let supabaseSession = SupabaseSession(
                         user: user,
@@ -381,20 +375,33 @@ struct SupabaseSession: Codable {
 }
 
 struct SupabaseAuthResponse: Codable {
+    let accessToken: String?
+    let refreshToken: String?
+    let expiresIn: Int?
     let user: User?
-    let session: SessionResponse?
-}
 
-struct SessionResponse: Codable {
-    let accessToken: String
-    let refreshToken: String
-    let expiresIn: Int
-    
     enum CodingKeys: String, CodingKey {
         case accessToken = "access_token"
         case refreshToken = "refresh_token"
         case expiresIn = "expires_in"
+        case user
     }
+
+    // Computed property for backwards compatibility
+    var session: SessionResponse? {
+        guard let accessToken = accessToken,
+              let refreshToken = refreshToken,
+              let expiresIn = expiresIn else {
+            return nil
+        }
+        return SessionResponse(accessToken: accessToken, refreshToken: refreshToken, expiresIn: expiresIn)
+    }
+}
+
+struct SessionResponse {
+    let accessToken: String
+    let refreshToken: String
+    let expiresIn: Int
 }
 
 struct SupabaseError: Codable {

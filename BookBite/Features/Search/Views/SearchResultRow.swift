@@ -28,11 +28,11 @@ struct SearchResultRow: View {
                     HStack(spacing: 4) {
                         Image(systemName: "star.fill")
                             .font(.system(size: 10))
-                            .foregroundColor(.orange)
+                            .foregroundColor(DesignSystem.Colors.nytGold)
                         Text("NYT Bestseller")
                             .font(.caption)
                             .fontWeight(.medium)
-                            .foregroundColor(.orange)
+                            .foregroundColor(DesignSystem.Colors.nytGold)
                     }
                     .padding(.top, 2)
                 }

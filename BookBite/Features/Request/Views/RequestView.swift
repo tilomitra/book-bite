@@ -6,7 +6,7 @@ struct RequestView: View {
     @FocusState private var isSearchFieldFocused: Bool
     
     var body: some View {
-        NavigationStack {
+        Group {
             VStack(spacing: 0) {
                 // Search bar - always at top
                 SearchBarView(viewModel: viewModel, isSearchFieldFocused: $isSearchFieldFocused)
@@ -81,8 +81,8 @@ struct InitialRequestView: View {
             VStack(spacing: 12) {
                 Image(systemName: "plus.magnifyingglass")
                     .font(.system(size: 50, weight: .light))
-                    .foregroundColor(.blue)
-                
+                    .foregroundColor(.primary)
+
                 Text("Request Any Book")
                     .font(.title2)
                     .fontWeight(.semibold)
@@ -107,28 +107,28 @@ struct InitialRequestView: View {
                         number: "1",
                         title: "Search",
                         description: "Search for any book using the search bar above",
-                        color: .blue
+                        color: .primary
                     )
-                    
+
                     HowItWorksStep(
                         number: "2",
-                        title: "Select", 
+                        title: "Select",
                         description: "Choose the book you want from the search results",
-                        color: .blue
+                        color: .primary
                     )
-                    
+
                     HowItWorksStep(
                         number: "3",
                         title: "AI Analysis",
                         description: "Our AI generates a comprehensive summary with key insights",
-                        color: .blue
+                        color: .primary
                     )
-                    
+
                     HowItWorksStep(
                         number: "4",
                         title: "Ready to Read",
                         description: "The book is added to your library with intelligent summaries",
-                        color: .blue
+                        color: .primary
                     )
                 }
                 .padding(.horizontal, 20)
@@ -145,22 +145,22 @@ struct HowItWorksStep: View {
     let description: String
     let color: Color
     
-    init(number: String, title: String, description: String, color: Color = DesignSystem.Colors.vibrantBlue) {
+    init(number: String, title: String, description: String, color: Color = .primary) {
         self.number = number
         self.title = title
         self.description = description
         self.color = color
     }
-    
+
     var body: some View {
         HStack(spacing: 12) {
             // Simple step number
             Text(number)
                 .font(.headline)
                 .fontWeight(.bold)
-                .foregroundColor(.white)
+                .foregroundColor(Color(UIColor.systemBackground))
                 .frame(width: 28, height: 28)
-                .background(Circle().fill(.blue))
+                .background(Circle().fill(Color.primary))
             
             // Compact content
             VStack(alignment: .leading, spacing: 2) {
@@ -188,29 +188,25 @@ struct LoadingSearchView: View {
             ZStack {
                 // Outer pulsing circle
                 Circle()
-                    .stroke(DesignSystem.Colors.vibrantBlue.opacity(0.3), lineWidth: 2)
+                    .stroke(Color.primary.opacity(0.3), lineWidth: 2)
                     .frame(width: 80, height: 80)
                     .scaleEffect(isAnimating ? 1.2 : 1.0)
                     .opacity(isAnimating ? 0.3 : 1.0)
-                
+
                 // Inner spinning circle
                 Circle()
                     .trim(from: 0, to: 0.7)
                     .stroke(
-                        LinearGradient(
-                            colors: [DesignSystem.Colors.vibrantBlue, DesignSystem.Colors.vibrantPurple],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
+                        Color.primary,
                         style: StrokeStyle(lineWidth: 3, lineCap: .round)
                     )
                     .frame(width: 60, height: 60)
                     .rotationEffect(.degrees(isAnimating ? 360 : 0))
-                
+
                 // Center icon
                 Image(systemName: "magnifyingglass")
                     .font(.system(size: 24, weight: .medium))
-                    .foregroundColor(DesignSystem.Colors.vibrantBlue)
+                    .foregroundColor(.primary)
             }
             .onAppear {
                 withAnimation(
@@ -249,18 +245,12 @@ struct BookRequestedSuccessView: View {
                 HStack(spacing: 12) {
                     ZStack {
                         Circle()
-                            .fill(
-                                LinearGradient(
-                                    colors: [Color.green.opacity(0.15), Color.mint.opacity(0.15)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
+                            .fill(DesignSystem.Colors.badgeGreen.opacity(0.15))
                             .frame(width: 32, height: 32)
-                        
+
                         Image(systemName: "checkmark")
                             .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(.green)
+                            .foregroundColor(DesignSystem.Colors.badgeGreen)
                     }
                     
                     VStack(alignment: .leading, spacing: 2) {
@@ -303,15 +293,15 @@ struct BookRequestedSuccessView: View {
                             HStack(spacing: 4) {
                                 Image(systemName: "star.fill")
                                     .font(.caption2)
-                                    .foregroundColor(.orange)
+                                    .foregroundColor(DesignSystem.Colors.nytGold)
                                 Text(nytInfo)
                                     .font(.caption2)
                                     .fontWeight(.medium)
-                                    .foregroundColor(.orange)
+                                    .foregroundColor(DesignSystem.Colors.nytGold)
                             }
                             .padding(.horizontal, 8)
                             .padding(.vertical, 2)
-                            .background(Color.orange.opacity(0.1))
+                            .background(DesignSystem.Colors.nytGold.opacity(0.1))
                             .clipShape(Capsule())
                         } else if !book.categories.isEmpty {
                             Text(book.categories.prefix(2).joined(separator: " • "))
@@ -351,20 +341,14 @@ struct BookRequestedSuccessView: View {
                             .font(.headline)
                             .fontWeight(.medium)
                     }
-                    .foregroundColor(.white)
+                    .foregroundColor(Color(UIColor.systemBackground))
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
-                    .background(
-                        LinearGradient(
-                            colors: [Color.blue, Color.blue.opacity(0.8)],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
+                    .background(Color.primary)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
-                    .shadow(color: Color.blue.opacity(0.3), radius: 8, x: 0, y: 4)
+                    .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 4)
                 }
-                
+
                 Button(action: onContinueSearching) {
                     HStack {
                         Image(systemName: "plus.magnifyingglass")
@@ -373,14 +357,14 @@ struct BookRequestedSuccessView: View {
                             .font(.subheadline)
                             .fontWeight(.medium)
                     }
-                    .foregroundColor(.blue)
+                    .foregroundColor(.primary)
                     .frame(maxWidth: .infinity)
                     .frame(height: 48)
-                    .background(Color.blue.opacity(0.08))
+                    .background(Color.primary.opacity(0.06))
                     .clipShape(RoundedRectangle(cornerRadius: 14))
                     .overlay(
                         RoundedRectangle(cornerRadius: 14)
-                            .stroke(Color.blue.opacity(0.2), lineWidth: 1)
+                            .stroke(Color.primary.opacity(0.15), lineWidth: 1)
                     )
                 }
             }
@@ -403,30 +387,32 @@ struct BookRequestedSuccessView: View {
 struct ErrorStateView: View {
     let errorMessage: String
     let onRetry: () -> Void
-    
+
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 50))
-                .foregroundColor(.orange)
-            
+                .foregroundColor(.primary.opacity(0.6))
+
             Text("Something went wrong")
                 .font(.title3)
                 .fontWeight(.semibold)
-            
+
             Text(errorMessage)
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
-            
+
             Button(action: onRetry) {
                 Text("Try Again")
                     .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(width: 120, height: 44)
-                    .background(.blue)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .fontWeight(.semibold)
+                    .foregroundColor(Color(UIColor.systemBackground))
+                    .padding(.horizontal, 32)
+                    .padding(.vertical, 14)
+                    .background(Color.primary)
+                    .clipShape(Capsule())
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -509,12 +495,12 @@ struct SearchBarView: View {
             Button(action: performSearch) {
                 Text("Search")
                     .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundColor(.white)
+                    .fontWeight(.semibold)
+                    .foregroundColor(Color(UIColor.systemBackground))
                     .padding(.horizontal, 16)
                     .padding(.vertical, 10)
-                    .background(viewModel.searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? Color.gray : Color.blue)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .background(viewModel.searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? Color.gray : Color.primary)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
             }
             .disabled(viewModel.searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isSearching)
         }

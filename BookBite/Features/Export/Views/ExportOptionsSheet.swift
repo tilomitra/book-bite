@@ -63,16 +63,16 @@ struct ExportOptionsSheet: View {
                     title: "Export as PDF",
                     subtitle: "One-page formatted summary",
                     icon: "doc.richtext",
-                    color: .red
+                    color: .primary
                 ) {
                     exportPDF()
                 }
-                
+
                 exportOptionButton(
                     title: "Export as Mind Map",
                     subtitle: "Visual hierarchy of key concepts",
                     icon: "brain.head.profile",
-                    color: .purple
+                    color: .primary
                 ) {
                     exportMindMap()
                 }

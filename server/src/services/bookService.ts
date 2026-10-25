@@ -3,6 +3,14 @@ import { GoogleBooksService } from './googleBooksService';
 import { Book } from '../models/types';
 import NodeCache from 'node-cache';
 
+// PostgREST caps a single response at 1000 rows
+const SUPABASE_PAGE_SIZE = 1000;
+
+// Characters that break PostgREST's `.or()` filter syntax or act as LIKE wildcards
+function sanitizeSearchTerm(term: string): string {
+  return term.replace(/[,()"\\%*]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
 export class BookService {
   private googleBooks: GoogleBooksService;
   private cache: NodeCache;
@@ -25,8 +33,9 @@ export class BookService {
       .from('books')
       .select('*', { count: 'exact' });
 
-    if (search) {
-      const searchTerm = `%${search.trim()}%`;
+    const cleanSearch = search ? sanitizeSearchTerm(search) : '';
+    if (cleanSearch) {
+      const searchTerm = `%${cleanSearch}%`;
       query = query.or(`title.ilike.${searchTerm},subtitle.ilike.${searchTerm}`);
     }
 
@@ -162,21 +171,57 @@ export class BookService {
     const { page = 1, limit = 20 } = options;
     const offset = (page - 1) * limit;
 
-    // Primary search in local database with pagination
-    const searchTerm = `%${query.trim()}%`;
-    const { data: localBooks, error, count } = await supabase
-      .from('books')
-      .select('*', { count: 'exact' })
-      .or(`title.ilike.${searchTerm},subtitle.ilike.${searchTerm},description.ilike.${searchTerm}`)
-      .order('created_at', { ascending: false })
-      .range(offset, offset + limit - 1);
+    // Primary search in local database. Fetch lightweight rows for every match so
+    // results can be ranked by relevance (title matches before description-only matches).
+    const cleanQuery = sanitizeSearchTerm(query);
+    if (!cleanQuery) {
+      return { books: [], total: 0, page, limit, totalPages: 0 };
+    }
+    const searchTerm = `%${cleanQuery}%`;
+    const matches: { id: string; title: string; subtitle: string | null; popularity_rank: number | null }[] = [];
+    for (let from = 0; ; from += SUPABASE_PAGE_SIZE) {
+      const { data, error } = await supabase
+        .from('books')
+        .select('id, title, subtitle, popularity_rank')
+        .or(`title.ilike.${searchTerm},subtitle.ilike.${searchTerm},description.ilike.${searchTerm}`)
+        .order('created_at', { ascending: false })
+        .range(from, from + SUPABASE_PAGE_SIZE - 1);
 
-    if (error) {
-      throw new Error(`Failed to search books: ${error.message}`);
+      if (error) {
+        throw new Error(`Failed to search books: ${error.message}`);
+      }
+      matches.push(...(data || []));
+      if (!data || data.length < SUPABASE_PAGE_SIZE) break;
     }
 
-    const results: Book[] = localBooks || [];
-    const localCount = count || 0;
+    const lowerQuery = cleanQuery.toLowerCase();
+    const relevance = (m: { title: string; subtitle: string | null }) => {
+      const title = (m.title || '').toLowerCase();
+      if (title === lowerQuery) return 0;
+      if (title.startsWith(lowerQuery)) return 1;
+      if (title.includes(lowerQuery)) return 2;
+      if ((m.subtitle || '').toLowerCase().includes(lowerQuery)) return 3;
+      return 4;
+    };
+    matches.sort((a, b) =>
+      relevance(a) - relevance(b) ||
+      (a.popularity_rank ?? Number.MAX_SAFE_INTEGER) - (b.popularity_rank ?? Number.MAX_SAFE_INTEGER)
+    );
+
+    const count = matches.length;
+    const pageIds = matches.slice(offset, offset + limit).map(m => m.id);
+    let localBooks: Book[] = [];
+    if (pageIds.length > 0) {
+      const { data, error } = await supabase.from('books').select('*').in('id', pageIds);
+      if (error) {
+        throw new Error(`Failed to search books: ${error.message}`);
+      }
+      const byId = new Map((data || []).map(b => [b.id, b]));
+      localBooks = pageIds.map(id => byId.get(id)).filter(Boolean) as Book[];
+    }
+
+    const results: Book[] = [...localBooks];
+    const localCount = count;
 
     // If we have enough local results or user specified local only, return them
     if (source === 'local' || results.length >= limit) {
@@ -189,8 +234,9 @@ export class BookService {
       };
     }
 
-    // If searching all sources and we need more results, add Google Books
-    if (source === 'all' || source === 'google') {
+    // Only top up with Google Books once local results are exhausted, so pages don't repeat
+    const isLastLocalPage = offset + limit >= localCount;
+    if (isLastLocalPage && (source === 'all' || source === 'google')) {
       try {
         const remainingLimit = limit - results.length;
         const googleResults = await this.googleBooks.searchBooksAsBooks(query, remainingLimit);
@@ -216,7 +262,7 @@ export class BookService {
     }
 
     // For mixed results, we estimate total since Google Books doesn't give exact counts
-    const estimatedTotal = localCount + (results.length > localBooks?.length ? 100 : 0);
+    const estimatedTotal = localCount + (results.length - localBooks.length);
 
     return {
       books: results,
@@ -342,12 +388,27 @@ export class BookService {
     return this.createBook(bookToCreate);
   }
 
-  async getCategories(): Promise<{ name: string; count: number }[]> {
-    const { data: books, error } = await supabase
-      .from('books')
-      .select('categories');
+  // Page through the whole books table (PostgREST returns at most 1000 rows per request)
+  private async fetchAllBooks<T = any>(columns: string): Promise<T[]> {
+    const rows: T[] = [];
+    for (let from = 0; ; from += SUPABASE_PAGE_SIZE) {
+      const { data, error } = await supabase
+        .from('books')
+        .select(columns)
+        .order('popularity_rank', { ascending: true, nullsFirst: false })
+        .order('created_at', { ascending: false })
+        .order('id', { ascending: true })
+        .range(from, from + SUPABASE_PAGE_SIZE - 1);
 
-    if (error) throw error;
+      if (error) throw new Error(`Failed to fetch books: ${error.message}`);
+      rows.push(...((data as T[]) || []));
+      if (!data || data.length < SUPABASE_PAGE_SIZE) break;
+    }
+    return rows;
+  }
+
+  async getCategories(): Promise<{ name: string; count: number }[]> {
+    const books = await this.fetchAllBooks<{ categories: string[] | null }>('categories');
 
     const categoryCounts = new Map<string, number>();
     
@@ -443,13 +504,7 @@ export class BookService {
   }> {
     const offset = (page - 1) * limit;
 
-    const { data: allBooks, error: countError } = await supabase
-      .from('books')
-      .select('*', { count: 'exact', head: false })
-      .order('popularity_rank', { ascending: true, nullsFirst: false })
-      .order('created_at', { ascending: false });
-
-    if (countError) throw countError;
+    const allBooks = await this.fetchAllBooks<Book>('*');
 
     const filteredBooks = allBooks?.filter(book => {
       if (!book.categories || !Array.isArray(book.categories)) return false;
@@ -491,8 +546,8 @@ export class BookService {
     // Sort books to prioritize those with cover images, while maintaining popularity order
     const sortedBooks = filteredBooks.sort((a, b) => {
       // First priority: books with cover images over those without
-      const aHasCover = !!(a.cover_url || a.cover_asset_name);
-      const bHasCover = !!(b.cover_url || b.cover_asset_name);
+      const aHasCover = !!a.cover_url;
+      const bHasCover = !!b.cover_url;
       
       if (aHasCover && !bHasCover) return -1;
       if (!aHasCover && bHasCover) return 1;

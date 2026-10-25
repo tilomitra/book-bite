@@ -93,18 +93,18 @@ struct EnhancedBookCard: View {
 struct EnhancedBookCoverView: View {
     let book: Book
     let style: BookCardStyle
-    
+
     @State private var imageLoaded = false
-    
+
     var body: some View {
         ZStack {
-            // Placeholder with gradient
+            // Placeholder with monochrome gradient
             RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small)
                 .fill(
                     LinearGradient(
                         colors: [
-                            DesignSystem.Colors.vibrantBlue.opacity(0.3),
-                            DesignSystem.Colors.vibrantPurple.opacity(0.3)
+                            Color(white: 0.85),
+                            Color(white: 0.92)
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -113,7 +113,7 @@ struct EnhancedBookCoverView: View {
                 .frame(width: style.coverWidth, height: style.coverHeight)
                 .opacity(imageLoaded ? 0 : 1)
                 .animation(DesignSystem.Animations.smooth, value: imageLoaded)
-            
+
             // Book Cover Image
             AsyncImage(url: URL.bookCover(from: book.coverAssetName)) { image in
                 image
@@ -134,8 +134,8 @@ struct EnhancedBookCoverView: View {
                 .frame(width: style.coverWidth, height: style.coverHeight)
                 .shimmerEffect()
             }
-            
-            // NYT Bestseller Corner Badge
+
+            // NYT Bestseller Corner Badge (keeps gold color as it's a badge)
             if book.isNYTBestseller == true {
                 VStack {
                     HStack {
@@ -143,12 +143,12 @@ struct EnhancedBookCoverView: View {
                         Image(systemName: "star.fill")
                             .font(.system(size: 12, weight: .bold))
                             .foregroundColor(.white)
-                            .padding(4)
+                            .padding(5)
                             .background(
                                 Circle()
                                     .fill(DesignSystem.Colors.nytGold)
                                     .shadow(
-                                        color: DesignSystem.Colors.nytGold.opacity(0.3),
+                                        color: Color.black.opacity(0.2),
                                         radius: 4,
                                         x: 0,
                                         y: 2
@@ -215,23 +215,27 @@ struct NYTBestsellerBadge: View {
 struct GenreTagsView: View {
     let categories: [String]
     let maxTags: Int
-    
+
     var displayCategories: [String] {
         Array(categories.prefix(maxTags))
     }
-    
+
     var body: some View {
         HStack(spacing: DesignSystem.Spacing.xs) {
             ForEach(displayCategories, id: \.self) { category in
                 Text(category)
                     .font(DesignSystem.Typography.caption2)
                     .fontWeight(.medium)
-                    .foregroundColor(DesignSystem.Colors.genreColor(for: category))
+                    .foregroundColor(.secondary)
                     .padding(.horizontal, DesignSystem.Spacing.sm)
-                    .padding(.vertical, 2)
+                    .padding(.vertical, 3)
                     .background(
                         Capsule()
-                            .fill(DesignSystem.Colors.genreColor(for: category).opacity(0.15))
+                            .fill(Color.primary.opacity(0.06))
+                    )
+                    .overlay(
+                        Capsule()
+                            .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
                     )
             }
         }

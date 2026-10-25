@@ -36,7 +36,11 @@ struct ExportServiceTests {
             citations: [],
             readTimeMinutes: 15,
             style: .full,
-            extendedSummary: "Extended summary about testing approaches and methodologies"
+            extendedSummary: "Extended summary about testing approaches and methodologies",
+            audioUrl: nil,
+            audioDurationSeconds: nil,
+            audioFileSizeBytes: nil,
+            audioVoiceId: nil
         )
     }
     
@@ -154,7 +158,11 @@ struct ExportServiceTests {
             citations: [],
             readTimeMinutes: 20,
             style: .full,
-            extendedSummary: "Extended summary with many ideas"
+            extendedSummary: "Extended summary with many ideas",
+            audioUrl: nil,
+            audioDurationSeconds: nil,
+            audioFileSizeBytes: nil,
+            audioVoiceId: nil
         )
         
         let pdfData = exportService.exportAsPDF(book: book, summary: summaryWithManyIdeas)

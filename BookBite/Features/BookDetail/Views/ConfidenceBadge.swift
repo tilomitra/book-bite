@@ -2,31 +2,31 @@ import SwiftUI
 
 struct ConfidenceBadge: View {
     let confidence: Confidence
-    
+
     var badgeColor: Color {
         switch confidence {
         case .high:
-            return .green
+            return DesignSystem.Colors.badgeGreen
         case .medium:
-            return .orange
+            return DesignSystem.Colors.badgeOrange
         case .low:
-            return .yellow
+            return DesignSystem.Colors.badgeYellow
         }
     }
-    
+
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 5) {
             Circle()
                 .fill(badgeColor)
                 .frame(width: 8, height: 8)
-            
+
             Text(confidence.rawValue.capitalized)
                 .font(.caption)
-                .fontWeight(.medium)
+                .fontWeight(.semibold)
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
         .background(badgeColor.opacity(0.15))
-        .cornerRadius(12)
+        .clipShape(Capsule())
     }
 }

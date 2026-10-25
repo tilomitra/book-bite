@@ -9,7 +9,7 @@ struct FeaturedBooksView: View {
     }
     
     var body: some View {
-        NavigationStack {
+        Group {
             VStack(spacing: 0) {
                 if viewModel.isLoading && viewModel.featuredBooks.isEmpty {
                     ConsistentLoadingView(style: .primary, message: "Loading featured books...")
@@ -35,11 +35,6 @@ struct FeaturedBooksView: View {
             .navigationTitle("Featured")
             .refreshable {
                 await viewModel.refreshFeaturedBooks()
-            }
-        }
-        .onAppear {
-            Task {
-                await viewModel.loadFeaturedBooks()
             }
         }
     }
@@ -100,35 +95,35 @@ struct FeaturedBooksContentView: View {
 
 struct NoteworthySection: View {
     let books: [Book]
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            // Section Header with special styling
+            // Section Header - monochrome styling
             HStack {
-                HStack(spacing: 6) {
+                HStack(spacing: 8) {
                     Image(systemName: "sparkles")
                         .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(.orange)
-                    
+                        .foregroundColor(.primary)
+
                     Text("Noteworthy")
                         .font(.system(size: 20, weight: .bold))
                         .foregroundColor(.primary)
                 }
-                
+
                 Spacer()
-                
+
                 // Refresh hint
                 HStack(spacing: 4) {
                     Image(systemName: "arrow.clockwise.circle.fill")
                         .font(.system(size: 14))
-                        .foregroundColor(.secondary.opacity(0.8))
+                        .foregroundColor(.secondary.opacity(0.6))
                     Text("Pull to refresh")
                         .font(.system(size: 12))
-                        .foregroundColor(.secondary.opacity(0.8))
+                        .foregroundColor(.secondary.opacity(0.6))
                 }
             }
             .padding(.horizontal)
-            
+
             // Horizontal Scroll View of Books
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
@@ -143,16 +138,6 @@ struct NoteworthySection: View {
             }
         }
         .padding(.vertical, 8)
-        .background(
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color.orange.opacity(0.05),
-                    Color.clear
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-        )
     }
 }
 
@@ -160,25 +145,25 @@ struct NoteworthyBookCard: View {
     let book: Book
     @EnvironmentObject var dependencies: DependencyContainer
     @State private var rating: BookRating?
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            // Book Cover with badge - added padding to prevent cutoff
+            // Book Cover with badge
             ZStack(alignment: .topTrailing) {
                 EnhancedBookCover(coverURL: book.coverAssetName)
                     .frame(width: 100, height: 150)
-                
-                // Popular badge
+
+                // Popular/NYT badge - keeps color as it's a badge
                 if book.popularityScore != nil || book.isNYTBestseller == true {
                     Image(systemName: "star.circle.fill")
                         .font(.system(size: 20))
-                        .foregroundColor(.orange)
+                        .foregroundColor(DesignSystem.Colors.nytGold)
                         .background(Circle().fill(Color.white))
                         .offset(x: 8, y: -8)
                 }
             }
-            .padding(.top, 8) // Add padding to accommodate the badge
-            
+            .padding(.top, 8)
+
             // Book Info
             VStack(alignment: .leading, spacing: 1) {
                 Text(book.title)
@@ -186,52 +171,52 @@ struct NoteworthyBookCard: View {
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.primary)
-                
+
                 Text(book.formattedAuthors)
                     .font(.system(size: 10))
                     .lineLimit(1)
                     .foregroundColor(.secondary)
-                
-                // Rating display
+
+                // Rating display (keeps star color)
                 if let rating = rating {
                     BookRatingDisplayView(rating: rating, showSource: false, compact: true)
                         .padding(.top, 1)
                 }
-                
-                // Popular badge and other indicators
+
+                // Badges - keep colors as they're badges
                 VStack(alignment: .leading, spacing: 2) {
                     if book.popularityScore != nil {
                         Text("Popular")
-                            .font(.system(size: 8, weight: .medium))
-                            .foregroundColor(.green)
-                            .padding(.horizontal, 4)
-                            .padding(.vertical, 1)
-                            .background(Color.green.opacity(0.15))
+                            .font(.system(size: 8, weight: .semibold))
+                            .foregroundColor(DesignSystem.Colors.badgeGreen)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(DesignSystem.Colors.badgeGreen.opacity(0.15))
                             .clipShape(Capsule())
                     }
-                    
+
                     // Popularity indicator
                     if let score = book.popularityScore, rating == nil {
                         HStack(spacing: 2) {
                             ForEach(0..<min(5, Int(score * 5)), id: \.self) { _ in
                                 Image(systemName: "star.fill")
                                     .font(.system(size: 8))
-                                    .foregroundColor(.orange)
+                                    .foregroundColor(DesignSystem.Colors.starColor)
                             }
                         }
                     } else if book.isNYTBestseller == true {
                         Text("NYT Bestseller")
-                            .font(.system(size: 9, weight: .medium))
-                            .foregroundColor(.orange)
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundColor(DesignSystem.Colors.nytGold)
                     }
                 }
                 .padding(.top, 2)
-                
+
                 Spacer(minLength: 0)
             }
-            .frame(width: 100, height: 62, alignment: .top) // Reduced height to compensate for top padding
+            .frame(width: 100, height: 62, alignment: .top)
         }
-        .frame(height: 232) // Increased total height to accommodate padding
+        .frame(height: 232)
         .task {
             rating = await dependencies.ratingsService.getRatingForBook(book)
         }
@@ -454,27 +439,27 @@ struct CompactBookCard: View {
     let book: Book
     @EnvironmentObject var dependencies: DependencyContainer
     @State private var rating: BookRating?
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            // Book Cover - Smaller for more content
+            // Book Cover
             EnhancedBookCover(coverURL: book.coverAssetName)
                 .frame(width: 90, height: 135)
-            
-            // Book Info - Simplified
+
+            // Book Info
             VStack(alignment: .leading, spacing: 1) {
                 Text(book.title)
                     .font(.system(size: 11, weight: .semibold))
                     .lineLimit(nil)
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.primary)
-                
+
                 Text(book.formattedAuthors)
                     .font(.system(size: 9))
                     .lineLimit(nil)
                     .foregroundColor(.secondary)
-                
-                // Rating display
+
+                // Rating display (keeps star color)
                 if let rating = rating {
                     HStack(spacing: 4) {
                         StarRatingView(rating: rating.average, starSize: 8)
@@ -485,25 +470,24 @@ struct CompactBookCard: View {
                     }
                     .padding(.top, 1)
                 }
-                
-                // Popular badge
+
+                // Popular badge - keeps badge color
                 if book.popularityScore != nil {
                     Text("Popular")
-                        .font(.system(size: 8, weight: .medium))
-                        .foregroundColor(.green)
-                        .padding(.horizontal, 4)
-                        .padding(.vertical, 1)
-                        .background(Color.green.opacity(0.15))
+                        .font(.system(size: 8, weight: .semibold))
+                        .foregroundColor(DesignSystem.Colors.badgeGreen)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(DesignSystem.Colors.badgeGreen.opacity(0.15))
                         .clipShape(Capsule())
                         .padding(.top, 1)
                 }
-                
-                // Add spacer to push content to top
+
                 Spacer(minLength: 0)
             }
             .frame(width: 90, height: 60, alignment: .top)
         }
-        .frame(height: 199) // Fixed height: 135 (cover) + 4 (spacing) + 60 (text area)
+        .frame(height: 199)
         .task {
             rating = await dependencies.ratingsService.getRatingForBook(book)
         }
@@ -514,12 +498,12 @@ struct FeaturedBookCard: View {
     let book: Book
     @EnvironmentObject var dependencies: DependencyContainer
     @State private var rating: BookRating?
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             // Book Cover
             BookCoverView(coverURL: book.coverAssetName, size: .medium)
-            
+
             // Book Info
             VStack(alignment: .leading, spacing: 4) {
                 Text(book.title)
@@ -527,68 +511,67 @@ struct FeaturedBookCard: View {
                     .lineLimit(nil)
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.primary)
-                
+
                 Text(book.formattedAuthors)
                     .font(.caption2)
                     .lineLimit(nil)
                     .foregroundColor(.secondary)
-                
-                // Rating display
+
+                // Rating display (keeps star color)
                 if let rating = rating {
                     BookRatingDisplayView(rating: rating, showSource: false, compact: true)
                 }
-                
-                // Popular badge and ranking
+
+                // Badges - keep colors
                 HStack(spacing: 4) {
                     if book.popularityScore != nil {
                         Text("Popular")
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundColor(.green)
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundColor(DesignSystem.Colors.badgeGreen)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
-                            .background(Color.green.opacity(0.15))
+                            .background(DesignSystem.Colors.badgeGreen.opacity(0.15))
                             .clipShape(Capsule())
                     }
-                    
+
                     if let nytRank = book.nytRank {
                         HStack(spacing: 2) {
                             Image(systemName: "star.fill")
                                 .font(.caption2)
-                                .foregroundColor(.orange)
-                            
+                                .foregroundColor(DesignSystem.Colors.nytGold)
+
                             Text("NYT #\(nytRank)")
                                 .font(.caption2)
-                                .fontWeight(.medium)
-                                .foregroundColor(.orange)
+                                .fontWeight(.semibold)
+                                .foregroundColor(DesignSystem.Colors.nytGold)
                         }
                     } else if let rank = book.popularityRank {
                         HStack(spacing: 2) {
                             Image(systemName: "star.fill")
                                 .font(.caption2)
-                                .foregroundColor(.orange)
-                            
+                                .foregroundColor(DesignSystem.Colors.starColor)
+
                             Text("#\(rank)")
                                 .font(.caption2)
-                                .fontWeight(.medium)
-                                .foregroundColor(.orange)
+                                .fontWeight(.semibold)
+                                .foregroundColor(DesignSystem.Colors.starColor)
                         }
                     }
                 }
-                
-                // Categories
+
+                // Categories - monochrome
                 Text(book.formattedCategories)
                     .font(.caption2)
                     .lineLimit(nil)
                     .foregroundColor(.secondary)
-                
-                // Add spacer to push content to top
+
                 Spacer(minLength: 0)
             }
             .frame(maxWidth: .infinity, alignment: .top)
             .frame(height: 120)
         }
         .frame(maxWidth: 160)
-        .frame(height: 280) // Fixed height for consistent alignment
+        .frame(height: 280)
         .background(Color.clear)
         .task {
             rating = await dependencies.ratingsService.getRatingForBook(book)
@@ -601,18 +584,18 @@ struct InitialFeaturedView: View {
         VStack(spacing: 20) {
             Image(systemName: "star.circle.fill")
                 .font(.system(size: 60))
-                .foregroundColor(.orange)
-            
+                .foregroundColor(.primary.opacity(0.6))
+
             Text("Featured Books")
                 .font(.title2)
                 .fontWeight(.semibold)
-            
+
             Text("Discover hand-picked featured books and New York Times bestselling non-fiction books, organized by genre and ranked by popularity.")
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
-            
+
             Spacer()
         }
         .padding(.top, 100)
@@ -645,29 +628,35 @@ struct EmptyNYTSearchView: View {
 struct ErrorNYTView: View {
     let error: Error
     let retry: () -> Void
-    
+
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "wifi.slash")
                 .font(.system(size: 50))
-                .foregroundColor(.red)
-            
+                .foregroundColor(.primary.opacity(0.6))
+
             Text("Connection Error")
                 .font(.title3)
                 .fontWeight(.semibold)
-            
+
             Text("Unable to load featured books. Please check your internet connection and try again.")
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
-            
-            Button("Try Again") {
-                retry()
+
+            Button(action: retry) {
+                Text("Try Again")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(Color(UIColor.systemBackground))
+                    .padding(.horizontal, 32)
+                    .padding(.vertical, 14)
+                    .background(Color.primary)
+                    .clipShape(Capsule())
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            
+            .padding(.top, 8)
+
             Spacer()
         }
         .padding(.top, 100)

@@ -96,13 +96,30 @@ export class SummaryController {
   async getJobStatus(req: Request, res: Response, next: NextFunction) {
     try {
       const { jobId } = req.params;
+
+      // generateSummary hands out `existing-<bookId>` when the summary already exists
+      if (jobId.startsWith('existing-')) {
+        return res.json({
+          id: jobId,
+          bookId: jobId.slice('existing-'.length),
+          status: 'completed',
+          message: 'Summary already exists'
+        });
+      }
+
       const job = await summaryService.getJobStatus(jobId);
       
       if (!job) {
         return res.status(404).json({ error: 'Job not found' });
       }
       
-      return res.json(job);
+      // Match the shape returned by generateSummary (the app decodes camelCase)
+      return res.json({
+        id: job.id,
+        bookId: job.book_id,
+        status: job.status,
+        message: job.error_message ?? null
+      });
     } catch (error) {
       return next(error);
     }

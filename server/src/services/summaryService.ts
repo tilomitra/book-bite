@@ -27,21 +27,22 @@ export class SummaryService {
 
   private setupQueueProcessor() {
     this.summaryQueue.process(async (job) => {
-      const { bookId, style } = job.data;
+      // job.id is Bull's internal id; the DB row id is carried in job.data.jobId
+      const { jobId, bookId, style } = job.data;
       
       try {
         // Update job status to processing
-        await this.updateJobStatus(job.id as string, 'processing');
+        await this.updateJobStatus(jobId, 'processing');
         
         // Generate the summary
         await this.generateAndSaveSummary(bookId, style);
         
         // Update job status to completed
-        await this.updateJobStatus(job.id as string, 'completed');
+        await this.updateJobStatus(jobId, 'completed');
       } catch (error) {
         // Update job status to failed
         await this.updateJobStatus(
-          job.id as string, 
+          jobId,
           'failed', 
           error instanceof Error ? error.message : 'Unknown error'
         );
@@ -60,12 +61,11 @@ export class SummaryService {
       .from('summaries')
       .select('*')
       .eq('book_id', bookId)
-      .single();
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
     if (error) {
-      if (error.code === 'PGRST116') {
-        return null;
-      }
       throw new Error(`Failed to fetch summary: ${error.message}`);
     }
 
