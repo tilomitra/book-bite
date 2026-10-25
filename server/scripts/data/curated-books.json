@@ -1,0 +1,2612 @@
+[
+  {
+    "title": "The Subtle Art of Not Giving a F*ck",
+    "author": "Mark Manson",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Can't Hurt Me",
+    "author": "David Goggins",
+    "category": "Self-Help"
+  },
+  {
+    "title": "The Courage to Be Disliked",
+    "author": "Ichiro Kishimi",
+    "category": "Self-Help"
+  },
+  {
+    "title": "The Mountain Is You",
+    "author": "Brianna Wiest",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Daring Greatly",
+    "author": "Brené Brown",
+    "category": "Self-Help"
+  },
+  {
+    "title": "The Gifts of Imperfection",
+    "author": "Brené Brown",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Atlas of the Heart",
+    "author": "Brené Brown",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Hidden Potential",
+    "author": "Adam Grant",
+    "category": "Self-Help"
+  },
+  {
+    "title": "The Obstacle Is the Way",
+    "author": "Ryan Holiday",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Stillness Is the Key",
+    "author": "Ryan Holiday",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Discipline Is Destiny",
+    "author": "Ryan Holiday",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Tiny Habits",
+    "author": "BJ Fogg",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Supercommunicators",
+    "author": "Charles Duhigg",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Feel-Good Productivity",
+    "author": "Ali Abdaal",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Essentialism",
+    "author": "Greg McKeown",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Effortless",
+    "author": "Greg McKeown",
+    "category": "Self-Help"
+  },
+  {
+    "title": "The Miracle Morning",
+    "author": "Hal Elrod",
+    "category": "Self-Help"
+  },
+  {
+    "title": "The Happiness Project",
+    "author": "Gretchen Rubin",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Psycho-Cybernetics",
+    "author": "Maxwell Maltz",
+    "category": "Self-Help"
+  },
+  {
+    "title": "The Magic of Thinking Big",
+    "author": "David J. Schwartz",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Who Moved My Cheese?",
+    "author": "Spencer Johnson",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Unfu*k Yourself",
+    "author": "Gary John Bishop",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Build the Life You Want",
+    "author": "Arthur C. Brooks",
+    "category": "Self-Help"
+  },
+  {
+    "title": "From Strength to Strength",
+    "author": "Arthur C. Brooks",
+    "category": "Self-Help"
+  },
+  {
+    "title": "The Comfort Crisis",
+    "author": "Michael Easter",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Four Thousand Weeks",
+    "author": "Oliver Burkeman",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Show Your Work!",
+    "author": "Austin Kleon",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Steal Like an Artist",
+    "author": "Austin Kleon",
+    "category": "Self-Help"
+  },
+  {
+    "title": "The War of Art",
+    "author": "Steven Pressfield",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Big Magic",
+    "author": "Elizabeth Gilbert",
+    "category": "Self-Help"
+  },
+  {
+    "title": "The Artist's Way",
+    "author": "Julia Cameron",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Bird by Bird",
+    "author": "Anne Lamott",
+    "category": "Self-Help"
+  },
+  {
+    "title": "Deep Work",
+    "author": "Cal Newport",
+    "category": "Productivity"
+  },
+  {
+    "title": "Digital Minimalism",
+    "author": "Cal Newport",
+    "category": "Productivity"
+  },
+  {
+    "title": "Slow Productivity",
+    "author": "Cal Newport",
+    "category": "Productivity"
+  },
+  {
+    "title": "Eat That Frog!",
+    "author": "Brian Tracy",
+    "category": "Productivity"
+  },
+  {
+    "title": "The ONE Thing",
+    "author": "Gary Keller",
+    "category": "Productivity"
+  },
+  {
+    "title": "Indistractable",
+    "author": "Nir Eyal",
+    "category": "Productivity"
+  },
+  {
+    "title": "Hooked",
+    "author": "Nir Eyal",
+    "category": "Productivity"
+  },
+  {
+    "title": "Make Time",
+    "author": "Jake Knapp",
+    "category": "Productivity"
+  },
+  {
+    "title": "Building a Second Brain",
+    "author": "Tiago Forte",
+    "category": "Productivity"
+  },
+  {
+    "title": "Tools of Titans",
+    "author": "Timothy Ferriss",
+    "category": "Productivity"
+  },
+  {
+    "title": "Stolen Focus",
+    "author": "Johann Hari",
+    "category": "Productivity"
+  },
+  {
+    "title": "Hyperfocus",
+    "author": "Chris Bailey",
+    "category": "Productivity"
+  },
+  {
+    "title": "The Productivity Project",
+    "author": "Chris Bailey",
+    "category": "Productivity"
+  },
+  {
+    "title": "Rest",
+    "author": "Alex Soojung-Kim Pang",
+    "category": "Productivity"
+  },
+  {
+    "title": "Range",
+    "author": "David Epstein",
+    "category": "Productivity"
+  },
+  {
+    "title": "A Mind for Numbers",
+    "author": "Barbara Oakley",
+    "category": "Productivity"
+  },
+  {
+    "title": "Noise",
+    "author": "Daniel Kahneman",
+    "category": "Psychology"
+  },
+  {
+    "title": "Influence",
+    "author": "Robert B. Cialdini",
+    "category": "Psychology"
+  },
+  {
+    "title": "Predictably Irrational",
+    "author": "Dan Ariely",
+    "category": "Psychology"
+  },
+  {
+    "title": "Bittersweet",
+    "author": "Susan Cain",
+    "category": "Psychology"
+  },
+  {
+    "title": "Flow",
+    "author": "Mihaly Csikszentmihalyi",
+    "category": "Psychology"
+  },
+  {
+    "title": "The Power of Regret",
+    "author": "Daniel H. Pink",
+    "category": "Psychology"
+  },
+  {
+    "title": "To Sell Is Human",
+    "author": "Daniel H. Pink",
+    "category": "Psychology"
+  },
+  {
+    "title": "The Coddling of the American Mind",
+    "author": "Greg Lukianoff",
+    "category": "Psychology"
+  },
+  {
+    "title": "Stumbling on Happiness",
+    "author": "Daniel Gilbert",
+    "category": "Psychology"
+  },
+  {
+    "title": "The Paradox of Choice",
+    "author": "Barry Schwartz",
+    "category": "Psychology"
+  },
+  {
+    "title": "Talking to Strangers",
+    "author": "Malcolm Gladwell",
+    "category": "Psychology"
+  },
+  {
+    "title": "David and Goliath",
+    "author": "Malcolm Gladwell",
+    "category": "Psychology"
+  },
+  {
+    "title": "The Willpower Instinct",
+    "author": "Kelly McGonigal",
+    "category": "Psychology"
+  },
+  {
+    "title": "The Upside of Stress",
+    "author": "Kelly McGonigal",
+    "category": "Psychology"
+  },
+  {
+    "title": "Attached",
+    "author": "Amir Levine",
+    "category": "Psychology"
+  },
+  {
+    "title": "Lost Connections",
+    "author": "Johann Hari",
+    "category": "Psychology"
+  },
+  {
+    "title": "Chatter",
+    "author": "Ethan Kross",
+    "category": "Psychology"
+  },
+  {
+    "title": "The Molecule of More",
+    "author": "Daniel Z. Lieberman",
+    "category": "Psychology"
+  },
+  {
+    "title": "Dopamine Nation",
+    "author": "Anna Lembke",
+    "category": "Psychology"
+  },
+  {
+    "title": "Behave",
+    "author": "Robert M. Sapolsky",
+    "category": "Psychology"
+  },
+  {
+    "title": "Determined",
+    "author": "Robert M. Sapolsky",
+    "category": "Psychology"
+  },
+  {
+    "title": "Why Zebras Don't Get Ulcers",
+    "author": "Robert M. Sapolsky",
+    "category": "Psychology"
+  },
+  {
+    "title": "Influence Is Your Superpower",
+    "author": "Zoe Chance",
+    "category": "Psychology"
+  },
+  {
+    "title": "Crucial Conversations",
+    "author": "Kerry Patterson",
+    "category": "Psychology"
+  },
+  {
+    "title": "Difficult Conversations",
+    "author": "Douglas Stone",
+    "category": "Psychology"
+  },
+  {
+    "title": "Thanks for the Feedback",
+    "author": "Douglas Stone",
+    "category": "Psychology"
+  },
+  {
+    "title": "The Laws of Human Nature",
+    "author": "Robert Greene",
+    "category": "Psychology"
+  },
+  {
+    "title": "The 48 Laws of Power",
+    "author": "Robert Greene",
+    "category": "Psychology"
+  },
+  {
+    "title": "Mastery",
+    "author": "Robert Greene",
+    "category": "Psychology"
+  },
+  {
+    "title": "The Art of Seduction",
+    "author": "Robert Greene",
+    "category": "Psychology"
+  },
+  {
+    "title": "Mistakes Were Made (But Not by Me)",
+    "author": "Carol Tavris",
+    "category": "Psychology"
+  },
+  {
+    "title": "The Scout Mindset",
+    "author": "Julia Galef",
+    "category": "Psychology"
+  },
+  {
+    "title": "Thinking in Bets",
+    "author": "Annie Duke",
+    "category": "Psychology"
+  },
+  {
+    "title": "Quit",
+    "author": "Annie Duke",
+    "category": "Psychology"
+  },
+  {
+    "title": "Superforecasting",
+    "author": "Philip E. Tetlock",
+    "category": "Psychology"
+  },
+  {
+    "title": "The Art of Thinking Clearly",
+    "author": "Rolf Dobelli",
+    "category": "Psychology"
+  },
+  {
+    "title": "Misbehaving",
+    "author": "Richard H. Thaler",
+    "category": "Psychology"
+  },
+  {
+    "title": "Unwinding Anxiety",
+    "author": "Judson Brewer",
+    "category": "Psychology"
+  },
+  {
+    "title": "Hold Me Tight",
+    "author": "Sue Johnson",
+    "category": "Psychology"
+  },
+  {
+    "title": "The Seven Principles for Making Marriage Work",
+    "author": "John M. Gottman",
+    "category": "Psychology"
+  },
+  {
+    "title": "Burnout",
+    "author": "Emily Nagoski",
+    "category": "Psychology"
+  },
+  {
+    "title": "Adult Children of Emotionally Immature Parents",
+    "author": "Lindsay C. Gibson",
+    "category": "Psychology"
+  },
+  {
+    "title": "Set Boundaries, Find Peace",
+    "author": "Nedra Glover Tawwab",
+    "category": "Psychology"
+  },
+  {
+    "title": "Self-Compassion",
+    "author": "Kristin Neff",
+    "category": "Psychology"
+  },
+  {
+    "title": "Radical Acceptance",
+    "author": "Tara Brach",
+    "category": "Psychology"
+  },
+  {
+    "title": "Wherever You Go, There You Are",
+    "author": "Jon Kabat-Zinn",
+    "category": "Mindfulness"
+  },
+  {
+    "title": "10% Happier",
+    "author": "Dan Harris",
+    "category": "Mindfulness"
+  },
+  {
+    "title": "The Miracle of Mindfulness",
+    "author": "Thich Nhat Hanh",
+    "category": "Mindfulness"
+  },
+  {
+    "title": "Peace Is Every Step",
+    "author": "Thich Nhat Hanh",
+    "category": "Mindfulness"
+  },
+  {
+    "title": "The Surrender Experiment",
+    "author": "Michael A. Singer",
+    "category": "Mindfulness"
+  },
+  {
+    "title": "Waking Up",
+    "author": "Sam Harris",
+    "category": "Mindfulness"
+  },
+  {
+    "title": "The Book of Joy",
+    "author": "Dalai Lama",
+    "category": "Mindfulness"
+  },
+  {
+    "title": "When Things Fall Apart",
+    "author": "Pema Chödrön",
+    "category": "Mindfulness"
+  },
+  {
+    "title": "Ikigai",
+    "author": "Héctor García",
+    "category": "Mindfulness"
+  },
+  {
+    "title": "The Little Book of Hygge",
+    "author": "Meik Wiking",
+    "category": "Mindfulness"
+  },
+  {
+    "title": "Why Buddhism Is True",
+    "author": "Robert Wright",
+    "category": "Mindfulness"
+  },
+  {
+    "title": "How to Do Nothing",
+    "author": "Jenny Odell",
+    "category": "Mindfulness"
+  },
+  {
+    "title": "On the Shortness of Life",
+    "author": "Seneca",
+    "category": "Philosophy"
+  },
+  {
+    "title": "The Daily Stoic",
+    "author": "Ryan Holiday",
+    "category": "Philosophy"
+  },
+  {
+    "title": "Nicomachean Ethics",
+    "author": "Aristotle",
+    "category": "Philosophy"
+  },
+  {
+    "title": "The Myth of Sisyphus",
+    "author": "Albert Camus",
+    "category": "Philosophy"
+  },
+  {
+    "title": "Tao Te Ching",
+    "author": "Lao Tzu",
+    "category": "Philosophy"
+  },
+  {
+    "title": "The Consolations of Philosophy",
+    "author": "Alain de Botton",
+    "category": "Philosophy"
+  },
+  {
+    "title": "Sophie's World",
+    "author": "Jostein Gaarder",
+    "category": "Philosophy"
+  },
+  {
+    "title": "Justice",
+    "author": "Michael J. Sandel",
+    "category": "Philosophy"
+  },
+  {
+    "title": "The Tyranny of Merit",
+    "author": "Michael J. Sandel",
+    "category": "Philosophy"
+  },
+  {
+    "title": "How to Be a Stoic",
+    "author": "Massimo Pigliucci",
+    "category": "Philosophy"
+  },
+  {
+    "title": "The Denial of Death",
+    "author": "Ernest Becker",
+    "category": "Philosophy"
+  },
+  {
+    "title": "Zen and the Art of Motorcycle Maintenance",
+    "author": "Robert M. Pirsig",
+    "category": "Philosophy"
+  },
+  {
+    "title": "The Story of Philosophy",
+    "author": "Will Durant",
+    "category": "Philosophy"
+  },
+  {
+    "title": "What We Owe the Future",
+    "author": "William MacAskill",
+    "category": "Philosophy"
+  },
+  {
+    "title": "The Life You Can Save",
+    "author": "Peter Singer",
+    "category": "Philosophy"
+  },
+  {
+    "title": "Siddhartha",
+    "author": "Hermann Hesse",
+    "category": "Philosophy"
+  },
+  {
+    "title": "Great by Choice",
+    "author": "Jim Collins",
+    "category": "Business"
+  },
+  {
+    "title": "Competing Against Luck",
+    "author": "Clayton M. Christensen",
+    "category": "Business"
+  },
+  {
+    "title": "Blue Ocean Strategy",
+    "author": "W. Chan Kim",
+    "category": "Business"
+  },
+  {
+    "title": "Good Strategy Bad Strategy",
+    "author": "Richard P. Rumelt",
+    "category": "Business"
+  },
+  {
+    "title": "Playing to Win",
+    "author": "A.G. Lafley",
+    "category": "Business"
+  },
+  {
+    "title": "The Everything Store",
+    "author": "Brad Stone",
+    "category": "Business"
+  },
+  {
+    "title": "Measure What Matters",
+    "author": "John Doerr",
+    "category": "Business"
+  },
+  {
+    "title": "High Output Management",
+    "author": "Andrew S. Grove",
+    "category": "Business"
+  },
+  {
+    "title": "Only the Paranoid Survive",
+    "author": "Andrew S. Grove",
+    "category": "Business"
+  },
+  {
+    "title": "The E-Myth Revisited",
+    "author": "Michael E. Gerber",
+    "category": "Business"
+  },
+  {
+    "title": "Rework",
+    "author": "Jason Fried",
+    "category": "Business"
+  },
+  {
+    "title": "It Doesn't Have to Be Crazy at Work",
+    "author": "Jason Fried",
+    "category": "Business"
+  },
+  {
+    "title": "Traction",
+    "author": "Gino Wickman",
+    "category": "Business"
+  },
+  {
+    "title": "Profit First",
+    "author": "Mike Michalowicz",
+    "category": "Business"
+  },
+  {
+    "title": "$100M Offers",
+    "author": "Alex Hormozi",
+    "category": "Business"
+  },
+  {
+    "title": "$100M Leads",
+    "author": "Alex Hormozi",
+    "category": "Business"
+  },
+  {
+    "title": "The Personal MBA",
+    "author": "Josh Kaufman",
+    "category": "Business"
+  },
+  {
+    "title": "The Mom Test",
+    "author": "Rob Fitzpatrick",
+    "category": "Business"
+  },
+  {
+    "title": "The Cold Start Problem",
+    "author": "Andrew Chen",
+    "category": "Business"
+  },
+  {
+    "title": "Blitzscaling",
+    "author": "Reid Hoffman",
+    "category": "Business"
+  },
+  {
+    "title": "The Startup of You",
+    "author": "Reid Hoffman",
+    "category": "Business"
+  },
+  {
+    "title": "Inspired",
+    "author": "Marty Cagan",
+    "category": "Business"
+  },
+  {
+    "title": "Empowered",
+    "author": "Marty Cagan",
+    "category": "Business"
+  },
+  {
+    "title": "The Phoenix Project",
+    "author": "Gene Kim",
+    "category": "Business"
+  },
+  {
+    "title": "Working Backwards",
+    "author": "Colin Bryar",
+    "category": "Business"
+  },
+  {
+    "title": "No Rules Rules",
+    "author": "Reed Hastings",
+    "category": "Business"
+  },
+  {
+    "title": "The Almanack of Naval Ravikant",
+    "author": "Eric Jorgenson",
+    "category": "Business"
+  },
+  {
+    "title": "Poor Charlie's Almanack",
+    "author": "Charles T. Munger",
+    "category": "Business"
+  },
+  {
+    "title": "Bad Blood",
+    "author": "John Carreyrou",
+    "category": "Business"
+  },
+  {
+    "title": "Super Pumped",
+    "author": "Mike Isaac",
+    "category": "Business"
+  },
+  {
+    "title": "Chip War",
+    "author": "Chris Miller",
+    "category": "Business"
+  },
+  {
+    "title": "The Toyota Way",
+    "author": "Jeffrey K. Liker",
+    "category": "Business"
+  },
+  {
+    "title": "Sprint",
+    "author": "Jake Knapp",
+    "category": "Business"
+  },
+  {
+    "title": "Shape Up",
+    "author": "Ryan Singer",
+    "category": "Business"
+  },
+  {
+    "title": "Amp It Up",
+    "author": "Frank Slootman",
+    "category": "Business"
+  },
+  {
+    "title": "Grinding It Out",
+    "author": "Ray Kroc",
+    "category": "Business"
+  },
+  {
+    "title": "Made in America",
+    "author": "Sam Walton",
+    "category": "Business"
+  },
+  {
+    "title": "Onward",
+    "author": "Howard Schultz",
+    "category": "Business"
+  },
+  {
+    "title": "Let My People Go Surfing",
+    "author": "Yvon Chouinard",
+    "category": "Business"
+  },
+  {
+    "title": "Build",
+    "author": "Tony Fadell",
+    "category": "Business"
+  },
+  {
+    "title": "The Infinite Game",
+    "author": "Simon Sinek",
+    "category": "Business"
+  },
+  {
+    "title": "Leaders Eat Last",
+    "author": "Simon Sinek",
+    "category": "Leadership"
+  },
+  {
+    "title": "The Five Dysfunctions of a Team",
+    "author": "Patrick Lencioni",
+    "category": "Leadership"
+  },
+  {
+    "title": "The Advantage",
+    "author": "Patrick Lencioni",
+    "category": "Leadership"
+  },
+  {
+    "title": "The Ideal Team Player",
+    "author": "Patrick Lencioni",
+    "category": "Leadership"
+  },
+  {
+    "title": "The Manager's Path",
+    "author": "Camille Fournier",
+    "category": "Leadership"
+  },
+  {
+    "title": "The Making of a Manager",
+    "author": "Julie Zhuo",
+    "category": "Leadership"
+  },
+  {
+    "title": "First, Break All the Rules",
+    "author": "Marcus Buckingham",
+    "category": "Leadership"
+  },
+  {
+    "title": "Team of Teams",
+    "author": "Stanley McChrystal",
+    "category": "Leadership"
+  },
+  {
+    "title": "Originals",
+    "author": "Adam Grant",
+    "category": "Leadership"
+  },
+  {
+    "title": "Lean In",
+    "author": "Sheryl Sandberg",
+    "category": "Leadership"
+  },
+  {
+    "title": "An Elegant Puzzle",
+    "author": "Will Larson",
+    "category": "Leadership"
+  },
+  {
+    "title": "Emotional Agility",
+    "author": "Susan David",
+    "category": "Leadership"
+  },
+  {
+    "title": "Made to Stick",
+    "author": "Chip Heath",
+    "category": "Marketing"
+  },
+  {
+    "title": "Decisive",
+    "author": "Chip Heath",
+    "category": "Marketing"
+  },
+  {
+    "title": "The Power of Moments",
+    "author": "Chip Heath",
+    "category": "Marketing"
+  },
+  {
+    "title": "Purple Cow",
+    "author": "Seth Godin",
+    "category": "Marketing"
+  },
+  {
+    "title": "Building a StoryBrand",
+    "author": "Donald Miller",
+    "category": "Marketing"
+  },
+  {
+    "title": "Positioning",
+    "author": "Al Ries",
+    "category": "Marketing"
+  },
+  {
+    "title": "Alchemy",
+    "author": "Rory Sutherland",
+    "category": "Marketing"
+  },
+  {
+    "title": "Obviously Awesome",
+    "author": "April Dunford",
+    "category": "Marketing"
+  },
+  {
+    "title": "Ogilvy on Advertising",
+    "author": "David Ogilvy",
+    "category": "Marketing"
+  },
+  {
+    "title": "Hey Whipple, Squeeze This",
+    "author": "Luke Sullivan",
+    "category": "Marketing"
+  },
+  {
+    "title": "SPIN Selling",
+    "author": "Neil Rackham",
+    "category": "Marketing"
+  },
+  {
+    "title": "How Brands Grow",
+    "author": "Byron Sharp",
+    "category": "Marketing"
+  },
+  {
+    "title": "Everybody Writes",
+    "author": "Ann Handley",
+    "category": "Marketing"
+  },
+  {
+    "title": "SuperFreakonomics",
+    "author": "Steven D. Levitt",
+    "category": "Economics"
+  },
+  {
+    "title": "Why Nations Fail",
+    "author": "Daron Acemoglu",
+    "category": "Economics"
+  },
+  {
+    "title": "Power and Progress",
+    "author": "Daron Acemoglu",
+    "category": "Economics"
+  },
+  {
+    "title": "The Undercover Economist",
+    "author": "Tim Harford",
+    "category": "Economics"
+  },
+  {
+    "title": "Naked Economics",
+    "author": "Charles Wheelan",
+    "category": "Economics"
+  },
+  {
+    "title": "Poor Economics",
+    "author": "Abhijit V. Banerjee",
+    "category": "Economics"
+  },
+  {
+    "title": "The Big Short",
+    "author": "Michael Lewis",
+    "category": "Economics"
+  },
+  {
+    "title": "Moneyball",
+    "author": "Michael Lewis",
+    "category": "Economics"
+  },
+  {
+    "title": "Flash Boys",
+    "author": "Michael Lewis",
+    "category": "Economics"
+  },
+  {
+    "title": "Liar's Poker",
+    "author": "Michael Lewis",
+    "category": "Economics"
+  },
+  {
+    "title": "Going Infinite",
+    "author": "Michael Lewis",
+    "category": "Economics"
+  },
+  {
+    "title": "Too Big to Fail",
+    "author": "Andrew Ross Sorkin",
+    "category": "Economics"
+  },
+  {
+    "title": "Debt",
+    "author": "David Graeber",
+    "category": "Economics"
+  },
+  {
+    "title": "Bullshit Jobs",
+    "author": "David Graeber",
+    "category": "Economics"
+  },
+  {
+    "title": "The Deficit Myth",
+    "author": "Stephanie Kelton",
+    "category": "Economics"
+  },
+  {
+    "title": "Doughnut Economics",
+    "author": "Kate Raworth",
+    "category": "Economics"
+  },
+  {
+    "title": "Thinking in Systems",
+    "author": "Donella H. Meadows",
+    "category": "Economics"
+  },
+  {
+    "title": "Basic Economics",
+    "author": "Thomas Sowell",
+    "category": "Economics"
+  },
+  {
+    "title": "Economics in One Lesson",
+    "author": "Henry Hazlitt",
+    "category": "Economics"
+  },
+  {
+    "title": "The Price of Inequality",
+    "author": "Joseph E. Stiglitz",
+    "category": "Economics"
+  },
+  {
+    "title": "Scarcity",
+    "author": "Sendhil Mullainathan",
+    "category": "Economics"
+  },
+  {
+    "title": "Fooled by Randomness",
+    "author": "Nassim Nicholas Taleb",
+    "category": "Economics"
+  },
+  {
+    "title": "Skin in the Game",
+    "author": "Nassim Nicholas Taleb",
+    "category": "Economics"
+  },
+  {
+    "title": "The Psychology of Money",
+    "author": "Morgan Housel",
+    "category": "Finance"
+  },
+  {
+    "title": "I Will Teach You to Be Rich",
+    "author": "Ramit Sethi",
+    "category": "Finance"
+  },
+  {
+    "title": "The Simple Path to Wealth",
+    "author": "JL Collins",
+    "category": "Finance"
+  },
+  {
+    "title": "One Up on Wall Street",
+    "author": "Peter Lynch",
+    "category": "Finance"
+  },
+  {
+    "title": "The Essays of Warren Buffett",
+    "author": "Warren E. Buffett",
+    "category": "Finance"
+  },
+  {
+    "title": "The Snowball",
+    "author": "Alice Schroeder",
+    "category": "Finance"
+  },
+  {
+    "title": "The Most Important Thing",
+    "author": "Howard Marks",
+    "category": "Finance"
+  },
+  {
+    "title": "Mastering the Market Cycle",
+    "author": "Howard Marks",
+    "category": "Finance"
+  },
+  {
+    "title": "Common Stocks and Uncommon Profits",
+    "author": "Philip A. Fisher",
+    "category": "Finance"
+  },
+  {
+    "title": "The Outsiders",
+    "author": "William N. Thorndike",
+    "category": "Finance"
+  },
+  {
+    "title": "Money: Master the Game",
+    "author": "Tony Robbins",
+    "category": "Finance"
+  },
+  {
+    "title": "The Bitcoin Standard",
+    "author": "Saifedean Ammous",
+    "category": "Finance"
+  },
+  {
+    "title": "Quit Like a Millionaire",
+    "author": "Kristy Shen",
+    "category": "Finance"
+  },
+  {
+    "title": "Brief Answers to the Big Questions",
+    "author": "Stephen Hawking",
+    "category": "Science"
+  },
+  {
+    "title": "Pale Blue Dot",
+    "author": "Carl Sagan",
+    "category": "Science"
+  },
+  {
+    "title": "The Demon-Haunted World",
+    "author": "Carl Sagan",
+    "category": "Science"
+  },
+  {
+    "title": "A Short History of Nearly Everything",
+    "author": "Bill Bryson",
+    "category": "Science"
+  },
+  {
+    "title": "The Body: A Guide for Occupants",
+    "author": "Bill Bryson",
+    "category": "Science"
+  },
+  {
+    "title": "The Selfish Gene",
+    "author": "Richard Dawkins",
+    "category": "Science"
+  },
+  {
+    "title": "The Blind Watchmaker",
+    "author": "Richard Dawkins",
+    "category": "Science"
+  },
+  {
+    "title": "The Song of the Cell",
+    "author": "Siddhartha Mukherjee",
+    "category": "Science"
+  },
+  {
+    "title": "Astrophysics for People in a Hurry",
+    "author": "Neil deGrasse Tyson",
+    "category": "Science"
+  },
+  {
+    "title": "Seven Brief Lessons on Physics",
+    "author": "Carlo Rovelli",
+    "category": "Science"
+  },
+  {
+    "title": "The Order of Time",
+    "author": "Carlo Rovelli",
+    "category": "Science"
+  },
+  {
+    "title": "The Fabric of the Cosmos",
+    "author": "Brian Greene",
+    "category": "Science"
+  },
+  {
+    "title": "Until the End of Time",
+    "author": "Brian Greene",
+    "category": "Science"
+  },
+  {
+    "title": "The Code Breaker",
+    "author": "Walter Isaacson",
+    "category": "Science"
+  },
+  {
+    "title": "Entangled Life",
+    "author": "Merlin Sheldrake",
+    "category": "Science"
+  },
+  {
+    "title": "An Immense World",
+    "author": "Ed Yong",
+    "category": "Science"
+  },
+  {
+    "title": "I Contain Multitudes",
+    "author": "Ed Yong",
+    "category": "Science"
+  },
+  {
+    "title": "The Sixth Extinction",
+    "author": "Elizabeth Kolbert",
+    "category": "Science"
+  },
+  {
+    "title": "The Hidden Life of Trees",
+    "author": "Peter Wohlleben",
+    "category": "Science"
+  },
+  {
+    "title": "What If?",
+    "author": "Randall Munroe",
+    "category": "Science"
+  },
+  {
+    "title": "Surely You're Joking, Mr. Feynman!",
+    "author": "Richard P. Feynman",
+    "category": "Science"
+  },
+  {
+    "title": "The Disappearing Spoon",
+    "author": "Sam Kean",
+    "category": "Science"
+  },
+  {
+    "title": "The Ape That Understood the Universe",
+    "author": "Steve Stewart-Williams",
+    "category": "Science"
+  },
+  {
+    "title": "Stiff",
+    "author": "Mary Roach",
+    "category": "Science"
+  },
+  {
+    "title": "Gulp",
+    "author": "Mary Roach",
+    "category": "Science"
+  },
+  {
+    "title": "The Hot Zone",
+    "author": "Richard Preston",
+    "category": "Science"
+  },
+  {
+    "title": "Spillover",
+    "author": "David Quammen",
+    "category": "Science"
+  },
+  {
+    "title": "Endurance",
+    "author": "Scott Kelly",
+    "category": "Science"
+  },
+  {
+    "title": "How to Change Your Mind",
+    "author": "Michael Pollan",
+    "category": "Science"
+  },
+  {
+    "title": "The Omnivore's Dilemma",
+    "author": "Michael Pollan",
+    "category": "Science"
+  },
+  {
+    "title": "The Botany of Desire",
+    "author": "Michael Pollan",
+    "category": "Science"
+  },
+  {
+    "title": "The Man Who Mistook His Wife for a Hat",
+    "author": "Oliver Sacks",
+    "category": "Science"
+  },
+  {
+    "title": "Musicophilia",
+    "author": "Oliver Sacks",
+    "category": "Science"
+  },
+  {
+    "title": "Incognito",
+    "author": "David Eagleman",
+    "category": "Science"
+  },
+  {
+    "title": "Livewired",
+    "author": "David Eagleman",
+    "category": "Science"
+  },
+  {
+    "title": "The Brain That Changes Itself",
+    "author": "Norman Doidge",
+    "category": "Science"
+  },
+  {
+    "title": "Origin Story",
+    "author": "David Christian",
+    "category": "Science"
+  },
+  {
+    "title": "The Origin of Species",
+    "author": "Charles Darwin",
+    "category": "Science"
+  },
+  {
+    "title": "Factfulness",
+    "author": "Hans Rosling",
+    "category": "Science"
+  },
+  {
+    "title": "The Signal and the Noise",
+    "author": "Nate Silver",
+    "category": "Science"
+  },
+  {
+    "title": "How Not to Be Wrong",
+    "author": "Jordan Ellenberg",
+    "category": "Science"
+  },
+  {
+    "title": "Fermat's Last Theorem",
+    "author": "Simon Singh",
+    "category": "Science"
+  },
+  {
+    "title": "The Code Book",
+    "author": "Simon Singh",
+    "category": "Science"
+  },
+  {
+    "title": "Godel, Escher, Bach",
+    "author": "Douglas R. Hofstadter",
+    "category": "Science"
+  },
+  {
+    "title": "The Information",
+    "author": "James Gleick",
+    "category": "Science"
+  },
+  {
+    "title": "Chaos",
+    "author": "James Gleick",
+    "category": "Science"
+  },
+  {
+    "title": "Life 3.0",
+    "author": "Max Tegmark",
+    "category": "Technology"
+  },
+  {
+    "title": "Superintelligence",
+    "author": "Nick Bostrom",
+    "category": "Technology"
+  },
+  {
+    "title": "Human Compatible",
+    "author": "Stuart Russell",
+    "category": "Technology"
+  },
+  {
+    "title": "The Alignment Problem",
+    "author": "Brian Christian",
+    "category": "Technology"
+  },
+  {
+    "title": "Algorithms to Live By",
+    "author": "Brian Christian",
+    "category": "Technology"
+  },
+  {
+    "title": "The Coming Wave",
+    "author": "Mustafa Suleyman",
+    "category": "Technology"
+  },
+  {
+    "title": "Co-Intelligence",
+    "author": "Ethan Mollick",
+    "category": "Technology"
+  },
+  {
+    "title": "The Age of Surveillance Capitalism",
+    "author": "Shoshana Zuboff",
+    "category": "Technology"
+  },
+  {
+    "title": "The Shallows",
+    "author": "Nicholas Carr",
+    "category": "Technology"
+  },
+  {
+    "title": "Weapons of Math Destruction",
+    "author": "Cathy O'Neil",
+    "category": "Technology"
+  },
+  {
+    "title": "The Innovators",
+    "author": "Walter Isaacson",
+    "category": "Technology"
+  },
+  {
+    "title": "Hackers",
+    "author": "Steven Levy",
+    "category": "Technology"
+  },
+  {
+    "title": "The Soul of a New Machine",
+    "author": "Tracy Kidder",
+    "category": "Technology"
+  },
+  {
+    "title": "AI Superpowers",
+    "author": "Kai-Fu Lee",
+    "category": "Technology"
+  },
+  {
+    "title": "The Master Algorithm",
+    "author": "Pedro Domingos",
+    "category": "Technology"
+  },
+  {
+    "title": "Genius Makers",
+    "author": "Cade Metz",
+    "category": "Technology"
+  },
+  {
+    "title": "The Inevitable",
+    "author": "Kevin Kelly",
+    "category": "Technology"
+  },
+  {
+    "title": "Excellent Advice for Living",
+    "author": "Kevin Kelly",
+    "category": "Technology"
+  },
+  {
+    "title": "Careless People",
+    "author": "Sarah Wynn-Williams",
+    "category": "Technology"
+  },
+  {
+    "title": "Empire of AI",
+    "author": "Karen Hao",
+    "category": "Technology"
+  },
+  {
+    "title": "Nexus",
+    "author": "Yuval Noah Harari",
+    "category": "Technology"
+  },
+  {
+    "title": "The Design of Everyday Things",
+    "author": "Don Norman",
+    "category": "Technology"
+  },
+  {
+    "title": "Don't Make Me Think",
+    "author": "Steve Krug",
+    "category": "Technology"
+  },
+  {
+    "title": "The Pragmatic Programmer",
+    "author": "David Thomas",
+    "category": "Technology"
+  },
+  {
+    "title": "Clean Code",
+    "author": "Robert C. Martin",
+    "category": "Technology"
+  },
+  {
+    "title": "The Mythical Man-Month",
+    "author": "Frederick P. Brooks Jr.",
+    "category": "Technology"
+  },
+  {
+    "title": "Accelerate",
+    "author": "Nicole Forsgren",
+    "category": "Technology"
+  },
+  {
+    "title": "Code",
+    "author": "Charles Petzold",
+    "category": "Technology"
+  },
+  {
+    "title": "Collapse",
+    "author": "Jared Diamond",
+    "category": "History"
+  },
+  {
+    "title": "Upheaval",
+    "author": "Jared Diamond",
+    "category": "History"
+  },
+  {
+    "title": "The Silk Roads",
+    "author": "Peter Frankopan",
+    "category": "History"
+  },
+  {
+    "title": "1776",
+    "author": "David McCullough",
+    "category": "History"
+  },
+  {
+    "title": "The Path Between the Seas",
+    "author": "David McCullough",
+    "category": "History"
+  },
+  {
+    "title": "Alexander Hamilton",
+    "author": "Ron Chernow",
+    "category": "History"
+  },
+  {
+    "title": "Grant",
+    "author": "Ron Chernow",
+    "category": "History"
+  },
+  {
+    "title": "Washington: A Life",
+    "author": "Ron Chernow",
+    "category": "History"
+  },
+  {
+    "title": "The Rise and Fall of the Third Reich",
+    "author": "William L. Shirer",
+    "category": "History"
+  },
+  {
+    "title": "A Distant Mirror",
+    "author": "Barbara W. Tuchman",
+    "category": "History"
+  },
+  {
+    "title": "The Splendid and the Vile",
+    "author": "Erik Larson",
+    "category": "History"
+  },
+  {
+    "title": "The Devil in the White City",
+    "author": "Erik Larson",
+    "category": "History"
+  },
+  {
+    "title": "Dead Wake",
+    "author": "Erik Larson",
+    "category": "History"
+  },
+  {
+    "title": "In the Garden of Beasts",
+    "author": "Erik Larson",
+    "category": "History"
+  },
+  {
+    "title": "Killers of the Flower Moon",
+    "author": "David Grann",
+    "category": "History"
+  },
+  {
+    "title": "The Lost City of Z",
+    "author": "David Grann",
+    "category": "History"
+  },
+  {
+    "title": "Unbroken",
+    "author": "Laura Hillenbrand",
+    "category": "History"
+  },
+  {
+    "title": "Seabiscuit",
+    "author": "Laura Hillenbrand",
+    "category": "History"
+  },
+  {
+    "title": "The Boys in the Boat",
+    "author": "Daniel James Brown",
+    "category": "History"
+  },
+  {
+    "title": "Band of Brothers",
+    "author": "Stephen E. Ambrose",
+    "category": "History"
+  },
+  {
+    "title": "Undaunted Courage",
+    "author": "Stephen E. Ambrose",
+    "category": "History"
+  },
+  {
+    "title": "The Warmth of Other Suns",
+    "author": "Isabel Wilkerson",
+    "category": "History"
+  },
+  {
+    "title": "Caste",
+    "author": "Isabel Wilkerson",
+    "category": "History"
+  },
+  {
+    "title": "The Making of the Atomic Bomb",
+    "author": "Richard Rhodes",
+    "category": "History"
+  },
+  {
+    "title": "American Prometheus",
+    "author": "Kai Bird",
+    "category": "History"
+  },
+  {
+    "title": "SPQR",
+    "author": "Mary Beard",
+    "category": "History"
+  },
+  {
+    "title": "The History of the Ancient World",
+    "author": "Susan Wise Bauer",
+    "category": "History"
+  },
+  {
+    "title": "Genghis Khan and the Making of the Modern World",
+    "author": "Jack Weatherford",
+    "category": "History"
+  },
+  {
+    "title": "The Dawn of Everything",
+    "author": "David Graeber",
+    "category": "History"
+  },
+  {
+    "title": "Enlightenment Now",
+    "author": "Steven Pinker",
+    "category": "History"
+  },
+  {
+    "title": "Rationality",
+    "author": "Steven Pinker",
+    "category": "History"
+  },
+  {
+    "title": "Humankind",
+    "author": "Rutger Bregman",
+    "category": "History"
+  },
+  {
+    "title": "Utopia for Realists",
+    "author": "Rutger Bregman",
+    "category": "History"
+  },
+  {
+    "title": "Postwar",
+    "author": "Tony Judt",
+    "category": "History"
+  },
+  {
+    "title": "The Cold War",
+    "author": "John Lewis Gaddis",
+    "category": "History"
+  },
+  {
+    "title": "Bloodlands",
+    "author": "Timothy Snyder",
+    "category": "History"
+  },
+  {
+    "title": "The Origins of Totalitarianism",
+    "author": "Hannah Arendt",
+    "category": "History"
+  },
+  {
+    "title": "1491",
+    "author": "Charles C. Mann",
+    "category": "History"
+  },
+  {
+    "title": "1493",
+    "author": "Charles C. Mann",
+    "category": "History"
+  },
+  {
+    "title": "Salt",
+    "author": "Mark Kurlansky",
+    "category": "History"
+  },
+  {
+    "title": "Cod",
+    "author": "Mark Kurlansky",
+    "category": "History"
+  },
+  {
+    "title": "The Prize",
+    "author": "Daniel Yergin",
+    "category": "History"
+  },
+  {
+    "title": "The Big Burn",
+    "author": "Timothy Egan",
+    "category": "History"
+  },
+  {
+    "title": "The Worst Hard Time",
+    "author": "Timothy Egan",
+    "category": "History"
+  },
+  {
+    "title": "Say Nothing",
+    "author": "Patrick Radden Keefe",
+    "category": "History"
+  },
+  {
+    "title": "Empire of Pain",
+    "author": "Patrick Radden Keefe",
+    "category": "History"
+  },
+  {
+    "title": "Midnight in Chernobyl",
+    "author": "Adam Higginbotham",
+    "category": "History"
+  },
+  {
+    "title": "Endurance: Shackleton's Incredible Voyage",
+    "author": "Alfred Lansing",
+    "category": "History"
+  },
+  {
+    "title": "Under the Banner of Heaven",
+    "author": "Jon Krakauer",
+    "category": "History"
+  },
+  {
+    "title": "The Right Stuff",
+    "author": "Tom Wolfe",
+    "category": "History"
+  },
+  {
+    "title": "Night",
+    "author": "Elie Wiesel",
+    "category": "History"
+  },
+  {
+    "title": "The Rise of Theodore Roosevelt",
+    "author": "Edmund Morris",
+    "category": "History"
+  },
+  {
+    "title": "The Power Broker",
+    "author": "Robert A. Caro",
+    "category": "History"
+  },
+  {
+    "title": "The Years of Lyndon Johnson: The Path to Power",
+    "author": "Robert A. Caro",
+    "category": "History"
+  },
+  {
+    "title": "Hidden Figures",
+    "author": "Margot Lee Shetterly",
+    "category": "History"
+  },
+  {
+    "title": "The Radium Girls",
+    "author": "Kate Moore",
+    "category": "History"
+  },
+  {
+    "title": "Prisoners of Geography",
+    "author": "Tim Marshall",
+    "category": "History"
+  },
+  {
+    "title": "The Revenge of Geography",
+    "author": "Robert D. Kaplan",
+    "category": "History"
+  },
+  {
+    "title": "The Ottoman Endgame",
+    "author": "Sean McMeekin",
+    "category": "History"
+  },
+  {
+    "title": "A Promised Land",
+    "author": "Barack Obama",
+    "category": "Biography"
+  },
+  {
+    "title": "I Know Why the Caged Bird Sings",
+    "author": "Maya Angelou",
+    "category": "Biography"
+  },
+  {
+    "title": "Open",
+    "author": "Andre Agassi",
+    "category": "Biography"
+  },
+  {
+    "title": "Be Useful",
+    "author": "Arnold Schwarzenegger",
+    "category": "Biography"
+  },
+  {
+    "title": "Spare",
+    "author": "Prince Harry",
+    "category": "Biography"
+  },
+  {
+    "title": "Friends, Lovers, and the Big Terrible Thing",
+    "author": "Matthew Perry",
+    "category": "Biography"
+  },
+  {
+    "title": "Crying in H Mart",
+    "author": "Michelle Zauner",
+    "category": "Biography"
+  },
+  {
+    "title": "Know My Name",
+    "author": "Chanel Miller",
+    "category": "Biography"
+  },
+  {
+    "title": "Hillbilly Elegy",
+    "author": "J. D. Vance",
+    "category": "Biography"
+  },
+  {
+    "title": "Just Kids",
+    "author": "Patti Smith",
+    "category": "Biography"
+  },
+  {
+    "title": "Wild",
+    "author": "Cheryl Strayed",
+    "category": "Biography"
+  },
+  {
+    "title": "Tuesdays with Morrie",
+    "author": "Mitch Albom",
+    "category": "Biography"
+  },
+  {
+    "title": "The Last Lecture",
+    "author": "Randy Pausch",
+    "category": "Biography"
+  },
+  {
+    "title": "Alan Turing: The Enigma",
+    "author": "Andrew Hodges",
+    "category": "Biography"
+  },
+  {
+    "title": "Churchill: Walking with Destiny",
+    "author": "Andrew Roberts",
+    "category": "Biography"
+  },
+  {
+    "title": "Napoleon: A Life",
+    "author": "Andrew Roberts",
+    "category": "Biography"
+  },
+  {
+    "title": "Titan: The Life of John D. Rockefeller, Sr.",
+    "author": "Ron Chernow",
+    "category": "Biography"
+  },
+  {
+    "title": "Tesla: Inventor of the Electrical Age",
+    "author": "W. Bernard Carlson",
+    "category": "Biography"
+  },
+  {
+    "title": "A Beautiful Mind",
+    "author": "Sylvia Nasar",
+    "category": "Biography"
+  },
+  {
+    "title": "Genius: The Life and Science of Richard Feynman",
+    "author": "James Gleick",
+    "category": "Biography"
+  },
+  {
+    "title": "Marie Curie and Her Daughters",
+    "author": "Shelley Emling",
+    "category": "Biography"
+  },
+  {
+    "title": "Catherine the Great",
+    "author": "Robert K. Massie",
+    "category": "Biography"
+  },
+  {
+    "title": "Cleopatra: A Life",
+    "author": "Stacy Schiff",
+    "category": "Biography"
+  },
+  {
+    "title": "Frederick Douglass: Prophet of Freedom",
+    "author": "David W. Blight",
+    "category": "Biography"
+  },
+  {
+    "title": "Barbarian Days",
+    "author": "William Finnegan",
+    "category": "Biography"
+  },
+  {
+    "title": "Bobby Kennedy",
+    "author": "Larry Tye",
+    "category": "Biography"
+  },
+  {
+    "title": "Mao: The Unknown Story",
+    "author": "Jung Chang",
+    "category": "Biography"
+  },
+  {
+    "title": "Wild Swans",
+    "author": "Jung Chang",
+    "category": "Biography"
+  },
+  {
+    "title": "Relentless",
+    "author": "Tim S. Grover",
+    "category": "Biography"
+  },
+  {
+    "title": "Mamba Mentality",
+    "author": "Kobe Bryant",
+    "category": "Biography"
+  },
+  {
+    "title": "The Score Takes Care of Itself",
+    "author": "Bill Walsh",
+    "category": "Biography"
+  },
+  {
+    "title": "Eleven Rings",
+    "author": "Phil Jackson",
+    "category": "Biography"
+  },
+  {
+    "title": "Legacy",
+    "author": "James Kerr",
+    "category": "Biography"
+  },
+  {
+    "title": "Lifespan",
+    "author": "David A. Sinclair",
+    "category": "Health"
+  },
+  {
+    "title": "The Blue Zones",
+    "author": "Dan Buettner",
+    "category": "Health"
+  },
+  {
+    "title": "Spark",
+    "author": "John J. Ratey",
+    "category": "Health"
+  },
+  {
+    "title": "Born to Run",
+    "author": "Christopher McDougall",
+    "category": "Health"
+  },
+  {
+    "title": "Good Energy",
+    "author": "Casey Means",
+    "category": "Health"
+  },
+  {
+    "title": "Glucose Revolution",
+    "author": "Jessie Inchauspé",
+    "category": "Health"
+  },
+  {
+    "title": "The Obesity Code",
+    "author": "Jason Fung",
+    "category": "Health"
+  },
+  {
+    "title": "Fast Food Nation",
+    "author": "Eric Schlosser",
+    "category": "Health"
+  },
+  {
+    "title": "Ultra-Processed People",
+    "author": "Chris van Tulleken",
+    "category": "Health"
+  },
+  {
+    "title": "Food Rules",
+    "author": "Michael Pollan",
+    "category": "Health"
+  },
+  {
+    "title": "The Plant Paradox",
+    "author": "Steven R. Gundry",
+    "category": "Health"
+  },
+  {
+    "title": "Grain Brain",
+    "author": "David Perlmutter",
+    "category": "Health"
+  },
+  {
+    "title": "The Checklist Manifesto",
+    "author": "Atul Gawande",
+    "category": "Health"
+  },
+  {
+    "title": "Complications",
+    "author": "Atul Gawande",
+    "category": "Health"
+  },
+  {
+    "title": "Gut",
+    "author": "Giulia Enders",
+    "category": "Health"
+  },
+  {
+    "title": "The Sleep Revolution",
+    "author": "Arianna Huffington",
+    "category": "Health"
+  },
+  {
+    "title": "Thrive",
+    "author": "Arianna Huffington",
+    "category": "Health"
+  },
+  {
+    "title": "Burn",
+    "author": "Herman Pontzer",
+    "category": "Health"
+  },
+  {
+    "title": "Exercised",
+    "author": "Daniel E. Lieberman",
+    "category": "Health"
+  },
+  {
+    "title": "Younger Next Year",
+    "author": "Chris Crowley",
+    "category": "Health"
+  },
+  {
+    "title": "Bigger Leaner Stronger",
+    "author": "Michael Matthews",
+    "category": "Health"
+  },
+  {
+    "title": "Starting Strength",
+    "author": "Mark Rippetoe",
+    "category": "Health"
+  },
+  {
+    "title": "Becoming a Supple Leopard",
+    "author": "Kelly Starrett",
+    "category": "Health"
+  },
+  {
+    "title": "Hidden Valley Road",
+    "author": "Robert Kolker",
+    "category": "Health"
+  },
+  {
+    "title": "An Unquiet Mind",
+    "author": "Kay Redfield Jamison",
+    "category": "Health"
+  },
+  {
+    "title": "The Noonday Demon",
+    "author": "Andrew Solomon",
+    "category": "Health"
+  },
+  {
+    "title": "The Myth of Normal",
+    "author": "Gabor Maté",
+    "category": "Health"
+  },
+  {
+    "title": "In the Realm of Hungry Ghosts",
+    "author": "Gabor Maté",
+    "category": "Health"
+  },
+  {
+    "title": "When the Body Says No",
+    "author": "Gabor Maté",
+    "category": "Health"
+  },
+  {
+    "title": "It Didn't Start with You",
+    "author": "Mark Wolynn",
+    "category": "Health"
+  },
+  {
+    "title": "What Happened to You?",
+    "author": "Bruce D. Perry",
+    "category": "Health"
+  },
+  {
+    "title": "Permission to Feel",
+    "author": "Marc Brackett",
+    "category": "Health"
+  },
+  {
+    "title": "The Wim Hof Method",
+    "author": "Wim Hof",
+    "category": "Health"
+  },
+  {
+    "title": "The Whole-Brain Child",
+    "author": "Daniel J. Siegel",
+    "category": "Parenting"
+  },
+  {
+    "title": "No-Drama Discipline",
+    "author": "Daniel J. Siegel",
+    "category": "Parenting"
+  },
+  {
+    "title": "How to Talk So Kids Will Listen & Listen So Kids Will Talk",
+    "author": "Adele Faber",
+    "category": "Parenting"
+  },
+  {
+    "title": "Siblings Without Rivalry",
+    "author": "Adele Faber",
+    "category": "Parenting"
+  },
+  {
+    "title": "The Gardener and the Carpenter",
+    "author": "Alison Gopnik",
+    "category": "Parenting"
+  },
+  {
+    "title": "Good Inside",
+    "author": "Becky Kennedy",
+    "category": "Parenting"
+  },
+  {
+    "title": "The Book You Wish Your Parents Had Read",
+    "author": "Philippa Perry",
+    "category": "Parenting"
+  },
+  {
+    "title": "Simplicity Parenting",
+    "author": "Kim John Payne",
+    "category": "Parenting"
+  },
+  {
+    "title": "Unconditional Parenting",
+    "author": "Alfie Kohn",
+    "category": "Parenting"
+  },
+  {
+    "title": "Bringing Up Bébé",
+    "author": "Pamela Druckerman",
+    "category": "Parenting"
+  },
+  {
+    "title": "Expecting Better",
+    "author": "Emily Oster",
+    "category": "Parenting"
+  },
+  {
+    "title": "Cribsheet",
+    "author": "Emily Oster",
+    "category": "Parenting"
+  },
+  {
+    "title": "The Self-Driven Child",
+    "author": "William Stixrud",
+    "category": "Parenting"
+  },
+  {
+    "title": "Free-Range Kids",
+    "author": "Lenore Skenazy",
+    "category": "Parenting"
+  },
+  {
+    "title": "Raising an Emotionally Intelligent Child",
+    "author": "John Gottman",
+    "category": "Parenting"
+  },
+  {
+    "title": "NurtureShock",
+    "author": "Po Bronson",
+    "category": "Parenting"
+  },
+  {
+    "title": "The Danish Way of Parenting",
+    "author": "Jessica Joelle Alexander",
+    "category": "Parenting"
+  },
+  {
+    "title": "Peaceful Parent, Happy Kids",
+    "author": "Laura Markham",
+    "category": "Parenting"
+  },
+  {
+    "title": "The Tyranny of Metrics",
+    "author": "Jerry Z. Muller",
+    "category": "Society"
+  },
+  {
+    "title": "Bowling Alone",
+    "author": "Robert D. Putnam",
+    "category": "Society"
+  },
+  {
+    "title": "The Upswing",
+    "author": "Robert D. Putnam",
+    "category": "Society"
+  },
+  {
+    "title": "Amusing Ourselves to Death",
+    "author": "Neil Postman",
+    "category": "Society"
+  },
+  {
+    "title": "The New Jim Crow",
+    "author": "Michelle Alexander",
+    "category": "Society"
+  },
+  {
+    "title": "Between the World and Me",
+    "author": "Ta-Nehisi Coates",
+    "category": "Society"
+  },
+  {
+    "title": "How to Be an Antiracist",
+    "author": "Ibram X. Kendi",
+    "category": "Society"
+  },
+  {
+    "title": "Evicted",
+    "author": "Matthew Desmond",
+    "category": "Society"
+  },
+  {
+    "title": "Poverty, by America",
+    "author": "Matthew Desmond",
+    "category": "Society"
+  },
+  {
+    "title": "Nickel and Dimed",
+    "author": "Barbara Ehrenreich",
+    "category": "Society"
+  },
+  {
+    "title": "Invisible Women",
+    "author": "Caroline Criado Perez",
+    "category": "Society"
+  },
+  {
+    "title": "The Second Sex",
+    "author": "Simone de Beauvoir",
+    "category": "Society"
+  },
+  {
+    "title": "We Should All Be Feminists",
+    "author": "Chimamanda Ngozi Adichie",
+    "category": "Society"
+  },
+  {
+    "title": "Bad Feminist",
+    "author": "Roxane Gay",
+    "category": "Society"
+  },
+  {
+    "title": "Fear: Trump in the White House",
+    "author": "Bob Woodward",
+    "category": "Society"
+  },
+  {
+    "title": "Why We're Polarized",
+    "author": "Ezra Klein",
+    "category": "Society"
+  },
+  {
+    "title": "How Democracies Die",
+    "author": "Steven Levitsky",
+    "category": "Society"
+  },
+  {
+    "title": "The Fourth Turning",
+    "author": "William Strauss",
+    "category": "Society"
+  },
+  {
+    "title": "Strangers in Their Own Land",
+    "author": "Arlie Russell Hochschild",
+    "category": "Society"
+  },
+  {
+    "title": "Coming Apart",
+    "author": "Charles Murray",
+    "category": "Society"
+  },
+  {
+    "title": "Dark Money",
+    "author": "Jane Mayer",
+    "category": "Society"
+  },
+  {
+    "title": "The Shock Doctrine",
+    "author": "Naomi Klein",
+    "category": "Society"
+  },
+  {
+    "title": "This Changes Everything",
+    "author": "Naomi Klein",
+    "category": "Society"
+  },
+  {
+    "title": "The Uninhabitable Earth",
+    "author": "David Wallace-Wells",
+    "category": "Society"
+  },
+  {
+    "title": "How to Avoid a Climate Disaster",
+    "author": "Bill Gates",
+    "category": "Society"
+  },
+  {
+    "title": "Drawdown",
+    "author": "Paul Hawken",
+    "category": "Society"
+  },
+  {
+    "title": "Not the End of the World",
+    "author": "Hannah Ritchie",
+    "category": "Society"
+  },
+  {
+    "title": "Smartcuts",
+    "author": "Shane Snow",
+    "category": "Society"
+  },
+  {
+    "title": "The Person You Mean to Be",
+    "author": "Dolly Chugh",
+    "category": "Society"
+  },
+  {
+    "title": "Blindspot",
+    "author": "Mahzarin R. Banaji",
+    "category": "Society"
+  },
+  {
+    "title": "Talent",
+    "author": "Tyler Cowen",
+    "category": "Society"
+  },
+  {
+    "title": "The Great Stagnation",
+    "author": "Tyler Cowen",
+    "category": "Society"
+  },
+  {
+    "title": "Status Anxiety",
+    "author": "Alain de Botton",
+    "category": "Society"
+  },
+  {
+    "title": "The Lonely Century",
+    "author": "Noreena Hertz",
+    "category": "Society"
+  },
+  {
+    "title": "Together",
+    "author": "Vivek H. Murthy",
+    "category": "Society"
+  },
+  {
+    "title": "The Art of Gathering",
+    "author": "Priya Parker",
+    "category": "Society"
+  },
+  {
+    "title": "On Writing",
+    "author": "Stephen King",
+    "category": "Writing"
+  },
+  {
+    "title": "On Writing Well",
+    "author": "William Zinsser",
+    "category": "Writing"
+  },
+  {
+    "title": "The Elements of Style",
+    "author": "William Strunk Jr.",
+    "category": "Writing"
+  },
+  {
+    "title": "Several Short Sentences About Writing",
+    "author": "Verlyn Klinkenborg",
+    "category": "Writing"
+  },
+  {
+    "title": "The Sense of Style",
+    "author": "Steven Pinker",
+    "category": "Writing"
+  },
+  {
+    "title": "Save the Cat!",
+    "author": "Blake Snyder",
+    "category": "Writing"
+  },
+  {
+    "title": "Story",
+    "author": "Robert McKee",
+    "category": "Writing"
+  },
+  {
+    "title": "The Hero with a Thousand Faces",
+    "author": "Joseph Campbell",
+    "category": "Writing"
+  },
+  {
+    "title": "Draft No. 4",
+    "author": "John McPhee",
+    "category": "Writing"
+  },
+  {
+    "title": "Writing Down the Bones",
+    "author": "Natalie Goldberg",
+    "category": "Writing"
+  },
+  {
+    "title": "Storyworthy",
+    "author": "Matthew Dicks",
+    "category": "Writing"
+  },
+  {
+    "title": "Talk Like TED",
+    "author": "Carmine Gallo",
+    "category": "Writing"
+  },
+  {
+    "title": "Resonate",
+    "author": "Nancy Duarte",
+    "category": "Writing"
+  },
+  {
+    "title": "Smart Brevity",
+    "author": "Jim VandeHei",
+    "category": "Writing"
+  },
+  {
+    "title": "How to Take Smart Notes",
+    "author": "Sönke Ahrens",
+    "category": "Writing"
+  },
+  {
+    "title": "What Color Is Your Parachute?",
+    "author": "Richard N. Bolles",
+    "category": "Career"
+  },
+  {
+    "title": "Designing Your Life",
+    "author": "Bill Burnett",
+    "category": "Career"
+  },
+  {
+    "title": "The 2-Hour Cocktail Party",
+    "author": "Nick Gray",
+    "category": "Career"
+  },
+  {
+    "title": "The Defining Decade",
+    "author": "Meg Jay",
+    "category": "Career"
+  },
+  {
+    "title": "Pivot",
+    "author": "Jenny Blake",
+    "category": "Career"
+  },
+  {
+    "title": "Ask for It",
+    "author": "Linda Babcock",
+    "category": "Career"
+  },
+  {
+    "title": "Working",
+    "author": "Robert A. Caro",
+    "category": "Career"
+  },
+  {
+    "title": "The Long Game",
+    "author": "Dorie Clark",
+    "category": "Career"
+  },
+  {
+    "title": "Anything You Want",
+    "author": "Derek Sivers",
+    "category": "Career"
+  },
+  {
+    "title": "Hell Yeah or No",
+    "author": "Derek Sivers",
+    "category": "Career"
+  },
+  {
+    "title": "The Art of Learning",
+    "author": "Josh Waitzkin",
+    "category": "Career"
+  },
+  {
+    "title": "How to Be Everything",
+    "author": "Emilie Wapnick",
+    "category": "Career"
+  },
+  {
+    "title": "The Prophet",
+    "author": "Kahlil Gibran",
+    "category": "Spirituality"
+  },
+  {
+    "title": "Mere Christianity",
+    "author": "C. S. Lewis",
+    "category": "Spirituality"
+  },
+  {
+    "title": "The Purpose Driven Life",
+    "author": "Rick Warren",
+    "category": "Spirituality"
+  },
+  {
+    "title": "Autobiography of a Yogi",
+    "author": "Paramahansa Yogananda",
+    "category": "Spirituality"
+  },
+  {
+    "title": "Be Here Now",
+    "author": "Ram Dass",
+    "category": "Spirituality"
+  },
+  {
+    "title": "The Power of Myth",
+    "author": "Joseph Campbell",
+    "category": "Spirituality"
+  },
+  {
+    "title": "Loving What Is",
+    "author": "Byron Katie",
+    "category": "Spirituality"
+  },
+  {
+    "title": "A Return to Love",
+    "author": "Marianne Williamson",
+    "category": "Spirituality"
+  },
+  {
+    "title": "Conversations with God",
+    "author": "Neale Donald Walsch",
+    "category": "Spirituality"
+  },
+  {
+    "title": "The Way of the Superior Man",
+    "author": "David Deida",
+    "category": "Spirituality"
+  },
+  {
+    "title": "The Book of Awakening",
+    "author": "Mark Nepo",
+    "category": "Spirituality"
+  },
+  {
+    "title": "The Bhagavad Gita",
+    "author": "Eknath Easwaran",
+    "category": "Spirituality"
+  },
+  {
+    "title": "The Tibetan Book of Living and Dying",
+    "author": "Sogyal Rinpoche",
+    "category": "Spirituality"
+  },
+  {
+    "title": "Zen Mind, Beginner's Mind",
+    "author": "Shunryu Suzuki",
+    "category": "Spirituality"
+  },
+  {
+    "title": "Notes from a Small Island",
+    "author": "Bill Bryson",
+    "category": "Travel"
+  },
+  {
+    "title": "The Great Railway Bazaar",
+    "author": "Paul Theroux",
+    "category": "Travel"
+  },
+  {
+    "title": "Travels with Charley",
+    "author": "John Steinbeck",
+    "category": "Travel"
+  },
+  {
+    "title": "Blue Highways",
+    "author": "William Least Heat-Moon",
+    "category": "Travel"
+  },
+  {
+    "title": "The Snow Leopard",
+    "author": "Peter Matthiessen",
+    "category": "Travel"
+  }
+]

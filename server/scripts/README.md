@@ -33,6 +33,20 @@ npx tsx scripts/populate-books.ts 15 all nyt
 - Generates both regular and extended summaries
 - Comprehensive progress tracking and error handling
 
+#### `add-curated-books.ts` - Hand-Picked Popular Books
+
+Adds the well-known non-fiction books listed in `scripts/data/curated-books.json` (title, author, category). For each book it gets metadata and a cover from Open Library (Google Books fills gaps when `GOOGLE_BOOKS_API_KEY` is set), skips books already in the database, inserts the book, and generates the summary and extended summary.
+
+```bash
+npm run add-curated-books -- --dry-run              # look up only: no DB writes, no OpenAI calls
+npm run add-curated-books -- --limit 20             # first 20 books
+npm run add-curated-books -- --category Business    # one category
+npm run add-curated-books -- --no-summaries         # books and covers only
+npm run add-curated-books                           # everything (~$0.03-0.05 per book)
+```
+
+To add more books, append entries to `curated-books.json`. Re-running is safe: existing books are skipped.
+
 ### 🤖 Summary Generation
 
 #### `generate-missing-summaries.ts` - Complete Summary Generation
