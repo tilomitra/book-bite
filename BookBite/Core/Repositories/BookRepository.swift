@@ -21,6 +21,11 @@ protocol FavoriteRepository {
     func downloadFavoriteForOffline(_ book: Book) async throws
 }
 
+protocol DailyIdeaProviding {
+    /// date is the user's local day as YYYY-MM-DD
+    func fetchDailyIdea(for date: String) async throws -> DailyIdea?
+}
+
 protocol SummaryGenerationCapable {
     func generateSummary(for bookId: String, style: Summary.SummaryStyle) async throws -> SummaryGenerationJob
     func checkSummaryGenerationJob(jobId: String) async throws -> SummaryGenerationJob

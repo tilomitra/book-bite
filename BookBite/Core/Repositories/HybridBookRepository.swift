@@ -1,6 +1,6 @@
 import Foundation
 
-class HybridBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRepository {
+class HybridBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRepository, DailyIdeaProviding {
     private let remoteRepository = RemoteBookRepository()
     private let offlineStorage = OfflineStorageService.shared
 
@@ -54,6 +54,10 @@ class HybridBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
         }
     }
     
+    func fetchDailyIdea(for date: String) async throws -> DailyIdea? {
+        return try await remoteRepository.fetchDailyIdea(for: date)
+    }
+
     func searchBooks(query: String) async throws -> [Book] {
         return try await remoteRepository.searchBooks(query: query)
     }

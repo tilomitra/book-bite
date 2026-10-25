@@ -55,3 +55,22 @@ describe('Configuration Tests', () => {
     expect(process.env.OPENAI_API_KEY).toBeDefined();
   });
 });
+describe('Daily idea pick', () => {
+  const { pickDailyIdea } = require('../services/dailyIdeaService');
+  const ids = ['a', 'b', 'c'];
+
+  test('returns null when there are no books', () => {
+    expect(pickDailyIdea([], '2026-10-25')).toBeNull();
+  });
+
+  test('is the same for the same date', () => {
+    expect(pickDailyIdea(ids, '2026-10-25')).toEqual(pickDailyIdea(ids, '2026-10-25'));
+  });
+
+  test('visits every book before a repeat', () => {
+    const days = ['2026-10-25', '2026-10-26', '2026-10-27'];
+    const picked = days.map(d => pickDailyIdea(ids, d).bookId);
+    expect(new Set(picked).size).toBe(3);
+    expect(pickDailyIdea(ids, '2026-10-28').round).toBe(pickDailyIdea(ids, '2026-10-25').round + 1);
+  });
+});
