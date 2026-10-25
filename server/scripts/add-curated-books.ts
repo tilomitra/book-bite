@@ -20,7 +20,7 @@
  *   --no-summaries     Insert books but do not generate summaries
  *   --concurrency <n>  Books processed in parallel (default 3)
  *
- * Cost: about $0.03-0.05 per book (GPT-4o summary + GPT-3.5 extended summary).
+ * Cost: about $0.003 per book (GPT-6 Luna summary + extended summary).
  */
 
 import { config } from 'dotenv';

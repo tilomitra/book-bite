@@ -55,7 +55,7 @@ npm run lint       # eslint, config in server/.eslintrc.cjs
 ### Data scripts (`server/scripts/`, all call services directly, cost real API money)
 ```bash
 npm run populate-books                      # Google Books + NYT, with AI summaries
-npm run add-curated-books -- --dry-run      # hand-picked list in scripts/data/curated-books.json (Open Library covers); drop --dry-run to insert + summarize
+npm run add-curated-books -- --dry-run      # ~$0.003/book; hand-picked list in scripts/data/curated-books.json (Open Library covers); drop --dry-run to insert + summarize
 npx tsx scripts/populate-books.ts 30 high google   # [booksPerCategory] [priority] [source]
 npm run generate-summaries                  # books missing summaries
 npm run generate-extended-summaries

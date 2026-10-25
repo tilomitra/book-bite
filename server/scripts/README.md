@@ -42,7 +42,7 @@ npm run add-curated-books -- --dry-run              # look up only: no DB writes
 npm run add-curated-books -- --limit 20             # first 20 books
 npm run add-curated-books -- --category Business    # one category
 npm run add-curated-books -- --no-summaries         # books and covers only
-npm run add-curated-books                           # everything (~$0.03-0.05 per book)
+npm run add-curated-books                           # everything (~$0.003 per book)
 ```
 
 To add more books, append entries to `curated-books.json`. Re-running is safe: existing books are skipped.
