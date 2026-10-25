@@ -25,6 +25,7 @@ struct FeaturedBooksView: View {
                     InitialFeaturedView()
                 } else {
                     FeaturedBooksContentView(
+                        dailyIdea: viewModel.dailyIdea,
                         noteworthyBooks: viewModel.noteworthyBooks,
                         featuredBooks: viewModel.featuredBooks,
                         booksByGenre: viewModel.booksByGenre,
@@ -41,6 +42,7 @@ struct FeaturedBooksView: View {
 }
 
 struct FeaturedBooksContentView: View {
+    let dailyIdea: DailyIdea?
     let noteworthyBooks: [Book]
     let featuredBooks: [Book]
     let booksByGenre: [(genre: String, books: [Book])]
@@ -75,7 +77,12 @@ struct FeaturedBooksContentView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                // Noteworthy Section - Always at the top
+                // Idea of the day - hidden while searching
+                if let dailyIdea, searchText.isEmpty {
+                    DailyIdeaCard(dailyIdea: dailyIdea)
+                }
+
+                // Noteworthy Section
                 if !filteredNoteworthyBooks.isEmpty {
                     NoteworthySection(books: filteredNoteworthyBooks)
                 }

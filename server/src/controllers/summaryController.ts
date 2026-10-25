@@ -1,9 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
 import { SummaryService } from '../services/summaryService';
+import { DailyIdeaService } from '../services/dailyIdeaService';
 import { SummarySchema } from '../models/types';
 import { z } from 'zod';
 
 const summaryService = new SummaryService();
+const dailyIdeaService = new DailyIdeaService();
+
+const DailyIdeaQuerySchema = z.object({
+  // The client's local date, so the idea changes at the user's midnight
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(d => !isNaN(Date.parse(d))).optional()
+});
 
 export class SummaryController {
   async getSummaryByBookId(req: Request, res: Response, next: NextFunction) {
@@ -16,6 +23,26 @@ export class SummaryController {
       }
       
       return res.json(summary);
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async getDailyIdea(req: Request, res: Response, next: NextFunction) {
+    try {
+      const parsed = DailyIdeaQuerySchema.safeParse(req.query);
+      if (!parsed.success) {
+        return res.status(400).json({ error: 'date must be YYYY-MM-DD' });
+      }
+
+      const date = parsed.data.date ?? new Date().toISOString().slice(0, 10);
+      const dailyIdea = await dailyIdeaService.getDailyIdea(date);
+
+      if (!dailyIdea) {
+        return res.status(404).json({ error: 'Daily idea not found' });
+      }
+
+      return res.json(dailyIdea);
     } catch (error) {
       return next(error);
     }

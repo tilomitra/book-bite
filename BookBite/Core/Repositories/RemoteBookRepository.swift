@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-class RemoteBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRepository {
+class RemoteBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRepository, DailyIdeaProviding {
     private let networkService = NetworkService.shared
     private let cacheService = CacheService.shared
     
@@ -75,6 +75,17 @@ class RemoteBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
         }
     }
     
+    func fetchDailyIdea(for date: String) async throws -> DailyIdea? {
+        do {
+            return try await networkService.get(endpoint: "summaries/daily-idea?date=\(date)")
+        } catch let error as NetworkError {
+            if case .clientError(404, _) = error {
+                return nil
+            }
+            throw error
+        }
+    }
+
     func searchBooks(query: String) async throws -> [Book] {
         // For search, always go to server for fresh results
         let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? query

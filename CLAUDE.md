@@ -77,7 +77,7 @@ Schema: `server/supabase/schema.sql` plus loose SQL files in `server/supabase/` 
   - `AudioPlaybackService` (shared, `@MainActor`): AVPlayer + lock-screen controls; `MiniAudioPlayer` overlay in `RootView`.
   - `CacheService`, `OfflineStorageService`, `ExportService` (PDF/text), `RatingsService`, `OnboardingService`.
 - `Core/Models`: `Book` and `Summary` use snake_case `CodingKeys` matching the DB columns. `Summary`/`KeyIdea` have lenient `init(from:)` (nullable columns, unknown confidence → `.medium`). Use `summary.summaryReadTimeMinutes` for display; the stored `read_time_minutes` is an unreliable LLM guess (often the whole book's length).
-- `Features/<Feature>/{Views,ViewModels}`: Featured, Library (+ search), Request (Google Books search → request new book), BookDetail (summary tabs, chat, audio), AudioPlayer, Settings, Onboarding, Authentication, Comparison, Export, Swipe.
+- `Features/<Feature>/{Views,ViewModels}`: Featured (`DailyIdeaCard` at the top, loaded via the `DailyIdeaProviding` repository protocol; failure hides the card), Library (+ search), Request (Google Books search → request new book), BookDetail (summary tabs, chat, audio), AudioPlayer, Settings, Onboarding, Authentication, Comparison, Export, Swipe.
 - `Shared/Design/DesignSystem.swift`: a monochrome redesign is in progress. `vibrant*` colors are aliases of `monoMedium`; colored accents are limited to badges, stars, and book covers.
 
 ## Server architecture
@@ -86,7 +86,7 @@ Schema: `server/supabase/schema.sql` plus loose SQL files in `server/supabase/` 
 
 Routes (prefix `/api`):
 - `books`: `/`, `/featured`, `/nyt-bestsellers`, `/search`, `/categories`, `/category/:category`, `/:id`, `/:id/cover`; admin POST/PUT/DELETE.
-- `summaries`: `/book/:bookId`, `POST /book/:bookId/generate` (public, rate-limited 20/h/IP), `/job/:jobId`; admin list/update/delete.
+- `summaries`: `/book/:bookId`, `POST /book/:bookId/generate` (public, rate-limited 20/h/IP), `/job/:jobId`, `/daily-idea?date=YYYY-MM-DD` ("Idea of the day": `{date, book, idea, hook}`, same pick for everyone on a date, from featured books with summaries; logic in `dailyIdeaService.ts`); admin list/update/delete.
 - `search`: `/books` (Google Books), `/book/:googleBooksId`, `POST /request` (adds book + generates summaries synchronously; 409 with `{book}` if it exists).
 - `books/:bookId/chat/...` (conversations, messages, SSE streaming), `books/:bookId/ratings`, `isbn/:isbn/ratings`.
 - `user/*` (favorites, reading-history, recommendations) and `auth/*` (profile, stats, account) require `Authorization: Bearer <supabase jwt>`.

@@ -6,6 +6,7 @@ class FeaturedBooksViewModel: ObservableObject {
     @Published var featuredBooks: [Book] = []
     @Published var nytBestsellerBooks: [Book] = []
     @Published var noteworthyBooks: [Book] = []
+    @Published var dailyIdea: DailyIdea?
     @Published var booksByGenre: [(genre: String, books: [Book])] = []
     @Published var isLoading = false
     @Published var error: Error?
@@ -64,6 +65,9 @@ class FeaturedBooksViewModel: ObservableObject {
         
         // Clear cache to ensure fresh data
         bookRepository.clearCache()
+
+        // Loads alongside the books; a failure only hides the card
+        let dailyIdeaTask = Task { await fetchDailyIdea() }
         
         do {
             // Fetch both featured books and NYT bestsellers
@@ -94,7 +98,25 @@ class FeaturedBooksViewModel: ObservableObject {
             }
         }
         
+        dailyIdea = await dailyIdeaTask.value ?? dailyIdea
         isLoading = false
+    }
+
+    private func fetchDailyIdea() async -> DailyIdea? {
+        guard let provider = bookRepository as? DailyIdeaProviding else { return nil }
+
+        // The user's local day, so the idea changes at their midnight
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd"
+
+        do {
+            return try await provider.fetchDailyIdea(for: formatter.string(from: Date()))
+        } catch {
+            print("Failed to load daily idea: \(error)")
+            return nil
+        }
     }
     
     private func selectNoteworthyBooks() {
