@@ -27,7 +27,9 @@ final class BookBiteUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
         
-        XCTAssertTrue(app.tabBars.buttons["Search"].exists)
+        let searchTab = app.tabBars.buttons["Search"]
+        XCTAssertTrue(searchTab.exists)
+        searchTab.tap()
         
         let searchField = app.searchFields.element
         XCTAssertTrue(searchField.exists)
@@ -48,16 +50,16 @@ final class BookBiteUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
         
+        let discoverTab = app.tabBars.buttons["Discover"]
         let searchTab = app.tabBars.buttons["Search"]
-        let libraryTab = app.tabBars.buttons["Library"]
         let settingsTab = app.tabBars.buttons["Settings"]
         
+        XCTAssertTrue(discoverTab.exists)
         XCTAssertTrue(searchTab.exists)
-        XCTAssertTrue(libraryTab.exists)
         XCTAssertTrue(settingsTab.exists)
         
-        libraryTab.tap()
-        XCTAssertTrue(app.navigationBars["My Library"].exists)
+        discoverTab.tap()
+        XCTAssertTrue(app.navigationBars["Discover"].exists)
         
         settingsTab.tap()
         XCTAssertTrue(app.navigationBars["Settings"].exists)
