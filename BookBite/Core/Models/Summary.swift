@@ -54,6 +54,11 @@ struct Summary: Identifiable, Codable {
         return max(1, Int((Double(words) / 200.0).rounded(.up)))
     }
 
+    /// True when there is an extended summary to read in full
+    var hasFullText: Bool {
+        !(extendedSummary ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
     /// Returns true if audio summary is available
     var hasAudio: Bool {
         audioUrl != nil && !audioUrl!.isEmpty

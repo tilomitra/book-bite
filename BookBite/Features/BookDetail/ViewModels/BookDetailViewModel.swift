@@ -21,9 +21,6 @@ class BookDetailViewModel: ObservableObject {
     @Published var summary: Summary?
     @Published var isLoadingSummary = false
     @Published var summaryError: Error?
-    @Published var selectedTab = 0
-    @Published var rating: BookRating?
-    @Published var isLoadingRating = false
     @Published var isGeneratingSummary = false
     @Published var generationMessage = "Generating summary..."
     @Published var isFavorite = false
@@ -32,17 +29,14 @@ class BookDetailViewModel: ObservableObject {
     @Published var isAvailableOffline = false
     
     private let repository: BookRepository
-    private let ratingsService: RatingsService
     private var pollingTask: Task<Void, Never>?
     
     init(book: Book, repository: BookRepository) {
         self.book = book
         self.repository = repository
-        self.ratingsService = DependencyContainer.shared.ratingsService
 
         Task {
             await loadSummary()
-            await loadRating()
             await loadFavoriteStatus()
             loadOfflineStatus()
         }
@@ -208,25 +202,16 @@ class BookDetailViewModel: ObservableObject {
         }
     }
     
-    func loadRating() async {
-        isLoadingRating = true
-        
-        rating = await ratingsService.getRatingForBook(book)
-        
-        isLoadingRating = false
-    }
-    
-    var readingTime: String {
-        guard let summary = summary else { return "Calculating..." }
-        return "\(summary.summaryReadTimeMinutes) min read"
-    }
-    
-    var publicationInfo: String {
-        var info = book.publishedYear.map { "\($0)" } ?? "Unknown"
-        if let publisher = book.publisher {
-            info += " • \(publisher)"
+    /// "2018 · 12 min read": the year, plus the summary's read time once it has loaded
+    var metadataLine: String {
+        var parts: [String] = []
+        if let year = book.publishedYear {
+            parts.append(String(year))
         }
-        return info
+        if let summary = summary {
+            parts.append("\(summary.summaryReadTimeMinutes) min read")
+        }
+        return parts.joined(separator: " · ")
     }
     
     // MARK: - Favorite Management

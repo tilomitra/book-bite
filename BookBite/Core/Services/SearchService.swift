@@ -87,8 +87,11 @@ class SearchService: ObservableObject {
             }
         }
         
-        isSearching = false
-        isLoadingMore = false
+        // A cancelled search was replaced or cleared; its successor owns these flags
+        if !Task.isCancelled {
+            isSearching = false
+            isLoadingMore = false
+        }
     }
     
     func loadInitialBooks() async {

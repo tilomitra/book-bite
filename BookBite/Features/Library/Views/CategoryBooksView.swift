@@ -2,9 +2,8 @@ import SwiftUI
 
 struct CategoryBooksView: View {
     let category: BookCategory
-    @EnvironmentObject var dependencies: DependencyContainer
     @StateObject private var viewModel: CategoryBooksViewModel
-    
+
     init(category: BookCategory) {
         self.category = category
         _viewModel = StateObject(wrappedValue: CategoryBooksViewModel(
@@ -12,207 +11,39 @@ struct CategoryBooksView: View {
             bookRepository: DependencyContainer.shared.bookRepository
         ))
     }
-    
-    var categoryColor: Color {
-        DesignSystem.Colors.categoryColor(for: category.name)
-    }
-    
+
     var body: some View {
-        VStack(spacing: 0) {
+        Group {
             if viewModel.isLoading && viewModel.books.isEmpty {
-                ConsistentLoadingView(style: .primary, message: "Loading \(category.name) books...")
+                ConsistentLoadingView(style: .primary, message: "Loading books...")
             } else if let error = viewModel.error {
-                ErrorBooksView(error: error) {
-                    Task {
-                        await viewModel.loadBooks()
+                ContentUnavailableView {
+                    Label("Can't load books", systemImage: "wifi.slash")
+                } description: {
+                    Text(error.localizedDescription)
+                } actions: {
+                    Button("Try Again") {
+                        Task { await viewModel.loadBooks() }
                     }
+                    .buttonStyle(.bordered)
                 }
             } else if viewModel.books.isEmpty {
-                EmptyBooksView(category: category.name)
+                ContentUnavailableView("No books in \(category.name)", systemImage: "books.vertical")
             } else {
-                BooksList(
-                    books: viewModel.books,
-                    isLoadingMore: viewModel.isLoadingMore,
-                    hasMore: viewModel.hasMore,
-                    onBookAppear: viewModel.onBookAppear
-                )
+                List(viewModel.books) { book in
+                    NavigationLink(destination: BookDetailView(book: book)) {
+                        SearchResultRow(book: book)
+                    }
+                }
+                .listStyle(.plain)
             }
         }
         .navigationTitle(category.name)
         .navigationBarTitleDisplayMode(.large)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                HStack(spacing: 4) {
-                    Image(systemName: category.iconName)
-                        .font(.system(size: 16))
-                    Text("\(viewModel.books.count)")
-                        .font(.system(size: 14, weight: .medium))
-                }
-                .foregroundColor(categoryColor)
-            }
-        }
-        .onAppear {
-            Task {
+        .task {
+            if viewModel.books.isEmpty {
                 await viewModel.loadBooks()
             }
         }
-    }
-}
-
-struct BooksList: View {
-    let books: [Book]
-    let isLoadingMore: Bool
-    let hasMore: Bool
-    let onBookAppear: (Book) -> Void
-    
-    var body: some View {
-        List {
-            ForEach(books) { book in
-                NavigationLink(destination: BookDetailView(book: book)) {
-                    BookRowView(book: book)
-                }
-                .onAppear {
-                    onBookAppear(book)
-                }
-            }
-            
-            if isLoadingMore {
-                ConsistentLoadingView(style: .pagination, message: "Loading more books...")
-                    .listRowSeparator(.hidden)
-            } else if !hasMore && !books.isEmpty {
-                HStack {
-                    Spacer()
-                    Text("No more books to load")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    Spacer()
-                }
-                .padding(.vertical, 8)
-                .listRowSeparator(.hidden)
-            }
-        }
-        .listStyle(PlainListStyle())
-    }
-}
-
-struct BookRowView: View {
-    let book: Book
-    
-    var body: some View {
-        HStack(spacing: 12) {
-            AsyncImage(url: URL.bookCover(from: book.coverAssetName)) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 60, height: 90)
-                        .cornerRadius(8)
-                case .failure(_):
-                    BookPlaceholderView.small()
-                case .empty:
-                    BookPlaceholderView.small(showLoading: true)
-                @unknown default:
-                    EmptyView()
-                }
-            }
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(book.title)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.primary)
-                    .lineLimit(2)
-                
-                if !book.authors.isEmpty {
-                    Text(book.formattedAuthors)
-                        .font(.system(size: 14))
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
-                }
-                
-                if let year = book.publishedYear {
-                    Text(String(year))
-                        .font(.system(size: 12))
-                        .foregroundColor(Color.secondary)
-                }
-                
-                if book.isNYTBestseller == true {
-                    HStack(spacing: 4) {
-                        Image(systemName: "star.fill")
-                            .font(.system(size: 10))
-                            .foregroundColor(DesignSystem.Colors.nytGold)
-                        Text("NYT Bestseller")
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundColor(DesignSystem.Colors.nytGold)
-                    }
-                    .padding(.top, 2)
-                }
-            }
-            
-            Spacer()
-        }
-        .padding(.vertical, 8)
-    }
-}
-
-struct EmptyBooksView: View {
-    let category: String
-    
-    var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "books.vertical")
-                .font(.system(size: 50))
-                .foregroundColor(.secondary)
-            
-            Text("No Books Found")
-                .font(.title3)
-                .fontWeight(.semibold)
-            
-            Text("No books available in \(category)")
-                .font(.body)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 40)
-            
-            Spacer()
-        }
-        .padding(.top, 100)
-    }
-}
-
-struct ErrorBooksView: View {
-    let error: Error
-    let retry: () -> Void
-
-    var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "wifi.slash")
-                .font(.system(size: 50))
-                .foregroundColor(.primary.opacity(0.6))
-
-            Text("Loading Error")
-                .font(.title3)
-                .fontWeight(.semibold)
-
-            Text("Unable to load books. \(error.localizedDescription)")
-                .font(.body)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 40)
-
-            Button(action: retry) {
-                Text("Try Again")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(Color(UIColor.systemBackground))
-                    .padding(.horizontal, 32)
-                    .padding(.vertical, 14)
-                    .background(Color.primary)
-                    .clipShape(Capsule())
-            }
-
-            Spacer()
-        }
-        .padding(.top, 100)
     }
 }

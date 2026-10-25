@@ -9,12 +9,6 @@ class DependencyContainer: ObservableObject {
     lazy var bookRepository: BookRepository = createBookRepository()
     lazy var chatRepository: ChatRepository = createChatRepository()
     lazy var searchService = SearchService(repository: bookRepository)
-    lazy var exportService = ExportService()
-    lazy var ratingsService = RatingsService(
-        networkService: NetworkService.shared,
-        cacheService: CacheService.shared
-    )
-    lazy var onboardingService = OnboardingService()
     lazy var sharingService = SharingService.shared
     lazy var authService = SupabaseAuthService()
     
@@ -27,18 +21,5 @@ class DependencyContainer: ObservableObject {
     
     private func createChatRepository() -> ChatRepository {
         return RemoteChatRepository()
-    }
-    
-    // For testing or manual switching
-    func switchToRemoteRepository() {
-        bookRepository = RemoteBookRepository()
-        searchService = SearchService(repository: bookRepository)
-        objectWillChange.send()
-    }
-    
-    func switchToHybridRepository() {
-        bookRepository = HybridBookRepository()
-        searchService = SearchService(repository: bookRepository)
-        objectWillChange.send()
     }
 }

@@ -17,7 +17,6 @@ struct BookBiteApp: App {
             RootView(deepLinkBook: deepLinkBook)
                 .environmentObject(dependencies)
                 .environmentObject(dependencies.authService)
-                .environmentObject(dependencies.onboardingService)
                 .onOpenURL { url in
                     handleDeepLink(url)
                 }

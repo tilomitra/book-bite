@@ -11,15 +11,13 @@ class SearchViewModel: ObservableObject {
     @Published var hasMore = false
     
     private let searchService: SearchService
+    /// The query the latest search was started for, so the empty state waits for the debounce
+    @Published private var lastSearchedQuery = ""
     private var cancellables = Set<AnyCancellable>()
     
     init(searchService: SearchService) {
         self.searchService = searchService
         setupBindings()
-        
-        Task {
-            await loadInitialBooks()
-        }
     }
     
     private func setupBindings() {
@@ -37,30 +35,33 @@ class SearchViewModel: ObservableObject {
         
         searchService.$searchError
             .assign(to: &$searchError)
-    }
-    
-    private func loadInitialBooks() async {
-        await searchService.loadInitialBooks()
+
+        // Search as the user types
+        $searchText
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .debounce(for: .milliseconds(350), scheduler: RunLoop.main)
+            .removeDuplicates()
+            .sink { [weak self] query in
+                guard let self else { return }
+                self.lastSearchedQuery = query
+                if query.isEmpty {
+                    self.searchService.clearSearch()
+                } else {
+                    self.searchService.search(query: query)
+                }
+            }
+            .store(in: &cancellables)
     }
     
     func performSearch() async {
-        guard !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            await searchService.loadInitialBooks()
-            return
-        }
-        searchService.search(query: searchText)
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else { return }
+        lastSearchedQuery = query
+        searchService.search(query: query)
     }
     
     func loadMoreBooks() async {
         await searchService.loadMoreBooks()
-    }
-    
-    func clearSearch() {
-        searchText = ""
-        searchService.clearSearch()
-        Task {
-            await loadInitialBooks()
-        }
     }
     
     // Check if we should load more books when a book appears
@@ -72,15 +73,16 @@ class SearchViewModel: ObservableObject {
         }
     }
     
-    var hasResults: Bool {
-        !searchResults.isEmpty
+    var isQueryEmpty: Bool {
+        searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+    
+    /// True while the user is typing and the debounced search has not started yet
+    var isPending: Bool {
+        searchText.trimmingCharacters(in: .whitespacesAndNewlines) != lastSearchedQuery
     }
     
     var showEmptyState: Bool {
-        !isSearching && searchResults.isEmpty && !searchText.isEmpty
-    }
-    
-    var showInitialState: Bool {
-        !isSearching && searchResults.isEmpty && searchText.isEmpty
+        !isSearching && !isPending && searchError == nil && searchResults.isEmpty && !isQueryEmpty
     }
 }

@@ -68,17 +68,21 @@ Schema: `server/supabase/schema.sql` plus loose SQL files in `server/supabase/` 
 
 ## iOS architecture
 
-- `App/`: `BookBiteApp` (entry), `RootView` (system `TabView`: Featured, Request, Library, Settings — **each tab is already wrapped in a `NavigationStack`; don't add another inside tab root views**), `Configuration/AppConfiguration` (server URL, flags), `DependencyContainer` (`@MainActor` singleton: repositories, `authService`, `searchService`, `onboardingService`).
+- `App/`: `BookBiteApp` (entry), `RootView` (system `TabView`: Discover, Search, Settings — **each tab is already wrapped in a `NavigationStack`; don't add another inside tab root views**), `Configuration/AppConfiguration` (server URL, flags), `DependencyContainer` (`@MainActor` singleton: repositories, `authService`, `searchService`).
 - `Core/Repositories`: `BookRepository` protocol; `RemoteBookRepository` does all API calls (books, summaries, summary-generation jobs, favorites). Favorites send the Supabase access token from `SupabaseAuthService.getAccessToken()`.
 - `Core/Services`:
   - `NetworkService`: generic `get/post/put/delete`. Use `NetworkService.makeDecoder()` for any server/Supabase JSON (ISO8601 dates with or without fractional seconds). Retries only transient failures of GET requests; decoding failures throw `.decodingError` immediately; POST takes a `timeout:` (book request uses 180s because the server runs the LLM synchronously).
   - `SearchService`: hits `/books/search?source=local` directly with `URLSession.shared` (not via the repository); tests stub it with a `URLProtocol`.
   - `SupabaseAuthService`: talks to Supabase Auth REST directly; session persisted in UserDefaults. Sign-in is optional (anonymous use is allowed).
   - `AudioPlaybackService` (shared, `@MainActor`): AVPlayer + lock-screen controls; `MiniAudioPlayer` overlay in `RootView`.
-  - `CacheService`, `OfflineStorageService`, `ExportService` (PDF/text), `RatingsService`, `OnboardingService`.
+  - `CacheService`, `OfflineStorageService` (downloads of saved books; `HybridBookRepository` falls back to it), `ExportService` (PDF/text, no UI yet).
 - `Core/Models`: `Book` and `Summary` use snake_case `CodingKeys` matching the DB columns. `Summary`/`KeyIdea` have lenient `init(from:)` (nullable columns, unknown confidence → `.medium`). Use `summary.summaryReadTimeMinutes` for display; the stored `read_time_minutes` is an unreliable LLM guess (often the whole book's length).
-- `Features/<Feature>/{Views,ViewModels}`: Featured (`DailyIdeaCard` at the top, loaded via the `DailyIdeaProviding` repository protocol; failure hides the card), Library (+ search), Request (Google Books search → request new book), BookDetail (summary tabs, chat, audio), AudioPlayer, Settings, Onboarding, Authentication, Comparison, Export, Swipe.
-- `Shared/Design/DesignSystem.swift`: a monochrome redesign is in progress. `vibrant*` colors are aliases of `monoMedium`; colored accents are limited to badges, stars, and book covers.
+- `Features/<Feature>/{Views,ViewModels}`:
+  - Featured = **Discover** tab: `DailyIdeaCard` (via the `DailyIdeaProviding` repository protocol; failure hides it), then one `BookShelf` per genre (cover, title, author only), "See all" → `BookGridView`.
+  - Search = **Search** tab (`BookSearchView`): `.searchable`, live search (350 ms debounce in `SearchViewModel`); empty query shows the category list (`LibraryViewModel` → `CategoryBooksView`). "Request it" links push `RequestView` (Google Books search → request new book).
+  - BookDetail: `BookDetailView` is one reading page (header, Read/Listen/Ask actions, hook, key ideas, how to apply, who it's for). "Read summary" pushes `SummaryReaderView` (extended summary, serif, text size in `@AppStorage("readerTextSize")`). Chat opens as a sheet. Bookmark = favorite (needs sign-in; downloads the book for offline).
+  - AudioPlayer, Settings (downloaded books, clear cache, version), Authentication.
+- Design rule: keep the UI monochrome and quiet. No badges, ratings, or decorative color on book lists; color comes from book covers only. `Shared/Design/DesignSystem.swift` still holds old tokens used by Request/Auth/Audio views.
 
 ## Server architecture
 
@@ -103,7 +107,8 @@ Behaviour worth knowing:
 `PORT`, `NODE_ENV`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_KEY`, `GOOGLE_BOOKS_API_KEY`, `NYT_API_KEY`, `OPENAI_API_KEY`, `ELEVENLABS_API_KEY`, `REDIS_URL`, `RATE_LIMIT_WINDOW_MS`, `RATE_LIMIT_MAX_REQUESTS`, `CORS_ORIGIN`, optional `DEBUG_ERRORS`.
 
 ## Known open issues
-- Featured view only loads the first 100 of ~216 featured books (default `limit=100`).
+- Discover tab only loads the first 100 of ~216 featured books (default `limit=100`).
 - Some covers (Open Library) load slowly via redirects; makeheadway.com covers are hotlinked.
 - `BookDetailViewModel` polling `Task` captures `self` strongly (bounded to 5 min).
 - `SearchService` bypasses the injected repository.
+- The summary's analysis fields (pitfalls, critiques, limitations) and citations are decoded but not shown in the app.
