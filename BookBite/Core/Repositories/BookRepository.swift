@@ -26,6 +26,10 @@ protocol DailyIdeaProviding {
     func fetchDailyIdea(for date: String) async throws -> DailyIdea?
 }
 
+protocol RecommendationsProviding {
+    func fetchRecommendations(_ request: RecommendationRequest) async throws -> Recommendations
+}
+
 protocol SummaryGenerationCapable {
     func generateSummary(for bookId: String, style: Summary.SummaryStyle) async throws -> SummaryGenerationJob
     func checkSummaryGenerationJob(jobId: String) async throws -> SummaryGenerationJob

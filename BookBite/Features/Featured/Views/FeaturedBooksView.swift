@@ -70,6 +70,8 @@ struct BookShelf: View {
             HStack(alignment: .firstTextBaseline) {
                 Text(title)
                     .font(.system(size: 24, weight: .medium, design: .serif))
+                    // "More like <title>" shelves can be long
+                    .lineLimit(2)
                     .accessibilityAddTraits(.isHeader)
 
                 Spacer()

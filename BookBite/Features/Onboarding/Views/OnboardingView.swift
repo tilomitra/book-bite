@@ -1,6 +1,7 @@
 import SwiftUI
 
-/// First-run flow: welcome + sign up (optional), topics, then the daily idea notification prompt.
+/// First-run flow: welcome + sign up (optional), topics, reading goals, books you've loved,
+/// then the daily idea notification prompt. The taste answers drive Discover's personal shelves.
 /// Shown by `BookBiteApp` until `OnboardingPreferences.completedKey` is set.
 struct OnboardingView: View {
     @EnvironmentObject var dependencies: DependencyContainer
@@ -21,6 +22,14 @@ struct OnboardingView: View {
                     .transition(.asymmetric(insertion: .opacity, removal: .move(edge: .leading).combined(with: .opacity)))
             case .topics:
                 TopicsView(viewModel: viewModel)
+                    .transition(.asymmetric(insertion: .move(edge: .trailing).combined(with: .opacity),
+                                            removal: .move(edge: .leading).combined(with: .opacity)))
+            case .goals:
+                GoalsView(viewModel: viewModel)
+                    .transition(.asymmetric(insertion: .move(edge: .trailing).combined(with: .opacity),
+                                            removal: .move(edge: .leading).combined(with: .opacity)))
+            case .books:
+                LovedBooksView(viewModel: viewModel)
                     .transition(.asymmetric(insertion: .move(edge: .trailing).combined(with: .opacity),
                                             removal: .move(edge: .leading).combined(with: .opacity)))
             case .notifications:

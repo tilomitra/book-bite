@@ -2,8 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import { BookService } from '../services/bookService';
 import { BookSchema } from '../models/types';
 import { z } from 'zod';
+import { RecommendationService, RecommendationRequestSchema } from '../services/recommendationService';
 
 const bookService = new BookService();
+const recommendationService = new RecommendationService();
 
 // Clamp ?page= / ?limit= to sane integers (NaN/0 break the range math; PostgREST caps responses at 1000 rows)
 function parsePagination(page: unknown, limit: unknown, defaultLimit: number) {
@@ -70,6 +72,19 @@ export class BookController {
       
       res.json(book);
     } catch (error) {
+      next(error);
+    }
+  }
+
+  async getRecommendations(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const request = RecommendationRequestSchema.parse(req.body ?? {});
+      res.json(await recommendationService.getRecommendations(request));
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: 'Invalid recommendation request', details: error.errors });
+        return;
+      }
       next(error);
     }
   }
