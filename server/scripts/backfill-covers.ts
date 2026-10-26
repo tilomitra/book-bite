@@ -118,10 +118,17 @@ async function otherGoogleEditions(book: BookRow): Promise<string[]> {
   if (!surname) return [];
   const query = encodeURIComponent(`${book.title.split(':')[0]} ${book.authors![0]}`);
   try {
-    const response = await fetch(
-      `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=20&printType=books&langRestrict=en&key=${process.env.GOOGLE_BOOKS_API_KEY}`
-    );
-    const json = await response.json();
+    let response: Response;
+    let json: any;
+    // Google sometimes answers 503 "Service temporarily unavailable"; retry those before giving up
+    for (let attempt = 1; ; attempt++) {
+      response = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=20&printType=books&langRestrict=en&key=${process.env.GOOGLE_BOOKS_API_KEY}`
+      );
+      json = await response.json();
+      if (!json.error || response.status < 500 || attempt === 4) break;
+      await new Promise(resolve => setTimeout(resolve, 5000 * attempt));
+    }
     if (json.error) {
       googleQuotaError = json.error.message ?? `HTTP ${response.status}`;
       throw new Error(googleQuotaError!);
