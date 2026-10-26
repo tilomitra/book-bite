@@ -104,6 +104,19 @@ struct Book: Identifiable, Codable, Hashable {
     var formattedAuthors: String {
         authors.joined(separator: ", ")
     }
+
+    /// Title without its subtitle ("Never Eat Alone: And Other Secrets…" → "Never Eat Alone"), for shelves.
+    var shelfTitle: String {
+        let main = title.components(separatedBy: CharacterSet(charactersIn: ":(")).first ?? title
+        let trimmed = main.trimmingCharacters(in: .whitespaces)
+        return trimmed.isEmpty ? title : trimmed
+    }
+
+    /// First author only, with "& others" when there are more, for shelves.
+    var shelfAuthor: String {
+        guard let first = authors.first else { return "" }
+        return authors.count > 1 ? "\(first) & others" : first
+    }
     
     var formattedCategories: String {
         categories.joined(separator: " • ")

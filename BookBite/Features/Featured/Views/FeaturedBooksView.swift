@@ -40,7 +40,7 @@ struct FeaturedBooksView: View {
                     }
 
                     ForEach(viewModel.booksByGenre, id: \.genre) { shelf in
-                        BookShelf(title: shelf.genre, books: shelf.books)
+                        BookShelf(heading: shelf.genre, books: shelf.books)
                     }
                 }
             }
@@ -60,34 +60,62 @@ struct FeaturedBooksView: View {
 /// A titled, horizontally scrolling row of books.
 struct BookShelf: View {
     let title: String
+    /// Small caps line above the title, e.g. "More like" over a book title
+    var eyebrow: String? = nil
     let books: [Book]
 
     private let previewCount = 12
     @Namespace private var zoom
 
+    /// Splits a server heading like "More like Never Eat Alone" into eyebrow and title,
+    /// so the long book title gets the full width and wraps instead of truncating.
+    init(heading: String, books: [Book]) {
+        let prefix = "More like "
+        if heading.hasPrefix(prefix) {
+            self.init(title: String(heading.dropFirst(prefix.count)), eyebrow: "More like", books: books)
+        } else {
+            self.init(title: heading, books: books)
+        }
+    }
+
+    init(title: String, eyebrow: String? = nil, books: [Book]) {
+        self.title = title
+        self.eyebrow = eyebrow
+        self.books = books
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .firstTextBaseline) {
-                Text(title)
-                    .font(.system(size: 24, weight: .medium, design: .serif))
-                    // "More like <title>" shelves can be long
-                    .lineLimit(2)
-                    .accessibilityAddTraits(.isHeader)
-
-                Spacer()
-
-                if books.count > previewCount {
-                    NavigationLink("See all") {
-                        BookGridView(title: title, books: books)
+            VStack(alignment: .leading, spacing: 4) {
+                if let eyebrow {
+                    HStack(alignment: .firstTextBaseline) {
+                        Text(eyebrow.uppercased())
+                            .font(.caption.weight(.semibold))
+                            .tracking(1.2)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        seeAllLink
                     }
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    Text(title)
+                        .font(.system(size: 22, weight: .medium, design: .serif))
+                        .fixedSize(horizontal: false, vertical: true)
+                } else {
+                    HStack(alignment: .firstTextBaseline, spacing: 12) {
+                        Text(title)
+                            .font(.system(size: 24, weight: .medium, design: .serif))
+                            .fixedSize(horizontal: false, vertical: true)
+                        Spacer(minLength: 0)
+                        seeAllLink
+                            .layoutPriority(1)
+                    }
                 }
             }
+            .accessibilityElement(children: .contain)
+            .accessibilityAddTraits(.isHeader)
             .padding(.horizontal, 20)
 
             ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(alignment: .top, spacing: 16) {
+                HStack(alignment: .top, spacing: 16) {
                     ForEach(books.prefix(previewCount)) { book in
                         NavigationLink {
                             BookDetailView(book: book)
@@ -105,6 +133,17 @@ struct BookShelf: View {
             .padding(.vertical, -12)
         }
     }
+
+    @ViewBuilder
+    private var seeAllLink: some View {
+        if books.count > previewCount {
+            NavigationLink("See all") {
+                BookGridView(title: eyebrow.map { "\($0) \(title)" } ?? title, books: books)
+            }
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+        }
+    }
 }
 
 /// Cover, title and author. Nothing else.
@@ -119,17 +158,18 @@ struct ShelfBookCard: View {
             EditorialCover(book: book, width: coverWidth)
                 .zoomSource(id: book.id, in: zoomNamespace)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(book.title)
+            VStack(alignment: .leading, spacing: 3) {
+                // Main title only (subtitles live on the cover), wrapped, never cut off
+                Text(book.shelfTitle)
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundColor(.primary)
-                    .lineLimit(1)
+                    .fixedSize(horizontal: false, vertical: true)
 
-                Text(book.formattedAuthors)
+                Text(book.shelfAuthor)
                     .font(.footnote)
                     .foregroundColor(.secondary)
-                    .lineLimit(1)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
         .frame(width: coverWidth, alignment: .leading)
