@@ -1,18 +1,38 @@
 import { Request, Response, NextFunction } from 'express';
 import { SummaryService } from '../services/summaryService';
 import { DailyIdeaService } from '../services/dailyIdeaService';
+import { HighlightService } from '../services/highlightService';
 import { SummarySchema } from '../models/types';
 import { z } from 'zod';
 
 const summaryService = new SummaryService();
 const dailyIdeaService = new DailyIdeaService();
+const highlightService = new HighlightService();
 
 const DailyIdeaQuerySchema = z.object({
   // The client's local date, so the idea changes at the user's midnight
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(d => !isNaN(Date.parse(d))).optional()
 });
 
+const HighlightsQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).max(1000).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(20)
+});
+
 export class SummaryController {
+  async getHighlights(req: Request, res: Response, next: NextFunction) {
+    try {
+      const parsed = HighlightsQuerySchema.safeParse(req.query);
+      if (!parsed.success) {
+        return res.status(400).json({ error: 'page and limit must be positive integers' });
+      }
+      return res.json(await highlightService.getHighlights(parsed.data.page, parsed.data.limit));
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+
   async getSummaryByBookId(req: Request, res: Response, next: NextFunction) {
     try {
       const { bookId } = req.params;

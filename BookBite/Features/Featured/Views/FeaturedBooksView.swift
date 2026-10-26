@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Discover tab: the idea of the day, then one shelf of books per genre.
+/// Discover tab: the idea of the day, then an endless feed of shelves and editorial cards.
 struct FeaturedBooksView: View {
     @StateObject private var viewModel: FeaturedBooksViewModel
 
@@ -39,8 +39,23 @@ struct FeaturedBooksView: View {
                         DailyIdeaCard(dailyIdea: dailyIdea)
                     }
 
-                    ForEach(viewModel.booksByGenre, id: \.genre) { shelf in
-                        BookShelf(title: shelf.genre, books: shelf.books)
+                    ForEach(Array(viewModel.blocks.enumerated()), id: \.element.id) { index, block in
+                        blockView(block)
+                            .onAppear {
+                                // Start loading a few blocks before the end, so scrolling doesn't stall
+                                if index >= viewModel.blocks.count - 3 {
+                                    Task { await viewModel.loadMore() }
+                                }
+                            }
+                    }
+
+                    if viewModel.canLoadMore {
+                        ProgressView()
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 20)
+                            .onAppear {
+                                Task { await viewModel.loadMore() }
+                            }
                     }
                 }
             }
@@ -55,39 +70,82 @@ struct FeaturedBooksView: View {
             await viewModel.loadFeaturedBooks()
         }
     }
+
+    @ViewBuilder
+    private func blockView(_ block: DiscoverBlock) -> some View {
+        switch block {
+        case .shelf(let title, let books):
+            BookShelf(heading: title, books: books)
+        case .spotlight(let highlight):
+            SpotlightCard(highlight: highlight)
+        case .passage(let highlight):
+            PassageCard(highlight: highlight)
+        case .quickBites(let title, let caption, let highlights):
+            QuickBitesCard(title: title, caption: caption, highlights: highlights)
+        }
+    }
 }
 
 /// A titled, horizontally scrolling row of books.
 struct BookShelf: View {
     let title: String
+    /// Small caps line above the title, e.g. "More like" over a book title
+    var eyebrow: String? = nil
     let books: [Book]
 
-    private let previewCount = 12
+    static let previewCount = 12
+    private var previewCount: Int { Self.previewCount }
     @Namespace private var zoom
+
+    /// Splits a server heading like "More like Never Eat Alone" into eyebrow and title,
+    /// so the long book title gets the full width and wraps instead of truncating.
+    init(heading: String, books: [Book]) {
+        let prefix = "More like "
+        if heading.hasPrefix(prefix) {
+            self.init(title: String(heading.dropFirst(prefix.count)), eyebrow: "More like", books: books)
+        } else {
+            self.init(title: heading, books: books)
+        }
+    }
+
+    init(title: String, eyebrow: String? = nil, books: [Book]) {
+        self.title = title
+        self.eyebrow = eyebrow
+        self.books = books
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .firstTextBaseline) {
-                Text(title)
-                    .font(.system(size: 24, weight: .medium, design: .serif))
-                    // "More like <title>" shelves can be long
-                    .lineLimit(2)
-                    .accessibilityAddTraits(.isHeader)
-
-                Spacer()
-
-                if books.count > previewCount {
-                    NavigationLink("See all") {
-                        BookGridView(title: title, books: books)
+            VStack(alignment: .leading, spacing: 4) {
+                if let eyebrow {
+                    HStack(alignment: .firstTextBaseline) {
+                        Text(eyebrow.uppercased())
+                            .font(.caption.weight(.semibold))
+                            .tracking(1.2)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        seeAllLink
                     }
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    Text(title)
+                        .font(.system(size: 22, weight: .medium, design: .serif))
+                        .fixedSize(horizontal: false, vertical: true)
+                } else {
+                    HStack(alignment: .firstTextBaseline, spacing: 12) {
+                        Text(title)
+                            .font(.system(size: 24, weight: .medium, design: .serif))
+                            .fixedSize(horizontal: false, vertical: true)
+                        Spacer(minLength: 0)
+                        seeAllLink
+                            .layoutPriority(1)
+                    }
                 }
             }
+            .accessibilityElement(children: .contain)
+            .accessibilityAddTraits(.isHeader)
             .padding(.horizontal, 20)
 
             ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(alignment: .top, spacing: 16) {
+                HStack(alignment: .top, spacing: 16) {
                     ForEach(books.prefix(previewCount)) { book in
                         NavigationLink {
                             BookDetailView(book: book)
@@ -105,6 +163,17 @@ struct BookShelf: View {
             .padding(.vertical, -12)
         }
     }
+
+    @ViewBuilder
+    private var seeAllLink: some View {
+        if books.count > previewCount {
+            NavigationLink("See all") {
+                BookGridView(title: eyebrow.map { "\($0) \(title)" } ?? title, books: books)
+            }
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+        }
+    }
 }
 
 /// Cover, title and author. Nothing else.
@@ -119,17 +188,18 @@ struct ShelfBookCard: View {
             EditorialCover(book: book, width: coverWidth)
                 .zoomSource(id: book.id, in: zoomNamespace)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(book.title)
+            VStack(alignment: .leading, spacing: 3) {
+                // Main title only (subtitles live on the cover), wrapped, never cut off
+                Text(book.shelfTitle)
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundColor(.primary)
-                    .lineLimit(1)
+                    .fixedSize(horizontal: false, vertical: true)
 
-                Text(book.formattedAuthors)
+                Text(book.shelfAuthor)
                     .font(.footnote)
                     .foregroundColor(.secondary)
-                    .lineLimit(1)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
         .frame(width: coverWidth, alignment: .leading)

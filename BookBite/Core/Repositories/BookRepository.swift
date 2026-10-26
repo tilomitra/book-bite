@@ -26,6 +26,11 @@ protocol DailyIdeaProviding {
     func fetchDailyIdea(for date: String) async throws -> DailyIdea?
 }
 
+protocol HighlightsProviding {
+    /// Books with a summary, most read first, each with its hook and one key idea. page starts at 1.
+    func fetchHighlights(page: Int, limit: Int) async throws -> HighlightsPage
+}
+
 protocol RecommendationsProviding {
     func fetchRecommendations(_ request: RecommendationRequest) async throws -> Recommendations
 }
