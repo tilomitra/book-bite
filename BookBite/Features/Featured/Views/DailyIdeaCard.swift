@@ -27,7 +27,7 @@ struct DailyIdeaCard: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 HStack(spacing: 12) {
-                    EditorialCover(coverURL: dailyIdea.book.coverAssetName, width: 34)
+                    EditorialCover(book: dailyIdea.book, width: 34)
                         .zoomSource(id: dailyIdea.book.id, in: zoom)
 
                     VStack(alignment: .leading, spacing: 2) {

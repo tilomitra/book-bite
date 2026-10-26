@@ -22,6 +22,8 @@
     "generate-extended-summaries": "tsx scripts/generate-extended-summaries.ts",
     "generate-audio": "tsx scripts/generate-audio.ts",
     "update-book-covers": "tsx scripts/update-book-covers.ts",
+    "backfill-covers": "tsx scripts/backfill-covers.ts",
+    "embed-books": "tsx scripts/embed-books.ts",
     "update-popularity-scores": "tsx scripts/update-popularity-scores.ts",
     "populate-headway-books": "tsx scripts/populate-headway-books.ts"
   },
@@ -52,6 +54,7 @@
     "@typescript-eslint/eslint-plugin": "^6.14.0",
     "@typescript-eslint/parser": "^6.14.0",
     "eslint": "^8.56.0",
+    "image-size": "^2.0.4",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.1",
     "tsx": "^4.6.2",

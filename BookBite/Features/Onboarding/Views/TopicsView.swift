@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// "What are you curious about?": the picked topics become the first shelves in Discover.
+/// "What are you curious about?": the picked topics come first in Discover and seed recommendations.
 struct TopicsView: View {
     @ObservedObject var viewModel: OnboardingViewModel
 
@@ -17,7 +17,7 @@ struct TopicsView: View {
                         .padding(.top, 20)
                         .accessibilityAddTraits(.isHeader)
 
-                    Text("Pick a few topics. We'll put them first in Discover.")
+                    Text("Pick a few topics. We'll use them to find books for you.")
                         .font(.body)
                         .foregroundStyle(.secondary)
                         .padding(.top, 10)
@@ -44,13 +44,13 @@ struct TopicsView: View {
                                         ? "Continue"
                                         : "Continue with \(viewModel.selectedGenres.count)") {
                     viewModel.saveTopics()
-                    viewModel.step = .notifications
+                    viewModel.step = .goals
                 }
                 .disabled(viewModel.selectedGenres.isEmpty)
                 .opacity(viewModel.selectedGenres.isEmpty ? 0.35 : 1)
                 .animation(.easeInOut(duration: 0.2), value: viewModel.selectedGenres.isEmpty)
 
-                Button("Skip") { viewModel.step = .notifications }
+                Button("Skip") { viewModel.step = .goals }
                     .font(.body.weight(.medium))
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity)
@@ -63,7 +63,8 @@ struct TopicsView: View {
     }
 }
 
-private struct TopicChip: View {
+/// Selectable capsule with an icon, used for topics and goals.
+struct TopicChip: View {
     let title: String
     let systemImage: String
     let isSelected: Bool

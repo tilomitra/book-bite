@@ -4,13 +4,17 @@ import SwiftUI
 @MainActor
 final class OnboardingViewModel: ObservableObject {
     enum Step {
-        case welcome, topics, notifications
+        case welcome, topics, goals, books, notifications
     }
 
     @Published var step: Step = .welcome
     @Published var selectedGenres: Set<String> = Set(OnboardingPreferences.preferredGenres)
+    @Published var selectedGoals: Set<String> = Set(OnboardingPreferences.readingGoals)
+    @Published var likedBookIds: Set<String> = Set(OnboardingPreferences.likedBookIds)
     /// Featured books for the welcome hero and the notification preview; empty until loaded or offline
     @Published private(set) var books: [Book] = []
+    /// Popular featured books with covers, for "Pick books you've loved"
+    @Published private(set) var popularBooks: [Book] = []
     @Published private(set) var dailyIdea: DailyIdea?
 
     private let bookRepository: BookRepository
@@ -25,17 +29,33 @@ final class OnboardingViewModel: ObservableObject {
         async let idea = fetchDailyIdea()
         if let featured = try? await bookRepository.fetchFeaturedBooks() {
             let withCovers = featured.filter { $0.coverAssetName?.isEmpty == false }
-            books = Array(withCovers.sorted { ($0.popularityScore ?? 0) > ($1.popularityScore ?? 0) }.prefix(12))
+                .sorted { ($0.popularityScore ?? 0) > ($1.popularityScore ?? 0) }
+            books = Array(withCovers.prefix(12))
+            popularBooks = Array(withCovers.prefix(36))
         }
         dailyIdea = await idea
     }
 
     func toggle(_ genre: String) {
-        if selectedGenres.contains(genre) {
-            selectedGenres.remove(genre)
-        } else {
-            selectedGenres.insert(genre)
+        selectedGenres.formSymmetricDifference([genre])
+    }
+
+    func toggleGoal(_ id: String) {
+        selectedGoals.formSymmetricDifference([id])
+    }
+
+    func toggleLiked(_ bookId: String) {
+        likedBookIds.formSymmetricDifference([bookId])
+    }
+
+    /// Popular books, those in the picked topics first, so the grid feels relevant
+    var pickerBooks: [Book] {
+        let keywords = selectedGenres.compactMap { $0.lowercased().split(separator: " ").first.map(String.init) }
+        guard !keywords.isEmpty else { return popularBooks }
+        func matches(_ book: Book) -> Bool {
+            book.categories.contains { category in keywords.contains { category.lowercased().contains($0) } }
         }
+        return popularBooks.filter(matches) + popularBooks.filter { !matches($0) }
     }
 
     func saveTopics() {
@@ -43,6 +63,17 @@ final class OnboardingViewModel: ObservableObject {
         OnboardingPreferences.preferredGenres = OnboardingPreferences.topics
             .map(\.genre)
             .filter { selectedGenres.contains($0) }
+    }
+
+    func saveGoals() {
+        OnboardingPreferences.readingGoals = OnboardingPreferences.goals
+            .map(\.id)
+            .filter { selectedGoals.contains($0) }
+    }
+
+    func saveLikedBooks() {
+        // In grid order, so the first picks seed the "More like …" shelves
+        OnboardingPreferences.likedBookIds = pickerBooks.map(\.id).filter { likedBookIds.contains($0) }
     }
 
     private func fetchDailyIdea() async -> DailyIdea? {

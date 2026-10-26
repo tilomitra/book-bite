@@ -11,6 +11,8 @@ class FeaturedBooksViewModel: ObservableObject {
     private let bookRepository: BookRepository
     private var featuredBooks: [Book] = []
     private var nytBestsellerBooks: [Book] = []
+    /// Personal shelves and per-book scores from the server; nil before they load or if they fail
+    private var recommendations: Recommendations?
 
     init(bookRepository: BookRepository) {
         self.bookRepository = bookRepository
@@ -33,6 +35,7 @@ class FeaturedBooksViewModel: ObservableObject {
 
         // Loads alongside the books; a failure only hides the card
         let dailyIdeaTask = Task { await fetchDailyIdea() }
+        let recommendationsTask = Task { await fetchRecommendations() }
 
         do {
             async let featuredBooksTask = bookRepository.fetchFeaturedBooks()
@@ -42,6 +45,8 @@ class FeaturedBooksViewModel: ObservableObject {
 
             featuredBooks = featured
             nytBestsellerBooks = nytBooks
+            // Wait for the personal shelves too, so the page doesn't reshuffle while someone reads it
+            recommendations = await recommendationsTask.value ?? recommendations
             groupBooksByGenre()
         } catch {
             // Don't show cancellation errors to user - they're expected during rapid refreshes
@@ -71,6 +76,43 @@ class FeaturedBooksViewModel: ObservableObject {
             print("Failed to load daily idea: \(error)")
             return nil
         }
+    }
+
+    /// Taste answers from onboarding plus books opened since. Empty for a reader who skipped everything.
+    private func makeRecommendationRequest() -> RecommendationRequest {
+        // Only books from our catalog have embeddings (search can open Google Books results)
+        let recent = RecentBooksStore.shared.books.map(\.id).filter { UUID(uuidString: $0) != nil }
+        return RecommendationRequest(
+            likedBookIds: OnboardingPreferences.likedBookIds,
+            recentBookIds: Array(recent.prefix(10)),
+            goals: OnboardingPreferences.readingGoals,
+            genres: OnboardingPreferences.preferredGenres
+        )
+    }
+
+    private func fetchRecommendations() async -> Recommendations? {
+        guard let provider = bookRepository as? RecommendationsProviding else { return nil }
+        let request = makeRecommendationRequest()
+        guard !request.isEmpty else { return nil }
+        do {
+            return try await provider.fetchRecommendations(request)
+        } catch {
+            // Discover works without them: genre shelves in the default order
+            print("Failed to load recommendations: \(error)")
+            return nil
+        }
+    }
+
+    /// Books closest to the reader's taste first; books without a score keep their order after them
+    private func sortedByScore(_ books: [Book], scores: [String: Double]) -> [Book] {
+        let scored = books.filter { scores[$0.id] != nil }.sorted { scores[$0.id]! > scores[$1.id]! }
+        return scored + books.filter { scores[$0.id] == nil }
+    }
+
+    /// How close a shelf is to the reader's taste: mean score of its five closest books
+    private func affinity(of books: [Book], scores: [String: Double]) -> Double {
+        let top = books.compactMap { scores[$0.id] }.sorted(by: >).prefix(5)
+        return top.isEmpty ? 0 : top.reduce(0, +) / Double(top.count)
     }
 
     /// Most popular first, then alphabetical, so shelves keep the same order between visits
@@ -184,10 +226,31 @@ class FeaturedBooksViewModel: ObservableObject {
             orderedGenres.append((genre: "More Books", books: sortedByPopularity(otherPicksBooks)))
         }
         
-        // Topics picked during onboarding come first, in their usual order
         let preferred = Set(OnboardingPreferences.preferredGenres)
-        booksByGenre = orderedGenres.filter { preferred.contains($0.genre) }
-            + orderedGenres.filter { !preferred.contains($0.genre) }
+        let scores = recommendations?.scores ?? [:]
+
+        if scores.isEmpty {
+            // Topics picked during onboarding come first, in their usual order
+            orderedGenres = orderedGenres.filter { preferred.contains($0.genre) }
+                + orderedGenres.filter { !preferred.contains($0.genre) }
+        } else {
+            // Shelves closest to the reader's taste first (picked topics get a nudge); "More Books" stays last
+            let moreBooks = orderedGenres.filter { $0.genre == "More Books" }
+            orderedGenres = orderedGenres
+                .filter { $0.genre != "More Books" }
+                .map { (genre: $0.genre, books: sortedByScore($0.books, scores: scores)) }
+                .map { shelf in (shelf, affinity(of: shelf.books, scores: scores) + (preferred.contains(shelf.genre) ? 0.05 : 0)) }
+                .sorted { $0.1 > $1.1 }
+                .map(\.0)
+                + moreBooks
+        }
+
+        // Personal shelves ("For you", "More like …", goals) go above the genre shelves
+        let genreNames = Set(orderedGenres.map(\.genre))
+        let personal = (recommendations?.shelves ?? [])
+            .filter { !genreNames.contains($0.title) && !$0.books.isEmpty }
+            .map { (genre: $0.title, books: $0.books) }
+        booksByGenre = personal + orderedGenres
     }
     
     private func mapCategoryToGenre(_ category: String) -> String {

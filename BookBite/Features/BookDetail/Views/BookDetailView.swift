@@ -35,7 +35,9 @@ struct BookDetailView: View {
         .background(Color.paper.ignoresSafeArea())
         .task {
             RecentBooksStore.shared.record(viewModel.book)
+            // Without a cover image the page shows a TypographicCover: tint with its cloth colour
             let tint = await CoverTint.color(for: viewModel.book.coverAssetName)
+                ?? Color(TypographicCover.cloth(for: viewModel.book.title))
             withAnimation(.easeOut(duration: 0.5)) { coverTint = tint }
         }
         .navigationBarTitleDisplayMode(.inline)
@@ -101,7 +103,7 @@ struct BookDetailView: View {
 
     private var bookHeader: some View {
         VStack(spacing: 18) {
-            EditorialCover(coverURL: viewModel.book.coverAssetName, width: 160)
+            EditorialCover(book: viewModel.book, width: 160)
 
             VStack(spacing: 6) {
                 Text(viewModel.book.title)

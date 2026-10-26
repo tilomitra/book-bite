@@ -13,6 +13,8 @@ router.get('/categories', bookController.getCategories);
 router.get('/category/:category', bookController.getBooksByCategory);
 router.get('/:id', bookController.getBookById);
 router.get('/:id/cover', bookController.getBookCover);
+// POST so the app's signals (liked/opened book ids, goals) stay out of URLs and logs
+router.post('/for-you', bookController.getRecommendations);
 
 // Admin routes
 router.post('/', authenticate, requireAdmin, bookController.createBook);
