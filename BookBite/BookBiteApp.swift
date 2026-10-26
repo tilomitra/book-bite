@@ -20,6 +20,9 @@ struct BookBiteApp: App {
                 .onOpenURL { url in
                     handleDeepLink(url)
                 }
+                .task {
+                    WidgetBridge.publishServerURL(AppConfiguration.shared.baseServerURL)
+                }
         }
     }
     

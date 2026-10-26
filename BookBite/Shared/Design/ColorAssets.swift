@@ -14,6 +14,13 @@ extension Color {
     static let textPrimary = Color(UIColor.label)
     static let textSecondary = Color(UIColor.secondaryLabel)
     static let textTertiary = Color(UIColor.tertiaryLabel)
+
+    /// Warm off-white page background for editorial screens (Discover); near-black in dark mode.
+    static let paper = Color(UIColor { traits in
+        traits.userInterfaceStyle == .dark
+            ? UIColor(red: 18 / 255, green: 17 / 255, blue: 16 / 255, alpha: 1)
+            : UIColor(red: 250 / 255, green: 248 / 255, blue: 244 / 255, alpha: 1)
+    })
 }
 
 // MARK: - Custom Color Initializers

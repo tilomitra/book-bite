@@ -52,18 +52,22 @@ final class BookBiteUITests: XCTestCase {
         
         let discoverTab = app.tabBars.buttons["Discover"]
         let searchTab = app.tabBars.buttons["Search"]
-        let settingsTab = app.tabBars.buttons["Settings"]
-        
+        let libraryTab = app.tabBars.buttons["Library"]
+
         XCTAssertTrue(discoverTab.exists)
         XCTAssertTrue(searchTab.exists)
-        XCTAssertTrue(settingsTab.exists)
-        
+        XCTAssertTrue(libraryTab.exists)
+
+        // Discover and Library use a serif header instead of a navigation bar title
         discoverTab.tap()
-        XCTAssertTrue(app.navigationBars["Discover"].exists)
-        
-        settingsTab.tap()
-        XCTAssertTrue(app.navigationBars["Settings"].exists)
-        
+        XCTAssertTrue(app.staticTexts["Discover"].waitForExistence(timeout: 3.0))
+
+        libraryTab.tap()
+        XCTAssertTrue(app.staticTexts["Library"].waitForExistence(timeout: 3.0))
+        app.buttons["Account and settings"].tap()
+        XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 3.0))
+        app.buttons["Done"].tap()
+
         searchTab.tap()
         XCTAssertTrue(app.searchFields.element.exists)
     }

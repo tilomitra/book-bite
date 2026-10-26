@@ -1,38 +1,44 @@
 import SwiftUI
 
-/// "Idea of the day": one short idea at the top of the Discover tab. Tap to open the book.
+/// "Idea of the day": one short idea at the top of the Discover tab, set as a pull quote
+/// between two rules. Tap to open the book.
 struct DailyIdeaCard: View {
     let dailyIdea: DailyIdea
+    @Namespace private var zoom
 
     var body: some View {
-        NavigationLink(destination: BookDetailView(book: dailyIdea.book)) {
+        NavigationLink {
+            BookDetailView(book: dailyIdea.book)
+                .navigationTransition(.zoom(sourceID: dailyIdea.book.id, in: zoom))
+        } label: {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Idea of the day")
                     .font(.caption)
                     .fontWeight(.semibold)
+                    .tracking(1)
                     .foregroundColor(.secondary)
                     .textCase(.uppercase)
 
-                Text(dailyIdea.idea.idea)
-                    .font(.system(.title3, design: .serif))
-                    .fontWeight(.medium)
+                Text("“\(dailyIdea.idea.idea)”")
+                    .font(.system(size: 25, design: .serif))
+                    .lineSpacing(3)
                     .foregroundColor(.primary)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
 
                 HStack(spacing: 12) {
-                    EnhancedBookCover(coverURL: dailyIdea.book.coverAssetName)
-                        .frame(width: 32, height: 48)
+                    EditorialCover(coverURL: dailyIdea.book.coverAssetName, width: 34)
+                        .zoomSource(id: dailyIdea.book.id, in: zoom)
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(dailyIdea.book.title)
-                            .font(.footnote)
+                            .font(.subheadline)
                             .fontWeight(.semibold)
                             .foregroundColor(.primary)
                             .lineLimit(1)
 
                         Text(dailyIdea.book.formattedAuthors)
-                            .font(.caption)
+                            .font(.footnote)
                             .foregroundColor(.secondary)
                             .lineLimit(1)
                     }
@@ -40,19 +46,21 @@ struct DailyIdeaCard: View {
                     Spacer()
 
                     Image(systemName: "chevron.right")
-                        .font(.footnote)
+                        .font(.footnote.weight(.semibold))
                         .foregroundColor(.secondary)
                 }
             }
-            .padding(20)
+            .padding(.vertical, 22)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color(UIColor.secondarySystemBackground))
-            )
+            .overlay(alignment: .top) {
+                Rectangle().fill(Color.primary).frame(height: 1)
+            }
+            .overlay(alignment: .bottom) {
+                Rectangle().fill(Color.primary.opacity(0.12)).frame(height: 1)
+            }
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .padding(.horizontal)
+        .padding(.horizontal, 20)
     }
 }

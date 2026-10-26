@@ -7,6 +7,7 @@ struct BookDetailView: View {
     @State private var showingChatSheet = false
     @State private var showingAuthSheet = false
     @State private var showingAudioPlayer = false
+    @State private var coverTint: Color?
     @EnvironmentObject var authService: SupabaseAuthService
 
     init(book: Book) {
@@ -29,6 +30,13 @@ struct BookDetailView: View {
             // Keep lines a readable length on wide screens
             .frame(maxWidth: 680)
             .frame(maxWidth: .infinity)
+            .background(alignment: .top) { coverWash }
+        }
+        .background(Color.paper.ignoresSafeArea())
+        .task {
+            RecentBooksStore.shared.record(viewModel.book)
+            let tint = await CoverTint.color(for: viewModel.book.coverAssetName)
+            withAnimation(.easeOut(duration: 0.5)) { coverTint = tint }
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -77,9 +85,23 @@ struct BookDetailView: View {
 
     // MARK: - Header
 
+    /// A wash of the cover's color behind the header, fading into the page. Scrolls with the content.
+    private var coverWash: some View {
+        LinearGradient(
+            colors: [(coverTint ?? .clear).opacity(0.5), (coverTint ?? .clear).opacity(0)],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .frame(height: 760)
+        // Extend above the content, under the navigation bar and into the overscroll area
+        .offset(y: -300)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+
     private var bookHeader: some View {
-        VStack(spacing: 16) {
-            BookCoverView(coverURL: viewModel.book.coverAssetName, size: .large)
+        VStack(spacing: 18) {
+            EditorialCover(coverURL: viewModel.book.coverAssetName, width: 160)
 
             VStack(spacing: 6) {
                 Text(viewModel.book.title)

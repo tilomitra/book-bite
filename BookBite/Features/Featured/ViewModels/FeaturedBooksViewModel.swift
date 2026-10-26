@@ -52,6 +52,7 @@ class FeaturedBooksViewModel: ObservableObject {
         }
 
         dailyIdea = await dailyIdeaTask.value ?? dailyIdea
+        if let dailyIdea { WidgetBridge.publish(dailyIdea) }
         isLoading = false
     }
 
