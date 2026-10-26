@@ -4,8 +4,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 export class OpenAIService {
   private client: OpenAI;
-  private model = 'gpt-4o';
-  private cheaperModel = 'gpt-3.5-turbo';
+  // GPT-6 Luna is a reasoning model: it takes max_completion_tokens (reasoning tokens count
+  // toward it) and only the default temperature.
+  private model = 'gpt-6-luna';
+  private cheaperModel = 'gpt-6-luna';
 
   constructor() {
     if (!process.env.OPENAI_API_KEY) {
@@ -35,8 +37,7 @@ export class OpenAIService {
     try {
       const response = await this.client.chat.completions.create({
         model: this.model,
-        max_tokens: 4000,
-        temperature: 0.7,
+        max_completion_tokens: 8000,
         response_format: { type: "json_object" },
         messages: [
           {
@@ -150,7 +151,7 @@ Ensure all arrays have at least one item, and confidence levels are realistic ba
       read_time_minutes: response.readTimeMinutes || 15,
       style: style,
       llm_model: this.model,
-      llm_version: 'gpt-4o-2024-05-13',
+      llm_version: this.model,
       generation_date: new Date()
     };
   }
@@ -179,8 +180,7 @@ Return the enhanced summary in the same JSON structure as the input.`;
     try {
       const response = await this.client.chat.completions.create({
         model: this.model,
-        max_tokens: 4000,
-        temperature: 0.5,
+        max_completion_tokens: 8000,
         response_format: { type: "json_object" },
         messages: [
           {
@@ -221,8 +221,7 @@ Return the enhanced summary in the same JSON structure as the input.`;
     try {
       const response = await this.client.chat.completions.create({
         model: this.cheaperModel, // Use cheaper model for extended summaries
-        max_tokens: 1500, // Allow for longer response
-        temperature: 0.7,
+        max_completion_tokens: 4000, // ~1000-word summary plus reasoning
         messages: [
           {
             role: 'user',

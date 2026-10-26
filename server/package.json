@@ -14,6 +14,7 @@
     "lint": "eslint src --ext .ts",
     "test": "jest",
     "populate-books": "tsx scripts/populate-books.ts",
+    "add-curated-books": "tsx scripts/add-curated-books.ts",
     "populate-books-google": "tsx scripts/populate-books.ts 25 all google",
     "populate-books-nyt": "tsx scripts/populate-books.ts 15 all nyt",
     "populate-books-high-priority": "tsx scripts/populate-books.ts 25 high all",

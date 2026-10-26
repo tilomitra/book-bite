@@ -105,7 +105,7 @@ async function generateExtendedSummaryForBook(book: BookWithSummary): Promise<Ex
       };
     }
 
-    console.log(`     🤖 Calling OpenAI API (using ${openai['cheaperModel'] || 'gpt-3.5-turbo'})...`);
+    console.log(`     🤖 Calling OpenAI API (using ${openai['cheaperModel']})...`);
     
     // Generate extended summary using cheaper model
     const extendedSummary = await openai.generateExtendedSummary(
@@ -180,7 +180,7 @@ async function generateExtendedSummaries(options: {
   console.log(`⚙️  Batch size: ${batchSize} books`);
   console.log(`⏱️  Delay between batches: ${delayBetweenBatches/1000}s`);
   console.log(`📊 Max books to process: ${maxBooks}`);
-  console.log(`💰 Using cheaper model (gpt-3.5-turbo) for cost efficiency`);
+  console.log(`💰 Using model gpt-6-luna`);
   console.log('');
 
   // Find books needing extended summaries
