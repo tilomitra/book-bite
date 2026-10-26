@@ -103,6 +103,7 @@ extension SharingService {
         let title = queryItems?.first(where: { $0.name == "title" })?.value ?? "Unknown Title"
         let author = queryItems?.first(where: { $0.name == "author" })?.value ?? ""
         let isbn = queryItems?.first(where: { $0.name == "isbn" })?.value
+        let cover = queryItems?.first(where: { $0.name == "cover" })?.value
         
         // Create a basic Book object for navigation
         // Note: This would ideally fetch full book details from the repository
@@ -111,7 +112,8 @@ extension SharingService {
             title: title,
             authors: author.isEmpty ? [] : [author],
             isbn10: isbn?.count == 10 ? isbn : nil,
-            isbn13: isbn?.count == 13 ? isbn : nil
+            isbn13: isbn?.count == 13 ? isbn : nil,
+            coverAssetName: cover
         )
     }
 }

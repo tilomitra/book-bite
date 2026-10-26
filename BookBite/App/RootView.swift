@@ -30,10 +30,10 @@ struct RootView: View {
                 }
 
                 NavigationStack {
-                    SettingsView()
+                    MyLibraryView()
                 }
                 .tabItem {
-                    Label("Settings", systemImage: "gearshape")
+                    Label("Library", systemImage: "books.vertical")
                 }
             }
             // Add padding at bottom when mini player is visible
