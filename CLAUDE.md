@@ -63,12 +63,13 @@ npx tsx scripts/populate-books.ts 30 high google   # [booksPerCategory] [priorit
 npm run generate-summaries                  # books missing summaries
 npm run generate-extended-summaries
 npm run generate-audio -- --title "Atomic Habits"   # or --book-id <uuid>, --list-missing, --dry-run, --force --voice-id <id>
+npm run backfill-covers -- --dry-run --featured --report /tmp/covers.json   # see "Covers" below; drop --dry-run to write
 npm run update-book-covers / update-popularity-scores / populate-headway-books
 ```
 Audio ≈ $0.94/book (GPT-4o script + ElevenLabs Turbo v2.5). Default voice Adam `pNInz6obpgDQGcFmaJgB`; others: Bella `EXAVITQu4vr4xnSDxMaL`, Rachel `21m00Tcm4TlvDq8ikWAM`, Antoni `ErXwobaYiN019PkySvjV`.
 
 ### Database
-Schema: `server/supabase/schema.sql` plus loose SQL files in `server/supabase/` (featured/NYT/extended-summary columns). Apply via the Supabase SQL editor; `migrations/` is empty. ~1,650 books.
+Schema: `server/supabase/schema.sql` plus loose SQL files in `server/supabase/` (featured/NYT/extended-summary columns). Apply via the Supabase SQL editor; `migrations/` is empty. ~2,060 books.
 
 ## iOS architecture
 
@@ -82,7 +83,8 @@ Schema: `server/supabase/schema.sql` plus loose SQL files in `server/supabase/` 
   - `RecentBooksStore` (shared, `@MainActor`): books opened in `BookDetailView`, newest first, max 20, in UserDefaults (works signed out).
   - `WidgetBridge`: writes the server URL and the latest `DailyIdea` JSON to the app group `group.tilo.BookBite` and reloads widget timelines.
   - `CacheService`, `OfflineStorageService` (downloads of saved books; `HybridBookRepository` falls back to it), `ExportService` (PDF/text, no UI yet).
-- Cover images: always build URLs with `URL.bookCover(from:)` (`Shared/Utilities/URLHelpers.swift`). Stored Google Books URLs are `zoom=1&edge=curl` (128px, page curl baked in); the helper forces https, drops `edge` and adds `fife=w800`. Keep `zoom=1`: without it Google sometimes returns the title page. The widget does the same inline (`fife=w400`).
+- Cover images: always build URLs with `URL.bookCover(from:)` (`Shared/Utilities/URLHelpers.swift`). Older stored Google Books URLs are `books/content?…zoom=1&edge=curl` (128px, page curl baked in); the helper forces https, drops `edge` and adds `fife=w800`. Keep `zoom=1`: without it Google sometimes returns the title page. The widget does the same inline (`fife=w400`). Backfilled covers (see "Covers") pass through unchanged.
+- Show covers with `EditorialCover(book:width:)` / `BookCoverView(book:size:)`: with the book they fall back to `TypographicCover` (Shared/Components; serif title + author on a bookcloth colour picked from the title) when `cover_url` is null or fails to load. `BookDetailView` tints with `TypographicCover.cloth(for:)` when there is no image.
 - `Core/Models`: `Book` and `Summary` use snake_case `CodingKeys` matching the DB columns. `Summary`/`KeyIdea` have lenient `init(from:)` (nullable columns, unknown confidence → `.medium`). Use `summary.summaryReadTimeMinutes` for display; the stored `read_time_minutes` is an unreliable LLM guess (often the whole book's length).
 - `Features/<Feature>/{Views,ViewModels}`:
   - Featured = **Discover** tab, "editorial" style: hidden nav bar with a custom serif header (date + "Discover"), `Color.paper` background, `DailyIdeaCard` as a pull quote between rules (via the `DailyIdeaProviding` repository protocol; failure hides it), then one `BookShelf` per genre (serif title; `ShelfBookCard` = `EditorialCover` + title + author), "See all" → `BookGridView`. `EditorialCover` is the 2:3 cover with book-shaped corners and shadow.
@@ -102,6 +104,10 @@ Self-contained (shares no app source files): its own lightweight `WidgetDailyIde
 ## Roadmap
 
 `TODO.md` lists the remaining design ideas (key-idea cards, Continue reading, Live Activity, App Intents, Lock Screen widgets, covers, accessibility, showing analysis/citations).
+
+## Covers
+
+`server/scripts/backfill-covers.ts` picks the sharpest cover per book and writes it to `books.cover_url`: Google Books publisher image (`books/publisher/content/images/frontcover/<id>?fife=w1200-h1800`, the original artwork) → the same for other Google editions with matching title + author surname → Apple Books by ISBN (never by title: "Drive" matched the wrong book) → Open Library → current URL. First candidate ≥500px wide with aspect 1.1–1.8 wins; else the largest ≥320px; else `null` (app shows `TypographicCover`). URLs are stored directly (Google/Apple are resizing CDNs; rehosting ~2k covers would hit the Supabase free-tier 1 GB storage). Replaced URLs are kept in `server/scripts/data/cover-url-backup.json` (oldest URL wins on re-runs). By default it skips books already on Google publisher/Apple URLs, so re-run it after adding books; new books still get 128px `books/content` URLs from the importers. iTunes lookup is rate limited (~20/min), so a full run takes a while. The other-edition step uses the Google Books API key, whose daily query quota a full run can exhaust (that also breaks the server's Google search / book requests until midnight Pacific); the script stops and saves what it checked when that happens. `--ids a,b` re-checks specific books. Check `--report` output visually before writing: other-edition matches are the riskiest.
 
 ## Server architecture
 

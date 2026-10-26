@@ -92,7 +92,7 @@ struct AudioPlayerView: View {
     private var coverArtView: some View {
         Group {
             if let book = audioService.currentBook {
-                BookCoverView(coverURL: book.coverAssetName, size: .large)
+                BookCoverView(book: book, size: .large)
                     .frame(maxWidth: 280, maxHeight: 280)
                     .shadow(color: .black.opacity(0.2), radius: 20, x: 0, y: 10)
             } else {

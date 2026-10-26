@@ -114,7 +114,7 @@ struct ShelfBookCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            EditorialCover(coverURL: book.coverAssetName, width: coverWidth)
+            EditorialCover(book: book, width: coverWidth)
                 .zoomSource(id: book.id, in: zoomNamespace)
 
             VStack(alignment: .leading, spacing: 2) {
@@ -136,9 +136,24 @@ struct ShelfBookCard: View {
 }
 
 /// A 2:3 book cover with a book-like shape (tighter corners at the spine) and a soft shadow.
+/// Without a cover image (none stored, or it fails to load) it shows a `TypographicCover`
+/// when it knows the title.
 struct EditorialCover: View {
     let coverURL: String?
     let width: CGFloat
+    var title: String? = nil
+    var author: String? = nil
+
+    init(coverURL: String?, width: CGFloat, title: String? = nil, author: String? = nil) {
+        self.coverURL = coverURL
+        self.width = width
+        self.title = title
+        self.author = author
+    }
+
+    init(book: Book, width: CGFloat) {
+        self.init(coverURL: book.coverAssetName, width: width, title: book.title, author: book.formattedAuthors)
+    }
 
     private var shape: UnevenRoundedRectangle {
         let spine = max(2, width * 0.025)
@@ -153,12 +168,19 @@ struct EditorialCover: View {
 
     var body: some View {
         AsyncImage(url: URL.bookCover(from: coverURL)) { phase in
-            if case .success(let image) = phase {
+            switch phase {
+            case .success(let image):
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-            } else {
+            case .empty where URL.bookCover(from: coverURL) != nil:
                 BookPlaceholderView.flexible(cornerRadius: 0, showLoading: false)
+            default:
+                if let title {
+                    TypographicCover(title: title, author: author ?? "")
+                } else {
+                    BookPlaceholderView.flexible(cornerRadius: 0, showLoading: false)
+                }
             }
         }
         .frame(width: width, height: width * 1.5)

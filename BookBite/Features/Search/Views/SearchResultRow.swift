@@ -6,7 +6,7 @@ struct SearchResultRow: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 16) {
-            BookCoverView(coverURL: book.coverAssetName, size: .small)
+            BookCoverView(book: book, size: .small)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(book.title)

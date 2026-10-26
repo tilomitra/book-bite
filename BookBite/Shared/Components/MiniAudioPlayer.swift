@@ -20,7 +20,7 @@ struct MiniAudioPlayer: View {
             HStack(spacing: 12) {
                 // Book cover
                 if let book = audioService.currentBook {
-                    BookCoverView(coverURL: book.coverAssetName, size: .small)
+                    BookCoverView(book: book, size: .small)
                         .frame(width: 44, height: 44)
                         .cornerRadius(6)
                 } else {

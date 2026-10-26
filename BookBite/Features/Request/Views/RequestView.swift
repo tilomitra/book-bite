@@ -176,7 +176,7 @@ struct BookRequestedSuccessView: View {
                 
                 // Compact book card
                 VStack(spacing: 12) {
-                    BookCoverView(coverURL: book.coverAssetName, size: .small)
+                    BookCoverView(book: book, size: .small)
                     
                     VStack(spacing: 6) {
                         Text(book.title)
