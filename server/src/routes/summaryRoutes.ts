@@ -10,6 +10,7 @@ const generationLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 20 });
 
 // Public routes
 router.get('/daily-idea', summaryController.getDailyIdea);
+router.get('/highlights', summaryController.getHighlights);
 router.get('/book/:bookId', summaryController.getSummaryByBookId);
 router.get('/job/:jobId', summaryController.getJobStatus);
 router.post('/book/:bookId/generate', generationLimiter, summaryController.generateSummary); // Made public for mobile app

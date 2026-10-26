@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Discover tab: the idea of the day, then one shelf of books per genre.
+/// Discover tab: the idea of the day, then an endless feed of shelves and editorial cards.
 struct FeaturedBooksView: View {
     @StateObject private var viewModel: FeaturedBooksViewModel
 
@@ -39,8 +39,23 @@ struct FeaturedBooksView: View {
                         DailyIdeaCard(dailyIdea: dailyIdea)
                     }
 
-                    ForEach(viewModel.booksByGenre, id: \.genre) { shelf in
-                        BookShelf(heading: shelf.genre, books: shelf.books)
+                    ForEach(Array(viewModel.blocks.enumerated()), id: \.element.id) { index, block in
+                        blockView(block)
+                            .onAppear {
+                                // Start loading a few blocks before the end, so scrolling doesn't stall
+                                if index >= viewModel.blocks.count - 3 {
+                                    Task { await viewModel.loadMore() }
+                                }
+                            }
+                    }
+
+                    if viewModel.canLoadMore {
+                        ProgressView()
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 20)
+                            .onAppear {
+                                Task { await viewModel.loadMore() }
+                            }
                     }
                 }
             }
@@ -55,6 +70,20 @@ struct FeaturedBooksView: View {
             await viewModel.loadFeaturedBooks()
         }
     }
+
+    @ViewBuilder
+    private func blockView(_ block: DiscoverBlock) -> some View {
+        switch block {
+        case .shelf(let title, let books):
+            BookShelf(heading: title, books: books)
+        case .spotlight(let highlight):
+            SpotlightCard(highlight: highlight)
+        case .passage(let highlight):
+            PassageCard(highlight: highlight)
+        case .quickBites(let title, let caption, let highlights):
+            QuickBitesCard(title: title, caption: caption, highlights: highlights)
+        }
+    }
 }
 
 /// A titled, horizontally scrolling row of books.
@@ -64,7 +93,8 @@ struct BookShelf: View {
     var eyebrow: String? = nil
     let books: [Book]
 
-    private let previewCount = 12
+    static let previewCount = 12
+    private var previewCount: Int { Self.previewCount }
     @Namespace private var zoom
 
     /// Splits a server heading like "More like Never Eat Alone" into eyebrow and title,

@@ -1,10 +1,32 @@
 import Foundation
 import Combine
 
+/// One item of the Discover feed below the idea of the day
+enum DiscoverBlock: Identifiable {
+    case shelf(title: String, books: [Book])
+    case spotlight(Highlight)
+    case passage(Highlight)
+    case quickBites(title: String, caption: String, highlights: [Highlight])
+
+    var id: String {
+        switch self {
+        // Highlight shelf titles repeat once their list cycles; the first book keeps ids unique
+        case .shelf(let title, let books): return "shelf:\(title):\(books.first?.id ?? "")"
+        case .spotlight(let highlight): return "spotlight:\(highlight.id)"
+        case .passage(let highlight): return "passage:\(highlight.id)"
+        case .quickBites(_, _, let highlights): return "bites:\(highlights.map(\.id).joined(separator: ","))"
+        }
+    }
+}
+
 @MainActor
 class FeaturedBooksViewModel: ObservableObject {
     @Published var dailyIdea: DailyIdea?
     @Published var booksByGenre: [(genre: String, books: [Book])] = []
+    /// The endless feed: shelves with editorial cards between them, then editorial cards and
+    /// shelves made from highlights once the genre shelves run out. Grows through `loadMore()`.
+    @Published private(set) var blocks: [DiscoverBlock] = []
+    @Published private(set) var isLoadingMore = false
     @Published var isLoading = false
     @Published var error: Error?
 
@@ -13,6 +35,28 @@ class FeaturedBooksViewModel: ObservableObject {
     private var nytBestsellerBooks: [Book] = []
     /// Personal shelves and per-book scores from the server; nil before they load or if they fail
     private var recommendations: Recommendations?
+
+    // Feed state
+    private var pendingShelves: [(genre: String, books: [Book])] = []
+    private var highlightQueue: [Highlight] = []
+    private var nextHighlightsPage = 1
+    private var hasMoreHighlights = true
+    /// Books already in the feed (ids and "title|author", to skip other editions): each book shows up once
+    private var usedBookKeys = Set<String>()
+    /// Position in the editorial rotation, so card styles alternate
+    private var editorialStep = 0
+    private var shelfStep = 0
+    private let highlightsPageSize = 24
+    /// Blocks added per `loadMore()`
+    private let chunkSize = 6
+
+    private static let biteTitles: [(title: String, caption: String)] = [
+        ("Quick bites", "Start here"),
+        ("Big ideas, briefly", "In one sentence"),
+        ("Worth your time", "Readers keep coming back"),
+        ("Before your next coffee", "In brief"),
+    ]
+    private static let highlightShelfTitles = ["More to explore", "Keep reading", "Also worth a look", "From the stacks"]
 
     init(bookRepository: BookRepository) {
         self.bookRepository = bookRepository
@@ -48,6 +92,9 @@ class FeaturedBooksViewModel: ObservableObject {
             // Wait for the personal shelves too, so the page doesn't reshuffle while someone reads it
             recommendations = await recommendationsTask.value ?? recommendations
             groupBooksByGenre()
+            // Before the feed, so its book isn't repeated on a card
+            dailyIdea = await dailyIdeaTask.value ?? dailyIdea
+            await resetFeed()
         } catch {
             // Don't show cancellation errors to user - they're expected during rapid refreshes
             if !(error is CancellationError) {
@@ -59,6 +106,167 @@ class FeaturedBooksViewModel: ObservableObject {
         dailyIdea = await dailyIdeaTask.value ?? dailyIdea
         if let dailyIdea { WidgetBridge.publish(dailyIdea) }
         isLoading = false
+    }
+
+    var canLoadMore: Bool {
+        !pendingShelves.isEmpty || !highlightQueue.isEmpty || hasMoreHighlights
+    }
+
+    /// Appends the next few blocks, fetching another page of highlights when the queue runs low.
+    /// Called as the reader nears the end of the feed.
+    func loadMore() async {
+        guard !isLoadingMore, !isLoading, canLoadMore else { return }
+        isLoadingMore = true
+        defer { isLoadingMore = false }
+        await appendChunk()
+    }
+
+    private func appendChunk() async {
+        // Enough for a full rotation (spotlight, three bites, passage, a shelf of eight)
+        while highlightQueue.count < 14 && hasMoreHighlights {
+            await fetchNextHighlights()
+        }
+
+        var added: [DiscoverBlock] = []
+        while added.count < chunkSize, let block = nextBlock() {
+            added.append(block)
+        }
+        blocks.append(contentsOf: added)
+    }
+
+    private func resetFeed() async {
+        pendingShelves = booksByGenre
+        highlightQueue = []
+        nextHighlightsPage = 1
+        hasMoreHighlights = bookRepository is HighlightsProviding
+        usedBookKeys = []
+        editorialStep = 0
+        shelfStep = 0
+        if let dailyIdea { markUsed(dailyIdea.book) }
+        blocks = []
+        await appendChunk()
+    }
+
+    private func fetchNextHighlights() async {
+        guard let provider = bookRepository as? HighlightsProviding else {
+            hasMoreHighlights = false
+            return
+        }
+        do {
+            let page = try await provider.fetchHighlights(page: nextHighlightsPage, limit: highlightsPageSize)
+            nextHighlightsPage += 1
+            hasMoreHighlights = page.hasMore
+            // Within a page (books of similar popularity), the ones closest to the reader's taste first
+            var items = page.items
+            if let scores = recommendations?.scores, !scores.isEmpty {
+                items = items.enumerated()
+                    .sorted { (scores[$0.element.id] ?? -1, -$0.offset) > (scores[$1.element.id] ?? -1, -$1.offset) }
+                    .map(\.element)
+            }
+            highlightQueue += items.filter { !isUsed($0.book) }
+        } catch {
+            // The feed ends with the shelves; the next scroll to the bottom tries again
+            print("Failed to load highlights: \(error)")
+            if highlightQueue.isEmpty { hasMoreHighlights = false }
+        }
+    }
+
+    private func bookKeys(_ book: Book) -> [String] {
+        [book.id, "\(book.shelfTitle.lowercased())|\(book.authors.first?.lowercased() ?? "")"]
+    }
+
+    private func isUsed(_ book: Book) -> Bool {
+        bookKeys(book).contains { usedBookKeys.contains($0) }
+    }
+
+    private func markUsed(_ book: Book) {
+        usedBookKeys.formUnion(bookKeys(book))
+    }
+
+    /// Next unused highlight, optionally only a quotable one
+    private func takeHighlight(quotable: Bool = false) -> Highlight? {
+        highlightQueue.removeAll { isUsed($0.book) }
+        guard let index = highlightQueue.firstIndex(where: { !quotable || $0.isQuotable }) else { return nil }
+        let highlight = highlightQueue.remove(at: index)
+        markUsed(highlight.book)
+        return highlight
+    }
+
+    private func takeHighlights(_ count: Int) -> [Highlight] {
+        var taken: [Highlight] = []
+        while taken.count < count, let highlight = takeHighlight() {
+            taken.append(highlight)
+        }
+        return taken
+    }
+
+    /// Two shelves, then an editorial card, while genre shelves last; after that editorial cards
+    /// alternate with shelves built from highlights.
+    private func nextBlock() -> DiscoverBlock? {
+        let rotationLength = pendingShelves.isEmpty ? 4 : 3
+        let position = editorialStep % rotationLength
+
+        if shelfStep < 2, let shelf = takeShelf() {
+            shelfStep += 1
+            return shelf
+        }
+        shelfStep = 0
+        editorialStep += 1
+
+        if let block = editorialBlock(at: position) {
+            return block
+        }
+        // Not enough highlights for that card: fall back to whatever is left
+        if let shelf = takeShelf() {
+            return shelf
+        }
+        if let highlight = takeHighlight() {
+            return .spotlight(highlight)
+        }
+        return nil
+    }
+
+    /// Next pending shelf without the books already shown; shelves left with fewer than 4 books are skipped
+    private func takeShelf() -> DiscoverBlock? {
+        while !pendingShelves.isEmpty {
+            let shelf = pendingShelves.removeFirst()
+            let books = unusedBooks(shelf.books)
+            guard books.count >= 4 else { continue }
+            // Only the books the shelf shows; the rest are behind "See all" and may still get a card
+            books.prefix(BookShelf.previewCount).forEach(markUsed)
+            return .shelf(title: shelf.genre, books: books)
+        }
+        return nil
+    }
+
+    /// Books not in the feed yet, one edition each
+    private func unusedBooks(_ books: [Book]) -> [Book] {
+        var seen = Set<String>()
+        return books.filter { book in
+            let keys = bookKeys(book)
+            guard !isUsed(book), keys.allSatisfy({ !seen.contains($0) }) else { return false }
+            seen.formUnion(keys)
+            return true
+        }
+    }
+
+    private func editorialBlock(at position: Int) -> DiscoverBlock? {
+        let round = editorialStep / 4
+        switch position {
+        case 0:
+            return takeHighlight().map(DiscoverBlock.spotlight)
+        case 1:
+            guard highlightQueue.count >= 3 else { return nil }
+            let titles = Self.biteTitles[round % Self.biteTitles.count]
+            return .quickBites(title: titles.title, caption: titles.caption, highlights: takeHighlights(3))
+        case 2:
+            return takeHighlight(quotable: true).map(DiscoverBlock.passage)
+        default:
+            guard highlightQueue.count >= 6 else { return nil }
+            let books = takeHighlights(8).map(\.book)
+            let title = Self.highlightShelfTitles[round % Self.highlightShelfTitles.count]
+            return .shelf(title: title, books: books)
+        }
     }
 
     private func fetchDailyIdea() async -> DailyIdea? {
