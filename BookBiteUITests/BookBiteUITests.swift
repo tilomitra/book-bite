@@ -25,6 +25,7 @@ final class BookBiteUITests: XCTestCase {
     @MainActor
     func testAppLaunchAndSearch() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-hasCompletedOnboarding", "YES"]
         app.launch()
         
         let searchTab = app.tabBars.buttons["Search"]
@@ -48,6 +49,7 @@ final class BookBiteUITests: XCTestCase {
     @MainActor
     func testTabNavigation() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-hasCompletedOnboarding", "YES"]
         app.launch()
         
         let discoverTab = app.tabBars.buttons["Discover"]

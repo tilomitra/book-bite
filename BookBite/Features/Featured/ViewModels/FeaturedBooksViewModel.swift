@@ -184,7 +184,10 @@ class FeaturedBooksViewModel: ObservableObject {
             orderedGenres.append((genre: "More Books", books: sortedByPopularity(otherPicksBooks)))
         }
         
-        booksByGenre = orderedGenres
+        // Topics picked during onboarding come first, in their usual order
+        let preferred = Set(OnboardingPreferences.preferredGenres)
+        booksByGenre = orderedGenres.filter { preferred.contains($0.genre) }
+            + orderedGenres.filter { !preferred.contains($0.genre) }
     }
     
     private func mapCategoryToGenre(_ category: String) -> String {
