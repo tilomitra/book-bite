@@ -18,6 +18,7 @@
  * Options:
  *   --dry-run          Print changes without writing to the database
  *   --limit <n>        Process at most n books
+ *   --title <text>     Only process books whose title contains this text
  *   --concurrency <n>  Books processed in parallel (default 3)
  *
  * Free: only calls Open Library.
@@ -69,14 +70,15 @@ async function withRetry<T>(fn: () => Promise<T>, attempts = 3): Promise<T> {
   }
 }
 
-// Same matching rules as add-curated-books.ts.
+// Like add-curated-books.ts, but hyphens become spaces so "Purpose-Driven" matches "Purpose Driven".
 function normalizeTitle(title: string): string {
   return title
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .split(/[:(]|\. /)[0]
     .replace(/&/g, 'and')
+    .replace(/[-\u2010-\u2015]/g, ' ')
     .replace(/[^a-z0-9 ]/g, '')
     .replace(/^the /, '')
     .replace(/\s+/g, ' ')
@@ -90,7 +92,7 @@ function lastName(author: string): string {
 }
 
 function normalizeName(name: string): string {
-  return name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  return name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 }
 
 function authorMatches(names: string[] = [], author: string): boolean {
@@ -98,7 +100,15 @@ function authorMatches(names: string[] = [], author: string): boolean {
   return names.some(name => normalizeName(name).includes(wanted));
 }
 
+// Open Library titles often run on past ours without a colon ("Eat That Frog! 21 Great Ways...",
+// "The Myth of Sisyphus and Other Essays"), so a title that starts with ours, at a word break, matches too.
+function titleMatches(candidate: string, wanted: string): boolean {
+  const title = normalizeTitle(candidate);
+  return title === wanted || title.startsWith(`${wanted} `);
+}
+
 // The matching work with the most readers, from a strict title/author search and a free-text one.
+// Most readers also picks the main work over spin-offs that share the title ("... for Students").
 async function findMainWork(title: string, author: string): Promise<OpenLibraryWork | null> {
   const wantedTitle = normalizeTitle(title);
   const searches = [{ title, author }, { q: `${title.split(':')[0]} ${lastName(author)}` }];
@@ -107,7 +117,7 @@ async function findMainWork(title: string, author: string): Promise<OpenLibraryW
     const data = await withRetry(() => getJson(`${OPEN_LIBRARY}/search.json`, { ...params, limit: 20, fields: FIELDS }));
     matches.push(
       ...((data.docs || []) as OpenLibraryWork[]).filter(
-        d => normalizeTitle(d.title) === wantedTitle && authorMatches(d.author_name, author)
+        d => titleMatches(d.title, wantedTitle) && authorMatches(d.author_name, author)
       )
     );
   }
@@ -146,10 +156,12 @@ async function main() {
   };
   const dryRun = args.includes('--dry-run');
   const limit = value('--limit') ? parseInt(value('--limit')!, 10) : undefined;
+  const titleFilter = value('--title')?.toLowerCase();
   const concurrency = Math.max(1, parseInt(value('--concurrency') || '3', 10));
 
   const { supabase } = await import('../src/config/supabase');
   let books = await loadBooks(supabase);
+  if (titleFilter) books = books.filter(b => b.title.toLowerCase().includes(titleFilter));
   if (limit) books = books.slice(0, limit);
   console.log(chalk.blue(`📚 ${books.length} books${dryRun ? ' (dry run)' : ''}`));
 
