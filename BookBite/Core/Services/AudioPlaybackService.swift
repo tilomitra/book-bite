@@ -141,7 +141,7 @@ class AudioPlaybackService: NSObject, ObservableObject {
     private func loadArtwork(for book: Book) {
         artworkTask?.cancel()
         artwork = nil
-        guard let coverURL = book.coverAssetName, let url = URL(string: coverURL) else { return }
+        guard let url = URL.bookCover(from: book.coverAssetName) else { return }
         artworkTask = Task { [weak self] in
             guard let (data, _) = try? await URLSession.shared.data(from: url),
                   let image = UIImage(data: data),

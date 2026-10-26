@@ -20,7 +20,7 @@ Ideas for taking the app to Apple Design Award level. Done so far: Editorial Dis
 - [ ] Deep links carry only title/author/cover; fetch the full book by id on open.
 
 ## Visual craft
-- [ ] High-resolution, consistent covers: no baked-in page curls (Google Books thumbnails), consistent crops.
+- [ ] Consistent covers: crops, and covers that are missing or wrong. (Page curls and low-res Google Books thumbnails are fixed client-side in `URL.bookCover(from:)`.)
 - [ ] Reader typography: hyphenation, measure, layouts that reflow at the largest Dynamic Type sizes.
 
 ## Accessibility

@@ -106,6 +106,11 @@ struct DailyIdeaProvider: TimelineProvider {
     private func loadCover(_ string: String?) async -> UIImage? {
         guard var string, !string.isEmpty else { return nil }
         if string.hasPrefix("http://") { string = "https://" + string.dropFirst("http://".count) }
+        // Google Books: drop the baked-in page curl and ask for a sharper image
+        // (same as the app's URL.bookCover; keep zoom=1 or Google may return the title page)
+        if string.contains("books.google.com/books/content") {
+            string = string.replacingOccurrences(of: "&edge=curl", with: "") + "&fife=w400"
+        }
         guard let url = URL(string: string),
               let (data, _) = try? await URLSession.shared.data(from: url),
               let image = UIImage(data: data) else { return nil }

@@ -127,7 +127,7 @@ class OfflineStorageService {
 
     /// Download cover image for offline access
     func downloadCoverImage(from urlString: String, for bookId: String) async throws {
-        guard let url = URL(string: urlString) else {
+        guard let url = URL.bookCover(from: urlString) else {
             throw OfflineStorageError.invalidURL
         }
 
