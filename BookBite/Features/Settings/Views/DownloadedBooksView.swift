@@ -38,10 +38,19 @@ struct DownloadedBooksView: View {
             } else {
                 Section {
                     ForEach(viewModel.offlineBooks) { offlineBook in
-                        DownloadedBookRow(
-                            offlineBook: offlineBook,
-                            formattedDate: viewModel.formattedDate(offlineBook.downloadedAt)
-                        )
+                        if let book = OfflineStorageService.shared.getOfflineBook(id: offlineBook.bookId) {
+                            NavigationLink(destination: BookDetailView(book: book)) {
+                                DownloadedBookRow(
+                                    offlineBook: offlineBook,
+                                    formattedDate: viewModel.formattedDate(offlineBook.downloadedAt)
+                                )
+                            }
+                        } else {
+                            DownloadedBookRow(
+                                offlineBook: offlineBook,
+                                formattedDate: viewModel.formattedDate(offlineBook.downloadedAt)
+                            )
+                        }
                     }
                     .onDelete(perform: viewModel.removeBook)
                 } header: {
@@ -108,34 +117,19 @@ struct DownloadedBookRow: View {
                         .lineLimit(1)
                 }
 
-                HStack(spacing: 8) {
-                    // Download date
-                    Label(formattedDate, systemImage: "calendar")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-
-                    // Status indicators
-                    if offlineBook.hasSummary {
-                        Label("Summary", systemImage: "doc.text.fill")
-                            .font(.caption)
-                            .foregroundColor(DesignSystem.Colors.badgeGreen)
-                    }
-                }
+                Text("Downloaded \(formattedDate)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
 
             Spacer()
-
-            // Offline indicator
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(DesignSystem.Colors.badgeGreen)
-                .font(.title3)
         }
         .padding(.vertical, 4)
     }
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         DownloadedBooksView()
     }
 }

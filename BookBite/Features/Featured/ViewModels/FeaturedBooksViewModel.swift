@@ -3,101 +3,54 @@ import Combine
 
 @MainActor
 class FeaturedBooksViewModel: ObservableObject {
-    @Published var featuredBooks: [Book] = []
-    @Published var nytBestsellerBooks: [Book] = []
-    @Published var noteworthyBooks: [Book] = []
     @Published var dailyIdea: DailyIdea?
     @Published var booksByGenre: [(genre: String, books: [Book])] = []
     @Published var isLoading = false
     @Published var error: Error?
-    @Published var searchText = ""
-    
+
     private let bookRepository: BookRepository
-    private var cancellables = Set<AnyCancellable>()
-    private var allPopularBooks: [Book] = []
-    
+    private var featuredBooks: [Book] = []
+    private var nytBestsellerBooks: [Book] = []
+
     init(bookRepository: BookRepository) {
         self.bookRepository = bookRepository
-        
-        // Set up search debouncing
-        $searchText
-            .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
-            .removeDuplicates()
-            .sink { [weak self] _ in
-                self?.filterBooks()
-            }
-            .store(in: &cancellables)
-        
-        // Load featured books on initialization
+
         Task {
             await loadFeaturedBooks()
         }
     }
-    
-    var allBooks: [Book] {
-        return featuredBooks + nytBestsellerBooks
-    }
-    
-    var filteredBooks: [Book] {
-        if searchText.isEmpty {
-            return allBooks
-        }
-        
-        let lowercasedQuery = searchText.lowercased()
-        return allBooks.filter { book in
-            book.title.lowercased().contains(lowercasedQuery) ||
-            book.authors.contains { $0.lowercased().contains(lowercasedQuery) } ||
-            book.categories.contains { $0.lowercased().contains(lowercasedQuery) }
-        }
-    }
-    
+
     var showEmptyState: Bool {
-        !isLoading && filteredBooks.isEmpty && !searchText.isEmpty
+        !isLoading && error == nil && booksByGenre.isEmpty
     }
-    
-    var showInitialState: Bool {
-        !isLoading && allBooks.isEmpty && searchText.isEmpty
-    }
-    
+
     func loadFeaturedBooks() async {
         isLoading = true
         error = nil
-        
+
         // Clear cache to ensure fresh data
         bookRepository.clearCache()
 
         // Loads alongside the books; a failure only hides the card
         let dailyIdeaTask = Task { await fetchDailyIdea() }
-        
+
         do {
-            // Fetch both featured books and NYT bestsellers
             async let featuredBooksTask = bookRepository.fetchFeaturedBooks()
             async let nytBooksTask = bookRepository.fetchNYTBestsellerBooks()
-            
+
             let (featured, nytBooks) = try await (featuredBooksTask, nytBooksTask)
-            
+
             featuredBooks = featured
             nytBestsellerBooks = nytBooks
-            
-            // Store all popular books for the noteworthy section
-            allPopularBooks = (featured + nytBooks).filter { book in
-                // Include books with popularity score or NYT bestseller status
-                book.popularityScore != nil || book.isNYTBestseller == true
-            }
-            
-            // Select random noteworthy books
-            selectNoteworthyBooks()
             groupBooksByGenre()
         } catch {
             // Don't show cancellation errors to user - they're expected during rapid refreshes
-            if error is CancellationError {
-                print("Request cancelled: \(error)")
-            } else {
+            if !(error is CancellationError) {
                 self.error = error
                 print("Failed to load books: \(error)")
             }
         }
-        
+
         dailyIdea = await dailyIdeaTask.value ?? dailyIdea
         isLoading = false
     }
@@ -118,33 +71,23 @@ class FeaturedBooksViewModel: ObservableObject {
             return nil
         }
     }
-    
-    private func selectNoteworthyBooks() {
-        // Select 8-10 random books from popular books
-        let numberOfBooks = Int.random(in: 8...10)
-        
-        // Sort by popularity score to get truly popular books
-        let sortedPopularBooks = allPopularBooks.sorted { book1, book2 in
-            // Prioritize books with higher popularity scores
-            if let score1 = book1.popularityScore, let score2 = book2.popularityScore {
+
+    /// Most popular first, then alphabetical, so shelves keep the same order between visits
+    private func sortedByPopularity(_ books: [Book]) -> [Book] {
+        books.sorted { book1, book2 in
+            switch (book1.popularityScore, book2.popularityScore) {
+            case let (score1?, score2?) where score1 != score2:
                 return score1 > score2
-            }
-            // NYT bestsellers next
-            if book1.isNYTBestseller == true && book2.isNYTBestseller != true {
+            case (.some, .none):
                 return true
-            }
-            if book1.isNYTBestseller != true && book2.isNYTBestseller == true {
+            case (.none, .some):
                 return false
+            default:
+                return book1.title.localizedCaseInsensitiveCompare(book2.title) == .orderedAscending
             }
-            // Random for others
-            return Bool.random()
         }
-        
-        // Take top popular books and shuffle them for variety
-        let topBooks = Array(sortedPopularBooks.prefix(min(30, sortedPopularBooks.count)))
-        noteworthyBooks = Array(topBooks.shuffled().prefix(numberOfBooks))
     }
-    
+
     private func groupBooksByGenre() {
         // Create genre groups based on categories
         var genreMap: [String: [Book]] = [:]
@@ -171,7 +114,7 @@ class FeaturedBooksViewModel: ObservableObject {
         var assignedBookIds = Set<String>()
         
         // Map books to their primary genre (first matching category only)
-        for book in allBooks {
+        for book in featuredBooks + nytBestsellerBooks {
             // Skip if this book is already assigned to a genre
             if assignedBookIds.contains(book.id) {
                 continue
@@ -214,15 +157,9 @@ class FeaturedBooksViewModel: ObservableObject {
         for genre in primaryGenres {
             if let books = genreMap[genre], !books.isEmpty {
                 if books.count >= 4 {
-                    // Randomize books for Business, Self-Help, Biography, and Personal Development sections
-                    let shuffledBooks = if genre == "Business" || genre == "Self-Help" || genre == "Biography" || genre == "Personal Development" {
-                        books.shuffled()
-                    } else {
-                        books
-                    }
-                    orderedGenres.append((genre: genre, books: shuffledBooks))
+                    orderedGenres.append((genre: genre, books: sortedByPopularity(books)))
                 } else {
-                    // Add books to "Other Picks" if less than 4 books
+                    // Add books to "More Books" if less than 4 books
                     otherPicksBooks.append(contentsOf: books)
                 }
                 genreMap.removeValue(forKey: genre)
@@ -233,23 +170,17 @@ class FeaturedBooksViewModel: ObservableObject {
         for (genre, books) in genreMap.sorted(by: { $0.key < $1.key }) {
             if !books.isEmpty {
                 if books.count >= 4 {
-                    // Randomize books for Business, Self-Help, Biography, and Personal Development sections
-                    let shuffledBooks = if genre == "Business" || genre == "Self-Help" || genre == "Biography" || genre == "Personal Development" {
-                        books.shuffled()
-                    } else {
-                        books
-                    }
-                    orderedGenres.append((genre: genre, books: shuffledBooks))
+                    orderedGenres.append((genre: genre, books: sortedByPopularity(books)))
                 } else {
-                    // Add books to "Other Picks" if less than 4 books
+                    // Add books to "More Books" if less than 4 books
                     otherPicksBooks.append(contentsOf: books)
                 }
             }
         }
         
-        // Add "Other Picks" category if we have books for it
+        // Add "More Books" shelf if we have books for it
         if !otherPicksBooks.isEmpty {
-            orderedGenres.append((genre: "Other Picks", books: otherPicksBooks))
+            orderedGenres.append((genre: "More Books", books: sortedByPopularity(otherPicksBooks)))
         }
         
         booksByGenre = orderedGenres
@@ -316,28 +247,5 @@ class FeaturedBooksViewModel: ObservableObject {
             // Return the original category if it doesn't match any mapping
             return category
         }
-    }
-    
-    func refreshFeaturedBooks() async {
-        // Re-select noteworthy books for variety on refresh
-        if !allPopularBooks.isEmpty {
-            selectNoteworthyBooks()
-        }
-        await loadFeaturedBooks()
-    }
-    
-    private func filterBooks() {
-        // Filtering is handled by computed property filteredBooks
-        // This method exists for future enhancements if needed
-    }
-    
-    func clearSearch() {
-        searchText = ""
-    }
-    
-    // MARK: - Book Actions
-    
-    func bookTapped(_ book: Book) {
-        // This will be handled by the view through navigation
     }
 }

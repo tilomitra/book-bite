@@ -1,90 +1,57 @@
 import SwiftUI
 
+/// The book page: who wrote it, what it says, and how to use it. The full summary opens in a reader.
 struct BookDetailView: View {
     @StateObject private var viewModel: BookDetailViewModel
-    @StateObject private var colorExtractor = ColorExtractor()
     @ObservedObject private var audioService = AudioPlaybackService.shared
     @State private var showingChatSheet = false
-    @State private var showingSummarySheet = false
     @State private var showingAuthSheet = false
     @State private var showingAudioPlayer = false
     @EnvironmentObject var authService: SupabaseAuthService
-    
+
     init(book: Book) {
         _viewModel = StateObject(wrappedValue: BookDetailViewModel(
             book: book,
             repository: DependencyContainer.shared.bookRepository
         ))
     }
-    
+
     var body: some View {
-        ZStack {
-            // Background gradient based on book cover colors
-            LinearGradient(
-                colors: colorExtractor.backgroundGradient,
-                startPoint: .top,
-                endPoint: .center
-            )
-            .ignoresSafeArea(.all, edges: .top)
-            
-            ScrollView(.vertical, showsIndicators: true) {
-                VStack(spacing: 0) {
-                    // Clean book header section
-                    bookHeader
-                        .padding(.horizontal)
-                        .padding(.top)
-                        .padding(.bottom, 32)
-                    
-                    // Action buttons section
-                    actionButtonsSection
-                        .padding(.horizontal)
-                        .padding(.bottom, 32)
-                
-                    // Summary preview or status
-                    summaryPreviewSection
-                }
+        ScrollView {
+            VStack(alignment: .leading, spacing: 32) {
+                bookHeader
+
+                summaryContent
             }
+            .padding(.horizontal, 20)
+            .padding(.top, 8)
+            .padding(.bottom, 40)
+            // Keep lines a readable length on wide screens
+            .frame(maxWidth: 680)
+            .frame(maxWidth: .infinity)
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                // Offline status indicator
-                if viewModel.isDownloadingForOffline {
-                    ProgressView()
-                        .scaleEffect(0.7)
-                } else if viewModel.isAvailableOffline {
-                    Image(systemName: "arrow.down.circle.fill")
-                        .foregroundColor(DesignSystem.Colors.badgeGreen)
-                        .font(.caption)
-                }
-
-                // Favorite button
-                Button(action: {
-                    handleFavoriteButtonTapped()
-                }) {
+                Button(action: handleFavoriteButtonTapped) {
                     if viewModel.isLoadingFavorite {
                         ProgressView()
-                            .scaleEffect(0.8)
                     } else {
-                        Image(systemName: viewModel.isFavorite ? "star.fill" : "star")
-                            .foregroundColor(viewModel.isFavorite ? DesignSystem.Colors.nytGold : .primary)
+                        Image(systemName: viewModel.isFavorite ? "bookmark.fill" : "bookmark")
                     }
                 }
+                .accessibilityLabel(viewModel.isFavorite ? "Remove from saved" : "Save")
 
-                // Share button
                 Button(action: {
                     SharingService.shared.shareBook(viewModel.book)
                 }) {
                     Image(systemName: "square.and.arrow.up")
-                        .foregroundColor(.primary)
                 }
+                .accessibilityLabel("Share")
             }
         }
-        .task {
-            await colorExtractor.extractColors(from: viewModel.book.coverAssetName)
-        }
         .sheet(isPresented: $showingChatSheet) {
-            NavigationView {
+            NavigationStack {
                 BookChatView(book: viewModel.book)
                     .navigationTitle(viewModel.book.title)
                     .navigationBarTitleDisplayMode(.inline)
@@ -96,23 +63,6 @@ struct BookDetailView: View {
                         }
                     }
             }
-            .presentationDetents([.large])
-            .presentationDragIndicator(.visible)
-        }
-        .sheet(isPresented: $showingSummarySheet) {
-            NavigationView {
-                summarySheetContent
-                    .navigationTitle(viewModel.book.title)
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button("Done") {
-                                showingSummarySheet = false
-                            }
-                        }
-                    }
-            }
-            .presentationDetents([.large])
             .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showingAuthSheet) {
@@ -124,443 +74,217 @@ struct BookDetailView: View {
                 .presentationDragIndicator(.visible)
         }
     }
-    
-    var actionButtonsSection: some View {
+
+    // MARK: - Header
+
+    private var bookHeader: some View {
         VStack(spacing: 16) {
-            // Primary CTA - Chat with book
-            Button(action: {
-                showingChatSheet = true
-            }) {
-                HStack(spacing: 12) {
-                    Image(systemName: "message.circle.fill")
-                        .font(.system(size: 20, weight: .medium))
+            BookCoverView(coverURL: viewModel.book.coverAssetName, size: .large)
 
-                    Text("Chat with book")
-                        .font(.system(size: 18, weight: .semibold))
+            VStack(spacing: 6) {
+                Text(viewModel.book.title)
+                    .font(.system(.title2, design: .serif))
+                    .fontWeight(.bold)
+                    .multilineTextAlignment(.center)
 
-                    Spacer()
-
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 14, weight: .semibold))
+                if let subtitle = viewModel.book.subtitle, !subtitle.isEmpty {
+                    Text(subtitle)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
                 }
-                .foregroundColor(Color(UIColor.systemBackground))
-                .padding(.horizontal, 24)
-                .padding(.vertical, 18)
-                .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.primary)
-                )
-                .shadow(color: Color.black.opacity(0.15), radius: 12, x: 0, y: 6)
+
+                Text(viewModel.book.formattedAuthors)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+
+                if !viewModel.metadataLine.isEmpty {
+                    Text(viewModel.metadataLine)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
             }
-            .buttonStyle(.plain)
+        }
+        .frame(maxWidth: .infinity)
+    }
 
-            // Listen to Audio Summary (if available)
-            if let summary = viewModel.summary, summary.hasAudio {
-                Button(action: {
-                    audioService.loadAudio(for: viewModel.book, summary: summary, autoPlay: true)
-                    showingAudioPlayer = true
-                }) {
-                    HStack(spacing: 12) {
-                        Image(systemName: "headphones")
-                            .font(.system(size: 20, weight: .medium))
+    // MARK: - Summary
 
-                        Text("Listen")
-                            .font(.system(size: 18, weight: .semibold))
+    @ViewBuilder
+    private var summaryContent: some View {
+        if viewModel.isLoadingSummary {
+            Group {
+                if viewModel.isGeneratingSummary {
+                    GeneratingView(message: viewModel.generationMessage)
+                } else {
+                    ProgressView()
+                }
+            }
+            .frame(maxWidth: .infinity, minHeight: 160)
+        } else if let error = viewModel.summaryError {
+            ContentUnavailableView {
+                Label("Can't load the summary", systemImage: "exclamationmark.triangle")
+            } description: {
+                Text(error.localizedDescription)
+            } actions: {
+                Button("Try Again") {
+                    Task { await viewModel.loadSummary() }
+                }
+                .buttonStyle(.bordered)
+            }
+        } else if let summary = viewModel.summary {
+            actions(for: summary)
+            summaryBody(summary)
+        } else {
+            noSummaryView
+        }
+    }
 
-                        Spacer()
-
-                        if let duration = summary.formattedAudioDuration {
-                            Text(duration)
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.primary.opacity(0.6))
-                        }
-
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 14, weight: .semibold))
-                    }
-                    .foregroundColor(.primary)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 18)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color(UIColor.secondarySystemBackground))
-                            .stroke(Color(UIColor.separator).opacity(0.5), lineWidth: 1)
-                    )
+    private func actions(for summary: Summary) -> some View {
+        VStack(spacing: 12) {
+            if summary.hasFullText {
+                NavigationLink(destination: SummaryReaderView(book: viewModel.book, summary: summary)) {
+                    Label("Read summary", systemImage: "book")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .foregroundColor(Color(UIColor.systemBackground))
+                        .background(RoundedRectangle(cornerRadius: 12).fill(Color.primary))
                 }
                 .buttonStyle(.plain)
             }
 
-            // Secondary CTA - Read Extended Summary
-            Button(action: {
-                showingSummarySheet = true
-            }) {
-                HStack(spacing: 12) {
-                    Image(systemName: "doc.text.fill")
-                        .font(.system(size: 20, weight: .medium))
-
-                    Text("Read")
-                        .font(.system(size: 18, weight: .semibold))
-
-                    Spacer()
-
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 14, weight: .semibold))
+            HStack(spacing: 12) {
+                if summary.hasAudio {
+                    secondaryButton(
+                        title: summary.formattedAudioDuration.map { "Listen · \($0)" } ?? "Listen",
+                        icon: "headphones"
+                    ) {
+                        audioService.loadAudio(for: viewModel.book, summary: summary, autoPlay: true)
+                        showingAudioPlayer = true
+                    }
                 }
+
+                secondaryButton(title: "Ask the book", icon: "bubble.left") {
+                    showingChatSheet = true
+                }
+            }
+        }
+    }
+
+    private func secondaryButton(title: String, icon: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Label(title, systemImage: icon)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
                 .foregroundColor(.primary)
-                .padding(.horizontal, 24)
-                .padding(.vertical, 18)
                 .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color(UIColor.secondarySystemBackground))
-                        .stroke(Color(UIColor.separator).opacity(0.5), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color(UIColor.separator), lineWidth: 1)
                 )
-            }
-            .buttonStyle(.plain)
+                .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
     }
-    
-    var summaryPreviewSection: some View {
-        VStack(spacing: 20) {
-            if viewModel.isLoadingSummary {
-                VStack(spacing: 16) {
-                    if viewModel.isGeneratingSummary {
-                        GeneratingView(message: viewModel.generationMessage)
-                    } else {
-                        ConsistentLoadingView(style: .primary, message: "Loading summary...")
-                    }
-                }
-                .frame(height: 150)
-                .padding()
-            } else if let error = viewModel.summaryError {
-                ErrorView(error: error) {
-                    Task {
-                        await viewModel.loadSummary()
-                    }
-                }
-                .padding()
-            } else if let summary = viewModel.summary {
-                summaryPreview(summary)
-            } else {
-                noSummaryPreview
-            }
-        }
-        .background(Color(UIColor.systemBackground))
-    }
-    
-    var summarySheetContent: some View {
-        Group {
-            if let summary = viewModel.summary {
-                EnhancedSummaryView(
-                    summary: summary, 
-                    book: viewModel.book,
-                    dominantColor: colorExtractor.dominantColor,
-                    secondaryColor: colorExtractor.secondaryColor,
-                    onGenerateSummary: {
-                        await viewModel.generateSummary()
-                    }
-                )
-            } else if viewModel.isLoadingSummary {
-                VStack(spacing: 16) {
-                    if viewModel.isGeneratingSummary {
-                        GeneratingView(message: viewModel.generationMessage)
-                    } else {
-                        ConsistentLoadingView(style: .primary, message: "Loading summary...")
-                    }
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                noSummaryView
-            }
-        }
-    }
-    
-    var bookHeader: some View {
-        VStack(spacing: 20) {
-            // Book cover centered
-            BookCoverView(coverURL: viewModel.book.coverAssetName, size: .large)
-                .frame(height: 200)
-                .shadow(radius: 10)
-            
-            // Book information
-            VStack(spacing: 12) {
-                Text(viewModel.book.title)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .multilineTextAlignment(.center)
-                
-                if let subtitle = viewModel.book.subtitle {
-                    Text(subtitle)
-                        .font(.callout)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-                
-                Text(viewModel.book.formattedAuthors)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundColor(.primary.opacity(0.8))
-                
-                VStack(spacing: 8) {
-                    HStack(spacing: 20) {
-                        // Publication info
-                        Text(viewModel.publicationInfo)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        
-                        // Reading time
-                        HStack(spacing: 4) {
-                            Image(systemName: "clock")
-                            Text(viewModel.readingTime)
-                        }
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    }
-                    
-                    // Book rating
-                    if viewModel.isLoadingRating {
-                        RatingLoadingView(compact: true)
-                    } else if let rating = viewModel.rating {
-                        BookRatingDisplayView(rating: rating, showSource: false, compact: true)
-                    }
-                }
-            }
-        }
-    }
-    
-    func summaryPreview(_ summary: Summary) -> some View {
-        VStack(spacing: 20) {
-            summaryHookSection(summary)
-            keyIdeasSection(summary)
-            actionsSection(summary)
-        }
-    }
-    
+
     @ViewBuilder
-    private func summaryHookSection(_ summary: Summary) -> some View {
+    private func summaryBody(_ summary: Summary) -> some View {
         if !summary.oneSentenceHook.isEmpty {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Text("What's inside?")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                    Spacer()
+            Text(summary.oneSentenceHook)
+                .font(.system(.title3, design: .serif))
+                .foregroundColor(.primary)
+                .lineSpacing(4)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+
+        if !summary.keyIdeas.isEmpty {
+            DetailSection(title: "Key ideas") {
+                ForEach(Array(summary.keyIdeas.enumerated()), id: \.element.id) { index, idea in
+                    HStack(alignment: .firstTextBaseline, spacing: 12) {
+                        Text("\(index + 1)")
+                            .font(.subheadline.monospacedDigit())
+                            .fontWeight(.semibold)
+                            .foregroundColor(.secondary)
+                            .frame(minWidth: 20, alignment: .trailing)
+
+                        Text(idea.idea)
+                            .font(.body)
+                            .lineSpacing(3)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                 }
-                
-                Text(summary.oneSentenceHook)
+            }
+        }
+
+        if !summary.howToApply.isEmpty {
+            DetailSection(title: "How to apply it") {
+                ForEach(summary.howToApply, id: \.id) { point in
+                    HStack(alignment: .firstTextBaseline, spacing: 12) {
+                        Text("•")
+                            .foregroundColor(.secondary)
+                            .frame(minWidth: 20, alignment: .trailing)
+
+                        Text(point.action)
+                            .font(.body)
+                            .lineSpacing(3)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
+        }
+
+        if !summary.whoShouldRead.isEmpty {
+            DetailSection(title: "Who it's for") {
+                Text(summary.whoShouldRead)
                     .font(.body)
-                    .foregroundColor(.primary.opacity(0.8))
-                    .italic()
+                    .lineSpacing(3)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(UIColor.secondarySystemBackground))
-            )
-            .padding(.horizontal)
         }
-    }
-    
-    @ViewBuilder
-    private func keyIdeasSection(_ summary: Summary) -> some View {
-        if !summary.keyIdeas.isEmpty {
-            keyIdeasContent(summary)
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color(UIColor.secondarySystemBackground))
-                )
-                .padding(.horizontal)
-        }
-    }
-    
-    private func keyIdeasContent(_ summary: Summary) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: "lightbulb.fill")
-                    .foregroundColor(.primary)
-                    .font(.system(size: 16))
-                Text("Key Ideas")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                Spacer()
-            }
-            
-            VStack(alignment: .leading, spacing: 8) {
-                ForEach(Array(summary.keyIdeas.enumerated()), id: \.element.id) { index, idea in
-                    keyIdeaRow(index: index, idea: idea)
-                }
-            }
-        }
-    }
-    
-    private func keyIdeaRow(index: Int, idea: KeyIdea) -> some View {
-        HStack(alignment: .top, spacing: 8) {
-            Text("\(index + 1).")
-                .font(.callout)
-                .fontWeight(.semibold)
-                .foregroundColor(.secondary)
-                .frame(width: 20, alignment: .trailing)
-            
-            Text(idea.idea)
-                .font(.callout)
-                .foregroundColor(.primary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-    }
-    
-    @ViewBuilder
-    private func actionsSection(_ summary: Summary) -> some View {
-        if !summary.howToApply.isEmpty {
-            actionsContent(summary)
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color(UIColor.secondarySystemBackground))
-                )
-                .padding(.horizontal)
-        }
-    }
-    
-    private func actionsContent(_ summary: Summary) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.primary)
-                    .font(.system(size: 16))
-                Text("Actions to Apply")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                Spacer()
-            }
-            
-            VStack(alignment: .leading, spacing: 8) {
-                ForEach(summary.howToApply, id: \.id) { action in
-                    actionRow(action: action)
-                }
-            }
-        }
-    }
-    
-    private func actionRow(action: ApplicationPoint) -> some View {
-        HStack(alignment: .top, spacing: 8) {
-            Image(systemName: "arrow.right.circle.fill")
-                .font(.caption)
-                .foregroundColor(.primary.opacity(0.5))
-                .frame(width: 20)
-
-            Text(action.action)
-                .font(.callout)
-                .foregroundColor(.primary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-    }
-    
-    var noSummaryPreview: some View {
-        VStack(spacing: 20) {
-            VStack(spacing: 16) {
-                Image(systemName: "doc.text.magnifyingglass")
-                    .font(.system(size: 40))
-                    .foregroundColor(.secondary.opacity(0.7))
-                
-                VStack(spacing: 8) {
-                    Text("No Summary Available")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.primary)
-                    
-                    Text("Generate a summary to unlock key insights and detailed analysis.")
-                        .font(.body)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 20)
-                }
-            }
-            
-            Button(action: {
-                Task {
-                    await viewModel.generateSummary()
-                }
-            }) {
-                HStack(spacing: 8) {
-                    Image(systemName: "sparkles")
-                        .font(.system(size: 16, weight: .medium))
-                    Text("Generate Summary")
-                        .font(.system(size: 16, weight: .semibold))
-                }
-                .foregroundColor(Color(UIColor.systemBackground))
-                .padding(.horizontal, 24)
-                .padding(.vertical, 14)
-                .background(Color.primary)
-                .clipShape(Capsule())
-                .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 4)
-            }
-            .buttonStyle(.plain)
-        }
-        .padding()
     }
 
-    var noSummaryView: some View {
-        VStack(spacing: 24) {
-            VStack(spacing: 16) {
-                Image(systemName: "doc.text.magnifyingglass")
-                    .font(.system(size: 50))
-                    .foregroundColor(.secondary.opacity(0.7))
-                
-                VStack(spacing: 8) {
-                    Text("No Summary Available")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.primary)
-                    
-                    Text("This book doesn't have an extended summary yet. Generate one to get key insights, ideas, and a detailed breakdown.")
-                        .font(.body)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 20)
-                }
+    private var noSummaryView: some View {
+        ContentUnavailableView {
+            Label("No summary yet", systemImage: "doc.text")
+        } description: {
+            Text("Create a summary of the key ideas in this book. It can take a few minutes.")
+        } actions: {
+            Button("Create summary") {
+                Task { await viewModel.generateSummary() }
             }
-            
-            Button(action: {
-                Task {
-                    await viewModel.generateSummary()
-                }
-            }) {
-                HStack(spacing: 8) {
-                    Image(systemName: "sparkles")
-                        .font(.system(size: 16, weight: .medium))
-                    Text("Generate a summary")
-                        .font(.system(size: 16, weight: .semibold))
-                }
-                .foregroundColor(Color(UIColor.systemBackground))
-                .padding(.horizontal, 24)
-                .padding(.vertical, 14)
-                .background(Color.primary)
-                .clipShape(Capsule())
-                .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 4)
-            }
-            .buttonStyle(.plain)
+            .buttonStyle(.bordered)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 40)
-        .padding(.horizontal, 20)
-        .background(Color(UIColor.systemBackground))
     }
-    
+
     // MARK: - Actions
-    
+
     private func handleFavoriteButtonTapped() {
-        // Check if user is authenticated
         if authService.authState.isAuthenticated {
-            // User is authenticated, proceed with favorite toggle
             Task {
                 await viewModel.toggleFavorite()
             }
         } else {
-            // User is not authenticated, show authentication sheet
+            // Saving needs an account
             showingAuthSheet = true
         }
     }
 }
 
-// StatView removed - now displaying key ideas and actions directly
+/// A headed block of text on the book page.
+private struct DetailSection<Content: View>: View {
+    let title: String
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text(title)
+                .font(.headline)
+
+            content
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}

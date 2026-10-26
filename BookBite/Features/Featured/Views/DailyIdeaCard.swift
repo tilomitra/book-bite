@@ -1,79 +1,58 @@
 import SwiftUI
 
-/// "Idea of the day": one short idea at the top of the Featured tab. Tap to open the book.
+/// "Idea of the day": one short idea at the top of the Discover tab. Tap to open the book.
 struct DailyIdeaCard: View {
     let dailyIdea: DailyIdea
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            // Header
-            HStack {
-                HStack(spacing: 8) {
-                    Image(systemName: "sun.max.fill")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(.primary)
+        NavigationLink(destination: BookDetailView(book: dailyIdea.book)) {
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Idea of the day")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.secondary)
+                    .textCase(.uppercase)
 
-                    Text("Idea of the day")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(.secondary)
-                        .textCase(.uppercase)
-                }
+                Text(dailyIdea.idea.idea)
+                    .font(.system(.title3, design: .serif))
+                    .fontWeight(.medium)
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
 
-                Spacer()
+                HStack(spacing: 12) {
+                    EnhancedBookCover(coverURL: dailyIdea.book.coverAssetName)
+                        .frame(width: 32, height: 48)
 
-                ShareLink(item: dailyIdea.shareText) {
-                    Image(systemName: "square.and.arrow.up")
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.primary)
-                }
-                .accessibilityLabel("Share idea")
-            }
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(dailyIdea.book.title)
+                            .font(.footnote)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                            .lineLimit(1)
 
-            NavigationLink(destination: BookDetailView(book: dailyIdea.book)) {
-                VStack(alignment: .leading, spacing: 14) {
-                    Text(dailyIdea.idea.idea)
-                        .font(.system(size: 20, weight: .semibold, design: .serif))
-                        .foregroundColor(.primary)
-                        .multilineTextAlignment(.leading)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                    // Source book
-                    HStack(spacing: 10) {
-                        EnhancedBookCover(coverURL: dailyIdea.book.coverAssetName)
-                            .frame(width: 36, height: 54)
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(dailyIdea.book.title)
-                                .font(.system(size: 13, weight: .semibold))
-                                .foregroundColor(.primary)
-                                .lineLimit(1)
-
-                            Text(dailyIdea.book.formattedAuthors)
-                                .font(.system(size: 12))
-                                .foregroundColor(.secondary)
-                                .lineLimit(1)
-                        }
-
-                        Spacer()
-
-                        Text("Read more")
-                            .font(.system(size: 13, weight: .medium))
+                        Text(dailyIdea.book.formattedAuthors)
+                            .font(.caption)
                             .foregroundColor(.secondary)
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(.secondary)
+                            .lineLimit(1)
                     }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
                 }
-                .contentShape(Rectangle())
             }
-            .buttonStyle(PlainButtonStyle())
+            .padding(20)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color(UIColor.secondarySystemBackground))
+            )
+            .contentShape(Rectangle())
         }
-        .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(UIColor.secondarySystemBackground))
-        )
+        .buttonStyle(.plain)
         .padding(.horizontal)
-        .padding(.top, 8)
     }
 }

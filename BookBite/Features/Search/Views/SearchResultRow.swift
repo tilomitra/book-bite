@@ -1,59 +1,34 @@
 import SwiftUI
 
+/// One book in a list: cover, title, author, year.
 struct SearchResultRow: View {
     let book: Book
-    
+
     var body: some View {
-        HStack(alignment: .top, spacing: 16) {
+        HStack(alignment: .center, spacing: 16) {
             BookCoverView(coverURL: book.coverAssetName, size: .small)
-            
-            VStack(alignment: .leading, spacing: 6) {
+
+            VStack(alignment: .leading, spacing: 4) {
                 Text(book.title)
                     .font(.headline)
-                    .fontWeight(.semibold)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.primary)
-                
+
                 Text(book.formattedAuthors)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .lineLimit(1)
-                
-                Text(book.publishedYear != nil ? String(book.publishedYear!) : "")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                
-                if book.isNYTBestseller == true {
-                    HStack(spacing: 4) {
-                        Image(systemName: "star.fill")
-                            .font(.system(size: 10))
-                            .foregroundColor(DesignSystem.Colors.nytGold)
-                        Text("NYT Bestseller")
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(DesignSystem.Colors.nytGold)
-                    }
-                    .padding(.top, 2)
+
+                if let year = book.publishedYear {
+                    Text(String(year))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.vertical, 12)
+        .padding(.vertical, 6)
         .contentShape(Rectangle())
-    }
-}
-
-struct CategoryChip: View {
-    let category: String
-    
-    var body: some View {
-        Text(category)
-            .font(.caption2)
-            .fontWeight(.medium)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .background(Color.secondary.opacity(0.15))
-            .cornerRadius(6)
     }
 }

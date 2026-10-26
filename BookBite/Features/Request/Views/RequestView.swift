@@ -76,106 +76,12 @@ struct RequestView: View {
 
 struct InitialRequestView: View {
     var body: some View {
-        VStack(spacing: 20) {
-            // Simple hero section
-            VStack(spacing: 12) {
-                Image(systemName: "plus.magnifyingglass")
-                    .font(.system(size: 50, weight: .light))
-                    .foregroundColor(.primary)
-
-                Text("Request Any Book")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                
-                Text("Search for any book to add it to your library")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 20)
-            }
-            .padding(.top, 20)
-            
-            // Simplified how it works
-            VStack(spacing: 12) {
-                Text("How it works:")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 20)
-                
-                VStack(spacing: 8) {
-                    HowItWorksStep(
-                        number: "1",
-                        title: "Search",
-                        description: "Search for any book using the search bar above",
-                        color: .primary
-                    )
-
-                    HowItWorksStep(
-                        number: "2",
-                        title: "Select",
-                        description: "Choose the book you want from the search results",
-                        color: .primary
-                    )
-
-                    HowItWorksStep(
-                        number: "3",
-                        title: "AI Analysis",
-                        description: "Our AI generates a comprehensive summary with key insights",
-                        color: .primary
-                    )
-
-                    HowItWorksStep(
-                        number: "4",
-                        title: "Ready to Read",
-                        description: "The book is added to your library with intelligent summaries",
-                        color: .primary
-                    )
-                }
-                .padding(.horizontal, 20)
-            }
-            
-            Spacer()
+        ContentUnavailableView {
+            Label("Request a book", systemImage: "plus.magnifyingglass")
+        } description: {
+            Text("Search for a book that is not in the library. We add it and write its summary.")
         }
-    }
-}
-
-struct HowItWorksStep: View {
-    let number: String
-    let title: String
-    let description: String
-    let color: Color
-    
-    init(number: String, title: String, description: String, color: Color = .primary) {
-        self.number = number
-        self.title = title
-        self.description = description
-        self.color = color
-    }
-
-    var body: some View {
-        HStack(spacing: 12) {
-            // Simple step number
-            Text(number)
-                .font(.headline)
-                .fontWeight(.bold)
-                .foregroundColor(Color(UIColor.systemBackground))
-                .frame(width: 28, height: 28)
-                .background(Circle().fill(Color.primary))
-            
-            // Compact content
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                
-                Text(description)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            
-            Spacer()
-        }
+        .padding(.top, 40)
     }
 }
 

@@ -2,9 +2,7 @@ import SwiftUI
 
 struct RootView: View {
     @EnvironmentObject var dependencies: DependencyContainer
-    @StateObject private var onboardingService = DependencyContainer.shared.onboardingService
     @ObservedObject private var audioService = AudioPlaybackService.shared
-    @State private var showOnboarding = false
     @State private var showDeepLinkBook = false
     @State private var showFullAudioPlayer = false
 
@@ -21,21 +19,14 @@ struct RootView: View {
                     FeaturedBooksView()
                 }
                 .tabItem {
-                    Label("Featured", systemImage: "star.fill")
+                    Label("Discover", systemImage: "book")
                 }
 
                 NavigationStack {
-                    RequestView()
+                    BookSearchView()
                 }
                 .tabItem {
-                    Label("Request", systemImage: "plus.magnifyingglass")
-                }
-
-                NavigationStack {
-                    LibraryView()
-                }
-                .tabItem {
-                    Label("Library", systemImage: "books.vertical")
+                    Label("Search", systemImage: "magnifyingglass")
                 }
 
                 NavigationStack {
@@ -63,21 +54,12 @@ struct RootView: View {
                 .transition(.move(edge: .bottom))
             }
         }
+        .tint(.primary)
         .animation(.easeInOut(duration: 0.25), value: audioService.isActive)
-        .onAppear {
-            if !onboardingService.hasCompletedOnboarding {
-                showOnboarding = true
-            }
-        }
         .onChange(of: deepLinkBook) { _, book in
             if book != nil {
                 showDeepLinkBook = true
             }
-        }
-        .sheet(isPresented: $showOnboarding) {
-            OnboardingView()
-                .environmentObject(onboardingService)
-                .interactiveDismissDisabled()
         }
         .sheet(isPresented: $showDeepLinkBook) {
             if let book = deepLinkBook {
