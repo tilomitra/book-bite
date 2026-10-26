@@ -47,6 +47,7 @@ interface OpenLibraryDoc {
   publisher?: string[];
   ratings_average?: number;
   ratings_count?: number;
+  readinglog_count?: number;
   subject?: string[];
 }
 
@@ -132,7 +133,7 @@ function authorMatches(names: string[] = [], author: string): boolean {
 }
 
 const OPEN_LIBRARY_FIELDS =
-  'key,title,subtitle,author_name,first_publish_year,isbn,cover_i,publisher,ratings_average,ratings_count';
+  'key,title,subtitle,author_name,first_publish_year,isbn,cover_i,publisher,ratings_average,ratings_count,readinglog_count';
 
 async function findOnOpenLibrary(book: CuratedBook): Promise<OpenLibraryDoc | null> {
   const wantedTitle = normalizeTitle(book.title);
@@ -148,8 +149,10 @@ async function findOnOpenLibrary(book: CuratedBook): Promise<OpenLibraryDoc | nu
     const matches = ((data.docs || []) as OpenLibraryDoc[]).filter(
       d => normalizeTitle(d.title) === wantedTitle && authorMatches(d.author_name, book.author)
     );
-    // Prefer the edition with a cover and the most ratings (the main work, not a study guide).
-    matches.sort((a, b) => Number(!!b.cover_i) - Number(!!a.cover_i) || (b.ratings_count || 0) - (a.ratings_count || 0));
+    // Prefer the work with the most readers (the main work, not an obscure edition or study guide), then a cover.
+    matches.sort(
+      (a, b) => (b.readinglog_count || 0) - (a.readinglog_count || 0) || Number(!!b.cover_i) - Number(!!a.cover_i)
+    );
     if (matches[0]) return matches[0];
   }
   return null;
@@ -198,10 +201,6 @@ function googleCoverUrl(volume: any): string | null {
   return `https://books.google.com/books/content?id=${volume.id}&printsec=frontcover&img=1&zoom=1&source=gbs_api`;
 }
 
-function popularityScore(averageRating: number, ratingsCount: number): number {
-  return averageRating > 0 && ratingsCount > 0 ? averageRating * Math.log10(ratingsCount + 1) : 0;
-}
-
 async function buildBookRow(book: CuratedBook) {
   const doc = await findOnOpenLibrary(book);
   // Google Books fills gaps: books Open Library does not have, and missing descriptions.
@@ -233,7 +232,8 @@ async function buildBookRow(book: CuratedBook) {
     google_books_id: google?.id || null,
     average_rating: averageRating,
     ratings_count: ratingsCount,
-    popularity_score: popularityScore(averageRating, ratingsCount)
+    // Open Library reader count, the same scale update-reader-counts.ts uses for every book.
+    popularity_score: doc?.readinglog_count || 0
   };
 }
 

@@ -50,9 +50,10 @@ const SHELF_PREVIEW = 12; // books visible on a Discover shelf; later shelves av
 const MAX_PER_AUTHOR = 2;
 const MAX_SEED_SHELVES = 2;
 // Added to similarity on shelves for books with any sign of being known (featured, NYT, a
-// popularity score or rank). The catalog has many obscure self-published titles that match a
+// popularity rank, or at least KNOWN_BOOK_READERS Open Library readers in popularity_score). The catalog has many obscure self-published titles that match a
 // topic closely; ~0.05 moves a known book from about the 48th closest to about the 16th.
 const KNOWN_BOOK_BOOST = 0.05;
+const KNOWN_BOOK_READERS = 100;
 const MAX_GOAL_SHELVES = 2;
 
 export interface Match { book_id: string; similarity: number }
@@ -69,7 +70,7 @@ interface BookRow {
 
 export function isKnownBook(book: BookRow): boolean {
   return Boolean(book.is_featured || book.is_nyt_bestseller)
-    || book.popularity_score != null
+    || (book.popularity_score ?? 0) >= KNOWN_BOOK_READERS
     || book.popularity_rank != null;
 }
 
