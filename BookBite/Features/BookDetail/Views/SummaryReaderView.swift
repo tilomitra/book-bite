@@ -1,67 +1,318 @@
 import SwiftUI
 
-/// The full summary as plain, comfortable reading text.
+/// The full summary as a book page: chapters, set type, reading themes, and a quiet record of where
+/// the reader is. Chrome is the navigation bar only (current chapter and time left) with a hairline
+/// of progress under it; the tab bar is hidden while reading.
 struct SummaryReaderView: View {
     let book: Book
     let summary: Summary
 
-    @AppStorage("readerTextSize") private var textSize: Double = 18
+    @AppStorage("readerTheme") private var theme: ReaderTheme = .paper
+    @AppStorage("readerTypeface") private var typeface: ReaderTypeface = .serif
+    @AppStorage("readerTextSize") private var textSize: Double = ReaderTextSize.standard
 
-    private let minTextSize: Double = 14
-    private let maxTextSize: Double = 26
+    /// Scales the chosen size with Dynamic Type, so the text reflows at every system size
+    @ScaledMetric(relativeTo: .body) private var typeScale: CGFloat = 1
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.colorScheme) private var systemColorScheme
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dismiss) private var dismiss
+
+    /// Parsed on appear rather than in init: BookDetailView builds this view eagerly for its link
+    @State private var document: ReaderDocument?
+    @State private var position = ScrollPosition(idType: Int.self)
+
+    @State private var fraction: Double = 0
+    @State private var currentChapter = 0
+    /// Where to resume, applied once the content has been laid out
+    @State private var pendingRestore: Double?
+    /// Scrollable distance from the last layout, for keeping the place when the text reflows
+    @State private var scrollRange: CGFloat = 0
+    /// True while the text reflows after a size or typeface change; scroll events are ignored then
+    @State private var isReflowing = false
+    /// Progress is recorded only after any restore, and only once the reader has actually scrolled
+    @State private var isRestored = false
+    @State private var startFraction: Double = 0
+    @State private var hasScrolled = false
+    @State private var lastSaved = Date.distantPast
+    @State private var isFinished = false
+    @State private var showsSettings = false
+    @State private var chapterJumps = 0
+
+    private static let headerID = -1
+    private static let endID = Int.max
+
+    private var style: ReaderStyle {
+        ReaderStyle(theme: theme,
+                    typeface: typeface,
+                    size: CGFloat(textSize) * typeScale * typeface.sizeAdjustment)
+    }
 
     var body: some View {
+        ZStack {
+            theme.background.ignoresSafeArea()
+
+            if let document, !document.isEmpty {
+                reader(document)
+            } else if document != nil {
+                Text("This summary isn't available yet.")
+                    .font(.system(.body, design: .serif))
+                    .foregroundStyle(theme.secondaryInk)
+                    .padding()
+            }
+        }
+        .environment(\.colorScheme, theme.colorScheme ?? systemColorScheme)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.hidden, for: .tabBar)
+        .toolbarBackground(theme.background, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarColorScheme(theme.colorScheme, for: .navigationBar)
+        .toolbar { toolbarContent }
+        .tint(theme.ink)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: theme)
+        .sensoryFeedback(.impact(flexibility: .soft, intensity: 0.6), trigger: isFinished) { _, finished in finished }
+        .sensoryFeedback(.selection, trigger: chapterJumps)
+        .onAppear(perform: load)
+        .onDisappear { record(force: true) }
+        .onChange(of: scenePhase) { _, phase in
+            if phase != .active { record(force: true) }
+        }
+    }
+
+    // MARK: - Reader
+
+    private func reader(_ document: ReaderDocument) -> some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(book.title)
-                        .font(.system(.title, design: .serif))
-                        .fontWeight(.bold)
+            VStack(alignment: .leading, spacing: 0) {
+                ReaderHeader(book: book, minutes: summary.summaryReadTimeMinutes, style: style)
+                    .id(Self.headerID)
 
-                    Text(book.formattedAuthors)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-
-                    Text("\(summary.summaryReadTimeMinutes) min read")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                ForEach(document.chapters) { chapter in
+                    ReaderChapterView(chapter: chapter, isOpening: chapter.id == 0, style: style)
+                        .id(chapter.id)
                 }
 
-                Text(summary.extendedSummary ?? "")
-                    .font(.system(size: textSize, design: .serif))
-                    .lineSpacing(textSize * 0.4)
-                    .textSelection(.enabled)
-                    .fixedSize(horizontal: false, vertical: true)
+                ReaderEndSection(book: book, isFinished: isFinished, style: style) {
+                    dismiss()
+                }
+                .id(Self.endID)
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 16)
-            .padding(.bottom, 40)
-            // Keep lines a readable length on wide screens
+            .scrollTargetLayout()
             .frame(maxWidth: 680, alignment: .leading)
+            .padding(.horizontal, 24)
             .frame(maxWidth: .infinity)
         }
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Menu {
-                    Button {
-                        textSize = min(maxTextSize, textSize + 2)
-                    } label: {
-                        Label("Larger text", systemImage: "textformat.size.larger")
-                    }
-                    .disabled(textSize >= maxTextSize)
+        .scrollPosition($position)
+        .scrollIndicators(.hidden)
+        .onScrollTargetVisibilityChange(idType: Int.self, threshold: 0.01) { ids in
+            updateCurrentChapter(visible: ids, in: document)
+        }
+        .onScrollGeometryChange(for: ScrollMetrics.self) { geometry in
+            ScrollMetrics(
+                offset: geometry.contentOffset.y + geometry.contentInsets.top,
+                range: geometry.contentSize.height + geometry.contentInsets.top
+                    + geometry.contentInsets.bottom - geometry.containerSize.height)
+        } action: { _, metrics in
+            scrolled(to: metrics)
+        }
+        .overlay(alignment: .top) {
+            ProgressHairline(fraction: fraction, theme: theme)
+        }
+        .onChange(of: textSize) { keepPlace() }
+        .onChange(of: typeface) { keepPlace() }
+        .onChange(of: typeScale) { keepPlace() }
+    }
 
-                    Button {
-                        textSize = max(minTextSize, textSize - 2)
-                    } label: {
-                        Label("Smaller text", systemImage: "textformat.size.smaller")
-                    }
-                    .disabled(textSize <= minTextSize)
-                } label: {
-                    Image(systemName: "textformat.size")
+    // MARK: - Toolbar
+
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .principal) {
+            if let document {
+                VStack(spacing: 1) {
+                    Text(currentTitle(in: document))
+                        .font(.system(.footnote, design: .serif).weight(.semibold))
+                        .foregroundStyle(theme.ink)
+                        .lineLimit(1)
+                        .id(currentTitle(in: document))
+                        .transition(.opacity)
+                    Text(timeLeft(in: document))
+                        .font(.caption2)
+                        .monospacedDigit()
+                        .foregroundStyle(theme.secondaryInk)
+                        .contentTransition(.numericText(countsDown: true))
                 }
-                .accessibilityLabel("Text size")
+                .animation(reduceMotion ? nil : .easeInOut(duration: 0.3), value: currentChapter)
+                .animation(reduceMotion ? nil : .default, value: timeLeft(in: document))
+                .accessibilityElement(children: .combine)
             }
         }
+
+        ToolbarItemGroup(placement: .topBarTrailing) {
+            if let document, document.titledChapters.count > 1 {
+                contentsMenu(document)
+            }
+
+            Button {
+                showsSettings = true
+            } label: {
+                Image(systemName: "textformat.size")
+            }
+            .accessibilityLabel("Reading settings")
+            .popover(isPresented: $showsSettings, arrowEdge: .top) {
+                ReaderSettingsPanel(systemColorScheme: systemColorScheme)
+                    .presentationCompactAdaptation(.popover)
+            }
+        }
+    }
+
+    private func contentsMenu(_ document: ReaderDocument) -> some View {
+        Menu {
+            Section("Contents") {
+                Button("Beginning") { jump(to: Self.headerID) }
+
+                ForEach(document.titledChapters) { chapter in
+                    Button {
+                        jump(to: chapter.id)
+                    } label: {
+                        if chapter.id == currentChapter {
+                            Label(chapter.title ?? "", systemImage: "checkmark")
+                        } else {
+                            Text(chapter.title ?? "")
+                        }
+                    }
+                }
+            }
+        } label: {
+            Image(systemName: "list.bullet")
+        }
+        .accessibilityLabel("Contents")
+    }
+
+    private func currentTitle(in document: ReaderDocument) -> String {
+        guard document.chapters.indices.contains(currentChapter),
+              let title = document.chapters[currentChapter].title else {
+            return book.shelfTitle
+        }
+        return title
+    }
+
+    private func timeLeft(in document: ReaderDocument) -> String {
+        if isFinished && fraction > 0.98 { return "Finished" }
+        let minutes = document.minutesLeft(at: fraction)
+        return minutes == 0 ? "Finished" : "\(minutes) min left"
+    }
+
+    // MARK: - Position
+
+    private func load() {
+        guard document == nil else { return }
+        document = ReaderDocument(markdown: summary.extendedSummary ?? "")
+            .hyphenated(locale: Locale(identifier: "en_US"))
+
+        let entry = ReadingProgressStore.shared.entry(for: book.id)
+        if let entry, !entry.isFinished, entry.fraction >= 0.03, entry.fraction < 0.97 {
+            // Resume where they left off
+            startFraction = entry.fraction
+            fraction = entry.fraction
+            currentChapter = entry.chapterIndex
+            pendingRestore = entry.fraction
+        } else {
+            isRestored = true
+        }
+    }
+
+    private func scrolled(to metrics: ScrollMetrics) {
+        if metrics.range != scrollRange { scrollRange = metrics.range }
+        guard metrics.range > 0, !isReflowing else { return }
+
+        if let pending = pendingRestore {
+            pendingRestore = nil
+            position.scrollTo(y: pending * metrics.range)
+            fraction = pending
+            isRestored = true
+            return
+        }
+
+        fraction = min(max(metrics.offset / metrics.range, 0), 1)
+
+        guard isRestored else { return }
+        if !hasScrolled, abs(fraction - startFraction) > 0.005 {
+            hasScrolled = true
+        }
+        guard hasScrolled else { return }
+
+        // Reaching the end section finishes the book
+        if !isFinished, metrics.range - metrics.offset < 80 {
+            isFinished = true
+            ReadingProgressStore.shared.markFinished(book)
+            return
+        }
+        record()
+    }
+
+    /// Keeps the reading position when the text reflows (size, typeface, Dynamic Type)
+    private func keepPlace() {
+        guard isRestored, pendingRestore == nil, fraction > 0, !isReflowing else { return }
+        let target = fraction
+        isReflowing = true
+        Task { @MainActor in
+            // Let the new layout land, then return to the same place in the text
+            try? await Task.sleep(for: .milliseconds(60))
+            position.scrollTo(y: target * scrollRange)
+            fraction = target
+            isReflowing = false
+        }
+    }
+
+    private func updateCurrentChapter(visible ids: [Int], in document: ReaderDocument) {
+        let chapterIDs = ids.filter { document.chapters.indices.contains($0) }
+        if let first = chapterIDs.min() {
+            currentChapter = first
+        } else if ids.contains(Self.headerID) {
+            currentChapter = 0
+        } else if ids.contains(Self.endID) {
+            currentChapter = max(document.chapters.count - 1, 0)
+        }
+    }
+
+    private func jump(to id: Int) {
+        chapterJumps += 1
+        // A long animated scroll through the text is disorienting; jump like a book's contents page
+        position.scrollTo(id: id, anchor: .top)
+    }
+
+    /// Saves the position at most every 2 seconds while scrolling, and always when leaving
+    private func record(force: Bool = false) {
+        guard isRestored, hasScrolled, !isReflowing else { return }
+        let now = Date()
+        guard force || now.timeIntervalSince(lastSaved) > 2 else { return }
+        lastSaved = now
+        ReadingProgressStore.shared.update(book, fraction: fraction, chapterIndex: currentChapter)
+    }
+}
+
+private struct ScrollMetrics: Equatable {
+    /// Distance scrolled from the top, 0...range
+    let offset: CGFloat
+    /// Total scrollable distance
+    let range: CGFloat
+}
+
+/// A hairline under the navigation bar that fills as you read
+private struct ProgressHairline: View {
+    let fraction: Double
+    let theme: ReaderTheme
+
+    var body: some View {
+        GeometryReader { proxy in
+            Rectangle()
+                .fill(theme.ink.opacity(0.55))
+                .frame(width: proxy.size.width * fraction)
+        }
+        .frame(height: 1.5)
+        .background(theme.rule.opacity(0.5))
+        .accessibilityHidden(true)
     }
 }
