@@ -59,22 +59,22 @@
     title.innerHTML = words.map((w, i) => `<span class="w" aria-hidden="true"><span style="--i:${i}">${w}</span></span>`).join(' ');
   }
 
-  const wall = $('[data-wall]');
-  const wallCols = [];
-  if (wall && BOOKS.length) {
-    const plane = document.createElement('div');
-    plane.className = 'wall-plane';
-    const cols = innerWidth < 900 ? 6 : 8;
-    for (let c = 0; c < cols; c++) {
-      const col = document.createElement('div');
-      col.className = 'wall-col';
-      const books = shuffled(BOOKS, c * 17 + 3).slice(0, 7);
-      // Two copies so the column can loop seamlessly
-      [...books, ...books].forEach((b) => col.append(coverEl(b, { lazy: false })));
-      plane.append(col);
-      wallCols.push({ el: col, speed: (c % 2 ? 1 : -1) * (14 + (c * 7) % 11), offset: Math.random() * 400 });
-    }
-    wall.append(plane);
+  // A few covers float around the hero phone; the pointer nudges them by depth
+  const device = $('[data-tilt]');
+  const floaters = [];
+  if (device && BOOKS.length) {
+    const box = document.createElement('div');
+    box.className = 'floaters';
+    box.setAttribute('aria-hidden', 'true');
+    const picks = ['Atomic Habits', 'The Psychology of Money', 'Sapiens', 'The Power of Habit', 'Zero to One', 'Ikigai'];
+    picks.map((t) => BOOKS.find((b) => b.title === t)).filter(Boolean).forEach((b, i) => {
+      const c = coverEl(b, { lazy: false });
+      c.style.setProperty('--dl', `${i * -1.3}s`);
+      c.style.setProperty('--depth', `${18 + (i % 3) * 14}px`);
+      box.append(c);
+      floaters.push(c);
+    });
+    device.prepend(box);
   }
 
   $$('[data-shelf]').forEach((shelf, i) => {
@@ -83,10 +83,9 @@
 
   requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add('is-loaded')));
 
-  // Pointer parallax: the phone and the wall lean toward the cursor
+  // Pointer parallax: the phone leans toward the cursor and the covers drift
   const hero = $('[data-hero]');
   const tilt = $('[data-tilt] .phone');
-  const plane = $('.wall-plane');
   let pointer = { x: 0, y: 0 };
   if (hero && !reduceMotion && matchMedia('(pointer: fine)').matches) {
     hero.addEventListener('pointermove', (e) => {
@@ -96,7 +95,7 @@
         tilt.style.setProperty('--ry', `${-10 + pointer.x * 16}deg`);
         tilt.style.setProperty('--rx', `${4 - pointer.y * 10}deg`);
       }
-      if (plane) plane.style.transform = `rotateX(${32 - pointer.y * 6}deg) rotateZ(${-16 + pointer.x * 5}deg)`;
+      floaters.forEach((c) => { c.style.setProperty('--px', -pointer.x * 2); c.style.setProperty('--py', -pointer.y * 2); });
     });
   }
 
@@ -494,7 +493,6 @@
     return clamp(-r.top / (r.height - innerHeight));
   };
   const visible = (el) => { const r = el.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight; };
-  const darkSections = [story, cta].filter(Boolean);
   let lastY = scrollY, velocity = 0, lastT = performance.now();
   const shelfRows = $$('[data-shelf]').map((el, i) => ({ el, x: 0, speed: i ? 9 : 14 }));
 
@@ -506,15 +504,8 @@
     lastY = y;
 
     nav.classList.toggle('is-stuck', y > 40);
-    nav.classList.toggle('on-dark', darkSections.some((el) => { const r = el.getBoundingClientRect(); return r.top < 40 && r.bottom > 40; }));
 
     if (hero && visible(hero) && !reduceMotion) {
-      wallCols.forEach((c) => {
-        c.offset += c.speed * dt;
-        const h = c.el.scrollHeight / 2;
-        const off = ((c.offset % h) + h) % h;
-        c.el.style.transform = `translate3d(0, ${-off - y * 0.25 * Math.sign(c.speed)}px, 0)`;
-      });
       shelfRows.forEach((s) => {
         s.x -= s.speed * dt;
         const w = s.el.scrollWidth / 2;
