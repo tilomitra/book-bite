@@ -5,54 +5,60 @@ struct RootView: View {
     @ObservedObject private var audioService = AudioPlaybackService.shared
     @ObservedObject private var router = DeepLinkRouter.shared
     @State private var showFullAudioPlayer = false
-    @State private var selectedTab: Tab = .discover
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @State private var selectedTab: AppTab = .discover
     /// Discover's stack, so links, Spotlight and intents can push a book onto it
     @State private var discoverPath = NavigationPath()
     /// Ask's stack: the compose screen pushes a conversation onto it
     @State private var askPath = NavigationPath()
 
-    enum Tab: Hashable {
-        case discover, ask, search, library
+    /// Not named `Tab`: that is SwiftUI's tab type
+    enum AppTab: Hashable {
+        case discover, ask, search, library, notebook
     }
 
     var body: some View {
         ZStack(alignment: .bottom) {
+            // A tab bar on iPhone; on iPad a sidebar the user can collapse into a tab bar at the top
             TabView(selection: $selectedTab) {
-                NavigationStack(path: $discoverPath) {
-                    FeaturedBooksView()
-                        .navigationDestination(for: BookRoute.self) { route in
-                            BookDetailView(book: route.book)
+                Tab("Discover", systemImage: "book", value: AppTab.discover) {
+                    NavigationStack(path: $discoverPath) {
+                        FeaturedBooksView()
+                            .navigationDestination(for: BookRoute.self) { route in
+                                BookDetailView(book: route.book)
+                            }
+                    }
+                }
+
+                Tab("Ask", systemImage: "questionmark.bubble", value: AppTab.ask) {
+                    NavigationStack(path: $askPath) {
+                        AskView(path: $askPath)
+                    }
+                }
+
+                Tab("Search", systemImage: "magnifyingglass", value: AppTab.search) {
+                    NavigationStack {
+                        BookSearchView()
+                    }
+                }
+
+                Tab("Library", systemImage: "books.vertical", value: AppTab.library) {
+                    NavigationStack {
+                        MyLibraryView()
+                    }
+                }
+
+                // Sidebar only: the iPhone tab bar keeps its four tabs
+                TabSection("Your reading") {
+                    Tab("Notebook", systemImage: "text.quote", value: AppTab.notebook) {
+                        NavigationStack {
+                            NotebookView()
                         }
+                    }
                 }
-                .tabItem {
-                    Label("Discover", systemImage: "book")
-                }
-                .tag(Tab.discover)
-
-                NavigationStack(path: $askPath) {
-                    AskView(path: $askPath)
-                }
-                .tabItem {
-                    Label("Ask", systemImage: "questionmark.bubble")
-                }
-                .tag(Tab.ask)
-
-                NavigationStack {
-                    BookSearchView()
-                }
-                .tabItem {
-                    Label("Search", systemImage: "magnifyingglass")
-                }
-                .tag(Tab.search)
-
-                NavigationStack {
-                    MyLibraryView()
-                }
-                .tabItem {
-                    Label("Library", systemImage: "books.vertical")
-                }
-                .tag(Tab.library)
+                .defaultVisibility(.hidden, for: .tabBar)
             }
+            .tabViewStyle(.sidebarAdaptable)
             // Add padding at bottom when mini player is visible
             .safeAreaInset(edge: .bottom) {
                 if audioService.isActive {
@@ -68,6 +74,8 @@ struct RootView: View {
                         showFullPlayer: $showFullAudioPlayer
                     )
                 }
+                // On iPad a full-width bar would stretch across the sidebar and the page
+                .frame(maxWidth: horizontalSizeClass == .regular ? 560 : CGFloat.infinity)
                 .transition(.move(edge: .bottom))
             }
         }

@@ -5,6 +5,11 @@ import UIKit
 struct AskConversationView: View {
     @StateObject private var viewModel: AskConversationViewModel
     @FocusState private var inputFocused: Bool
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    /// Wide layout only: the cited books in a column beside the answer
+    @State private var showsSources = true
+
+    private var isWide: Bool { horizontalSizeClass == .regular }
 
     init(route: AskRoute) {
         _viewModel = StateObject(wrappedValue: AskConversationViewModel(
@@ -28,9 +33,12 @@ struct AskConversationView: View {
                         .id(turn.id)
                     }
                 }
-                .padding(.horizontal, 20)
+                .padding(.horizontal, isWide ? 40 : 20)
                 .padding(.top, 12)
                 .padding(.bottom, 24)
+                // A readable line length beside the sources column
+                .frame(maxWidth: isWide ? 720 : CGFloat.infinity)
+                .frame(maxWidth: .infinity)
             }
             .scrollDismissesKeyboard(.interactively)
             .onChange(of: viewModel.conversation.turns.count) { _, _ in
@@ -47,6 +55,23 @@ struct AskConversationView: View {
         .navigationTitle(shortTitle)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.hidden, for: .tabBar)
+        .toolbar {
+            if isWide {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showsSources.toggle()
+                    } label: {
+                        Image(systemName: "sidebar.trailing")
+                    }
+                    .accessibilityLabel(showsSources ? "Hide sources" : "Show sources")
+                }
+            }
+        }
+        // Off on iPhone, where the chips under each point open the books
+        .inspector(isPresented: Binding(get: { isWide && showsSources }, set: { showsSources = $0 })) {
+            AskSourcesPanel(books: viewModel.conversation.turns.last?.sources ?? [])
+                .inspectorColumnWidth(min: 300, ideal: 340, max: 420)
+        }
         .onAppear { viewModel.start() }
         .onDisappear { viewModel.stop() }
     }
@@ -86,6 +111,65 @@ struct AskConversationView: View {
         .askGlass(in: RoundedRectangle(cornerRadius: 27, style: .continuous))
         .padding(.horizontal, 16)
         .padding(.bottom, 8)
+    }
+}
+
+/// The books behind the latest answer, numbered as the answer cites them. Tapping one opens it.
+private struct AskSourcesPanel: View {
+    let books: [Book]
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                Text("Sources")
+                    .font(.caption.weight(.semibold))
+                    .tracking(1.2)
+                    .textCase(.uppercase)
+                    .foregroundStyle(.secondary)
+                    .accessibilityAddTraits(.isHeader)
+
+                if books.isEmpty {
+                    Text("The books behind the answer show here.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                ForEach(Array(books.enumerated()), id: \.element.id) { index, book in
+                    NavigationLink(value: BookRoute(book: book)) {
+                        HStack(alignment: .top, spacing: 14) {
+                            EditorialCover(book: book, width: 60)
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("\(index + 1)")
+                                    .font(.footnote.weight(.semibold).monospacedDigit())
+                                    .foregroundStyle(.secondary)
+                                Text(book.shelfTitle)
+                                    .font(.system(size: 18, weight: .medium, design: .serif))
+                                    .foregroundStyle(.primary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                Text(book.shelfAuthor)
+                                    .font(.footnote)
+                                    .foregroundStyle(.secondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                            .multilineTextAlignment(.leading)
+
+                            Spacer(minLength: 0)
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("Source \(index + 1), \(book.title)")
+                    .accessibilityHint("Opens the book")
+                }
+            }
+            .padding(24)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .background(Color.paper.ignoresSafeArea())
+        .animation(.default, value: books.map(\.id))
     }
 }
 
