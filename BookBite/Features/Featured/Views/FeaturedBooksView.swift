@@ -3,6 +3,7 @@ import SwiftUI
 /// Discover tab: the idea of the day, then an endless feed of shelves and editorial cards.
 struct FeaturedBooksView: View {
     @StateObject private var viewModel: FeaturedBooksViewModel
+    @ObservedObject private var readingProgress = ReadingProgressStore.shared
 
     init() {
         _viewModel = StateObject(wrappedValue: FeaturedBooksViewModel(bookRepository: DependencyContainer.shared.bookRepository))
@@ -15,6 +16,9 @@ struct FeaturedBooksView: View {
                 EditorialHeader(title: "Discover", caption: {
                     Text(Date.now, format: .dateTime.weekday(.wide).month(.wide).day())
                 })
+
+                // On-device, so it shows even while the feed loads or the server is unreachable
+                ContinueReadingSection(entries: readingProgress.inProgress)
 
                 if viewModel.isLoading && viewModel.booksByGenre.isEmpty {
                     ConsistentLoadingView(style: .primary, message: "Loading books...")
@@ -91,6 +95,8 @@ struct BookShelf: View {
     let title: String
     /// Small caps line above the title, e.g. "More like" over a book title
     var eyebrow: String? = nil
+    /// Quiet line under the title, e.g. "12 finished this year"
+    var caption: String? = nil
     let books: [Book]
 
     static let previewCount = 12
@@ -108,9 +114,10 @@ struct BookShelf: View {
         }
     }
 
-    init(title: String, eyebrow: String? = nil, books: [Book]) {
+    init(title: String, eyebrow: String? = nil, caption: String? = nil, books: [Book]) {
         self.title = title
         self.eyebrow = eyebrow
+        self.caption = caption
         self.books = books
     }
 
@@ -138,6 +145,11 @@ struct BookShelf: View {
                         seeAllLink
                             .layoutPriority(1)
                     }
+                }
+                if let caption {
+                    Text(caption)
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
                 }
             }
             .accessibilityElement(children: .contain)

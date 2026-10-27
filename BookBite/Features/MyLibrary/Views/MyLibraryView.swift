@@ -1,10 +1,12 @@
 import SwiftUI
 
-/// Library tab: books you opened recently, saved (needs sign-in) and downloaded. Settings opens from the
-/// account button in the header.
+/// Library tab, your reading loop: summaries in progress, kept ideas (Notebook), books opened recently,
+/// saved (needs sign-in), finished and downloaded. Settings opens from the account button in the header.
 struct MyLibraryView: View {
     @EnvironmentObject private var authService: SupabaseAuthService
     @ObservedObject private var recentBooks = RecentBooksStore.shared
+    @ObservedObject private var readingProgress = ReadingProgressStore.shared
+    @ObservedObject private var savedIdeas = SavedIdeasStore.shared
     @StateObject private var viewModel = MyLibraryViewModel(repository: DependencyContainer.shared.bookRepository)
     @State private var showingSettings = false
     @State private var showingAuth = false
@@ -29,8 +31,18 @@ struct MyLibraryView: View {
                     .accessibilityLabel("Account and settings")
                 })
 
-                if !recentBooks.books.isEmpty {
-                    BookShelf(title: "Recently opened", books: recentBooks.books)
+                if isEmpty {
+                    LibraryIntro()
+                }
+
+                ContinueReadingSection(entries: readingProgress.inProgress, maxCompactRows: 6)
+
+                if !savedIdeas.ideas.isEmpty {
+                    NotebookPreview(ideas: savedIdeas.ideas)
+                }
+
+                if !recentlyOpened.isEmpty {
+                    BookShelf(title: "Recently opened", books: recentlyOpened)
                 }
 
                 if isSignedIn {
@@ -41,17 +53,16 @@ struct MyLibraryView: View {
                     signInPrompt
                 }
 
-                if !viewModel.downloadedBooks.isEmpty {
-                    BookShelf(title: "Downloaded", books: viewModel.downloadedBooks)
+                if !finishedBooks.isEmpty {
+                    BookShelf(
+                        title: "Finished",
+                        caption: FinishedStats.caption(readingProgress.finished),
+                        books: finishedBooks
+                    )
                 }
 
-                if isEmpty {
-                    ContentUnavailableView(
-                        "Nothing here yet",
-                        systemImage: "books.vertical",
-                        description: Text("Books you open, save or download show up here.")
-                    )
-                    .padding(.top, 40)
+                if !viewModel.downloadedBooks.isEmpty {
+                    BookShelf(title: "Downloaded", books: viewModel.downloadedBooks)
                 }
             }
             .padding(.top, 8)
@@ -84,6 +95,17 @@ struct MyLibraryView: View {
 
     private var isEmpty: Bool {
         recentBooks.books.isEmpty && viewModel.downloadedBooks.isEmpty && (viewModel.savedBooks.isEmpty || !isSignedIn)
+            && readingProgress.inProgress.isEmpty && readingProgress.finished.isEmpty && savedIdeas.ideas.isEmpty
+    }
+
+    /// Books opened recently, minus the ones already listed under Continue reading
+    private var recentlyOpened: [Book] {
+        let inProgress = Set(readingProgress.inProgress.map(\.book.id))
+        return recentBooks.books.filter { !inProgress.contains($0.id) }
+    }
+
+    private var finishedBooks: [Book] {
+        readingProgress.finished.map(\.book)
     }
 
     /// Saving needs an account; shown in place of the Saved shelf when signed out.
