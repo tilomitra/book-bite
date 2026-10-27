@@ -8,6 +8,7 @@ BookBite shows AI-generated non-fiction book summaries (one-sentence hook, key i
 
 - **iOS app** (`BookBite/`): SwiftUI, MVVM, iOS 18.5+ deployment target, bundle id `tilo.BookBite`. Built with Xcode 26 (iOS 26 simulator SDK).
 - **Widget extension** (`BookBiteWidget/`, target `BookBiteWidget`, bundle id `tilo.BookBite.BookBiteWidget`): "Idea of the Day" Home Screen widget (small, medium), embedded in the app.
+- **Landing page** (`server/public/`): static one-page site served by the Express server at `/` (so `book-bite.onrender.com/`). See "Landing page" below.
 - **Server** (`server/`): Express + TypeScript, Supabase (Postgres) for data, OpenAI for summaries/chat, ElevenLabs for audio, Bull/Redis for the summary job queue.
 - The app is **remote-only**: all books/summaries come from the server. There is no bundled data or offline-first mode (only per-book offline downloads via `OfflineStorageService`). `HybridBookRepository` is just a wrapper around `RemoteBookRepository`.
 
@@ -135,6 +136,10 @@ Personal Discover shelves from embeddings. `server/supabase/add-book-embeddings.
 ## Covers
 
 `server/scripts/backfill-covers.ts` picks the sharpest cover per book and writes it to `books.cover_url`: Google Books publisher image (`books/publisher/content/images/frontcover/<id>?fife=w1200-h1800`, the original artwork) → the same for other Google editions with matching title + author surname → Apple Books by ISBN (never by title: "Drive" matched the wrong book) → Open Library → current URL. First candidate ≥500px wide with aspect 1.1–1.8 wins; else the largest ≥320px; else `null` (app shows `TypographicCover`). URLs are stored directly (Google/Apple are resizing CDNs; rehosting ~2k covers would hit the Supabase free-tier 1 GB storage). Replaced URLs are kept in `server/scripts/data/cover-url-backup.json` (oldest URL wins on re-runs). By default it skips books already on Google publisher/Apple URLs, so re-run it after adding books; new books still get 128px `books/content` URLs from the importers. iTunes lookup is rate limited (~20/min), so a full run takes a while. The other-edition step uses the Google Books API key, whose daily query quota a full run can exhaust (that also breaks the server's Google search / book requests until midnight Pacific); the script stops and saves what it checked when that happens. `--ids a,b` re-checks specific books. Check `--report` output visually before writing: other-edition matches are the riskiest.
+
+## Landing page
+
+`server/public/` = `index.html`, `landing.css`, `landing.js`, `books.js`, icons; served by `express.static` (10 min cache) before the API routes. No build step and no libraries. Helmet's CSP allows only same-origin scripts, so no inline `<script>`; `img-src` allows any https host for hotlinked covers; Google Fonts (Newsreader, Hanken Grotesk) pass the default `style-src`/`font-src https:`. Scenes: hero (tilted wall of drifting covers behind a Discover phone mock), "bite" (pinned; a cover gets three bites as you scroll, then its hook reveals word by word), story (pinned phone: key ideas → reader themes → audio → chat), Idea of the Day widget mock tinted by cover hue, two velocity-reactive cover marquees, TestFlight CTA. All scroll scenes run off one rAF loop in `landing.js` reading section progress. `books.js` is a static snapshot (title, author, cover, average `tint`/`hue`) of popular books from `/summaries/highlights`, so the page never depends on Supabase; regenerate it by hand if covers change. The TestFlight link is `TESTFLIGHT_URL` at the top of `landing.js` (placeholder until the public invite exists).
 
 ## Server architecture
 
