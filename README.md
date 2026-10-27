@@ -9,6 +9,10 @@
 </p>
 
 <p align="center">
+  <a href="https://book-bite.onrender.com/"><strong>book-bite.onrender.com</strong></a>
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/iOS-18.5%2B-black?logo=apple" alt="iOS 18.5+">
   <img src="https://img.shields.io/badge/SwiftUI-MVVM-F05138?logo=swift&logoColor=white" alt="SwiftUI">
   <img src="https://img.shields.io/badge/server-Express%20%2B%20TypeScript-3178C6?logo=typescript&logoColor=white" alt="Express + TypeScript">
@@ -20,6 +24,8 @@
 BookBite is an iOS app for people who want to learn from books but do not have time to read all of them. Each book gets a one-sentence hook, its key ideas, how to apply them, an honest look at its weak points, and a chaptered summary you can read in about ten minutes. You can also listen to it, or ask the book questions.
 
 The design is quiet and editorial, like a good magazine. The only color comes from the book covers.
+
+BookBite is in beta on TestFlight. See the [website](https://book-bite.onrender.com/).
 
 ## What you can do
 
@@ -72,6 +78,21 @@ Sign-in (Apple or email) is optional. You can use almost all of BookBite as a gu
 - **Recommendations** use one `text-embedding-3-small` vector per book in pgvector. The server builds a taste vector from your liked books, recent books, goals and topics.
 - **Covers** come from the sharpest source available (Google publisher art, Apple Books, Open Library). When no good cover exists, the app draws a typographic cover on bookcloth.
 
+## The website
+
+The landing page at [book-bite.onrender.com](https://book-bite.onrender.com/) is served by the same Express server as the API, from `server/public/`. It is plain HTML, CSS and JavaScript, with no build step and no libraries.
+
+- **A WebGL book mosaic.** The hero is about 600 real covers on a tilted table, drawn with WebGL2 shaders: rounded corners, spine shading, gloss and soft shadows. The covers drop in on load, lift toward your cursor, and part around the headline.
+- **Scroll scenes.** A cover gets bitten down to its one-sentence hook. A phone walks through key ideas, the reader, audio and chat. There is also a demo of turning an everyday problem into a book and steps, and the Idea of the Day widget.
+- **No live data needed.** Book titles and covers are a saved snapshot (`books.js`), so the page still works if the database is down. The browser can't read the cover sites' images into WebGL, so the covers are baked into one image, `covers-atlas.webp`. After you change `books.js`, rebuild it:
+
+```bash
+cd server
+python3 scripts/build-landing-atlas.py public/books.js public/covers-atlas.webp > /tmp/books.js && mv /tmp/books.js public/books.js
+```
+
+The script needs Pillow (`pip install pillow`). The TestFlight link is `TESTFLIGHT_URL` at the top of `server/public/landing.js`.
+
 ## Project layout
 
 ```
@@ -84,6 +105,7 @@ BookBite/              iOS app
 BookBiteWidget/        "Idea of the Day" widget extension
 BookBiteTests/         Unit tests (Swift Testing)
 server/
+├── public/            The website (landing page and WebGL hero)
 ├── src/               routes → controllers → services, Zod types, middleware
 ├── scripts/           Catalogue, summary, audio, cover and embedding scripts
 └── supabase/          Schema and SQL files
@@ -101,7 +123,7 @@ server/
 cd server
 cp .env.example .env        # then fill in your keys
 npm install
-npm run dev                 # http://localhost:3000/api
+npm run dev                 # API at http://localhost:3000/api, website at http://localhost:3000/
 ```
 
 ### 2. Run the app
@@ -141,7 +163,7 @@ These scripts call paid APIs. Most take `--dry-run`, so use it first.
 
 ## Deployment
 
-The server deploys to [Render](https://render.com) from `main` (`server/`, `yarn build` / `yarn start`), with Redis as a Render Key Value store.
+The server deploys to [Render](https://render.com) from `main` (`server/`, `yarn build` / `yarn start`), with Redis as a Render Key Value store. The website deploys with it, so a push to `main` updates both.
 
 ## Roadmap
 
