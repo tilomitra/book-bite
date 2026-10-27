@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BookBite App Store Screenshots</title>
+<!--
+  App Store screenshots, 6.9" (1320 x 2868). Each slide renders alone at slides.html#<n>.
+  Raw screens in raw/ come from BookBiteUITests/AppStoreScreenshots.swift; render with render.sh.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@500;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=block" rel="stylesheet">
+<style>
+  :root {
+    --text: #0a0a0a;
+    --text-2: #6e6e73;
+    --accent: #ff5b2e;
+    --peach: #fff3ec;
+    --mint: #e7f6ee;
+    --lilac: #f0edff;
+    --butter: #fff6d6;
+    --paper: #f7f2e8;
+    --font: "Geist", -apple-system, system-ui, sans-serif;
+    --serif: "Newsreader", "New York", Georgia, serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #fff; width: 1320px; }
+  body { font-family: var(--font); color: var(--text); -webkit-font-smoothing: antialiased; }
+
+  .slide {
+    position: relative; width: 1320px; height: 2868px; overflow: hidden;
+    display: none;
+  }
+  body.all .slide, .slide.on { display: block; }
+  body.all .slide { margin-bottom: 40px; }
+
+  .copy { position: absolute; left: 110px; right: 110px; top: 210px; text-align: center; }
+  .eyebrow {
+    display: inline-block; font-weight: 700; font-size: 38px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 38px;
+  }
+  h1 {
+    font-weight: 800; font-size: 128px; line-height: 0.98; letter-spacing: -0.045em;
+    text-wrap: balance;
+  }
+  h1 em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -0.02em; }
+  .sub {
+    margin: 44px auto 0; max-width: 980px; font-size: 46px; line-height: 1.3; font-weight: 500;
+    color: var(--text-2); letter-spacing: -0.01em; text-wrap: balance;
+  }
+
+  /* Phone */
+  .phone {
+    position: absolute; left: 50%; top: 900px; width: 1000px;
+    transform: translateX(-50%);
+    padding: 24px; border-radius: 156px; background: #111;
+    box-shadow:
+      0 0 0 4px #2a2a2a inset,
+      0 0 0 3px rgba(255,255,255,0.08),
+      0 80px 160px -40px rgba(40, 20, 10, 0.35),
+      0 30px 60px -20px rgba(40, 20, 10, 0.25);
+  }
+  .phone img { display: block; width: 100%; border-radius: 132px; }
+  .phone.tilt { transform: translateX(-50%) rotate(-4deg); }
+
+  /* Slide palettes */
+  .s-orange { background: var(--accent); color: #fff; }
+  .s-orange .eyebrow { color: #fff; opacity: 0.85; }
+  .s-orange .sub { color: rgba(255,255,255,0.86); }
+  .s-orange .phone { box-shadow: 0 0 0 4px #2a2a2a inset, 0 90px 180px -40px rgba(90, 20, 0, 0.55); }
+  .s-peach { background: var(--peach); }
+  .s-mint { background: var(--mint); }
+  .s-lilac { background: var(--lilac); }
+  .s-butter { background: var(--butter); }
+
+  /* Soft blobs so flat backgrounds have some depth */
+  .blob { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.7; }
+
+  /* Widget slide */
+  .s-widget { background: linear-gradient(170deg, #f3d9c9 0%, #e9c7c3 45%, #c9b7d9 100%); }
+  .s-widget .sub { color: rgba(10,10,10,0.6); }
+  .widgets { position: absolute; left: 0; right: 0; top: 1240px; }
+  .w-medium, .w-small {
+    position: absolute; border-radius: 96px; overflow: hidden; color: #fff;
+    box-shadow: 0 60px 120px -30px rgba(40, 10, 10, 0.45);
+  }
+  .w-medium {
+    left: 110px; width: 1100px; height: 516px; padding: 48px;
+    display: flex; gap: 52px; background: #3b231c;
+  }
+  .w-medium img { height: 420px; border-radius: 14px; box-shadow: 0 12px 30px rgba(0,0,0,0.45); }
+  .w-medium .w-body { display: flex; flex-direction: column; justify-content: space-between; padding: 10px 0 6px; }
+  .w-cap { font-size: 30px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #d9a995; }
+  .w-idea { font-family: var(--serif); font-size: 64px; line-height: 1.12; letter-spacing: -0.01em; }
+  .w-by { font-size: 32px; font-weight: 500; color: #d9a995; }
+  .w-small {
+    left: 110px; top: 600px; width: 516px; height: 516px; padding: 44px;
+    background: #191817; display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .w-small .w-cap, .w-small .w-by { color: #a8a6a3; }
+  .w-small .w-idea { font-size: 44px; line-height: 1.14; }
+  .w-small .w-head { display: flex; justify-content: space-between; align-items: flex-start; }
+  .w-small img { width: 84px; border-radius: 8px; }
+  .app { position: absolute; left: 694px; top: 600px; width: 516px; height: 516px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; }
+  .app .icon { width: 300px; height: 300px; border-radius: 68px; background: url(assets/icon.png) center/cover;
+    box-shadow: 0 40px 80px -20px rgba(60,10,10,0.45); }
+  .app span { font-size: 44px; font-weight: 600; color: rgba(10,10,10,0.75); }
+</style>
+</head>
+<body>
+
+<!-- 1 · Hero: book page -->
+<section class="slide s-orange" id="s1">
+  <div class="copy">
+    <h1>Great books,<br><em>in 15 minutes.</em></h1>
+    <p class="sub">Key ideas, audio and answers from the best non-fiction.</p>
+  </div>
+  <div class="phone"><img src="raw/detail.png" alt=""></div>
+</section>
+
+<!-- 2 · Ask -->
+<section class="slide s-lilac" id="s2">
+  <div class="blob" style="width:900px;height:900px;background:#d9d0ff;right:-300px;top:-200px"></div>
+  <div class="copy">
+    <span class="eyebrow">Ask</span>
+    <h1>Bring a problem.<br><em>Leave with a plan.</em></h1>
+    <p class="sub">Answers drawn from the books that have solved it before.</p>
+  </div>
+  <div class="phone"><img src="raw/ask-answer.png" alt=""></div>
+</section>
+
+<!-- 3 · Discover -->
+<section class="slide s-peach" id="s3">
+  <div class="blob" style="width:900px;height:900px;background:#ffd9c4;left:-320px;top:-160px"></div>
+  <div class="copy">
+    <span class="eyebrow">Discover</span>
+    <h1>Find your next<br><em>great read.</em></h1>
+    <p class="sub">An idea every day and shelves picked for your goals.</p>
+  </div>
+  <div class="phone"><img src="raw/discover.png" alt=""></div>
+</section>
+
+<!-- 4 · Reader -->
+<section class="slide s-mint" id="s4">
+  <div class="blob" style="width:900px;height:900px;background:#c8ecd8;right:-300px;top:-120px"></div>
+  <div class="copy">
+    <span class="eyebrow">Read or listen</span>
+    <h1>The big ideas.<br><em>None of the filler.</em></h1>
+    <p class="sub">Summaries in short chapters, with audio for the commute.</p>
+  </div>
+  <div class="phone"><img src="raw/reader.png" alt=""></div>
+</section>
+
+<!-- 5 · Question of the day -->
+<section class="slide s-butter" id="s5">
+  <div class="blob" style="width:900px;height:900px;background:#ffe9a3;left:-300px;top:-140px"></div>
+  <div class="copy">
+    <span class="eyebrow">Explore</span>
+    <h1>One question.<br><em>Many great minds.</em></h1>
+    <p class="sub">See what the best books say about focus, habits and leading.</p>
+  </div>
+  <div class="phone"><img src="raw/ask-home.png" alt=""></div>
+</section>
+
+<!-- 6 · Widget -->
+<section class="slide s-widget" id="s6">
+  <div class="copy">
+    <span class="eyebrow">Widget</span>
+    <h1>A new idea,<br><em>every morning.</em></h1>
+    <p class="sub">Put the idea of the day on your Home Screen.</p>
+  </div>
+  <div class="widgets">
+    <div class="w-medium">
+      <img src="assets/richdad.jpg" alt="">
+      <div class="w-body">
+        <div class="w-cap">Idea of the day</div>
+        <div class="w-idea">Why a high income doesn’t necessarily make you wealthy.</div>
+        <div class="w-by">Rich Dad Poor Dad · Robert T. Kiyosaki</div>
+      </div>
+    </div>
+    <div class="w-small">
+      <div class="w-head"><div class="w-cap">Today</div><img src="assets/psychmoney.jpg" alt=""></div>
+      <div class="w-idea">Financial behavior often matters more than technical knowledge.</div>
+      <div class="w-by">The Psychology of Money</div>
+    </div>
+    <div class="app"><div class="icon"></div><span>BookBite</span></div>
+  </div>
+</section>
+
+<!-- 7 · Library -->
+<section class="slide s-peach" id="s7">
+  <div class="blob" style="width:900px;height:900px;background:#ffd9c4;right:-320px;top:-160px"></div>
+  <div class="copy">
+    <span class="eyebrow">Library</span>
+    <h1>Keep the ideas<br><em>that stick.</em></h1>
+    <p class="sub">Pick up where you left off and save ideas to your notebook.</p>
+  </div>
+  <div class="phone"><img src="raw/library.png" alt=""></div>
+</section>
+
+<script src="slides.js"></script>
+</body>
+</html>

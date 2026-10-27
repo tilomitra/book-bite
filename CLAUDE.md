@@ -124,7 +124,14 @@ Schema: `server/supabase/schema.sql` plus loose SQL files in `server/supabase/` 
 
 ## Widget (`BookBiteWidget/DailyIdeaWidget.swift`)
 
-Self-contained (shares no app source files): its own lightweight `WidgetDailyIdea` decoder. The timeline provider fetches `/summaries/daily-idea?date=<local yyyy-MM-dd>` from the server URL the app stored in the app group (default production), falls back to the app's cached idea, downloads the cover, and refreshes at local midnight. Tapping opens `bookbite://book/<id>?…&cover=`. Both targets have the `group.tilo.BookBite` app group entitlement (`BookBite/BookBite.entitlements` now also wired via `CODE_SIGN_ENTITLEMENTS`). The project uses file-system-synchronized groups, so new files in `BookBiteWidget/` join the target automatically (`Info.plist` is excluded).
+Self-contained (shares no app source files): its own lightweight `WidgetDailyIdea` decoder. The timeline provider fetches `/summaries/daily-idea?date=<local yyyy-MM-dd>` from the server URL the app stored in the app group (default production), falls back to the app's cached idea, downloads the cover, and refreshes at local midnight. Design: the background is a dark shade of the cover's average hue (`WidgetTint.from`, CIAreaAverage; grey/black/white covers and missing covers get a neutral near-black), with serif idea text, a lighter shade of the same hue for captions and byline, and the cover on the left (medium) or as a small thumbnail beside the title (small). No cover → a typographic placeholder with the title. Tapping opens `bookbite://book/<id>?…&cover=`. Both targets have the `group.tilo.BookBite` app group entitlement (`BookBite/BookBite.entitlements` now also wired via `CODE_SIGN_ENTITLEMENTS`). The project uses file-system-synchronized groups, so new files in `BookBiteWidget/` join the target automatically (`Info.plist` is excluded).
+
+## App Store screenshots (`design/app-store/`)
+
+Seven 6.9" slides (1320 x 2868, Apple scales them to smaller iPhones) in the landing page's look: Geist headline with a Newsreader italic second line, orange eyebrow, one pastel per slide, real app screens in a CSS phone frame. Order: book page (orange hero), Ask answer, Discover, reader, Ask home, widget (HTML mock with real covers/ideas), Library. Pipeline:
+1. Raw screens: boot iPhone 17 Pro Max, `xcrun simctl status_bar <udid> override --time 9:41 --batteryState discharging --batteryLevel 100 --cellularBars 4 --wifiBars 3 --operatorName ""`, then `TEST_RUNNER_SCREENSHOT_DIR=$PWD/design/app-store/raw xcodebuild test ... -only-testing:BookBiteUITests/AppStoreScreenshots` (`BookBiteUITests/AppStoreScreenshots.swift`; skipped without that env var; uses the production server). The test shuts the simulator down afterwards.
+2. `design/app-store/render.sh` renders `slides.html#1..7` with headless Chrome into `out/`. `slides.html` with no hash shows all slides.
+Discover's idea of the day changes daily; re-capture if it picks a weak book.
 
 ## Roadmap
 
