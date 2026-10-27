@@ -377,6 +377,7 @@
     return clamp(-r.top / (r.height - innerHeight));
   };
   const visible = (el) => { const r = el.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight; };
+  const darkSections = [story, cta].filter(Boolean);
   let lastY = scrollY, velocity = 0, lastT = performance.now();
   const shelfRows = $$('[data-shelf]').map((el, i) => ({ el, x: 0, speed: i ? 9 : 14 }));
 
@@ -388,6 +389,7 @@
     lastY = y;
 
     nav.classList.toggle('is-stuck', y > 40);
+    nav.classList.toggle('on-dark', darkSections.some((el) => { const r = el.getBoundingClientRect(); return r.top < 40 && r.bottom > 40; }));
 
     if (hero && visible(hero) && !reduceMotion) {
       wallCols.forEach((c) => {
