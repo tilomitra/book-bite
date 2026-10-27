@@ -1,6 +1,22 @@
 import OpenAI from 'openai';
 import { Summary, KeyIdea, ApplicationPoint, Citation } from '../models/types';
 import { v4 as uuidv4 } from 'uuid';
+import {
+  EXTENDED_SUMMARY_SYSTEM_PROMPT,
+  ExtendedSummaryContext,
+  buildExtendedSummaryPrompt,
+  checkExtendedSummary,
+  normalizeExtendedSummary
+} from './extendedSummaryPrompt';
+
+export interface ExtendedSummaryResult {
+  text: string;
+  /** Format problems left after the retry (empty when the summary follows the format) */
+  problems: string[];
+  usage: { inputTokens: number; outputTokens: number };
+  attempts: number;
+  model: string;
+}
 
 export class OpenAIService {
   private client: OpenAI;
@@ -205,67 +221,66 @@ Return the enhanced summary in the same JSON structure as the input.`;
     }
   }
 
+  /** The extended summary text in the chaptered format (see extendedSummaryPrompt.ts) */
   async generateExtendedSummary(
     bookTitle: string,
     bookAuthors: string[],
     bookDescription: string,
-    bookCategories: string[]
+    bookCategories: string[],
+    context: ExtendedSummaryContext = {}
   ): Promise<string> {
-    const prompt = this.buildExtendedSummaryPrompt(
-      bookTitle,
-      bookAuthors,
-      bookDescription,
-      bookCategories
-    );
+    const result = await this.generateExtendedSummaryDetailed(bookTitle, bookAuthors, bookDescription, bookCategories, context);
+    return result.text;
+  }
+
+  /**
+   * Generates, normalizes and checks the format. One retry with the problems spelled out when the
+   * first answer breaks the format; the attempt with fewer problems wins. Usage covers both calls.
+   */
+  async generateExtendedSummaryDetailed(
+    bookTitle: string,
+    bookAuthors: string[],
+    bookDescription: string,
+    bookCategories: string[],
+    context: ExtendedSummaryContext = {}
+  ): Promise<ExtendedSummaryResult> {
+    const prompt = buildExtendedSummaryPrompt(bookTitle, bookAuthors, bookDescription, bookCategories, context);
+    const usage = { inputTokens: 0, outputTokens: 0 };
+
+    const attempt = async (messages: OpenAI.Chat.ChatCompletionMessageParam[]) => {
+      const response = await this.client.chat.completions.create({
+        model: this.cheaperModel,
+        max_completion_tokens: 10000, // ~1,500 words plus reasoning
+        messages
+      });
+      usage.inputTokens += response.usage?.prompt_tokens ?? 0;
+      usage.outputTokens += response.usage?.completion_tokens ?? 0;
+      const content = response.choices[0].message.content;
+      if (!content) throw new Error('No response content from OpenAI');
+      const text = normalizeExtendedSummary(content);
+      return { text, problems: checkExtendedSummary(text) };
+    };
 
     try {
-      const response = await this.client.chat.completions.create({
-        model: this.cheaperModel, // Use cheaper model for extended summaries
-        max_completion_tokens: 4000, // ~1000-word summary plus reasoning
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ]
-      });
-
-      const content = response.choices[0].message.content;
-      if (!content) {
-        throw new Error('No response content from OpenAI');
+      const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
+        { role: 'system', content: EXTENDED_SUMMARY_SYSTEM_PROMPT },
+        { role: 'user', content: prompt }
+      ];
+      let best = await attempt(messages);
+      let attempts = 1;
+      if (best.problems.length > 0) {
+        const retry = await attempt([
+          ...messages,
+          { role: 'assistant', content: best.text },
+          { role: 'user', content: `Rewrite it so it follows the format and voice rules exactly. Problems: ${best.problems.join('; ')}.` }
+        ]);
+        attempts = 2;
+        if (retry.problems.length < best.problems.length) best = retry;
       }
-
-      return content.trim();
+      return { ...best, usage, attempts, model: this.cheaperModel };
     } catch (error) {
       console.error('Error generating extended summary with OpenAI:', error);
       throw new Error('Failed to generate extended book summary');
     }
-  }
-
-  private buildExtendedSummaryPrompt(
-    title: string,
-    authors: string[],
-    description: string,
-    categories: string[]
-  ): string {
-    return `Generate a comprehensive, detailed summary of approximately 1000 words for the following book. This should be a narrative-style summary that covers all major themes, concepts, and insights from the book in an engaging, readable format.
-
-Book Information:
-- Title: ${title}
-- Authors: ${authors.join(', ')}
-- Categories: ${categories.join(', ')}
-- Description: ${description}
-
-The extended summary should:
-1. Start with an engaging introduction that sets the context and explains why this book matters
-2. Cover the main themes and concepts in detail, with specific examples where relevant
-3. Explain the author's key arguments and supporting evidence
-4. Discuss practical applications and implications
-5. Address any limitations or criticisms of the work
-6. Conclude with the book's overall significance and who would benefit from reading it
-
-Write this as a flowing, narrative summary that someone could read to get a comprehensive understanding of the book's content without having to read the full book. Make it engaging and informative, similar to a detailed book review or summary you might find in a literary journal.
-
-Do not use JSON formatting - provide the summary as plain text that flows naturally from paragraph to paragraph.`;
   }
 }

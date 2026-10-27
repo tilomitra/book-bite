@@ -2,6 +2,7 @@ import { supabase } from '../config/supabase';
 import { GoogleBooksService } from './googleBooksService';
 import { Book } from '../models/types';
 import NodeCache from 'node-cache';
+import { isNonFiction } from '../utils/fiction';
 
 // PostgREST caps a single response at 1000 rows
 const SUPABASE_PAGE_SIZE = 1000;
@@ -82,8 +83,10 @@ export class BookService {
       throw new Error(`Failed to fetch featured books: ${error.message}`);
     }
 
+    // Discover's genre shelves and onboarding use featured books: keep them non-fiction.
+    // Filtered after paging, so a page can be a little short (only a handful are fiction).
     const result = {
-      books: data || [],
+      books: (data || []).filter(isNonFiction),
       total: count || 0,
       page,
       limit,

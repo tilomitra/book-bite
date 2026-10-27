@@ -27,6 +27,7 @@ import { config } from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import chalk from 'chalk';
+import { isFiction } from '../src/utils/fiction';
 
 config();
 
@@ -279,7 +280,8 @@ async function generateSummaries(supabase: any, openai: any, book: any): Promise
     book.title,
     book.authors,
     book.description || '',
-    book.categories
+    book.categories,
+    { subtitle: book.subtitle, hook: summary.one_sentence_hook, keyIdeas: summary.key_ideas?.map((k: any) => k.idea) }
   );
   const { error: extendedError } = await supabase
     .from('summaries')
@@ -322,6 +324,13 @@ async function main() {
         if (existing.has(bookKey(book.title, book.author))) {
           stats.skipped++;
           console.log(chalk.yellow(`  📋 Already in DB: ${label}`));
+          continue;
+        }
+
+        // The list is hand-picked non-fiction; this catches a novel added by mistake
+        if (isFiction({ title: book.title, authors: [book.author], categories: [book.category] })) {
+          stats.skipped++;
+          console.log(chalk.yellow(`  📕 Fiction, skipped: ${label}`));
           continue;
         }
 

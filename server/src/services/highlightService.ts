@@ -1,5 +1,6 @@
 import { supabase } from '../config/supabase';
 import NodeCache from 'node-cache';
+import { isFiction } from '../utils/fiction';
 
 /** Stable per book, so a book shows the same key idea on every visit */
 function ideaIndex(bookId: string, count: number) {
@@ -9,7 +10,7 @@ function ideaIndex(bookId: string, count: number) {
 }
 
 /**
- * Discover's endless feed: books with a summary, most read first, each with its hook and one key idea.
+ * Discover's endless feed: non-fiction books with a summary, most read first, each with its hook and one key idea.
  * Paged so the app can keep loading as the reader scrolls.
  */
 export class HighlightService {
@@ -35,6 +36,8 @@ export class HighlightService {
 
     const rows = data || [];
     const items = rows.slice(0, limit).flatMap(({ summaries, ...book }) => {
+      // Filtered here rather than in SQL, so a page can come back a little short
+      if (isFiction(book)) return [];
       // PostgREST embeds one object or a list (regeneration can leave several); use the newest
       const summary = (Array.isArray(summaries) ? [...summaries] : [summaries]).sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))[0];
       const keyIdeas = summary?.key_ideas;

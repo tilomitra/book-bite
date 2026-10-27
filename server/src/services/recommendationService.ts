@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { supabase } from '../config/supabase';
 import { EmbeddingService, blend, parseVector, toVectorLiteral } from './embeddingService';
+import { isFiction } from '../utils/fiction';
 
 /**
  * Reading goals offered in onboarding. The app sends ids; only the server knows the text that
@@ -74,11 +75,11 @@ export function isKnownBook(book: BookRow): boolean {
     || book.popularity_rank != null;
 }
 
-/** Matches as books, closest first after the boost for known books. */
+/** Matches as books (non-fiction only), closest first after the boost for known books. */
 export function rankMatches(matches: Match[], books: Map<string, BookRow>): BookRow[] {
   return matches
     .map(m => ({ book: books.get(m.book_id), score: m.similarity }))
-    .filter((r): r is { book: BookRow; score: number } => Boolean(r.book))
+    .filter((r): r is { book: BookRow; score: number } => Boolean(r.book) && !isFiction(r.book!))
     .map(r => ({ ...r, score: r.score + (isKnownBook(r.book) ? KNOWN_BOOK_BOOST : 0) }))
     .sort((a, b) => b.score - a.score)
     .map(r => r.book);

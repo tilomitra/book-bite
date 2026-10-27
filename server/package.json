@@ -20,6 +20,7 @@
     "populate-books-high-priority": "tsx scripts/populate-books.ts 25 high all",
     "generate-summaries": "tsx scripts/generate-missing-summaries.ts",
     "generate-extended-summaries": "tsx scripts/generate-extended-summaries.ts",
+    "regenerate-extended-summaries": "tsx scripts/regenerate-extended-summaries.ts",
     "generate-audio": "tsx scripts/generate-audio.ts",
     "update-book-covers": "tsx scripts/update-book-covers.ts",
     "backfill-covers": "tsx scripts/backfill-covers.ts",
