@@ -1,3 +1,5 @@
+import CoreImage
+import CoreImage.CIFilterBuiltins
 import SwiftUI
 import UIKit
 import WidgetKit
@@ -33,6 +35,7 @@ struct DailyIdeaEntry: TimelineEntry {
     let bookTitle: String
     let author: String
     let cover: UIImage?
+    let tint: WidgetTint
     let deepLink: URL?
 
     static let placeholder = DailyIdeaEntry(
@@ -41,8 +44,53 @@ struct DailyIdeaEntry: TimelineEntry {
         bookTitle: "Atomic Habits",
         author: "James Clear",
         cover: nil,
+        tint: .neutral,
         deepLink: nil
     )
+}
+
+/// Colors taken from the cover: a dark shade of its average hue as the background,
+/// with a lighter shade of the same hue for captions so the cover stands out.
+struct WidgetTint {
+    let background: Color
+    let accent: Color
+    let text: Color
+
+    static let neutral = WidgetTint(
+        background: Color(red: 0.11, green: 0.105, blue: 0.095),
+        accent: Color(red: 0.72, green: 0.69, blue: 0.63),
+        text: Color(red: 0.97, green: 0.95, blue: 0.91)
+    )
+
+    private static let context = CIContext(options: [.workingColorSpace: NSNull()])
+
+    static func from(_ image: UIImage?) -> WidgetTint {
+        guard let cgImage = image?.cgImage else { return .neutral }
+        let input = CIImage(cgImage: cgImage)
+        let filter = CIFilter.areaAverage()
+        filter.inputImage = input
+        filter.extent = input.extent
+        guard let output = filter.outputImage else { return .neutral }
+
+        var pixel = [UInt8](repeating: 0, count: 4)
+        context.render(output, toBitmap: &pixel, rowBytes: 4,
+                       bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+                       format: .RGBA8, colorSpace: nil)
+
+        var hue: CGFloat = 0, saturation: CGFloat = 0, brightness: CGFloat = 0, alpha: CGFloat = 0
+        UIColor(red: CGFloat(pixel[0]) / 255, green: CGFloat(pixel[1]) / 255,
+                blue: CGFloat(pixel[2]) / 255, alpha: 1)
+            .getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+
+        // Black, white and grey covers have no hue worth keeping
+        guard saturation > 0.12 else { return .neutral }
+        let s = min(max(saturation, 0.4), 0.65)
+        return WidgetTint(
+            background: Color(hue: hue, saturation: s, brightness: 0.19),
+            accent: Color(hue: hue, saturation: s * 0.55, brightness: 0.82),
+            text: Color(hue: hue, saturation: 0.06, brightness: 0.98)
+        )
+    }
 }
 
 // MARK: - Timeline
@@ -75,12 +123,14 @@ struct DailyIdeaProvider: TimelineProvider {
         let idea = await fetchToday(defaults: defaults) ?? cachedIdea(defaults: defaults)
         guard let idea else { return .placeholder }
 
+        let cover = await loadCover(idea.book.coverURL)
         return DailyIdeaEntry(
             date: .now,
             ideaText: idea.idea.idea,
             bookTitle: idea.book.title,
             author: idea.book.authors?.joined(separator: ", ") ?? "",
-            cover: await loadCover(idea.book.coverURL),
+            cover: cover,
+            tint: WidgetTint.from(cover),
             deepLink: deepLink(for: idea.book)
         )
     }
@@ -135,18 +185,17 @@ struct DailyIdeaProvider: TimelineProvider {
 
 // MARK: - Views
 
-private extension Color {
-    /// Matches the app's `Color.paper`.
-    static let paper = Color(UIColor { traits in
-        traits.userInterfaceStyle == .dark
-            ? UIColor(red: 18 / 255, green: 17 / 255, blue: 16 / 255, alpha: 1)
-            : UIColor(red: 250 / 255, green: 248 / 255, blue: 244 / 255, alpha: 1)
-    })
-}
-
 struct DailyIdeaWidgetView: View {
     @Environment(\.widgetFamily) private var family
     let entry: DailyIdeaEntry
+
+    private var tint: WidgetTint { entry.tint }
+
+    /// The first author, or the title when there is none.
+    private var byline: String {
+        let first = entry.author.components(separatedBy: ", ").first ?? ""
+        return first.isEmpty ? entry.bookTitle : first
+    }
 
     var body: some View {
         Group {
@@ -157,62 +206,75 @@ struct DailyIdeaWidgetView: View {
                 small
             }
         }
+        .foregroundStyle(tint.text)
         .widgetURL(entry.deepLink)
-        .containerBackground(for: .widget) { Color.paper }
+        .containerBackground(for: .widget) { tint.background }
     }
 
-    private var caption: some View {
-        Text("Idea of the day")
+    private func caption(_ text: String) -> some View {
+        Text(text)
             .font(.system(size: 10, weight: .semibold))
-            .tracking(0.8)
+            .tracking(0.9)
             .textCase(.uppercase)
-            .foregroundStyle(.secondary)
+            .foregroundStyle(tint.accent)
     }
 
     private var small: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            caption
+        VStack(alignment: .leading, spacing: 5) {
+            caption("Today")
 
             Text(entry.ideaText)
                 .font(.system(size: 15, design: .serif))
+                .lineSpacing(1)
                 .lineLimit(5)
-                .minimumScaleFactor(0.8)
+                .minimumScaleFactor(0.75)
 
-            Spacer(minLength: 0)
+            Spacer(minLength: 4)
 
-            Text(entry.bookTitle)
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
+            HStack(spacing: 7) {
+                cover
+                    .frame(width: 20, height: 30)
+                    .clipShape(bookShape)
+
+                Text(entry.bookTitle)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(tint.accent)
+                    .lineLimit(2)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var medium: some View {
-        HStack(alignment: .top, spacing: 14) {
+        HStack(spacing: 16) {
+            cover
+                .frame(width: 84, height: 126)
+                .clipShape(bookShape)
+                .shadow(color: .black.opacity(0.45), radius: 8, y: 4)
+
             VStack(alignment: .leading, spacing: 6) {
-                caption
+                caption("Idea of the day")
 
                 Text(entry.ideaText)
                     .font(.system(size: 17, design: .serif))
-                    .lineLimit(4)
-                    .minimumScaleFactor(0.85)
+                    .lineSpacing(1)
+                    .lineLimit(5)
+                    .minimumScaleFactor(0.75)
 
-                Spacer(minLength: 0)
+                Spacer(minLength: 4)
 
-                Text(entry.author.isEmpty ? entry.bookTitle : "\(entry.bookTitle) · \(entry.author)")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(.secondary)
+                Text(byline)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(tint.accent)
                     .lineLimit(1)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            cover
-                .frame(width: 70, height: 105)
-                .clipShape(UnevenRoundedRectangle(topLeadingRadius: 2, bottomLeadingRadius: 2,
-                                                  bottomTrailingRadius: 4, topTrailingRadius: 4))
-                .shadow(color: .black.opacity(0.2), radius: 5, y: 3)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         }
+    }
+
+    private var bookShape: some Shape {
+        UnevenRoundedRectangle(topLeadingRadius: 2, bottomLeadingRadius: 2,
+                               bottomTrailingRadius: 4, topTrailingRadius: 4)
     }
 
     @ViewBuilder
@@ -222,11 +284,16 @@ struct DailyIdeaWidgetView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fill)
         } else {
+            // Like the app's TypographicCover: the title on plain cloth
             Rectangle()
-                .fill(Color.primary.opacity(0.08))
-                .overlay {
-                    Image(systemName: "book.closed")
-                        .foregroundStyle(.secondary)
+                .fill(tint.accent.opacity(0.25))
+                .overlay(alignment: .topLeading) {
+                    Text(entry.bookTitle)
+                        .font(.system(size: 11, weight: .semibold, design: .serif))
+                        .foregroundStyle(tint.text)
+                        .lineLimit(5)
+                        .minimumScaleFactor(0.6)
+                        .padding(7)
                 }
         }
     }
