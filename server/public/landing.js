@@ -22,21 +22,27 @@
   const CLOTHS = ['#732324', '#2f4a3a', '#24364f', '#5b4a2e', '#3d2c44', '#6a5a3c', '#2e3d3f', '#4a2a22'];
   const clothFor = (title) => CLOTHS[[...title].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % CLOTHS.length];
 
-  function coverEl(book, { lazy = true } = {}) {
+  // A 3D hardcover (see .book3d): the cover in front, a spine with title and author in the cover's colour, page edges
+  function bookEl(book) {
     const el = document.createElement('div');
-    el.className = 'cover';
-    el.style.setProperty('--cloth', clothFor(book.title));
-    const t = document.createElement('span'); t.className = 't'; t.textContent = book.title;
-    const a = document.createElement('span'); a.className = 'a'; a.textContent = book.author;
-    el.append(t, a);
+    el.className = 'book3d';
+    const cloth = book.tint || clothFor(book.title);
+    el.style.setProperty('--cloth', cloth);
+    el.style.setProperty('--edge', cloth);
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(cloth.slice(i, i + 2), 16));
+    if (0.299 * r + 0.587 * g + 0.114 * b > 160) el.style.setProperty('--spine-ink', 'rgba(20, 18, 16, .85)');
+    el.innerHTML = '<div class="b-back"></div><div class="b-spine"><span class="st"></span><span class="sa"></span></div>'
+      + '<div class="b-fore"></div><div class="b-head"></div><div class="b-tail"></div><div class="b-front"><span class="t"></span></div>';
+    $('.st', el).textContent = book.title;
+    $('.sa', el).textContent = book.author.split(/,| and /)[0];
+    $('.t', el).textContent = book.title;
     if (book.cover) {
       const img = new Image();
       img.alt = '';
       img.decoding = 'async';
-      if (lazy) img.loading = 'lazy';
       img.onload = () => img.classList.add('ok');
       img.src = book.cover;
-      el.append(img);
+      $('.b-front', el).append(img);
     }
     return el;
   }
@@ -128,7 +134,7 @@
       if (p < b.at - 0.02) bitten[i] = false;
     });
     const turn = easeOut(range(p, 0, 0.4));
-    biteCover.style.setProperty('--ry', `${-22 + turn * 22}deg`);
+    biteCover.style.setProperty('--ry', `${24 - turn * 12}deg`);
     biteCover.style.setProperty('--s', `${1 - easeOut(range(p, 0.38, 0.6)) * 0.12}`);
     const words = range(p, 0.36, 0.86) * hookWords.length;
     hookWords.forEach((el, i) => el.style.setProperty('--o', 0.1 + 0.9 * clamp(words - i)));
@@ -429,7 +435,7 @@
   /* ---------- Shelves marquee ---------- */
   const rows = $$('[data-row]').map((row, r) => {
     const books = shuffled(BOOKS, 90 + r * 31).slice(0, 18);
-    [...books, ...books].forEach((b) => row.append(coverEl(b, { lazy: false })));
+    [...books, ...books].forEach((b) => row.append(bookEl(b)));
     return { el: row, dir: r ? 1 : -1, x: r ? -600 : 0 };
   });
 

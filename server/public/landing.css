@@ -112,26 +112,45 @@ a { color: inherit; }
 .no-gl.hero { background: radial-gradient(60% 60% at 50% 40%, var(--peach), var(--bg)); }
 .hero-center { position: relative; text-align: center; padding: 96px var(--gutter) 40px; display: flex; flex-direction: column; align-items: center; }
 
-/* A book cover: typographic bookcloth underneath, the real cover fades in on top */
-.cover {
-  position: relative;
-  aspect-ratio: 2 / 3;
-  border-radius: 3px 6px 6px 3px;
-  overflow: hidden;
-  background: var(--cloth, #5a3a2e);
-  box-shadow: 0 1px 1px rgba(0,0,0,.12), 0 18px 34px -16px rgba(0,0,0,.45);
-  color: rgba(255,255,255,.88);
-  flex: none;
+
+/* A hardcover in CSS 3D: front cover, spine, page block and back around a box --w wide, 1.5 × --w tall and --d thick.
+   --cloth colours the spine and back, --edge the board edges. Every face hides its back so the box sorts itself. */
+.book3d {
+  --w: 140px; --d: calc(var(--w) * .15); --cloth: #5a3a2e; --edge: var(--cloth);
+  --pages: repeating-linear-gradient(var(--grain, 90deg), rgba(120, 100, 70, .07) 0 1px, transparent 1px 2.5px), #f6f2e8;
+  position: relative; width: var(--w); height: calc(var(--w) * 1.5); flex: none;
+  transform-style: preserve-3d;
 }
-.cover::before { /* spine crease */
-  content: ""; position: absolute; inset: 0 auto 0 0; width: 7%; z-index: 2;
-  background: linear-gradient(90deg, rgba(0,0,0,.16), rgba(255,255,255,.1) 45%, transparent);
-  pointer-events: none;
+.book3d > * { position: absolute; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.book3d .b-front { inset: 0; transform: translateZ(calc(var(--d) / 2)); border-radius: 2px 4px 4px 2px; overflow: hidden; }
+.book3d .b-front img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.book3d .b-front::after { /* hinge groove and a soft sheen */
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.22), rgba(255,255,255,.14) 3.5%, rgba(0,0,0,.14) 5%, transparent 9%),
+    linear-gradient(115deg, rgba(255,255,255,.12), transparent 40%);
 }
-.cover .t { position: absolute; inset: 12% 12% auto 14%; font: 500 15px/1.1 var(--serif); }
-.cover .a { position: absolute; inset: auto 12% 10% 14%; font: 500 9px/1.2 var(--font); letter-spacing: .04em; opacity: .8; }
-.cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .6s; }
-.cover img.ok { opacity: 1; }
+.book3d .b-back { inset: 0; transform: rotateY(180deg) translateZ(calc(var(--d) / 2)); background: var(--cloth); border-radius: 4px 2px 2px 4px; filter: brightness(.7); }
+.book3d .b-inner { inset: 1px 3px 1px 1px; transform: translateZ(calc(var(--d) / -2 + 2px)); background: var(--pages); --grain: 0deg; box-shadow: inset 0 0 12px rgba(120, 100, 70, .25); }
+.book3d .b-spine {
+  top: 0; bottom: 0; left: calc(50% - var(--d) / 2); width: var(--d);
+  transform: rotateY(-90deg) translateZ(calc(var(--w) / 2));
+  background: var(--cloth); border-radius: 3px;
+  display: flex; align-items: center; justify-content: space-between; padding: 10% 0 8%; /* vertical writing: the row runs down the spine */
+  writing-mode: vertical-rl; overflow: hidden; color: var(--spine-ink, rgba(255,255,255,.9));
+  font: 500 calc(var(--d) * .36)/1 var(--serif); white-space: nowrap;
+}
+.book3d .b-spine::after { /* the rounded back of the spine */
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(0,0,0,.28), rgba(255,255,255,.14) 45%, rgba(0,0,0,.08) 70%, rgba(0,0,0,.3));
+}
+.book3d .b-spine .sa { order: -1; font: 600 calc(var(--d) * .24)/1 var(--font); letter-spacing: .08em; text-transform: uppercase; }
+.book3d .b-spine span { max-height: 62%; overflow: hidden; text-overflow: ellipsis; }
+.book3d .b-fore, .book3d .b-head, .book3d .b-tail { background: var(--pages); box-shadow: inset 2px 0 0 var(--edge), inset -2px 0 0 var(--edge), inset 6px 0 6px -4px rgba(80, 60, 30, .35), inset -6px 0 6px -4px rgba(80, 60, 30, .35); }
+.book3d .b-fore { top: 2px; bottom: 2px; left: calc(50% - var(--d) / 2); width: var(--d); transform: rotateY(90deg) translateZ(calc(var(--w) / 2 - 2px)); }
+.book3d .b-head, .book3d .b-tail { --grain: 0deg; left: 0; right: 2px; top: calc(50% - var(--d) / 2); height: var(--d); box-shadow: inset 0 2px 0 var(--edge), inset 0 -2px 0 var(--edge), inset 0 6px 6px -4px rgba(80, 60, 30, .35), inset 0 -6px 6px -4px rgba(80, 60, 30, .35); }
+.book3d .b-head { transform: rotateX(90deg) translateZ(calc(var(--w) * .75 - 2px)); }
+.book3d .b-tail { transform: rotateX(-90deg) translateZ(calc(var(--w) * .75 - 2px)); }
 
 .hero-title {
   font-size: clamp(44px, 6.6vw, 104px);
@@ -190,9 +209,6 @@ a { color: inherit; }
 .d-idea-by { font: 500 .62em/1 var(--sans); text-align: center; color: var(--ink-dim); }
 .d-shelf-title { font: 500 1.08em/1 var(--serif); margin: .4em 0 .7em; }
 .d-shelf { display: flex; gap: .7em; width: max-content; margin-bottom: 1.1em; will-change: transform; }
-.d-shelf .cover { width: 4.6em; box-shadow: 0 6px 12px -6px rgba(0,0,0,.5); }
-.d-shelf .cover .t { font-size: .6em; }
-.d-shelf .cover .a { display: none; }
 .tabbar {
   position: absolute; z-index: 10; left: 6%; right: 6%; bottom: 3.2%;
   height: 10%; border-radius: 99px;
@@ -214,26 +230,29 @@ a { color: inherit; }
 .bite-book { position: relative; display: flex; justify-content: center; perspective: 1200px; }
 .bite-cover {
   --r1: 0px; --r2: 0px; --r3: 0px;
-  width: clamp(200px, 26vw, 340px);
-  aspect-ratio: 2 / 3;
-  border-radius: 3px 7px 7px 3px;
-  overflow: hidden;
-  background: #dcdedc;
-  transform: rotateY(var(--ry, -22deg)) rotateX(6deg) scale(var(--s, 1));
-  transform-style: preserve-3d;
+  --w: clamp(200px, 26vw, 340px);
+  --cloth: #f1f1ec; --edge: #ecece6;
+  transform: rotateY(var(--ry, 24deg)) rotateX(6deg) scale(var(--s, 1));
+}
+/* The bites go through the cover; the paper inside shows a little smaller, like the cut edge of the pages */
+.bite-cover .b-front, .bite-cover .b-inner {
+  --k: 1;
   -webkit-mask-image:
-    radial-gradient(circle at 80% 3%, transparent var(--r1), #000 calc(var(--r1) + .5px)),
-    radial-gradient(circle at 99% 12%, transparent var(--r2), #000 calc(var(--r2) + .5px)),
-    radial-gradient(circle at 101% 27%, transparent var(--r3), #000 calc(var(--r3) + .5px));
+    radial-gradient(circle at 80% 3%, transparent calc(var(--r1) * var(--k)), #000 calc(var(--r1) * var(--k) + .5px)),
+    radial-gradient(circle at 99% 12%, transparent calc(var(--r2) * var(--k)), #000 calc(var(--r2) * var(--k) + .5px)),
+    radial-gradient(circle at 101% 27%, transparent calc(var(--r3) * var(--k)), #000 calc(var(--r3) * var(--k) + .5px));
   -webkit-mask-composite: source-in;
   mask-image:
-    radial-gradient(circle at 80% 3%, transparent var(--r1), #000 calc(var(--r1) + .5px)),
-    radial-gradient(circle at 99% 12%, transparent var(--r2), #000 calc(var(--r2) + .5px)),
-    radial-gradient(circle at 101% 27%, transparent var(--r3), #000 calc(var(--r3) + .5px));
+    radial-gradient(circle at 80% 3%, transparent calc(var(--r1) * var(--k)), #000 calc(var(--r1) * var(--k) + .5px)),
+    radial-gradient(circle at 99% 12%, transparent calc(var(--r2) * var(--k)), #000 calc(var(--r2) * var(--k) + .5px)),
+    radial-gradient(circle at 101% 27%, transparent calc(var(--r3) * var(--k)), #000 calc(var(--r3) * var(--k) + .5px));
   mask-composite: intersect;
 }
+.bite-cover .b-inner { --k: .9; }
+.bite-cover .b-front { background: #dcdedc; }
+.bite-cover .b-spine { color: #6f9a80; }
+.bite-cover .b-spine .sa { color: #1b1b1b; }
 .bite-book { filter: drop-shadow(0 34px 34px rgba(0, 0, 0, .18)) drop-shadow(0 4px 6px rgba(0, 0, 0, .12)); }
-.bite-cover img { width: 100%; height: 100%; object-fit: cover; }
 .crumbs { position: absolute; inset: -30% -40%; width: 180%; height: 160%; pointer-events: none; }
 
 .bite-title { font-size: clamp(36px, 4.6vw, 68px); line-height: 1; }
@@ -469,9 +488,19 @@ a { color: inherit; }
 .shelves h2 { font-size: clamp(34px, 4.4vw, 64px); line-height: 1.02; }
 .shelves > p { margin-top: 20px; font-size: clamp(17px, 1.4vw, 20px); line-height: 1.5; color: var(--text-2); padding-right: max(var(--gutter), 42%); letter-spacing: -0.01em; }
 .rows { margin-top: clamp(56px, 7vw, 90px); display: flex; flex-direction: column; gap: 28px; transform: rotate(-3deg); }
-.row { display: flex; gap: 24px; width: max-content; will-change: transform; }
-.row .cover { width: clamp(118px, 12vw, 160px); transition: transform .5s var(--ease-spring), box-shadow .5s; }
-.row .cover:hover { transform: translateY(-10px) rotate(-2deg) scale(1.05); box-shadow: 0 30px 40px -18px rgba(0,0,0,.5); }
+.row { display: flex; gap: 34px; width: max-content; will-change: transform; padding: 0 0 0 20px; }
+/* Books on the shelf turn their spines a little toward you; hovering one turns it to face you */
+.row .book3d {
+  --w: clamp(118px, 12vw, 160px);
+  transform: perspective(1100px) rotateY(34deg);
+  transition: transform .6s var(--ease-spring);
+  filter: drop-shadow(0 22px 18px rgba(0, 0, 0, .16));
+}
+.row .book3d:hover { transform: perspective(1100px) translateY(-10px) rotateY(8deg) rotateX(4deg) scale(1.05); }
+.row .b-front { background: var(--cloth); color: rgba(255,255,255,.88); }
+.row .b-front .t { position: absolute; inset: 12% 12% auto 14%; font: 500 15px/1.1 var(--serif); }
+.row .b-front img { position: absolute; inset: 0; opacity: 0; transition: opacity .6s; }
+.row .b-front img.ok { opacity: 1; }
 
 /* ---------- CTA: one big orange panel ---------- */
 .cta {
@@ -509,7 +538,7 @@ a { color: inherit; }
 @media (max-width: 900px) {
 
   .bite-stage { grid-template-columns: 1fr; gap: 28px; }
-  .bite-cover { width: clamp(140px, 38vw, 220px); }
+  .bite-cover { --w: clamp(140px, 38vw, 220px); }
   .bite-hook { margin-top: 18px; }
 
   .story-sticky { grid-template-columns: 1fr; grid-template-rows: auto 1fr; align-content: center; gap: 18px; padding-top: 84px; }

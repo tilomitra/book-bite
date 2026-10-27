@@ -1,4 +1,4 @@
-// Hero book mosaic: ~500 covers drawn in one instanced WebGL2 call (plus one for their shadows).
+// Hero book mosaic: ~600 hardcover books (boxes with cover, spine, page edges) drawn in one instanced WebGL2 call (plus one for their shadows).
 // Covers come from a same-origin atlas (covers-atlas.webp) because the original cover hosts don't send CORS headers.
 (() => {
   const canvas = document.querySelector('[data-gl]');
@@ -11,12 +11,15 @@
 
   const VERT = `#version 300 es
   precision highp float;
-  layout(location = 0) in vec2 aCorner;   // -0.5..0.5
+  layout(location = 0) in vec4 aVert;     // box corner (-0.5..0.5) and face: 0 cover, 1 back, 2 fore-edge, 3 spine, 4 head, 5 tail
   layout(location = 1) in vec4 aInst;     // column, row, atlas slot, random
   uniform mat4 uViewProj, uPlane;
   uniform vec2 uGrid, uSpacing, uSize, uMouse, uClearC, uClearH;
   uniform float uTime, uIntro, uShadow, uAspect, uMouseOn, uClear;
   out vec2 vUv; out vec2 vBox; out float vSlot; out float vAlpha; out vec3 vN; out vec3 vWorld; out float vLift; out float vHover;
+  out vec3 vP; flat out int vFace; out float vThick;
+
+  const vec3 NORMALS[6] = vec3[6](vec3(0., 0., 1.), vec3(0., 0., -1.), vec3(1., 0., 0.), vec3(-1., 0., 0.), vec3(0., 1., 0.), vec3(0., -1., 0.));
 
   float hash(float n) { return fract(sin(n * 127.1) * 43758.5453); }
   mat3 rotX(float a) { float c = cos(a), s = sin(a); return mat3(1., 0., 0., 0., c, s, 0., -s, c); }
@@ -52,24 +55,32 @@
     vec2 dir = length(dm) > 1e-4 ? normalize(dm) : vec2(0.);
     mat3 R = rotY(-dir.x * hover * .5 + (1. - e) * (rnd - .5) * 2.4) * rotX(dir.y * hover * .5 + (1. - e) * 1.1);
     vec2 size = uSize * (1. + hover * .1);
+    // Page count varies from book to book
+    float thick = .13 + hash(aInst.z + 3.) * .12;
 
     vec3 local;
     float up = max(lift, 0.);
+    int face = int(aVert.w + .5);
     if (uShadow > .5) {
-      // Contact shadow on the table: grows, softens and slides away as the cover lifts
+      // Contact shadow on the table: grows, softens and slides away as the book lifts
       float grow = 1. + up * .3;
-      vBox = size * .5 * grow;
-      vec2 p = aCorner * size * grow * 1.6;
+      vBox = size * .5 * grow + thick * .25;
+      vec2 p = aVert.xy * (size * grow + thick) * 1.6;
       vUv = p;
-      local = vec3(p + vec2(.06, -.16) * up + vec2(.02, -.05), 0.);
+      local = vec3(p + vec2(.06, -.16) * up + vec2(.03, -.08), 0.);
     } else {
-      vUv = aCorner + .5;
+      // A closed book lying on the table, cover up; it turns about its middle
+      vUv = aVert.xy + .5;
       vBox = size * .5;
-      local = R * vec3(aCorner * size, 0.) + vec3(0., 0., max(lift, -3.));
+      vec3 b = vec3(aVert.xy * size, aVert.z * thick);
+      local = R * b + vec3(0., 0., thick * .5 + max(lift, -3.) - .06);
     }
     vec4 world = uPlane * vec4(vec3(x, y, 0.) + local, 1.);
     gl_Position = uViewProj * world;
-    vN = mat3(uPlane) * (R * vec3(0., 0., 1.));
+    vN = mat3(uPlane) * (R * NORMALS[face]);
+    vP = aVert.xyz;
+    vFace = face;
+    vThick = thick;
     vWorld = world.xyz;
     vSlot = aInst.z;
     vAlpha = smoothstep(0., .25, ip) * edge * (1. - clearing);
@@ -80,6 +91,7 @@
   const FRAG = `#version 300 es
   precision highp float;
   in vec2 vUv; in vec2 vBox; in float vSlot; in float vAlpha; in vec3 vN; in vec3 vWorld; in float vLift; in float vHover;
+  in vec3 vP; flat in int vFace; in float vThick;
   uniform sampler2D uAtlas;
   uniform vec2 uAtlasGrid, uSize;
   uniform vec3 uBg, uCam, uLight;
@@ -87,6 +99,32 @@
   out vec4 o;
 
   float sdRound(vec2 p, vec2 b, float r) { vec2 q = abs(p) - b + r; return length(max(q, 0.)) + min(max(q.x, q.y), 0.) - r; }
+  float hash(float n) { return fract(sin(n * 127.1) * 43758.5453); }
+
+  vec2 slotUv(vec2 uv) {
+    vec2 slot = vec2(mod(vSlot, uAtlasGrid.x), floor(vSlot / uAtlasGrid.x));
+    return (slot + clamp(vec2(uv.x, 1. - uv.y), .004, .996)) / uAtlasGrid;
+  }
+  vec3 cover(vec2 uv) { return texture(uAtlas, slotUv(uv)).rgb; }
+  // The cover's overall colour, from a small mip level (bookcloth for the back and spine)
+  vec3 coverAvg() { return textureLod(uAtlas, slotUv(vec2(.5)), 6.).rgb; }
+
+  // Edge of the book: boards top and bottom, the page block between them, slightly recessed.
+  // s runs across the thickness (0 back, 1 cover), a along the edge; edgeUv is where the cover's own edge is.
+  vec3 bookEdge(float s, float a, vec2 edgeUv, float spineEnd) {
+    float board = .02 / vThick;
+    vec3 cloth = coverAvg();
+    if (s > 1. - board) return cover(edgeUv) * .8;
+    if (s < board) return cloth * .6;
+    if (spineEnd > 0.) return cloth * .7; // the spine's cloth wraps around the head and tail
+    // Pages: warm paper, a grain of individual sheets, shadowed under the boards' overhang
+    float sheet = hash(floor(s * vThick * 900.)) * .5 + hash(floor(s * vThick * 260.)) * .5;
+    vec3 c = vec3(.99, .97, .92) * (.9 + .1 * sheet);
+    float inset = min(s - board, 1. - board - s) * vThick;
+    c *= mix(.72, 1., smoothstep(0., .022, inset));
+    c *= .96 + .04 * sin(a * 3.1416); // a soft bow along the edge
+    return c;
+  }
 
   void main() {
     if (uShadow > .5) {
@@ -94,35 +132,60 @@
       float blur = .05 + up * .22;
       float sd = sdRound(vUv, vBox, .05);
       float a = 1. - smoothstep(-blur, blur, sd);
-      a *= vAlpha * .3 / (1. + up * 1.6);
+      a *= vAlpha * .36 / (1. + up * 1.6);
       o = vec4(vec3(.12, .08, .06) * a, a);
       return;
     }
-    vec2 p = (vUv - .5) * vBox * 2.;
-    float sd = sdRound(p, vBox, .03);
-    float aa = fwidth(sd) * 1.2;
-    float a = (1. - smoothstep(-aa, aa, sd)) * vAlpha;
+    float a = vAlpha;
     if (a < .004) discard;
 
-    vec2 slot = vec2(mod(vSlot, uAtlasGrid.x), floor(vSlot / uAtlasGrid.x));
-    vec2 uv = clamp(vec2(vUv.x, 1. - vUv.y), .004, .996);
-    vec3 c = texture(uAtlas, (slot + uv) / uAtlasGrid).rgb;
+    vec3 P = vP + .5;            // 0..1 across width, height, thickness
+    float spineW = .035 / vBox.x; // share of the width the spine's cloth wraps onto the cover
+    vec3 c;
+    float gloss = 1.;
+    if (vFace == 0) {
+      c = cover(P.xy);
+      // Hinge: the groove where the cover board meets the spine, with a thin highlight
+      c *= mix(.72, 1., smoothstep(0., .06, P.x));
+      c += .12 * exp(-pow((P.x - .075) * 70., 2.));
+      c *= 1. - .25 * exp(-pow((P.x - .095) * 90., 2.));
+      // Board edges catch a little light
+      vec2 e = min(P.xy, 1. - P.xy) * vBox * 2.;
+      c += .05 * (1. - smoothstep(0., .012, min(e.x, e.y)));
+    } else if (vFace == 1) {
+      c = coverAvg() * .6;
+      gloss = .3;
+    } else if (vFace == 3) {
+      // Spine: the cover's left edge wrapped round a rounded back
+      c = mix(cover(vec2(.012, P.y)), cover(vec2(.03, P.y)), .5);
+      float bow = sin(P.z * 3.1416);
+      c *= .7 + .3 * bow;
+      c += .06 * pow(bow, 8.);
+      c *= mix(.75, 1., smoothstep(0., .03, min(P.y, 1. - P.y))); // headbands
+      gloss = .6;
+    } else if (vFace == 2) {
+      c = bookEdge(P.z, P.y, vec2(.995, P.y), 0.);
+      gloss = 0.;
+    } else {
+      float y = vFace == 4 ? .995 : .005;
+      c = bookEdge(P.z, P.x, vec2(P.x, y), step(P.x, spineW));
+      gloss = 0.;
+    }
+    // Soft contact darkening near the table on the sides
+    if (vFace > 1) c *= mix(.8, 1., smoothstep(0., .5, P.z));
 
-    // Spine: a shaded hinge with a thin highlight, like a real hardcover
-    c *= mix(.72, 1., smoothstep(0., .06, vUv.x));
-    c += .12 * exp(-pow((vUv.x - .075) * 70., 2.));
-    c *= 1. - .25 * exp(-pow((vUv.x - .095) * 90., 2.));
-
-    // Light: soft diffuse, a glossy highlight that moves with the cover's tilt, and a sheen sweep on hover
+    // Light: diffuse that shades the sides apart from the cover, a glossy highlight that moves with the tilt, and a sheen sweep on hover
     vec3 N = normalize(vN);
     vec3 V = normalize(uCam - vWorld);
     vec3 Hh = normalize(uLight + V);
-    float diff = .86 + .14 * max(dot(N, uLight), 0.);
-    float spec = pow(max(dot(N, Hh), 0.), 90.) * .4;
-    float band = (vUv.x * .8 + (1. - vUv.y) * .6) - (vHover * 1.6 - .2);
-    float sheen = exp(-band * band * 18.) * .16 * vHover;
+    float diff = (gloss > 0. ? .58 : .74) + .42 * max(dot(N, uLight), 0.); // paper edges scatter more light
+    float spec = pow(max(dot(N, Hh), 0.), 90.) * .4 * gloss;
+    float sheen = 0.;
+    if (vFace == 0) {
+      float band = (P.x * .8 + (1. - P.y) * .6) - (vHover * 1.6 - .2);
+      sheen = exp(-band * band * 18.) * .16 * vHover;
+    }
     c = c * diff + spec + sheen;
-    c += .05 * (1. - smoothstep(0., .015, -sd)); // bright paper edge
 
     float fog = smoothstep(uFogNear, uFogFar, length(uCam - vWorld));
     c = mix(c, uBg, fog * .9);
@@ -157,13 +220,30 @@
   /* ---------- Geometry ---------- */
   const COLS = 28, ROWS = 22;
   const SLOTS = (window.BB_BOOKS || []).length || ATLAS.cols * ATLAS.rows;
+  // Each book is a box: per face a normal n and two edges u, v with u × v = n, so every face winds counter-clockwise from outside
+  const FACES = [
+    [[0, 0, 1], [1, 0, 0], [0, 1, 0]],   // cover
+    [[0, 0, -1], [1, 0, 0], [0, -1, 0]], // back
+    [[1, 0, 0], [0, 1, 0], [0, 0, 1]],   // fore-edge
+    [[-1, 0, 0], [0, 0, 1], [0, 1, 0]],  // spine
+    [[0, 1, 0], [0, 0, 1], [1, 0, 0]],   // head
+    [[0, -1, 0], [1, 0, 0], [0, 0, 1]],  // tail
+  ];
+  const boxVerts = [], boxIdx = [];
+  FACES.forEach(([n, u, v], f) => {
+    [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(([a, b]) => {
+      boxVerts.push(...[0, 1, 2].map((k) => (n[k] + a * u[k] + b * v[k]) * .5), f);
+    });
+    boxIdx.push(f * 4, f * 4 + 1, f * 4 + 2, f * 4, f * 4 + 2, f * 4 + 3);
+  });
   const vao = gl.createVertexArray();
   gl.bindVertexArray(vao);
-  const quad = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, quad);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-.5, -.5, .5, -.5, -.5, .5, .5, .5]), gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(boxVerts), gl.STATIC_DRAW);
   gl.enableVertexAttribArray(0);
-  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(boxIdx), gl.STATIC_DRAW);
   const inst = new Float32Array(COLS * ROWS * 4);
   // Columns slide past each other, so any two neighbouring columns can line up at any offset.
   // Even and odd columns draw from separate halves of the atlas, so a cover never sits next to itself.
@@ -176,6 +256,18 @@
   const instBuf = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, instBuf);
   gl.bufferData(gl.ARRAY_BUFFER, inst, gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(1);
+  gl.vertexAttribPointer(1, 4, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribDivisor(1, 1);
+
+  // Shadows are flat quads on the table, sharing the instance data
+  const shadowVao = gl.createVertexArray();
+  gl.bindVertexArray(shadowVao);
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-.5, -.5, 0, 0, .5, -.5, 0, 0, -.5, .5, 0, 0, .5, .5, 0, 0]), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);
+  gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0);
+  gl.bindBuffer(gl.ARRAY_BUFFER, instBuf);
   gl.enableVertexAttribArray(1);
   gl.vertexAttribPointer(1, 4, gl.FLOAT, false, 0, 0);
   gl.vertexAttribDivisor(1, 1);
@@ -325,17 +417,20 @@
     gl.uniform1i(U.uAtlas, 0);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, tex);
-    gl.bindVertexArray(vao);
 
-    // Shadows first, flat on the table; then the covers with depth so lifted ones sit on top
+    // Shadows first, flat on the table; then the books with depth (back faces culled) so lifted ones sit on top
+    gl.bindVertexArray(shadowVao);
     gl.disable(gl.DEPTH_TEST);
+    gl.disable(gl.CULL_FACE);
     gl.depthMask(false);
     gl.uniform1f(U.uShadow, 1);
     gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, COLS * ROWS);
+    gl.bindVertexArray(vao);
     gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.CULL_FACE);
     gl.depthMask(true);
     gl.uniform1f(U.uShadow, 0);
-    gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, COLS * ROWS);
+    gl.drawElementsInstanced(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0, COLS * ROWS);
   }
   requestAnimationFrame(frame);
 })();
