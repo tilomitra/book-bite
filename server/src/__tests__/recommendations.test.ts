@@ -60,6 +60,18 @@ describe('rankMatches', () => {
     ], books).map(b => b.id);
     expect(ranked).toEqual(['exact', 'known', 'obscure']);
   });
+
+  test('drops fiction', () => {
+    const books = new Map([
+      ['novel', { id: 'novel', title: 'The Alchemist', categories: ['Fiction'], is_featured: true }],
+      ['essay', { id: 'essay', title: 'Meditations', categories: ['Philosophy'] }]
+    ]);
+    const ranked = rankMatches([
+      { book_id: 'novel', similarity: 0.9 },
+      { book_id: 'essay', similarity: 0.5 }
+    ], books).map(b => b.id);
+    expect(ranked).toEqual(['essay']);
+  });
 });
 
 describe('RecommendationRequestSchema', () => {

@@ -6,6 +6,7 @@ import { GoogleBooksService } from '../src/services/googleBooksService';
 import { BookService } from '../src/services/bookService';
 import { OpenAIService } from '../src/services/openaiService';
 import { supabase } from '../src/config/supabase';
+import { isFiction } from '../src/utils/fiction';
 import chalk from 'chalk';
 
 // Load environment variables
@@ -339,6 +340,12 @@ class BookPopulator {
           bookData.is_featured = nytBook.rank <= 10;
 
           // Check for duplicates
+          // BookBite is non-fiction only
+          if (isFiction(bookData)) {
+            console.log(chalk.yellow(`  📕 Skipping fiction: ${bookData.title} (${(bookData.categories || []).join(', ')})`));
+            continue;
+          }
+
           const isDuplicate = await this.checkForDuplicates(bookData);
           if (isDuplicate) {
             stats.duplicates++;
@@ -425,6 +432,12 @@ class BookPopulator {
           }
 
           // Check for duplicates
+          // BookBite is non-fiction only
+          if (isFiction(bookData)) {
+            console.log(chalk.yellow(`  📕 Skipping fiction: ${bookData.title} (${(bookData.categories || []).join(', ')})`));
+            continue;
+          }
+
           const isDuplicate = await this.checkForDuplicates(bookData);
           if (isDuplicate) {
             stats.duplicates++;

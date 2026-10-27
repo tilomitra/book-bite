@@ -1,5 +1,6 @@
 import { supabase } from '../config/supabase';
 import NodeCache from 'node-cache';
+import { isNonFiction, CategorizedBook } from '../utils/fiction';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
@@ -25,14 +26,14 @@ export class DailyIdeaService {
     this.cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 });
   }
 
-  /** Ids of books that have a summary, featured books first (casual-friendly titles) */
+  /** Ids of non-fiction books that have a summary, featured books first (casual-friendly titles) */
   private async getCandidateBookIds(): Promise<string[]> {
     const cached = this.cache.get<string[]>('daily-idea:candidates');
     if (cached) return cached;
 
     const featured = await supabase
       .from('summaries')
-      .select('book_id, books!inner(is_featured)')
+      .select('book_id, books!inner(is_featured, title, authors, categories)')
       .eq('books.is_featured', true);
     if (featured.error) {
       throw new Error(`Failed to fetch daily idea candidates: ${featured.error.message}`);
@@ -40,15 +41,20 @@ export class DailyIdeaService {
 
     let rows = featured.data || [];
     if (rows.length === 0) {
-      const all = await supabase.from('summaries').select('book_id').limit(1000);
+      const all = await supabase
+        .from('summaries')
+        .select('book_id, books!inner(title, authors, categories)')
+        .limit(1000);
       if (all.error) {
         throw new Error(`Failed to fetch daily idea candidates: ${all.error.message}`);
       }
       rows = (all.data || []) as typeof rows;
     }
 
-    // Regeneration can leave duplicate summaries per book
-    const ids = Array.from(new Set(rows.map((r: { book_id: string }) => r.book_id))).sort();
+    // Fiction has no ideas to apply. Regeneration can leave duplicate summaries per book.
+    const nonFiction = (rows as unknown as { book_id: string; books: CategorizedBook | CategorizedBook[] }[])
+      .filter(r => (Array.isArray(r.books) ? r.books : [r.books]).every(b => !b || isNonFiction(b)));
+    const ids = Array.from(new Set(nonFiction.map(r => r.book_id))).sort();
     this.cache.set('daily-idea:candidates', ids);
     return ids;
   }

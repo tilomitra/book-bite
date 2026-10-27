@@ -68,6 +68,21 @@ npx tsx scripts/generate-missing-summaries.ts 3 50
 - Smart rate limiting and batch processing
 - Comprehensive error handling and progress tracking
 
+#### `regenerate-extended-summaries.ts` - Rewrite Extended Summaries in Chapters
+**Purpose**: Rewrites existing extended summaries in the chaptered format (intro, 5-8 `## ` chapters, `## The takeaway`; prompt in `src/services/extendedSummaryPrompt.ts`). Non-fiction books with a summary only; updates the newest summary row per book.
+
+```bash
+npm run regenerate-extended-summaries -- --dry-run --limit 1          # one sample to stdout + cost estimate, writes nothing
+npm run regenerate-extended-summaries -- --featured --by-popularity --limit 50
+npm run regenerate-extended-summaries -- --ids <uuid>,<uuid> [--force]
+```
+
+- Resumable: summaries already in the chaptered format are skipped (`--force` rewrites them anyway)
+- Old text is appended to `scripts/data/extended-summary-backup.jsonl` (git-ignored) before each write
+- `--concurrency` (default 2) and `--delay-ms` (default 1000); 429s back off and retry
+- Answers that still break the format after one retry are not saved
+- Cost: about $0.0016 per book with GPT-6 Luna ($0.10/$0.50 per 1M in/out), about $3 for all ~1,730
+
 #### `generate-extended-summaries.ts` - Extended Summary Backfill
 **Purpose**: Generates extended summaries for books that already have regular summaries but are missing extended ones.
 
