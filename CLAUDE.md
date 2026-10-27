@@ -25,10 +25,20 @@ xcrun simctl install booted /tmp/bb-dd/Build/Products/Debug-iphonesimulator/Book
 SIMCTL_CHILD_BOOKBITE_SERVER_URL=http://localhost:3001/api xcrun simctl launch booted tilo.BookBite
 ```
 
+### Physical iPhone
+```bash
+xcodebuild -project BookBite.xcodeproj -scheme BookBite -configuration Debug -destination 'id=00008140-000C69302EA2801C' \
+  -derivedDataPath /tmp/bb-dd-device -allowProvisioningUpdates CODE_SIGN_ENTITLEMENTS=<copy of BookBite.entitlements without applesignin> build
+xcrun devicectl device install app --device 436DAA2B-928F-54A1-9777-1FECF00A7994 /tmp/bb-dd-device/Build/Products/Debug-iphoneos/BookBite.app
+```
+- xcodebuild wants the hardware UDID (`xcodebuild -showdestinations`); devicectl uses the CoreDevice id (`xcrun devicectl list devices`).
+- Team `H6DZU85MBF` is a free personal team: it can't sign Sign in with Apple, so device builds override `CODE_SIGN_ENTITLEMENTS` with an app-group-only file. Free-team installs expire after 7 days.
+- Server URL resolution (Debug): `BOOKBITE_SERVER_URL` launch env var → Info.plist `BookBiteServerURL` (from the `BOOKBITE_SERVER_URL` build setting; set only for `sdk=iphoneos*` Debug to `http://Zenith.local:3001/api`, the Mac's Bonjour name) → `http://localhost:3000/api`. Info.plist has `NSAllowsLocalNetworking` for plain-http `.local` hosts. Phone and Mac must share Wi-Fi and the server must run on 3001.
+
 ### Known environment gotchas
 - **Port 3000 is often taken** on this machine by another project's Next.js dev server. Don't kill it — run BookBite on 3001 and pass `BOOKBITE_SERVER_URL` (Debug builds read it; default `http://localhost:3000/api`). Release builds use `https://book-bite.onrender.com/api`.
 - **Supabase project `yjejgiltdbuombrzdtbv` (free tier) pauses when idle.** Symptom: every DB-backed endpoint 500s with a Cloudflare "521 Web server is down" HTML page in the error. Only the user can restore it (Supabase dashboard); the Supabase MCP here is not authorized and there is no `supabase` CLI.
-- **Render deploy (`book-bite.onrender.com`) is suspended**, so release builds have no backend.
+- **Render deploy** (`book-bite.onrender.com`, service `srv-d2h8n32dbo4c73aqd4q0`, Ohio, starter plan) auto-deploys `main` from `server/` with `yarn install && yarn build` / `yarn start`; Redis is the free Key Value `book-bite-redis` (`REDIS_URL=redis://red-dbg273p42hec73dc693g:6379`, internal only). `NODE_ENV=production` makes yarn skip devDependencies, so `YARN_PRODUCTION=false` must stay set or the build picks up Render's global (newer) `tsc` and fails on `moduleResolution`. yarn ignores `package-lock.json`, so TypeScript and Node (22.x) are pinned in `package.json`.
 - **No iOS simulator runtime may be installed** after Xcode updates (`xcrun simctl list runtimes` empty). Fix: `xcodebuild -downloadPlatform iOS` (~8 GB, run in background).
 - `xcodebuild test` can shut the simulator down; re-boot it before installing/launching.
 - `tsx` server startup takes several seconds; wait for `Server running on` before curling.

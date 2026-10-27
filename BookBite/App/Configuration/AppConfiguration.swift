@@ -21,7 +21,12 @@ struct AppConfiguration {
     
     var baseServerURL: String {
         #if DEBUG
-        return ProcessInfo.processInfo.environment["BOOKBITE_SERVER_URL"] ?? "http://localhost:3000/api"
+        // Launch env var wins; Debug device builds bake the Mac's LAN server into Info.plist.
+        if let url = ProcessInfo.processInfo.environment["BOOKBITE_SERVER_URL"] { return url }
+        if let url = Bundle.main.object(forInfoDictionaryKey: "BookBiteServerURL") as? String, !url.isEmpty {
+            return url
+        }
+        return "http://localhost:3000/api"
         #else
         return "https://book-bite.onrender.com/api"
         #endif

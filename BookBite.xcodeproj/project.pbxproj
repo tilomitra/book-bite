@@ -503,6 +503,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				"BOOKBITE_SERVER_URL[sdk=iphoneos*]" = "http://Zenith.local:3001/api";
 				CODE_SIGN_ENTITLEMENTS = BookBite/BookBite.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
