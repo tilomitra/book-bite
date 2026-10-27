@@ -11,7 +11,11 @@ struct BookDetailView: View {
     @State private var showingAudioPlayer = false
     @State private var coverTint: Color?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @EnvironmentObject var authService: SupabaseAuthService
+
+    /// iPad and other wide windows: the cover and actions stay in a column on the left, the summary scrolls beside them
+    private var isWide: Bool { horizontalSizeClass == .regular }
 
     init(book: Book) {
         _viewModel = StateObject(wrappedValue: BookDetailViewModel(
@@ -21,20 +25,12 @@ struct BookDetailView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 32) {
-                bookHeader
-
-                summaryContent
+        Group {
+            if isWide {
+                wideLayout
+            } else {
+                compactLayout
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 8)
-            .padding(.bottom, 48)
-            // Keep lines a readable length on wide screens
-            .frame(maxWidth: 680)
-            .frame(maxWidth: .infinity)
-            .background(alignment: .top) { coverWash }
-            .animation(reduceMotion ? nil : .easeOut(duration: 0.3), value: viewModel.summary?.id)
         }
         .background(Color.paper.ignoresSafeArea())
         .task {
@@ -89,6 +85,62 @@ struct BookDetailView: View {
         }
     }
 
+    // MARK: - Layouts
+
+    private var compactLayout: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 32) {
+                bookHeader(coverWidth: 168)
+
+                summaryContent(showsActions: true)
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 8)
+            .padding(.bottom, 48)
+            // Keep lines a readable length on wide screens
+            .frame(maxWidth: 680)
+            .frame(maxWidth: .infinity)
+            .background(alignment: .top) { coverWash }
+            .animation(reduceMotion ? nil : .easeOut(duration: 0.3), value: viewModel.summary?.id)
+        }
+    }
+
+    /// Two columns: the book and what you can do with it on a wash of the cover's colour, the summary on paper
+    private var wideLayout: some View {
+        HStack(spacing: 0) {
+            ScrollView {
+                VStack(spacing: 28) {
+                    bookHeader(coverWidth: 220)
+
+                    if let summary = viewModel.summary, !viewModel.isLoadingSummary {
+                        actions(for: summary)
+                            .transition(.opacity)
+                    }
+                }
+                .padding(.horizontal, 36)
+                .padding(.top, 16)
+                .padding(.bottom, 40)
+            }
+            .scrollBounceBehavior(.basedOnSize)
+            .frame(width: 400)
+            .background {
+                (coverTint ?? .clear).opacity(0.3)
+                    .ignoresSafeArea()
+                    .accessibilityHidden(true)
+            }
+
+            ScrollView {
+                summaryContent(showsActions: false)
+                    .padding(.horizontal, 48)
+                    .padding(.top, 24)
+                    .padding(.bottom, 48)
+                    .frame(maxWidth: 760, alignment: .leading)
+                    .frame(maxWidth: .infinity)
+            }
+        }
+        .animation(reduceMotion ? nil : .easeOut(duration: 0.3), value: viewModel.summary?.id)
+    }
+
     // MARK: - Header
 
     /// A wash of the cover's color behind the header, fading into the page. Scrolls with the content.
@@ -105,9 +157,9 @@ struct BookDetailView: View {
         .accessibilityHidden(true)
     }
 
-    private var bookHeader: some View {
+    private func bookHeader(coverWidth: CGFloat) -> some View {
         VStack(spacing: 22) {
-            EditorialCover(book: viewModel.book, width: 168)
+            EditorialCover(book: viewModel.book, width: coverWidth)
                 .accessibilityHidden(true)
 
             VStack(spacing: 8) {
@@ -153,8 +205,9 @@ struct BookDetailView: View {
 
     // MARK: - Summary
 
+    /// The summary sections. With `showsActions` false (wide layout) the read and listen buttons live in the left column.
     @ViewBuilder
-    private var summaryContent: some View {
+    private func summaryContent(showsActions: Bool) -> some View {
         if viewModel.isLoadingSummary {
             Group {
                 if viewModel.isGeneratingSummary {
@@ -179,9 +232,11 @@ struct BookDetailView: View {
             VStack(alignment: .leading, spacing: 44) {
                 VStack(spacing: 28) {
                     if !summary.oneSentenceHook.isEmpty {
-                        hook(summary.oneSentenceHook)
+                        hook(summary.oneSentenceHook, centered: showsActions)
                     }
-                    actions(for: summary)
+                    if showsActions {
+                        actions(for: summary)
+                    }
                 }
                 summaryBody(summary)
             }
@@ -192,15 +247,16 @@ struct BookDetailView: View {
     }
 
     /// The book's promise in one sentence, set like a magazine dek under the title.
-    private func hook(_ text: String) -> some View {
+    /// Centered under the title on iPhone; on the wide layout it opens the right column, larger and flush left.
+    private func hook(_ text: String, centered: Bool) -> some View {
         Text(text)
-            .font(.system(.title3, design: .serif))
-            .lineSpacing(5)
-            .multilineTextAlignment(.center)
+            .font(.system(centered ? .title3 : .title, design: .serif))
+            .lineSpacing(centered ? 5 : 6)
+            .multilineTextAlignment(centered ? .center : .leading)
             .foregroundStyle(.primary.opacity(0.85))
             .fixedSize(horizontal: false, vertical: true)
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, 4)
+            .frame(maxWidth: .infinity, alignment: centered ? .center : .leading)
+            .padding(.horizontal, centered ? 4 : 0)
     }
 
     private func actions(for summary: Summary) -> some View {

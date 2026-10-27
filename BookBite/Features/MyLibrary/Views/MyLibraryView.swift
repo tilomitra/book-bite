@@ -10,6 +10,7 @@ struct MyLibraryView: View {
     @StateObject private var viewModel = MyLibraryViewModel(repository: DependencyContainer.shared.bookRepository)
     @State private var showingSettings = false
     @State private var showingAuth = false
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     private var isSignedIn: Bool {
         authService.isAuthenticated && !authService.isAnonymous
@@ -35,10 +36,20 @@ struct MyLibraryView: View {
                     LibraryIntro()
                 }
 
-                ContinueReadingSection(entries: readingProgress.inProgress, maxCompactRows: 6)
+                if horizontalSizeClass == .regular && !readingProgress.inProgress.isEmpty && !savedIdeas.ideas.isEmpty {
+                    // iPad: what you're reading and what you kept, side by side
+                    HStack(alignment: .top, spacing: 16) {
+                        ContinueReadingSection(entries: readingProgress.inProgress, maxCompactRows: 4)
+                            .frame(maxWidth: .infinity, alignment: .top)
+                        NotebookPreview(ideas: savedIdeas.ideas, previewCount: 4)
+                            .frame(maxWidth: .infinity, alignment: .top)
+                    }
+                } else {
+                    ContinueReadingSection(entries: readingProgress.inProgress, maxCompactRows: 6)
 
-                if !savedIdeas.ideas.isEmpty {
-                    NotebookPreview(ideas: savedIdeas.ideas)
+                    if !savedIdeas.ideas.isEmpty {
+                        NotebookPreview(ideas: savedIdeas.ideas)
+                    }
                 }
 
                 if !recentlyOpened.isEmpty {
