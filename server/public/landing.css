@@ -428,17 +428,18 @@ a { color: inherit; }
 .widget-copy p { margin-top: 20px; font-size: clamp(17px, 1.4vw, 20px); line-height: 1.5; color: var(--text-2); max-width: 36ch; letter-spacing: -0.01em; }
 .widget-picker { margin-top: 34px; display: flex; flex-wrap: wrap; gap: 10px; }
 .widget-picker button {
+  /* Corners concentric with the cover inside: outer radius = cover radius + padding */
   appearance: none; border: 0; cursor: pointer;
-  display: flex; align-items: center; gap: 10px;
-  padding: 6px 14px 6px 6px; border-radius: 99px;
-  background: var(--white); color: var(--text);
-  box-shadow: 0 0 0 1px var(--line);
-  font: 500 14px/1 var(--font);
+  display: flex; align-items: center; gap: 12px;
+  padding: 6px 16px 6px 6px; border-radius: 10px;
+  background: rgba(255, 255, 255, .7); color: var(--text);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .06);
+  font: 500 15px/1.15 var(--font); letter-spacing: -0.01em; text-align: left;
   transition: background-color .3s, color .3s, transform .4s var(--ease-spring), box-shadow .3s;
 }
-.widget-picker button:hover { transform: translateY(-1px); box-shadow: 0 0 0 1px var(--line), 0 8px 18px -10px rgba(0,0,0,.3); }
-.widget-picker button[aria-selected="true"] { background: var(--accent); color: var(--white); }
-.widget-picker img { width: 22px; height: 33px; object-fit: cover; border-radius: 3px; }
+.widget-picker button:hover { background: var(--white); transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(0, 0, 0, .06), 0 8px 18px -10px rgba(0,0,0,.3); }
+.widget-picker button[aria-selected="true"] { background: var(--accent); color: var(--white); box-shadow: 0 10px 20px -12px rgba(160, 50, 10, .7); }
+.widget-picker img { width: 24px; height: 36px; flex: none; object-fit: cover; border-radius: 3px 4px 4px 3px; box-shadow: 0 0 0 .5px rgba(0, 0, 0, .12), 0 2px 4px rgba(0, 0, 0, .15); }
 
 .home {
   --h: 30; --s: 50%;
@@ -494,7 +495,12 @@ a { color: inherit; }
   --w: clamp(118px, 12vw, 160px);
   transform: perspective(1100px) rotateY(34deg);
   transition: transform .6s var(--ease-spring);
-  filter: drop-shadow(0 22px 18px rgba(0, 0, 0, .16));
+}
+/* The shadow is a layer behind the back cover: a filter on the book would flatten its 3D faces */
+.row .book3d::before {
+  content: ""; position: absolute; inset: 3% 0 0 4%; border-radius: 4px;
+  transform: translateZ(calc(var(--d) / -2 - 1px));
+  box-shadow: 0 26px 26px -12px rgba(0, 0, 0, .32), 0 6px 10px -4px rgba(0, 0, 0, .12);
 }
 .row .book3d:hover { transform: perspective(1100px) translateY(-10px) rotateY(8deg) rotateX(4deg) scale(1.05); }
 .row .b-front { background: var(--cloth); color: rgba(255,255,255,.88); }

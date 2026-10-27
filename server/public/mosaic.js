@@ -62,12 +62,14 @@
     float up = max(lift, 0.);
     int face = int(aVert.w + .5);
     if (uShadow > .5) {
-      // Contact shadow on the table: grows, softens and slides away as the book lifts
+      // Shadow on the table: cast down and right, away from the light, further for thicker books;
+      // it grows, softens and slides away as the book lifts. vThick carries the softness.
       float grow = 1. + up * .3;
-      vBox = size * .5 * grow + thick * .25;
-      vec2 p = aVert.xy * (size * grow + thick) * 1.6;
+      vBox = size * .5 * grow - .03;
+      vec2 p = aVert.xy * (size * grow + .6 + up);
       vUv = p;
-      local = vec3(p + vec2(.06, -.16) * up + vec2(.03, -.08), 0.);
+      vThick = .05 + thick * .45;
+      local = vec3(p + vec2(.06, -.16) * up + vec2(.3, -.6) * thick, 0.);
     } else {
       // A closed book lying on the table, cover up; it turns about its middle
       vUv = aVert.xy + .5;
@@ -80,7 +82,7 @@
     vN = mat3(uPlane) * (R * NORMALS[face]);
     vP = aVert.xyz;
     vFace = face;
-    vThick = thick;
+    if (uShadow < .5) vThick = thick;
     vWorld = world.xyz;
     vSlot = aInst.z;
     vAlpha = smoothstep(0., .25, ip) * edge * (1. - clearing);
@@ -129,10 +131,10 @@
   void main() {
     if (uShadow > .5) {
       float up = max(vLift, 0.);
-      float blur = .05 + up * .22;
+      float blur = vThick + up * .22;
       float sd = sdRound(vUv, vBox, .05);
       float a = 1. - smoothstep(-blur, blur, sd);
-      a *= vAlpha * .36 / (1. + up * 1.6);
+      a *= vAlpha * .3 / (1. + up * 1.6);
       o = vec4(vec3(.12, .08, .06) * a, a);
       return;
     }
