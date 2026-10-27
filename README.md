@@ -1,317 +1,156 @@
-# BookBite
+<p align="center">
+  <img src="BookBite/Assets.xcassets/AppIcon.appiconset/Bookbite_V2-1024x1024@1x.png" width="128" alt="BookBite app icon">
+</p>
 
-BookBite is a comprehensive iOS application for discovering, exploring, and learning from non-fiction books. Get AI-powered summaries, key insights, and practical applications from thousands of books across business, self-help, science, and more.
+<h1 align="center">BookBite</h1>
 
-## Features
+<p align="center">
+  <em>The big ideas from great non-fiction, in the time it takes to drink a coffee.</em>
+</p>
 
-### Core Features
-- **📚 Extensive Library**: Access thousands of non-fiction books across 35+ categories
-- **🤖 AI-Powered Summaries**: Intelligent summaries with key insights and extended analysis
-- **⚡ Quick Reading**: 8-10 minute summaries for busy professionals
-- **🎯 Smart Discovery**: Featured books, swipe-based discovery, and intelligent recommendations
-- **🔍 Advanced Search**: Real-time search across titles, authors, categories, and topics
-- **📖 Book Requests**: Request any book and get AI-generated summaries on-demand
-- **⭐ Reader Reviews**: Community ratings and reviews from Open Library integration
+<p align="center">
+  <img src="https://img.shields.io/badge/iOS-18.5%2B-black?logo=apple" alt="iOS 18.5+">
+  <img src="https://img.shields.io/badge/SwiftUI-MVVM-F05138?logo=swift&logoColor=white" alt="SwiftUI">
+  <img src="https://img.shields.io/badge/server-Express%20%2B%20TypeScript-3178C6?logo=typescript&logoColor=white" alt="Express + TypeScript">
+  <img src="https://img.shields.io/badge/license-MIT-lightgrey" alt="MIT license">
+</p>
 
-### Reading Experience
-- **📑 Multiple Summary Types**: 
-  - Quick summaries for rapid understanding
-  - Extended summaries for deeper insights
-  - Key ideas extraction
-  - Practical applications
-  - Critical analysis
-  - References and citations
-- **💼 Workplace Applications**: Role-specific guidance for applying concepts
-- **🔄 Flexible Data Sources**: Choose between local (offline), remote (server), or hybrid modes
-- **🌓 Dark Mode Support**: Eye-friendly reading in low-light conditions
+---
 
-### Backend Capabilities
-- **🔄 Real-time Sync**: Seamless integration with Node.js/Express backend
-- **📊 Database Integration**: PostgreSQL via Supabase for scalable data storage
-- **🤖 AI Integration**: OpenAI-powered summary generation
-- **📚 Multiple Data Sources**: Google Books API and NYT Bestsellers integration
-- **⚡ Background Processing**: Async job queue for efficient summary generation
+BookBite is an iOS app for people who want to learn from books but do not have time to read all of them. Each book gets a one-sentence hook, its key ideas, how to apply them, an honest look at its weak points, and a chaptered summary you can read in about ten minutes. You can also listen to it, or ask the book questions.
 
-## Screenshots
+The design is quiet and editorial, like a good magazine. The only color comes from the book covers.
 
-*Note: The app features a clean, modern SwiftUI interface with tab-based navigation. Key screens include:*
-- **Featured Tab**: Discover trending and recommended books with detailed views
-- **Swipe Tab**: Tinder-style book discovery with quick decisions
-- **Search Tab**: Advanced search with filters and real-time results
-- **Request Tab**: On-demand book request system with AI analysis
-- **Settings Tab**: Configure data sources, cache settings, and preferences
+## What you can do
 
-## Requirements
+### Discover
+- **Idea of the Day.** One key idea from a well-known book, set as a pull quote. The same idea for everyone, every day.
+- **An endless editorial feed.** Shelves by topic, spotlight cards, quick bites and single passages. No book shows twice.
+- **Shelves made for you.** "For you", "More like *Atomic Habits*" and shelves for your reading goals. They come from what you picked during onboarding and what you open.
 
-- iOS 18.5+
-- Xcode 16.4+
-- Swift 5.0+
+### Read
+- **A real reading page.** Each book has a hook, key ideas, how to apply them, who it is for, and "The other side" (critiques and limits).
+- **Key ideas as cards.** Swipe through them, keep the ones you like, or share one as an image.
+- **A reader built for long text.** Chapters with a contents menu, Paper, Sepia and Night themes, serif or sans type, and text size that follows Dynamic Type.
+- **Picks up where you stopped.** BookBite remembers your place and shows "N min left".
+- **Audio summaries** with lock-screen controls.
+- **Chat with the book.** Ask questions and get streamed answers.
 
-## Installation
+### Keep
+- **Library.** Continue reading, recently opened, saved books, finished books ("12 finished this year") and offline downloads.
+- **Notebook.** All the ideas you kept, by book or by date.
+- **Request any book.** Search Google Books. BookBite writes the summary on demand.
 
-1. Clone the repository:
-```bash
-git clone git@github.com:tilomitra/book-bite.git
-cd book-bite
+### Everywhere on iPhone
+- **Home Screen widget** with the Idea of the Day (small and medium).
+- **Siri and Shortcuts:** "Today's idea in BookBite" and "Continue reading".
+- **Spotlight** finds books you have opened.
+- **Share links** (`bookbite://book/<id>`) open the book in the app.
+- **A daily 8 AM reminder**, if you want one.
+
+Sign-in (Apple or email) is optional. You can use almost all of BookBite as a guest.
+
+## How it works
+
+```
+┌─────────────────────┐        ┌──────────────────────────┐
+│  iOS app (SwiftUI)  │  HTTPS │  Server (Express + TS)   │
+│  + Home Screen      │ ─────▶ │  REST API, rate limits   │
+│    widget           │        │  Bull queue on Redis     │
+└─────────────────────┘        └──────────┬───────────────┘
+                                          │
+          ┌───────────────────┬───────────┼──────────────┬─────────────────────┐
+          ▼                   ▼           ▼              ▼                     ▼
+   Supabase (Postgres   OpenAI          ElevenLabs   Google Books, NYT,    Supabase Auth
+   + pgvector)          summaries,      audio        Open Library          (Apple, email)
+                        chat,
+                        embeddings
 ```
 
-2. Open the project in Xcode:
-```bash
-open BookBite.xcodeproj
+- The app is **remote-only**. All books and summaries come from the server. You can download single books for offline reading.
+- About **2,100 non-fiction books**. Fiction is filtered out.
+- **Recommendations** use one `text-embedding-3-small` vector per book in pgvector. The server builds a taste vector from your liked books, recent books, goals and topics.
+- **Covers** come from the sharpest source available (Google publisher art, Apple Books, Open Library). When no good cover exists, the app draws a typographic cover on bookcloth.
+
+## Project layout
+
 ```
-
-3. Build and run on your preferred simulator or device.
-
-## Architecture
-
-BookBite follows a clean MVVM architecture with repository pattern for both iOS and backend:
-
-### iOS App Structure
-```
-BookBite/
-├── App/                     # App configuration and entry point
-│   ├── BookBiteApp.swift  # Main app with @main attribute
-│   ├── RootView.swift     # Tab-based navigation
-│   └── Configuration/     # Settings and dependency injection
-├── Core/                    # Data models, repositories, and services
-│   ├── Models/            # Book, Summary, User, Request models
-│   ├── Repositories/      # Data access abstraction
-│   │   ├── BookRepository.swift       # Protocol definition
-│   │   ├── LocalBookRepository.swift  # Bundled JSON data
-│   │   ├── RemoteBookRepository.swift # Server API integration
-│   │   └── HybridBookRepository.swift # Smart fallback logic
-│   └── Services/          # NetworkService, CacheService, etc.
-├── Features/               # Feature-specific modules
-│   ├── Featured/          # Featured books carousel
-│   ├── Swipe/            # Tinder-style book discovery
-│   ├── Search/           # Advanced search functionality
-│   ├── Request/          # Book request system
-│   ├── BookDetail/       # Detailed book views with tabs
-│   └── Settings/         # App configuration
-├── Shared/                # Reusable UI components
-└── Resources/            # Assets and fixtures
-    └── Fixtures/         # Bundled JSON data for offline use
-```
-
-### Backend Structure
-```
+BookBite/              iOS app
+├── App/               Entry point, tabs, deep links, App Intents, configuration
+├── Core/              Models, repositories (API), services (network, auth, audio, stores)
+├── Features/          Featured (Discover), Search, MyLibrary, BookDetail + Reader,
+│                      Onboarding, Request, AudioPlayer, Settings, Authentication
+└── Shared/            Design system, editorial components, utilities
+BookBiteWidget/        "Idea of the Day" widget extension
+BookBiteTests/         Unit tests (Swift Testing)
 server/
-├── src/
-│   ├── config/           # Database and app configuration
-│   ├── controllers/      # HTTP request handlers
-│   ├── middleware/       # Auth, error handling, rate limiting
-│   ├── models/          # TypeScript types and Zod schemas
-│   ├── routes/          # API endpoint definitions
-│   └── services/        # Business logic and integrations
-│       ├── GoogleBooksService.ts  # Book metadata
-│       ├── OpenAIService.ts       # AI summaries
-│       ├── NYTService.ts          # Bestsellers
-│       └── QueueService.ts        # Background jobs
-├── scripts/              # Data population utilities
-└── supabase/            # Database schema and migrations
+├── src/               routes → controllers → services, Zod types, middleware
+├── scripts/           Catalogue, summary, audio, cover and embedding scripts
+└── supabase/          Schema and SQL files
 ```
 
-## Key Components
+## Getting started
 
-### iOS Features
-- **Smart Search**: Debounced real-time search with 300ms delay, filters across title, author, subtitle, and categories
-- **Book Detail Tabs**: 
-  - Overview: AI-generated summary and key ideas
-  - Apply: Workplace-specific implementation guidance
-  - Analysis: Critical perspectives and common pitfalls
-  - References: Citations with external links
-- **Request System**: On-demand book requests with automatic AI summary generation
-- **Data Management**: Protocol-based repository pattern with local/remote/hybrid modes
-- **Caching**: Smart caching with configurable TTL and automatic cleanup
-- **Network Monitoring**: Automatic online/offline detection and fallback
+### Requirements
+- Xcode 26 with an iOS simulator runtime
+- Node 22 and Redis
+- A Supabase project and API keys for OpenAI, Google Books, NYT and ElevenLabs (see `server/.env.example`)
 
-### Backend Features
-- **RESTful API**: Express.js with TypeScript for type safety
-- **Database**: PostgreSQL via Supabase with row-level security
-- **Authentication**: JWT-based with admin/public roles
-- **AI Integration**: OpenAI GPT-4 for intelligent summary generation
-- **External APIs**: 
-  - Google Books API for metadata enrichment
-  - NYT Bestsellers API for trending books
-- **Job Queue**: Redis-backed Bull queue for async processing
-- **Rate Limiting**: API compliance and protection
-
-## Testing
-
-Run the test suite:
-
+### 1. Start the server
 ```bash
-# Run all tests
-xcodebuild test -project BookBite.xcodeproj -scheme BookBite -destination 'platform=iOS Simulator,name=iPhone 15'
-
-# Run specific test
-xcodebuild test -project BookBite.xcodeproj -scheme BookBite -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:BookBiteTests/BookModelTests
+cd server
+cp .env.example .env        # then fill in your keys
+npm install
+npm run dev                 # http://localhost:3000/api
 ```
 
-Test coverage includes:
-- Model serialization/deserialization
-- Search filtering logic
-- UI navigation flows
-- Export functionality
-
-## Data Population Scripts
-
-The backend includes powerful scripts for automatically populating the database with thousands of books and AI-generated summaries:
-
-### NYT Bestsellers Integration
-
-Fetch and populate from New York Times bestseller lists:
-
+### 2. Run the app
 ```bash
-# Populate with all NYT non-fiction bestseller lists
-cd server && npm run populate-nyt
-
-# Process only high-priority lists (combined, hardcover, business, science, biography)
-cd server && npx tsx scripts/populate-nyt-bestsellers.ts --priority
-
-# Process specific list
-cd server && npx tsx scripts/populate-nyt-bestsellers.ts --list business-books
+open BookBite.xcodeproj     # then run the BookBite scheme
 ```
 
-**Features:**
-- Fetches from 16+ NYT non-fiction bestseller lists
-- Includes rank and weeks on list metadata
-- Automatic deduplication across lists
-- AI-generated summaries with extended analysis
+Debug builds use `http://localhost:3000/api`. To use another server, set the `BOOKBITE_SERVER_URL` launch environment variable. Release builds use the production server.
 
-### Category-Based Book Discovery
+### 3. Set up the database
+Apply `server/supabase/schema.sql` and the other SQL files in `server/supabase/` in the Supabase SQL editor. `add-book-embeddings.sql` turns on recommendations.
 
-Automatically discover and add books by category using Google Books API:
+## Commands
 
-```bash
-# Get 50 books per category (all priorities)
-cd server && npx tsx scripts/populate-books-by-category.ts 50
+| Task | Command |
+| --- | --- |
+| Build the app | `xcodebuild -project BookBite.xcodeproj -scheme BookBite -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build` |
+| App unit tests | `xcodebuild test … -only-testing:BookBiteTests` |
+| Server dev mode | `cd server && npm run dev` |
+| Type-check | `cd server && npx tsc --noEmit` |
+| Server tests | `cd server && npm test` |
+| Lint | `cd server && npm run lint` |
 
-# Get 25 books per category, high priority categories only
-cd server && npx tsx scripts/populate-books-by-category.ts 25 high
+### Catalogue scripts
+These scripts call paid APIs. Most take `--dry-run`, so use it first.
 
-# Get 10 books per category, medium priority categories only  
-cd server && npx tsx scripts/populate-books-by-category.ts 10 medium
+| Script | What it does |
+| --- | --- |
+| `npm run add-curated-books` | Adds books from a hand-picked list, with summaries |
+| `npm run populate-books` | Imports books from Google Books and NYT |
+| `npm run generate-summaries` | Writes summaries for books that have none |
+| `npm run regenerate-extended-summaries` | Rewrites extended summaries into chapters |
+| `npm run generate-audio -- --title "Atomic Habits"` | Makes an audio summary |
+| `npm run backfill-covers` | Finds sharper covers |
+| `npm run embed-books` | Updates the recommendation embeddings |
+| `npm run update-reader-counts` | Sets popularity from Open Library reader counts |
 
-# Get 5 books per category, low priority categories only
-cd server && npx tsx scripts/populate-books-by-category.ts 5 low
-```
+## Deployment
 
-**Features:**
-- 35+ comprehensive non-fiction categories (Self-Help, Business, Science, History, etc.)
-- Automatic deduplication across categories
-- AI-generated summaries and extended summaries
-- Smart rate limiting for API compliance
-- Progress tracking and detailed statistics
+The server deploys to [Render](https://render.com) from `main` (`server/`, `yarn build` / `yarn start`), with Redis as a Render Key Value store.
 
-**Categories Include:**
-- **High Priority**: Self-Help, Psychology, Business, History, Biography, Memoir, Leadership, etc.
-- **Medium Priority**: Economics, Innovation, Biology, Philosophy, Politics, Health, etc.
-- **Low Priority**: Art, Music, Travel, Cooking
+## Roadmap
 
-### Manual Book Curation
-
-For curated lists of popular books:
-
-```bash
-# Populate with handpicked popular non-fiction books
-cd server && npx tsx scripts/populate-nonfiction-books.ts
-```
-
-This script includes 75+ carefully selected popular non-fiction books across categories like:
-- Self-Help & Personal Development
-- Biography & Memoir  
-- Science & Nature
-- Business & Economics
-- History & Politics
-- Health & Wellness
-
-### Extended Summary Generation
-
-Generate cost-effective extended summaries for existing books:
-
-```bash
-# Generate extended summaries for all books without them
-cd server && npm run generate-extended-summaries
-```
-
-## Sample Data
-
-The app includes curated summaries for popular non-fiction books across multiple categories:
-
-### Business & Leadership
-- The Manager's Path by Camille Fournier
-- Accelerate by Nicole Forsgren, Jez Humble, Gene Kim
-- Inspired by Marty Cagan
-- The Lean Startup by Eric Ries
-- Good to Great by Jim Collins
-- The Creative Act by Rick Rubin
-
-### Personal Development
-- Atomic Habits by James Clear
-- The 7 Habits of Highly Effective People by Stephen Covey
-- Deep Work by Cal Newport
-- The Power of Now by Eckhart Tolle
-
-### Science & Technology
-- Sapiens by Yuval Noah Harari
-- Thinking in Systems by Donella H. Meadows
-- The Gene by Siddhartha Mukherjee
-- Astrophysics for People in a Hurry by Neil deGrasse Tyson
-
-### Psychology & Philosophy
-- Thinking, Fast and Slow by Daniel Kahneman
-- Man's Search for Meaning by Viktor Frankl
-- The Body Keeps the Score by Bessel van der Kolk
-- Meditations by Marcus Aurelius
-
-## Current Implementation Status
-
-### ✅ Completed Features
-- Native iOS app with SwiftUI
-- Tab-based navigation (Featured, Swipe, Search, Request, Settings)
-- Book detail views with multiple tabs
-- Local/Remote/Hybrid data source modes
-- Caching and offline support
-- AI-powered book request system
-- Backend API with Express/TypeScript
-- Supabase database integration
-- Google Books API integration
-- NYT Bestsellers integration
-- OpenAI summary generation
-- Background job processing
-- Data population scripts
-
-### 🚧 In Progress
-- Enhanced swipe gestures for book discovery
-- PDF export functionality
-- Mind map generation
-
-### 📋 Future Enhancements
-- User accounts and authentication
-- Personalized recommendations
-- Reading progress tracking
-- Social features (sharing, discussions)
-- Apple Watch companion app
-- Android version
-- Web application
-- Audio summaries
-- Multi-language support
+See [`TODO.md`](TODO.md). Next up: a Live Activity for audio, Lock Screen widgets, chapters for the full catalogue, citations in the app, and more accessibility work.
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+Contributors and coding agents: read [`CLAUDE.md`](CLAUDE.md) first. It has the architecture, conventions and known issues in detail.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
-
-## Acknowledgments
-
-- Built with SwiftUI and modern iOS development practices
-- Inspired by the need for accessible business book insights
-- Sample book data sourced from public domain information
+MIT. See [LICENSE.md](LICENSE.md).
