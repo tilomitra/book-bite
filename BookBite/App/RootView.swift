@@ -8,9 +8,11 @@ struct RootView: View {
     @State private var selectedTab: Tab = .discover
     /// Discover's stack, so links, Spotlight and intents can push a book onto it
     @State private var discoverPath = NavigationPath()
+    /// Ask's stack: the compose screen pushes a conversation onto it
+    @State private var askPath = NavigationPath()
 
     enum Tab: Hashable {
-        case discover, search, library
+        case discover, ask, search, library
     }
 
     var body: some View {
@@ -26,6 +28,14 @@ struct RootView: View {
                     Label("Discover", systemImage: "book")
                 }
                 .tag(Tab.discover)
+
+                NavigationStack(path: $askPath) {
+                    AskView(path: $askPath)
+                }
+                .tabItem {
+                    Label("Ask", systemImage: "questionmark.bubble")
+                }
+                .tag(Tab.ask)
 
                 NavigationStack {
                     BookSearchView()

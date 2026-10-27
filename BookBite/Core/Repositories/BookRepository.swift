@@ -31,6 +31,15 @@ protocol HighlightsProviding {
     func fetchHighlights(page: Int, limit: Int) async throws -> HighlightsPage
 }
 
+/// Ask: answers to personal questions from ideas across the catalogue (`ask/*` endpoints)
+protocol AskProviding {
+    /// `date` is the local day, yyyy-MM-dd
+    func fetchAskHome(date: String) async throws -> AskHome
+    /// Books that look like they answer a half-typed question
+    func fetchAskMatches(for question: String) async throws -> [Book]
+    func ask(_ request: AskRequest) -> AsyncThrowingStream<AskStreamEvent, Error>
+}
+
 protocol RecommendationsProviding {
     func fetchRecommendations(_ request: RecommendationRequest) async throws -> Recommendations
 }

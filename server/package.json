@@ -25,6 +25,7 @@
     "update-book-covers": "tsx scripts/update-book-covers.ts",
     "backfill-covers": "tsx scripts/backfill-covers.ts",
     "embed-books": "tsx scripts/embed-books.ts",
+    "embed-ideas": "tsx scripts/embed-ideas.ts",
     "update-popularity-scores": "tsx scripts/update-popularity-scores.ts",
     "update-reader-counts": "tsx scripts/update-reader-counts.ts",
     "populate-headway-books": "tsx scripts/populate-headway-books.ts"

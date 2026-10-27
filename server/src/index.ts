@@ -14,6 +14,7 @@ import ratingsRoutes from './routes/ratingsRoutes';
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import audioRoutes from './routes/audioRoutes';
+import askRoutes from './routes/askRoutes';
 import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
@@ -72,6 +73,7 @@ app.use('/api', ratingsRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api', audioRoutes);
+app.use('/api/ask', askRoutes);
 
 // Error handling middleware
 app.use(errorHandler);

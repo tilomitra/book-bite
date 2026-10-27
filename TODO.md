@@ -36,3 +36,10 @@ Ideas for taking the app to Apple Design Award level. Done so far: Editorial Dis
 
 ## Trust
 - [x] Show the summary's analysis (critiques, limitations, pitfalls) and citations; they are decoded but not displayed.
+
+## Ask (needs you at your desk)
+- [ ] Apply `server/supabase/add-idea-embeddings.sql` in the Supabase SQL editor (project `yjejgiltdbuombrzdtbv`). Creates `idea_embeddings` and the `match_ideas` RPC; until then Ask falls back to whole-book matching and cites weaker books.
+- [ ] Backfill it: `cd server && npm run embed-ideas -- --dry-run`, then `npm run embed-ideas` (a couple of cents). Re-run after generating summaries.
+- [ ] Restart the local server on 3001 so it has the `/api/ask` routes.
+- [ ] Later: "Did it work?" check-ins for the "This week" action (designed in the Ask the Shelf canvas, not built).
+
