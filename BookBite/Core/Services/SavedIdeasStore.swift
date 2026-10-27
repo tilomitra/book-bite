@@ -20,6 +20,13 @@ final class SavedIdeasStore: ObservableObject {
 
     @Published private(set) var ideas: [SavedIdea] = []
 
+    // ISO 8601 dates to match `NetworkService.makeDecoder()`, which reads them back
+    private static let encoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        return encoder
+    }()
+
     private let defaults: UserDefaults
     private let key = "savedIdeas"
 
@@ -54,7 +61,7 @@ final class SavedIdeasStore: ObservableObject {
     }
 
     private func save() {
-        if let data = try? JSONEncoder().encode(ideas) {
+        if let data = try? Self.encoder.encode(ideas) {
             defaults.set(data, forKey: key)
         }
     }

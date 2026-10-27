@@ -135,4 +135,10 @@ struct ReaderDocumentTests {
         #expect(ReaderLeadIn(paragraph: "Too short.", withInitial: true) == nil)
         #expect(ReaderLeadIn(paragraph: "• A list item that is long enough to count", withInitial: true) == nil)
     }
+
+    @Test("Straight quotes become typographic quotes")
+    func testSmartQuotes() {
+        #expect(ReaderDocument.smartQuotes(#""The Hobbit" isn't Tolkien's last ('Silmarillion')."#)
+            == "“The Hobbit” isn’t Tolkien’s last (‘Silmarillion’).")
+    }
 }

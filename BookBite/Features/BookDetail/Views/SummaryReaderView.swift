@@ -289,7 +289,8 @@ struct SummaryReaderView: View {
         let now = Date()
         guard force || now.timeIntervalSince(lastSaved) > 2 else { return }
         lastSaved = now
-        ReadingProgressStore.shared.update(book, fraction: fraction, chapterIndex: currentChapter)
+        ReadingProgressStore.shared.update(book, fraction: fraction, chapterIndex: currentChapter,
+                                           totalMinutes: summary.summaryReadTimeMinutes)
     }
 }
 

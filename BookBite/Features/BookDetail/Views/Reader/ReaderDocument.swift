@@ -124,7 +124,25 @@ struct ReaderDocument: Equatable {
         // A lone hash left at the start (e.g. "#Heading")
         text = text.replacing(#/^#+/#, with: "")
 
-        return text.trimmingCharacters(in: .whitespaces)
+        return smartQuotes(text.trimmingCharacters(in: .whitespaces))
+    }
+
+    /// Straight quotes → typographic ones: opening after a space or bracket, closing (and apostrophes)
+    /// everywhere else.
+    static func smartQuotes(_ text: String) -> String {
+        var result = ""
+        result.reserveCapacity(text.count)
+        var previous: Character?
+        for character in text {
+            let opens = previous.map { $0.isWhitespace || "([{—–".contains($0) } ?? true
+            switch character {
+            case "\"": result.append(opens ? "“" : "”")
+            case "'": result.append(opens ? "‘" : "’")
+            default: result.append(character)
+            }
+            previous = character
+        }
+        return result
     }
 
     /// `*word*` → word (NSRegularExpression: Swift Regex lookbehind needs a newer OS)

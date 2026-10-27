@@ -118,7 +118,7 @@ private struct ReadingStatusText: View {
             .monospacedDigit()
             .contentTransition(.numericText())
             .task(id: entry.book.id) {
-                totalMinutes = ReadingTime.cachedTotalMinutes(bookId: entry.book.id)
+                totalMinutes = entry.totalMinutes ?? ReadingTime.cachedTotalMinutes(bookId: entry.book.id)
             }
     }
 }

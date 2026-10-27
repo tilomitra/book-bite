@@ -13,6 +13,8 @@ final class ReadingProgressStore: ObservableObject {
         var fraction: Double
         /// Index of the chapter the reader was last in
         var chapterIndex: Int
+        /// Minutes to read the whole summary, so "N min left" works without the summary at hand
+        var totalMinutes: Int?
         var updatedAt: Date
         var finishedAt: Date?
 
@@ -27,6 +29,13 @@ final class ReadingProgressStore: ObservableObject {
 
     /// Newest first
     @Published private(set) var entries: [Entry] = []
+
+    // ISO 8601 dates to match `NetworkService.makeDecoder()`, which reads them back
+    private static let encoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        return encoder
+    }()
 
     private let defaults: UserDefaults
     private let key = "readingProgress"
@@ -55,12 +64,13 @@ final class ReadingProgressStore: ObservableObject {
     }
 
     /// Records the reading position. Never moves a finished book back to unfinished.
-    func update(_ book: Book, fraction: Double, chapterIndex: Int) {
+    func update(_ book: Book, fraction: Double, chapterIndex: Int, totalMinutes: Int? = nil) {
         let clamped = min(max(fraction, 0), 1)
         var entry = entry(for: book.id)
             ?? Entry(book: book, fraction: 0, chapterIndex: 0, updatedAt: Date(), finishedAt: nil)
         entry.fraction = clamped
         entry.chapterIndex = chapterIndex
+        if let totalMinutes { entry.totalMinutes = totalMinutes }
         entry.updatedAt = Date()
         upsert(entry)
     }
@@ -92,7 +102,7 @@ final class ReadingProgressStore: ObservableObject {
     }
 
     private func save() {
-        if let data = try? JSONEncoder().encode(entries) {
+        if let data = try? Self.encoder.encode(entries) {
             defaults.set(data, forKey: key)
         }
     }

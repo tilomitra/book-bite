@@ -250,6 +250,9 @@ struct EditorialCover: View {
         )
     }
 
+    /// AsyncImage reports a load cancelled by a re-render as a failure and never retries, so retry once
+    @State private var attempt = 0
+
     var body: some View {
         AsyncImage(url: URL.bookCover(from: coverURL)) { phase in
             switch phase {
@@ -259,6 +262,12 @@ struct EditorialCover: View {
                     .aspectRatio(contentMode: .fill)
             case .empty where URL.bookCover(from: coverURL) != nil:
                 BookPlaceholderView.flexible(cornerRadius: 0, showLoading: false)
+            case .failure where attempt == 0:
+                BookPlaceholderView.flexible(cornerRadius: 0, showLoading: false)
+                    .task {
+                        try? await Task.sleep(for: .milliseconds(300))
+                        attempt += 1
+                    }
             default:
                 if let title {
                     TypographicCover(title: title, author: author ?? "")
@@ -267,6 +276,7 @@ struct EditorialCover: View {
                 }
             }
         }
+        .id(attempt)
         .frame(width: width, height: width * 1.5)
         .clipShape(shape)
         .overlay(shape.stroke(Color.primary.opacity(0.08), lineWidth: 0.5))
