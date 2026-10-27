@@ -3,24 +3,29 @@ import SwiftUI
 struct RootView: View {
     @EnvironmentObject var dependencies: DependencyContainer
     @ObservedObject private var audioService = AudioPlaybackService.shared
-    @State private var showDeepLinkBook = false
+    @ObservedObject private var router = DeepLinkRouter.shared
     @State private var showFullAudioPlayer = false
+    @State private var selectedTab: Tab = .discover
+    /// Discover's stack, so links, Spotlight and intents can push a book onto it
+    @State private var discoverPath = NavigationPath()
 
-    let deepLinkBook: Book?
-
-    init(deepLinkBook: Book? = nil) {
-        self.deepLinkBook = deepLinkBook
+    enum Tab: Hashable {
+        case discover, search, library
     }
-    
+
     var body: some View {
         ZStack(alignment: .bottom) {
-            TabView {
-                NavigationStack {
+            TabView(selection: $selectedTab) {
+                NavigationStack(path: $discoverPath) {
                     FeaturedBooksView()
+                        .navigationDestination(for: BookRoute.self) { route in
+                            BookDetailView(book: route.book)
+                        }
                 }
                 .tabItem {
                     Label("Discover", systemImage: "book")
                 }
+                .tag(Tab.discover)
 
                 NavigationStack {
                     BookSearchView()
@@ -28,6 +33,7 @@ struct RootView: View {
                 .tabItem {
                     Label("Search", systemImage: "magnifyingglass")
                 }
+                .tag(Tab.search)
 
                 NavigationStack {
                     MyLibraryView()
@@ -35,6 +41,7 @@ struct RootView: View {
                 .tabItem {
                     Label("Library", systemImage: "books.vertical")
                 }
+                .tag(Tab.library)
             }
             // Add padding at bottom when mini player is visible
             .safeAreaInset(edge: .bottom) {
@@ -56,22 +63,24 @@ struct RootView: View {
         }
         .tint(.primary)
         .animation(.easeInOut(duration: 0.25), value: audioService.isActive)
-        .onChange(of: deepLinkBook) { _, book in
-            if book != nil {
-                showDeepLinkBook = true
-            }
-        }
-        .sheet(isPresented: $showDeepLinkBook) {
-            if let book = deepLinkBook {
-                NavigationStack {
-                    BookDetailView(book: book)
-                }
-            }
-        }
+        // A link can arrive before RootView exists (cold launch, during onboarding), so check on appear too
+        .onAppear { showPendingBook() }
+        .onChange(of: router.pending) { _, _ in showPendingBook() }
         .sheet(isPresented: $showFullAudioPlayer) {
             AudioPlayerView(audioService: audioService)
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
         }
+    }
+
+    /// Switches to Discover and shows the routed book on top of its root, replacing whatever was pushed.
+    private func showPendingBook() {
+        guard let route = router.pending else { return }
+        router.pending = nil
+        showFullAudioPlayer = false
+        selectedTab = .discover
+        var path = NavigationPath()
+        path.append(route)
+        discoverPath = path
     }
 }

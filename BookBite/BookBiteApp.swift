@@ -5,12 +5,12 @@
 //  Created by Tilo Mitra on 2025-08-14.
 //
 
+import CoreSpotlight
 import SwiftUI
 
 @main
 struct BookBiteApp: App {
     @StateObject private var dependencies = DependencyContainer.shared
-    @State private var deepLinkBook: Book?
     @AppStorage(OnboardingPreferences.completedKey) private var hasCompletedOnboarding = false
 
     init() {
@@ -21,7 +21,7 @@ struct BookBiteApp: App {
         WindowGroup {
             Group {
                 if hasCompletedOnboarding {
-                    RootView(deepLinkBook: deepLinkBook)
+                    RootView()
                         .transition(.opacity)
                 } else {
                     OnboardingView(bookRepository: dependencies.bookRepository)
@@ -33,15 +33,24 @@ struct BookBiteApp: App {
             .onOpenURL { url in
                 handleDeepLink(url)
             }
+            .onContinueUserActivity(CSSearchableItemActionType) { activity in
+                handleSpotlight(activity)
+            }
             .task {
                 WidgetBridge.publishServerURL(AppConfiguration.shared.baseServerURL)
+                SpotlightIndexer.shared.start()
             }
         }
     }
-    
+
+    /// `bookbite://book/<id>?title=&author=&cover=` from shared links and the widget
     private func handleDeepLink(_ url: URL) {
-        if let book = dependencies.sharingService.handleIncomingURL(url) {
-            deepLinkBook = book
-        }
+        guard let partial = dependencies.sharingService.handleIncomingURL(url) else { return }
+        DeepLinkRouter.shared.open(bookId: partial.id, partial: partial)
+    }
+
+    private func handleSpotlight(_ activity: NSUserActivity) {
+        guard let bookId = SpotlightIndexer.bookId(from: activity) else { return }
+        DeepLinkRouter.shared.open(bookId: bookId, partial: SpotlightIndexer.knownBook(id: bookId))
     }
 }

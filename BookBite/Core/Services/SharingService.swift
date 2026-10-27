@@ -20,7 +20,11 @@ class SharingService: ObservableObject {
         if let isbn = book.isbn13 ?? book.isbn10 {
             queryItems.append(URLQueryItem(name: "isbn", value: isbn))
         }
-        
+        // Lets the link show a cover even if the full book can't be fetched on open
+        if let cover = book.coverAssetName {
+            queryItems.append(URLQueryItem(name: "cover", value: cover))
+        }
+
         components.queryItems = queryItems
         return components.url
     }
@@ -105,8 +109,8 @@ extension SharingService {
         let isbn = queryItems?.first(where: { $0.name == "isbn" })?.value
         let cover = queryItems?.first(where: { $0.name == "cover" })?.value
         
-        // Create a basic Book object for navigation
-        // Note: This would ideally fetch full book details from the repository
+        // A partial book from the link. DeepLinkRouter fetches the full record by id and uses this
+        // only if that fails.
         return Book(
             id: bookId,
             title: title,
