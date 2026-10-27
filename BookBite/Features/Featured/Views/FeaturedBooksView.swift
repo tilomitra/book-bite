@@ -4,6 +4,10 @@ import SwiftUI
 struct FeaturedBooksView: View {
     @StateObject private var viewModel: FeaturedBooksViewModel
     @ObservedObject private var readingProgress = ReadingProgressStore.shared
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
+    /// iPad and other wide windows: the idea of the day beside Continue reading, cards three to a row
+    private var isWide: Bool { horizontalSizeClass == .regular }
 
     init() {
         _viewModel = StateObject(wrappedValue: FeaturedBooksViewModel(bookRepository: DependencyContainer.shared.bookRepository))
@@ -18,7 +22,11 @@ struct FeaturedBooksView: View {
                 })
 
                 // On-device, so it shows even while the feed loads or the server is unreachable
-                ContinueReadingSection(entries: readingProgress.inProgress)
+                if isWide {
+                    wideTopRow
+                } else {
+                    ContinueReadingSection(entries: readingProgress.inProgress)
+                }
 
                 if viewModel.isLoading && viewModel.booksByGenre.isEmpty {
                     ConsistentLoadingView(style: .primary, message: "Loading books...")
@@ -39,15 +47,16 @@ struct FeaturedBooksView: View {
                     ContentUnavailableView("No books yet", systemImage: "books.vertical")
                         .padding(.top, 40)
                 } else {
-                    if let dailyIdea = viewModel.dailyIdea {
+                    if !isWide, let dailyIdea = viewModel.dailyIdea {
                         DailyIdeaCard(dailyIdea: dailyIdea)
                     }
 
-                    ForEach(Array(viewModel.blocks.enumerated()), id: \.element.id) { index, block in
-                        blockView(block)
+                    let rows = isWide ? FeedRow.wide(viewModel.blocks) : viewModel.blocks.map(FeedRow.block)
+                    ForEach(Array(rows.enumerated()), id: \.element.id) { index, row in
+                        rowView(row)
                             .onAppear {
-                                // Start loading a few blocks before the end, so scrolling doesn't stall
-                                if index >= viewModel.blocks.count - 3 {
+                                // Start loading a few rows before the end, so scrolling doesn't stall
+                                if index >= rows.count - 3 {
                                     Task { await viewModel.loadMore() }
                                 }
                             }
@@ -75,6 +84,47 @@ struct FeaturedBooksView: View {
         }
     }
 
+    /// The idea of the day and Continue reading side by side; either one alone takes the full width
+    @ViewBuilder
+    private var wideTopRow: some View {
+        let entries = readingProgress.inProgress
+        if viewModel.dailyIdea != nil || !entries.isEmpty {
+            HStack(alignment: .top, spacing: 16) {
+                if let dailyIdea = viewModel.dailyIdea {
+                    DailyIdeaCard(dailyIdea: dailyIdea)
+                        .frame(maxWidth: .infinity, alignment: .top)
+                }
+                if !entries.isEmpty {
+                    ContinueReadingSection(entries: entries)
+                        .frame(maxWidth: .infinity, alignment: .top)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func rowView(_ row: FeedRow) -> some View {
+        switch row {
+        case .block(let block):
+            blockView(block)
+        case .cards(let cards):
+            // Always three columns, so a row still filling up doesn't stretch its first card
+            HStack(alignment: .top, spacing: 0) {
+                ForEach(0..<FeedRow.cardsPerRow, id: \.self) { column in
+                    Group {
+                        if column < cards.count {
+                            blockView(cards[column])
+                        } else {
+                            Color.clear.frame(height: 1)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .top)
+                }
+            }
+            .padding(.horizontal, 10)
+        }
+    }
+
     @ViewBuilder
     private func blockView(_ block: DiscoverBlock) -> some View {
         switch block {
@@ -90,6 +140,44 @@ struct FeaturedBooksView: View {
     }
 }
 
+/// One row of the Discover feed: a block as is, or on wide screens up to three editorial cards side by side.
+enum FeedRow: Identifiable {
+    case block(DiscoverBlock)
+    case cards([DiscoverBlock])
+
+    static let cardsPerRow = 3
+
+    var id: String {
+        switch self {
+        case .block(let block): return block.id
+        // Named after its first card, which never changes, so the row keeps its identity as it fills
+        case .cards(let cards): return "cards:\(cards.first?.id ?? "")"
+        }
+    }
+
+    /// Shelves stay full width. Each card row is placed where its first card was and takes the next
+    /// cards from further down, so rows already on screen never move when more blocks load.
+    static func wide(_ blocks: [DiscoverBlock]) -> [FeedRow] {
+        var rows: [FeedRow] = []
+        var openRow: Int?
+        for block in blocks {
+            if case .shelf = block {
+                rows.append(.block(block))
+                continue
+            }
+            if let index = openRow, case .cards(let cards) = rows[index] {
+                let filled = cards + [block]
+                rows[index] = .cards(filled)
+                if filled.count == cardsPerRow { openRow = nil }
+            } else {
+                rows.append(.cards([block]))
+                openRow = rows.count - 1
+            }
+        }
+        return rows
+    }
+}
+
 /// A titled, horizontally scrolling row of books.
 struct BookShelf: View {
     let title: String
@@ -102,6 +190,7 @@ struct BookShelf: View {
     static let previewCount = 12
     private var previewCount: Int { Self.previewCount }
     @Namespace private var zoom
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     /// Splits a server heading like "More like Never Eat Alone" into eyebrow and title,
     /// so the long book title gets the full width and wraps instead of truncating.
@@ -163,7 +252,7 @@ struct BookShelf: View {
                             BookDetailView(book: book)
                                 .navigationTransition(.zoom(sourceID: book.id, in: zoom))
                         } label: {
-                            ShelfBookCard(book: book, coverWidth: 118, zoomNamespace: zoom)
+                            ShelfBookCard(book: book, coverWidth: horizontalSizeClass == .regular ? 136 : 118, zoomNamespace: zoom)
                         }
                         .buttonStyle(.plain)
                     }
@@ -290,7 +379,7 @@ struct BookGridView: View {
     let title: String
     let books: [Book]
 
-    private let columns = [GridItem(.adaptive(minimum: 104, maximum: 140), spacing: 16, alignment: .top)]
+    private let columns = [GridItem(.adaptive(minimum: 104, maximum: 150), spacing: 20, alignment: .top)]
     @Namespace private var zoom
 
     var body: some View {

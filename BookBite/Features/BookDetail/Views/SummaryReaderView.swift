@@ -18,6 +18,7 @@ struct SummaryReaderView: View {
     @Environment(\.colorScheme) private var systemColorScheme
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     /// Parsed on appear rather than in init: BookDetailView builds this view eagerly for its link
     @State private var document: ReaderDocument?
@@ -39,6 +40,12 @@ struct SummaryReaderView: View {
     @State private var isFinished = false
     @State private var showsSettings = false
     @State private var chapterJumps = 0
+    /// Wide layout only: the contents column on the left and "Ask the book" on the right
+    @State private var showsContents = true
+    @State private var showsAsk = false
+
+    /// iPad and other wide windows: room for the contents beside the text, and to ask about it without leaving
+    private var isWide: Bool { horizontalSizeClass == .regular }
 
     private static let headerID = -1
     private static let endID = Int.max
@@ -54,7 +61,15 @@ struct SummaryReaderView: View {
             theme.background.ignoresSafeArea()
 
             if let document, !document.isEmpty {
-                reader(document)
+                if isWide && showsContents && document.titledChapters.count > 1 {
+                    HStack(spacing: 0) {
+                        contentsColumn(document)
+                            .transition(.move(edge: .leading).combined(with: .opacity))
+                        reader(document)
+                    }
+                } else {
+                    reader(document)
+                }
             } else if document != nil {
                 Text("This summary isn't available yet.")
                     .font(.system(.body, design: .serif))
@@ -69,12 +84,21 @@ struct SummaryReaderView: View {
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarColorScheme(theme.colorScheme, for: .navigationBar)
         .toolbar { toolbarContent }
+        // Off on iPhone, where the reader keeps only its text (showsAsk is only set in wide layout).
+        // A plain binding: one built in `body` is a new value on every pass and loops the layout
+        .inspector(isPresented: $showsAsk) {
+            BookChatView(book: book)
+                .inspectorColumnWidth(min: 320, ideal: 380, max: 480)
+        }
         .tint(theme.ink)
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: theme)
         .sensoryFeedback(.impact(flexibility: .soft, intensity: 0.6), trigger: isFinished) { _, finished in finished }
         .sensoryFeedback(.selection, trigger: chapterJumps)
         .onAppear(perform: load)
         .onDisappear { record(force: true) }
+        .onChange(of: horizontalSizeClass) { _, sizeClass in
+            if sizeClass != .regular { showsAsk = false }
+        }
         .onChange(of: scenePhase) { _, phase in
             if phase != .active { record(force: true) }
         }
@@ -151,7 +175,25 @@ struct SummaryReaderView: View {
 
         ToolbarItemGroup(placement: .topBarTrailing) {
             if let document, document.titledChapters.count > 1 {
-                contentsMenu(document)
+                if isWide {
+                    Button {
+                        withAnimation(reduceMotion ? nil : .snappy) { showsContents.toggle() }
+                    } label: {
+                        Image(systemName: "sidebar.leading")
+                    }
+                    .accessibilityLabel(showsContents ? "Hide contents" : "Show contents")
+                } else {
+                    contentsMenu(document)
+                }
+            }
+
+            if isWide {
+                Button {
+                    showsAsk.toggle()
+                } label: {
+                    Image(systemName: showsAsk ? "bubble.left.fill" : "bubble.left")
+                }
+                .accessibilityLabel(showsAsk ? "Hide Ask the book" : "Ask the book")
             }
 
             Button {
@@ -188,6 +230,58 @@ struct SummaryReaderView: View {
             Image(systemName: "list.bullet")
         }
         .accessibilityLabel("Contents")
+    }
+
+    /// The chapters as a column beside the text (wide layout); the current one is marked
+    private func contentsColumn(_ document: ReaderDocument) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Contents")
+                    .font(.caption.weight(.semibold))
+                    .tracking(1.2)
+                    .textCase(.uppercase)
+                    .foregroundStyle(theme.secondaryInk)
+                    .padding(.horizontal, 12)
+                    .padding(.bottom, 10)
+                    .accessibilityAddTraits(.isHeader)
+
+                contentsRow("Beginning", isCurrent: false) { jump(to: Self.headerID) }
+
+                ForEach(document.titledChapters) { chapter in
+                    contentsRow(chapter.title ?? "", isCurrent: chapter.id == currentChapter) {
+                        jump(to: chapter.id)
+                    }
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 24)
+        }
+        .scrollIndicators(.hidden)
+        .frame(width: 260)
+        .overlay(alignment: .trailing) {
+            Rectangle().fill(theme.rule).frame(width: 0.5)
+        }
+    }
+
+    private func contentsRow(_ title: String, isCurrent: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.system(.subheadline, design: .serif).weight(isCurrent ? .semibold : .regular))
+                .foregroundStyle(theme.ink)
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 10)
+                .background(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(isCurrent ? theme.rule.opacity(0.6) : .clear)
+                )
+                .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(isCurrent ? .isSelected : [])
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: isCurrent)
     }
 
     private func currentTitle(in document: ReaderDocument) -> String {
