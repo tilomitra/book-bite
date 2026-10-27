@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>BookBite</title>
-  <meta name="description" content="The big ideas from non-fiction books: one sentence, a handful of key ideas and a fifteen-minute read. Join the iPhone beta on TestFlight.">
+  <meta name="description" content="Key ideas from 2,000+ bestselling non-fiction books in 15 minutes, to read or listen to, plus AI that helps you apply them to your own problems. Join the iPhone beta on TestFlight.">
   <meta name="theme-color" content="#f5f5f7">
   <meta property="og:title" content="BookBite">
-  <meta property="og:description" content="Take a bite out of every book on your list. Now on TestFlight for iPhone.">
+  <meta property="og:description" content="Learn from the world’s best books in 15 minutes a day. Now on TestFlight for iPhone.">
   <meta property="og:image" content="/icon.png">
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -35,8 +35,8 @@
 
       <div class="hero-inner">
         <div class="hero-copy">
-          <h1 class="hero-title" data-split>Take a bite out of every book on your&nbsp;list.</h1>
-          <p class="hero-lede load-in" style="--d: 900ms">BookBite gives you the core of a non-fiction book in one sentence, a handful of key ideas and a fifteen-minute read.</p>
+          <h1 class="hero-title" data-split>Learn from the world’s best books in 15&nbsp;minutes a&nbsp;day.</h1>
+          <p class="hero-lede load-in" style="--d: 900ms">Key ideas from 2,000+ bestselling non-fiction books, to read or listen to. Plus AI that helps you put them to work on the problems in your own life.</p>
           <div class="hero-actions load-in" style="--d: 1050ms">
             <a class="btn btn-light" data-testflight href="#">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.37 12.46c-.02-2.33 1.9-3.45 1.99-3.5-1.08-1.59-2.77-1.8-3.37-1.83-1.43-.15-2.8.84-3.53.84-.73 0-1.85-.82-3.04-.8-1.56.02-3 .91-3.81 2.31-1.62 2.82-.41 7 1.17 9.29.77 1.12 1.69 2.38 2.9 2.33 1.17-.05 1.61-.75 3.02-.75 1.41 0 1.81.75 3.04.73 1.26-.02 2.05-1.14 2.82-2.27.89-1.3 1.25-2.56 1.27-2.62-.03-.01-2.43-.93-2.46-3.73zM14.06 5.6c.64-.78 1.08-1.86.96-2.94-.93.04-2.05.62-2.71 1.4-.6.69-1.12 1.79-.98 2.85 1.03.08 2.09-.53 2.73-1.31z"/></svg>
@@ -84,7 +84,7 @@
             <canvas class="crumbs" data-crumbs aria-hidden="true"></canvas>
           </div>
           <div class="bite-copy">
-            <h2 class="bite-title" id="bite-title" data-bite-title>Three hundred pages,<br> one sentence.</h2>
+            <h2 class="bite-title" id="bite-title" data-bite-title>Three hundred pages.<br> One big idea.</h2>
             <blockquote class="bite-hook" data-bite-hook>Financial success depends less on mastering formulas than on understanding your own behavior, staying patient, and making choices you can live with.</blockquote>
             <p class="bite-source" data-bite-source>The Psychology of Money, Morgan Housel</p>
           </div>
@@ -93,25 +93,52 @@
       </div>
     </section>
 
+    <!-- Solve: AI turns a daily problem into books and steps -->
+    <section class="solve" data-solve aria-labelledby="solve-title">
+      <div class="solve-copy">
+        <h2 id="solve-title">Bring a problem. Leave with a plan.</h2>
+        <p>Pick what’s on your mind. BookBite’s AI finds the books that tackle it, pulls out the steps you can try today, and answers follow-up questions about your situation using what the book actually says.</p>
+        <div class="problems" role="tablist" aria-label="Example problems" data-problems></div>
+      </div>
+      <div class="solve-card" data-solve-card aria-live="polite">
+        <div class="solve-tag">Example</div>
+        <div class="solve-q" data-solve-q></div>
+        <div class="solve-match" data-solve-part>
+          <div class="solve-cover"><img alt="" data-solve-img></div>
+          <div>
+            <div class="solve-label">Best match</div>
+            <div class="solve-title" data-solve-title></div>
+            <div class="solve-why" data-solve-why></div>
+          </div>
+        </div>
+        <div class="solve-label" data-solve-part>Try this today</div>
+        <ol class="solve-steps" data-solve-steps></ol>
+        <div class="solve-ask" data-solve-part>
+          <div class="ask-q" data-ask-q></div>
+          <div class="ask-a" data-ask-a></div>
+        </div>
+      </div>
+    </section>
+
     <!-- Story: a pinned phone walks through the app -->
     <section class="story" data-story aria-label="What's inside the app">
       <div class="story-sticky">
         <div class="story-steps">
           <article class="step" data-step="0">
-            <h2>Key ideas, one card at a time</h2>
-            <p>Swipe through the handful of ideas that carry the book. Keep the ones worth remembering and they land in your notebook.</p>
+            <h2>Key ideas in 15 minutes</h2>
+            <p>Skip the filler. Swipe through the ideas that carry each book and save the ones you want to remember to your notebook.</p>
           </article>
           <article class="step" data-step="1">
-            <h2>The fifteen-minute version</h2>
-            <p>When a card isn’t enough, read the whole summary in chapters. Paper, sepia or night, set in a typeface made for reading. It picks up where you left off.</p>
+            <h2>Go deeper when you want to</h2>
+            <p>Read the full summary in short chapters, in light, sepia or dark mode. BookBite remembers where you stopped.</p>
           </article>
           <article class="step" data-step="2">
-            <h2>Listen with the screen off</h2>
-            <p>Narrated summaries play from the lock screen, so a book fits into a walk or a commute.</p>
+            <h2>Listen on the go</h2>
+            <p>Turn your commute, workout or chores into learning time with narrated summaries that play from the lock screen.</p>
           </article>
           <article class="step" data-step="3">
-            <h2>Ask the book anything</h2>
-            <p>Not sure how an idea applies to you? Ask, and get an answer grounded in what the book actually says.</p>
+            <h2>Ask how it applies to you</h2>
+            <p>Describe your situation and get advice grounded in what the book actually says, not a generic chatbot answer.</p>
           </article>
           <ol class="story-dots" aria-hidden="true"><li></li><li></li><li></li><li></li></ol>
         </div>
@@ -179,8 +206,8 @@
     <!-- Widget -->
     <section class="widget-sec" data-widget-sec aria-labelledby="widget-title">
       <div class="widget-copy">
-        <h2 id="widget-title">An idea a day, on your Home Screen</h2>
-        <p>The Idea of the Day widget puts one key idea from a different book on your Home Screen every morning, tinted to match its cover. Tap it to open the book.</p>
+        <h2 id="widget-title">One big idea every morning</h2>
+        <p>Build a daily learning habit without opening the app. The Idea of the Day widget puts a key idea from a different book on your Home Screen each morning. Tap it to read more.</p>
         <div class="widget-picker" role="tablist" aria-label="Sample ideas" data-widget-picker></div>
       </div>
       <div class="home" data-home>
@@ -206,8 +233,11 @@
 
     <!-- Shelves -->
     <section class="shelves" data-shelves aria-labelledby="shelves-title">
-      <h2 id="shelves-title">Two thousand books and counting, from Sapiens to The Lean Startup.</h2>
-      <p>Psychology, money, health, history, business and the classics people keep recommending. Missing one? Request it from the app and a summary is written in a minute or two.</p>
+      <h2 id="shelves-title">Bestselling non-fiction, picked for your goals.</h2>
+      <p>2,000+ titles across psychology, productivity, money, health, relationships and leadership. Choose your goals and BookBite builds shelves around them. Missing a book? Request it and get a summary in a minute or two.</p>
+      <ul class="goals" aria-label="Goals you can choose">
+        <li>Better habits</li><li>Better with money</li><li>Leading at work</li><li>How people think</li><li>Healthier living</li><li>Better relationships</li><li>Calm and meaning</li><li>Starting something</li><li>Creative work</li><li>How the world works</li>
+      </ul>
       <div class="rows" aria-hidden="true">
         <div class="row" data-row="0"></div>
         <div class="row" data-row="1"></div>
@@ -220,8 +250,8 @@
         <img src="/icon.png" alt="The BookBite app icon: a cream B with a bite out of its corner" width="200" height="200">
         <div class="cta-glare" aria-hidden="true"></div>
       </div>
-      <h2 id="cta-title">Start with one book tonight.</h2>
-      <p>BookBite is in beta on TestFlight. Install Apple’s TestFlight app, then tap the link to join.</p>
+      <h2 id="cta-title">Fifteen minutes a day adds up.</h2>
+      <p>BookBite is free while in beta on TestFlight. Install Apple’s TestFlight app, then tap the link to join.</p>
       <a class="btn btn-light btn-big" data-testflight href="#">Join the beta on TestFlight</a>
       <ol class="cta-steps">
         <li>Install TestFlight from the App Store</li>

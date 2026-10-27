@@ -163,7 +163,7 @@
     BITES.forEach((b, i) => {
       const t = range(p, b.at, b.at + 0.05);
       biteCover.style.setProperty(`--r${i + 1}`, `${(t > 0 ? backOut(t) : 0) * w * 0.21}px`);
-      if (t > 0 && !bitten[i]) { bitten[i] = true; spawnCrumbs(b); if (navigator.vibrate) navigator.vibrate(8); }
+      if (t > 0 && !bitten[i]) { bitten[i] = true; spawnCrumbs(b); }
       if (p < b.at - 0.02) bitten[i] = false;
     });
     const turn = easeOut(range(p, 0, 0.4));
@@ -173,6 +173,123 @@
     hookWords.forEach((el, i) => el.style.setProperty('--o', 0.1 + 0.9 * clamp(words - i)));
     biteSource.style.setProperty('--o', range(p, 0.86, 0.92));
     biteMeter.style.transform = `scaleX(${p})`;
+  }
+
+  /* ---------- Solve ---------- */
+  // Example problems; steps come from each book's "How to apply it" section in the app
+  const PROBLEMS = [
+    {
+      problem: 'I keep putting off the big task',
+      book: 'Eat That Frog!',
+      why: 'Do your most important task first, before easier work takes over the day.',
+      steps: [
+        'Tonight, write tomorrow’s list and mark the one task with the biggest impact.',
+        'Start your day with a distraction-free block on that task, before you check messages.',
+        'If it feels daunting, define the next concrete step and work in short, timed chunks.',
+      ],
+      ask: 'What if the big task depends on other people?',
+      answer: 'Tracy would have you split it. Find the part only you can do and make that tomorrow morning’s frog. Send your requests to others first thing, so their part moves while you work on yours.',
+    },
+    {
+      problem: 'I can’t stop checking my phone',
+      book: 'Deep Work',
+      why: 'Focus is a rare, valuable skill, and you can train it like any other.',
+      steps: [
+        'Schedule protected focus blocks and decide in advance what each one is for.',
+        'During a block, silence notifications and keep messaging closed.',
+        'Practise boredom: wait in a line or take a walk without reaching for your phone.',
+      ],
+      ask: 'I need my phone for work, though.',
+      answer: 'Newport’s point is to be deliberate, not to go offline. Pick set times to check messages, say three a day, and leave the phone in another room during focus blocks. Most things that feel urgent can wait two hours.',
+    },
+    {
+      problem: 'I want to stop stressing about money',
+      book: 'The Psychology of Money',
+      why: 'Financial success is less about formulas and more about your behaviour.',
+      steps: [
+        'Write down what “enough” means for you, and check big decisions against it.',
+        'Build a buffer, like an emergency fund, so a setback never forces a rushed choice.',
+        'Pick an investing approach you can stick with when markets fall.',
+      ],
+      ask: 'My friends earn more and I feel behind.',
+      answer: 'Housel would say comparison has no finish line. Define what a good life costs for you and measure progress against that, not against what other people appear to spend.',
+    },
+    {
+      problem: 'I have a tough conversation coming up',
+      book: 'Never Split the Difference',
+      why: 'Negotiation lessons from a former FBI hostage negotiator, for any high-stakes talk.',
+      steps: [
+        'Label the other person’s emotions out loud: “It seems like you’re worried about…”',
+        'Ask “what” and “how” questions instead of yes-or-no ones.',
+        'Mirror their last few words to keep them talking.',
+      ],
+      ask: 'I need to ask my boss for a raise.',
+      answer: 'Voss would start by naming what your boss is likely feeling: “It seems like budgets are tight this year.” Then ask, “How can we get my pay in line with what I now deliver?” It invites them to solve the problem with you.',
+    },
+    {
+      problem: 'My new habits never stick',
+      book: 'Atomic Habits',
+      why: 'Small changes, repeated daily, add up to remarkable results.',
+      steps: [
+        'Make it obvious: put the cue where you’ll see it, like a book on your pillow.',
+        'Shrink the habit until it takes two minutes, then show up every day.',
+        'Think in identity: not “I want to read” but “I’m a reader.”',
+      ],
+      ask: 'I always quit after a week.',
+      answer: 'Clear’s rule is never miss twice. One missed day is an accident; two is the start of a new habit. Keep the habit small enough that even on a bad day you can do the two-minute version.',
+    },
+  ].map((p) => ({ ...p, ...(BOOKS.find((b) => b.title === p.book) || {}) }));
+
+  const solveCard = $('[data-solve-card]');
+  const problemsEl = $('[data-problems]');
+  let solveIndex = -1, solveTimers = [], solveAuto = null, solveTyping = null;
+  function showProblem(i) {
+    if (!solveCard || i === solveIndex) return;
+    solveIndex = i;
+    const p = PROBLEMS[i];
+    $$('button', problemsEl).forEach((b, j) => b.setAttribute('aria-selected', String(j === i)));
+    solveTimers.forEach(clearTimeout); solveTimers = [];
+    clearInterval(solveTyping);
+    $('[data-solve-q]').textContent = p.problem;
+    $('[data-solve-img]').src = p.cover || '';
+    $('[data-solve-title]').textContent = `${p.book}${p.author ? `, ${p.author}` : ''}`;
+    $('[data-solve-why]').textContent = p.why;
+    const steps = $('[data-solve-steps]');
+    steps.replaceChildren(...p.steps.map((t) => { const li = document.createElement('li'); li.textContent = t; return li; }));
+    $('[data-ask-q]').textContent = p.ask;
+    const answer = $('[data-ask-a]');
+    answer.textContent = '';
+    const parts = [$('[data-solve-q]'), ...$$('[data-solve-part]', solveCard).slice(0, 2), ...steps.children, $('.solve-ask')];
+    parts.forEach((el) => { el.classList.add('rv'); el.classList.remove('in'); });
+    if (reduceMotion) { parts.forEach((el) => el.classList.add('in')); answer.textContent = p.answer; return; }
+    parts.forEach((el, k) => solveTimers.push(setTimeout(() => el.classList.add('in'), 120 + k * 260)));
+    // The follow-up answer types out once the steps are in
+    solveTimers.push(setTimeout(() => {
+      let n = 0;
+      solveTyping = setInterval(() => {
+        n = Math.min(p.answer.length, n + 3);
+        answer.textContent = p.answer.slice(0, n);
+        if (n < p.answer.length) answer.insertAdjacentHTML('beforeend', '<span class="caret"></span>');
+        else clearInterval(solveTyping);
+      }, 24);
+    }, 120 + parts.length * 260 + 200));
+  }
+  if (problemsEl && solveCard) {
+    PROBLEMS.forEach((p, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('role', 'tab');
+      b.textContent = p.problem;
+      b.addEventListener('click', () => { clearInterval(solveAuto); solveAuto = 'off'; showProblem(i); });
+      problemsEl.append(b);
+    });
+    let started = false;
+    new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !started) { started = true; showProblem(0); }
+      if (reduceMotion || solveAuto === 'off') return;
+      if (e.isIntersecting && !solveAuto) solveAuto = setInterval(() => showProblem((solveIndex + 1) % PROBLEMS.length), 11000);
+      else if (!e.isIntersecting && solveAuto) { clearInterval(solveAuto); solveAuto = null; }
+    }, { threshold: 0.35 }).observe(solveCard);
   }
 
   /* ---------- Story ---------- */
