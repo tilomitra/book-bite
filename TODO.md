@@ -28,7 +28,10 @@ Ideas for taking the app to Apple Design Award level. Done so far: Editorial Dis
 - [ ] Audit Reduce Motion everywhere; localization.
 
 ## Content
-- [ ] Run `npm run regenerate-extended-summaries` so existing summaries get chapters (about $3 for all; dry-run first).
+- [x] Chapters for featured books (210 of 211 regenerated 2026-10-26, $0.33).
+- [ ] Chapters for the rest of the non-fiction catalogue (~1,500 books, ~$2.30, ~1 hour): `npm run regenerate-extended-summaries -- --by-popularity` (resumable; skips books already done; dry-run first).
+- [ ] Unfeature or delete the placeholder book "Unti9780063422506" (`544bc854-8962-43fe-b02e-cc7aa5833362`), an NYT import with no real title; its regeneration fails.
+- [ ] Reader hyphenation sometimes breaks at the wrong place ("Gett-ing").
 - [ ] Citations are decoded but not shown.
 
 ## Trust
