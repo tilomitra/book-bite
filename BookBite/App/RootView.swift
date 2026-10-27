@@ -48,17 +48,23 @@ struct RootView: View {
                     }
                 }
 
-                // Sidebar only: the iPhone tab bar keeps its four tabs
-                TabSection("Your reading") {
-                    Tab("Notebook", systemImage: "text.quote", value: AppTab.notebook) {
-                        NavigationStack {
-                            NotebookView()
+                // Sidebar only. `defaultVisibility` hides it from the iPad's top tab bar but not
+                // from the compact one, so leave it out there: the iPhone keeps its four tabs
+                if horizontalSizeClass == .regular {
+                    TabSection("Your reading") {
+                        Tab("Notebook", systemImage: "text.quote", value: AppTab.notebook) {
+                            NavigationStack {
+                                NotebookView()
+                            }
                         }
                     }
+                    .defaultVisibility(.hidden, for: .tabBar)
                 }
-                .defaultVisibility(.hidden, for: .tabBar)
             }
             .tabViewStyle(.sidebarAdaptable)
+            .onChange(of: horizontalSizeClass) { _, sizeClass in
+                if sizeClass != .regular && selectedTab == .notebook { selectedTab = .library }
+            }
             // Add padding at bottom when mini player is visible
             .safeAreaInset(edge: .bottom) {
                 if audioService.isActive {
