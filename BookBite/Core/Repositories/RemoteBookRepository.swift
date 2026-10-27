@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-class RemoteBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRepository, DailyIdeaProviding, RecommendationsProviding, HighlightsProviding {
+class RemoteBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRepository, DailyIdeaProviding, RecommendationsProviding, HighlightsProviding, AskProviding {
     private let networkService = NetworkService.shared
     private let cacheService = CacheService.shared
     
@@ -92,6 +92,58 @@ class RemoteBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
 
     func fetchRecommendations(_ request: RecommendationRequest) async throws -> Recommendations {
         return try await networkService.post(endpoint: "books/for-you", body: request)
+    }
+
+    func fetchAskHome(date: String) async throws -> AskHome {
+        return try await networkService.get(endpoint: "ask/home?date=\(date)")
+    }
+
+    func fetchAskMatches(for question: String) async throws -> [Book] {
+        let response: AskMatches = try await networkService.post(endpoint: "ask/matches", body: ["question": question])
+        return response.books
+    }
+
+    /// Server-sent events: `sources`, then `delta`s, then `done` (or `error`)
+    func ask(_ request: AskRequest) -> AsyncThrowingStream<AskStreamEvent, Error> {
+        AsyncThrowingStream { continuation in
+            let task = Task {
+                do {
+                    guard let url = URL(string: "\(AppConfiguration.shared.baseServerURL)/ask") else {
+                        throw NetworkError.invalidResponse
+                    }
+                    var urlRequest = URLRequest(url: url)
+                    urlRequest.httpMethod = "POST"
+                    urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                    urlRequest.setValue("text/event-stream", forHTTPHeaderField: "Accept")
+                    urlRequest.timeoutInterval = 90
+                    urlRequest.httpBody = try JSONEncoder().encode(request)
+
+                    let (bytes, response) = try await URLSession.shared.bytes(for: urlRequest)
+                    guard let http = response as? HTTPURLResponse else { throw NetworkError.invalidResponse }
+                    guard http.statusCode == 200 else { throw NetworkError.unexpectedStatusCode(http.statusCode) }
+
+                    let decoder = NetworkService.makeDecoder()
+                    for try await line in bytes.lines where line.hasPrefix("data: ") {
+                        let event = try decoder.decode(AskServerEvent.self, from: Data(line.dropFirst(6).utf8))
+                        switch event.type {
+                        case "sources": continuation.yield(.sources(event.books ?? []))
+                        case "delta": continuation.yield(.delta(event.text ?? ""))
+                        case "done":
+                            continuation.finish()
+                            return
+                        case "error":
+                            throw NetworkError.networkFailure(NSError(domain: "AskError", code: -1, userInfo: [NSLocalizedDescriptionKey: event.error ?? "Couldn’t answer that"]))
+                        default: break
+                        }
+                    }
+                    // The stream ended without `done`: the connection dropped mid-answer
+                    throw NetworkError.invalidResponse
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
     }
 
     func searchBooks(query: String) async throws -> [Book] {
@@ -294,3 +346,11 @@ private struct ImportBookRequest: Codable {
 private struct EmptyResponse: Codable {
     // Empty struct for endpoints that don't return data
 }
+
+private struct AskServerEvent: Decodable {
+    let type: String
+    let books: [Book]?
+    let text: String?
+    let error: String?
+}
+
