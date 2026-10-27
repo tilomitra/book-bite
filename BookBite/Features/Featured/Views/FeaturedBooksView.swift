@@ -93,7 +93,6 @@ struct FeaturedBooksView: View {
                 if let dailyIdea = viewModel.dailyIdea {
                     DailyIdeaCard(dailyIdea: dailyIdea)
                         .frame(maxWidth: .infinity, alignment: .top)
-                        .layoutPriority(1)
                 }
                 if !entries.isEmpty {
                     ContinueReadingSection(entries: entries)

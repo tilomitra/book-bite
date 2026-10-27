@@ -84,8 +84,9 @@ struct SummaryReaderView: View {
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarColorScheme(theme.colorScheme, for: .navigationBar)
         .toolbar { toolbarContent }
-        // Off on iPhone, where the reader keeps only its text
-        .inspector(isPresented: Binding(get: { isWide && showsAsk }, set: { showsAsk = $0 })) {
+        // Off on iPhone, where the reader keeps only its text (showsAsk is only set in wide layout).
+        // A plain binding: one built in `body` is a new value on every pass and loops the layout
+        .inspector(isPresented: $showsAsk) {
             BookChatView(book: book)
                 .inspectorColumnWidth(min: 320, ideal: 380, max: 480)
         }
@@ -95,6 +96,9 @@ struct SummaryReaderView: View {
         .sensoryFeedback(.selection, trigger: chapterJumps)
         .onAppear(perform: load)
         .onDisappear { record(force: true) }
+        .onChange(of: horizontalSizeClass) { _, sizeClass in
+            if sizeClass != .regular { showsAsk = false }
+        }
         .onChange(of: scenePhase) { _, phase in
             if phase != .active { record(force: true) }
         }
