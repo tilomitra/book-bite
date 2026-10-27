@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "license": "MIT",
   "engines": {
-    "node": ">=20.0.0"
+    "node": "22.x"
   },
   "scripts": {
     "dev": "tsx watch src/index.ts",
@@ -60,6 +60,6 @@
     "jest": "^29.7.0",
     "ts-jest": "^29.1.1",
     "tsx": "^4.6.2",
-    "typescript": "^5.3.3"
+    "typescript": "5.9.2"
   }
 }
