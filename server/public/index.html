@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>BookBite</title>
   <meta name="description" content="Key ideas from 2,000+ bestselling non-fiction books in 15 minutes, to read or listen to, plus AI that helps you apply them to your own problems. Join the iPhone beta on TestFlight.">
-  <meta name="theme-color" content="#fff3ec">
+  <meta name="theme-color" content="#f5f5f7">
   <meta property="og:title" content="BookBite">
   <meta property="og:description" content="Learn from the world’s best books in 15 minutes a day. Now on TestFlight for iPhone.">
   <meta property="og:image" content="/icon.png">
@@ -28,46 +28,20 @@
   </header>
 
   <main id="main">
-    <!-- Hero: covers float around the app -->
+    <!-- Hero: a WebGL table of real covers (mosaic.js); the headline sits in a clearing at its centre -->
     <section class="hero" id="top" data-hero>
-
-      <div class="hero-inner">
-        <div class="hero-copy">
-          <h1 class="hero-title" data-split>Learn from the world’s best books in 15&nbsp;minutes a&nbsp;day.</h1>
-          <p class="hero-lede load-in" style="--d: 900ms">Key ideas from 2,000+ bestselling non-fiction books, to read or listen to. Plus AI that helps you put them to work on the problems in your own life.</p>
-          <div class="hero-actions load-in" style="--d: 1050ms">
-            <a class="btn btn-light" data-testflight href="#">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.37 12.46c-.02-2.33 1.9-3.45 1.99-3.5-1.08-1.59-2.77-1.8-3.37-1.83-1.43-.15-2.8.84-3.53.84-.73 0-1.85-.82-3.04-.8-1.56.02-3 .91-3.81 2.31-1.62 2.82-.41 7 1.17 9.29.77 1.12 1.69 2.38 2.9 2.33 1.17-.05 1.61-.75 3.02-.75 1.41 0 1.81.75 3.04.73 1.26-.02 2.05-1.14 2.82-2.27.89-1.3 1.25-2.56 1.27-2.62-.03-.01-2.43-.93-2.46-3.73zM14.06 5.6c.64-.78 1.08-1.86.96-2.94-.93.04-2.05.62-2.71 1.4-.6.69-1.12 1.79-.98 2.85 1.03.08 2.09-.53 2.73-1.31z"/></svg>
-              Join the beta on TestFlight
-            </a>
-            <span class="hero-note">Free while in beta. iPhone, iOS 18.5 or later.</span>
-          </div>
+      <canvas class="hero-gl" data-gl aria-hidden="true"></canvas>
+      <div class="hero-center">
+        <h1 class="hero-title" data-split>The world’s best books, in 15&nbsp;minutes a&nbsp;day.</h1>
+        <p class="hero-lede load-in" style="--d: 800ms">Key ideas from 2,000+ bestselling non-fiction books to read or listen to, with AI that helps you apply them to your own life.</p>
+        <div class="hero-actions load-in" style="--d: 950ms">
+          <a class="btn btn-light" data-testflight href="#">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.37 12.46c-.02-2.33 1.9-3.45 1.99-3.5-1.08-1.59-2.77-1.8-3.37-1.83-1.43-.15-2.8.84-3.53.84-.73 0-1.85-.82-3.04-.8-1.56.02-3 .91-3.81 2.31-1.62 2.82-.41 7 1.17 9.29.77 1.12 1.69 2.38 2.9 2.33 1.17-.05 1.61-.75 3.02-.75 1.41 0 1.81.75 3.04.73 1.26-.02 2.05-1.14 2.82-2.27.89-1.3 1.25-2.56 1.27-2.62-.03-.01-2.43-.93-2.46-3.73zM14.06 5.6c.64-.78 1.08-1.86.96-2.94-.93.04-2.05.62-2.71 1.4-.6.69-1.12 1.79-.98 2.85 1.03.08 2.09-.53 2.73-1.31z"/></svg>
+            Join the beta on TestFlight
+          </a>
         </div>
-
-        <div class="hero-device load-in" style="--d: 500ms" data-tilt>
-          <div class="phone">
-            <div class="phone-screen screen-paper">
-              <div class="island"></div>
-              <div class="statusbar"><span>9:41</span><span class="sb-icons"><i></i><i></i><i></i></span></div>
-              <div class="discover" data-discover>
-                <div class="d-date" data-today>Tuesday, 27 October</div>
-                <div class="d-title">Discover</div>
-                <div class="d-rule"></div>
-                <div class="d-idea-label">Idea of the day</div>
-                <p class="d-idea">“Deep work requires deliberate routines and boundaries. Make focused effort a regular part of your schedule.”</p>
-                <div class="d-idea-by">Deep Work, Cal Newport</div>
-                <div class="d-rule"></div>
-                <div class="d-shelf-title">For you</div>
-                <div class="d-shelf" data-shelf="0"></div>
-                <div class="d-shelf-title">More like Atomic Habits</div>
-                <div class="d-shelf" data-shelf="1"></div>
-              </div>
-              <div class="tabbar"><span class="on">Discover</span><span>Search</span><span>Library</span></div>
-            </div>
-          </div>
-        </div>
+        <p class="hero-note load-in" style="--d: 1100ms">Free while in beta. iPhone, iOS 18.5 or later.</p>
       </div>
-
     </section>
 
     <!-- The bite: a cover is eaten down to its one-sentence hook as you scroll -->
@@ -265,5 +239,6 @@
 
   <script src="/books.js"></script>
   <script src="/landing.js"></script>
+  <script src="/mosaic.js"></script>
 </body>
 </html>

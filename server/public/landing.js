@@ -59,45 +59,7 @@
     title.innerHTML = words.map((w, i) => `<span class="w" aria-hidden="true"><span style="--i:${i}">${w}</span></span>`).join(' ');
   }
 
-  // A few covers float around the hero phone; the pointer nudges them by depth
-  const device = $('[data-tilt]');
-  const floaters = [];
-  if (device && BOOKS.length) {
-    const box = document.createElement('div');
-    box.className = 'floaters';
-    box.setAttribute('aria-hidden', 'true');
-    const picks = ['Atomic Habits', 'The Psychology of Money', 'Sapiens', 'The Power of Habit', 'Zero to One', 'Ikigai'];
-    picks.map((t) => BOOKS.find((b) => b.title === t)).filter(Boolean).forEach((b, i) => {
-      const c = coverEl(b, { lazy: false });
-      c.style.setProperty('--dl', `${i * -1.3}s`);
-      c.style.setProperty('--depth', `${18 + (i % 3) * 14}px`);
-      box.append(c);
-      floaters.push(c);
-    });
-    device.prepend(box);
-  }
-
-  $$('[data-shelf]').forEach((shelf, i) => {
-    shuffled(BOOKS, 40 + i * 11).slice(0, 10).forEach((b) => shelf.append(coverEl(b, { lazy: false })));
-  });
-
   requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add('is-loaded')));
-
-  // Pointer parallax: the phone leans toward the cursor and the covers drift
-  const hero = $('[data-hero]');
-  const tilt = $('[data-tilt] .phone');
-  let pointer = { x: 0, y: 0 };
-  if (hero && !reduceMotion && matchMedia('(pointer: fine)').matches) {
-    hero.addEventListener('pointermove', (e) => {
-      const r = hero.getBoundingClientRect();
-      pointer = { x: (e.clientX - r.left) / r.width - 0.5, y: (e.clientY - r.top) / r.height - 0.5 };
-      if (tilt) {
-        tilt.style.setProperty('--ry', `${-10 + pointer.x * 16}deg`);
-        tilt.style.setProperty('--rx', `${4 - pointer.y * 10}deg`);
-      }
-      floaters.forEach((c) => { c.style.setProperty('--px', -pointer.x * 2); c.style.setProperty('--py', -pointer.y * 2); });
-    });
-  }
 
   /* ---------- Nav ---------- */
   const nav = $('[data-nav]');
@@ -494,7 +456,6 @@
   };
   const visible = (el) => { const r = el.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight; };
   let lastY = scrollY, velocity = 0, lastT = performance.now();
-  const shelfRows = $$('[data-shelf]').map((el, i) => ({ el, x: 0, speed: i ? 9 : 14 }));
 
   function frame(now) {
     const dt = Math.min(64, now - lastT) / 1000;
@@ -505,14 +466,6 @@
 
     nav.classList.toggle('is-stuck', y > 40);
 
-    if (hero && visible(hero) && !reduceMotion) {
-      shelfRows.forEach((s) => {
-        s.x -= s.speed * dt;
-        const w = s.el.scrollWidth / 2;
-        if (w > 0 && -s.x > w) s.x += w;
-        s.el.style.transform = `translate3d(${s.x}px, 0, 0)`;
-      });
-    }
     if (bite && visible(bite)) updateBite(progressOf(bite));
     if (crumbs.length) drawCrumbs();
     if (story && visible(story)) updateStory(progressOf(story));
