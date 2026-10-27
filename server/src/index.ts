@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
+import path from 'path';
 
 import bookRoutes from './routes/bookRoutes';
 import summaryRoutes from './routes/summaryRoutes';
@@ -22,8 +23,12 @@ const app = express();
 app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
-// Security middleware
-app.use(helmet());
+// Security middleware. The landing page hotlinks book covers (Google Books, Apple, Open Library), so images may come from any https host.
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: { 'img-src': ["'self'", 'data:', 'https:'] }
+  }
+}));
 
 // CORS configuration
 const corsOptions = {
@@ -49,6 +54,9 @@ app.use(express.urlencoded({ extended: true }));
 if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('dev'));
 }
+
+// Landing page (server/public): works from src/ under tsx and from dist/ after tsc
+app.use(express.static(path.join(__dirname, '../public'), { maxAge: '10m' }));
 
 // Health check endpoint
 app.get('/health', (_, res) => {
