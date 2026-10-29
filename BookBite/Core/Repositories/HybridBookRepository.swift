@@ -58,6 +58,10 @@ class HybridBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
         return try await remoteRepository.fetchDailyIdea(for: date)
     }
 
+    func fetchRandomIdea(excluding bookId: String?) async throws -> DailyIdea? {
+        return try await remoteRepository.fetchRandomIdea(excluding: bookId)
+    }
+
     func fetchHighlights(page: Int, limit: Int) async throws -> HighlightsPage {
         return try await remoteRepository.fetchHighlights(page: page, limit: limit)
     }

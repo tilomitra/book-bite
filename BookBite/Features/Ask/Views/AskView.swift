@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The Ask tab: question of the day, Explore topics and the "What's on your mind?" field.
+/// The Ask tab: a featured question (new each time the tab opens), Explore topics and the "What's on your mind?" field.
 /// Asking opens `AskComposeView`; sending it pushes `AskConversationView`.
 struct AskView: View {
     /// The Ask tab's navigation path (owned by `RootView`)
@@ -29,7 +29,7 @@ struct AskView: View {
                     .accessibilityLabel("Your questions")
                 })
 
-                if let daily = viewModel.home?.daily {
+                if let daily = viewModel.question {
                     DailyQuestionCard(daily: daily) {
                         path.append(AskRoute(question: daily.question))
                     }
@@ -91,6 +91,8 @@ struct AskView: View {
         }
         .editorialNavigationBar()
         .task { await viewModel.load() }
+        // A new question every time the tab opens; the first one comes with `load()`
+        .onAppear { viewModel.showNextQuestion() }
         .fullScreenCover(item: $compose) { request in
             AskComposeView(suggestions: request.suggestions) { question in
                 compose = nil
@@ -110,7 +112,7 @@ struct AskView: View {
     }
 }
 
-/// Today's question on a dark card, with the books that answer it fanned above
+/// The featured question on a dark card, with the books that answer it fanned above
 private struct DailyQuestionCard: View {
     let daily: AskHome.Daily
     let open: () -> Void
@@ -120,7 +122,7 @@ private struct DailyQuestionCard: View {
         Button(action: open) {
             VStack(spacing: 0) {
                 HStack {
-                    Text("Today’s question".uppercased())
+                    Text("Try asking".uppercased())
                         .font(.caption.weight(.semibold))
                         .tracking(1.2)
                         .foregroundStyle(.white.opacity(0.62))
@@ -157,7 +159,7 @@ private struct DailyQuestionCard: View {
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Today’s question: \(daily.question)")
+        .accessibilityLabel("Try asking: \(daily.question)")
         .accessibilityHint("Shows the answer")
         .task(id: daily.books.first?.id) {
             if let color = await CoverTint.color(for: daily.books.first?.coverAssetName) {

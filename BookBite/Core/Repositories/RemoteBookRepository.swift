@@ -86,6 +86,18 @@ class RemoteBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
         }
     }
 
+    func fetchRandomIdea(excluding bookId: String?) async throws -> DailyIdea? {
+        let query = bookId.map { "?exclude=\($0)" } ?? ""
+        do {
+            return try await networkService.get(endpoint: "summaries/random-idea\(query)")
+        } catch let error as NetworkError {
+            if case .clientError(404, _) = error {
+                return nil
+            }
+            throw error
+        }
+    }
+
     func fetchHighlights(page: Int, limit: Int) async throws -> HighlightsPage {
         return try await networkService.get(endpoint: "summaries/highlights?page=\(page)&limit=\(limit)")
     }

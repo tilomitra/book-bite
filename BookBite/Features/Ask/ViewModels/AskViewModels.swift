@@ -1,11 +1,14 @@
 import Foundation
 import SwiftUI
 
-/// The Ask tab's question of the day and Explore topics.
+/// The Ask tab's featured question (a new one each time the tab opens) and Explore topics.
 @MainActor
 final class AskHomeViewModel: ObservableObject {
     @Published private(set) var home: AskHome?
+    @Published private(set) var question: AskHome.Daily?
     @Published private(set) var didFail = false
+    /// Questions not shown yet, in random order; refilled when empty
+    private var deck: [AskHome.Daily] = []
 
     private let provider: AskProviding?
 
@@ -24,13 +27,27 @@ final class AskHomeViewModel: ObservableObject {
         do {
             home = try await provider.fetchAskHome(date: Self.localDate())
             didFail = false
+            showNextQuestion()
         } catch {
             print("Failed to load Ask home: \(error)")
             didFail = true
         }
     }
 
-    /// The user's local day, so the question changes at their midnight
+    /// Moves to another question. Each one shows once before any repeats.
+    func showNextQuestion() {
+        guard let home else { return }
+        if deck.isEmpty {
+            deck = (home.questions ?? [home.daily]).shuffled()
+            // Don't show the same question twice in a row across rounds
+            if deck.count > 1, deck.first?.question == question?.question {
+                deck.swapAt(0, deck.count - 1)
+            }
+        }
+        question = deck.removeFirst()
+    }
+
+    /// The user's local day; the server's `daily` question still changes with it
     static func localDate(_ date: Date = Date()) -> String {
         let formatter = DateFormatter()
         formatter.calendar = Calendar(identifier: .gregorian)

@@ -74,3 +74,12 @@ describe('Daily idea pick', () => {
     expect(pickDailyIdea(ids, '2026-10-28').round).toBe(pickDailyIdea(ids, '2026-10-25').round + 1);
   });
 });
+
+describe('Ask citations', () => {
+  const { citedBooks } = require('../services/askService');
+
+  test('counts different books, not citations', () => {
+    expect(citedBooks('- **One.** Text [1]\n- **Two.** Text [3]\n- **Three.** Text [1]')).toBe(2);
+    expect(citedBooks('No citations')).toBe(0);
+  });
+});

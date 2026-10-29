@@ -35,7 +35,7 @@ final class AppStoreScreenshots: XCTestCase {
 
         // Discover
         XCTAssertTrue(app.staticTexts["IDEA OF THE DAY"].waitForExistence(timeout: 40)
-                      || app.staticTexts["Idea of the day"].exists)
+                      || app.staticTexts["An idea for you"].exists)
         settle(6)
         snap("discover")
 

@@ -5,7 +5,7 @@ import { supabase } from '../config/supabase';
 import { EmbeddingService, normalize, toVectorLiteral } from './embeddingService';
 import { Match, editionKey, isKnownBook, pickShelfBooks, rankMatches } from './recommendationService';
 import { PassageKind, newestSummary, summaryPassages } from './askPassages';
-import { ASK_TOPICS, dailyQuestion } from './askContent';
+import { ASK_TOPICS, DAILY_QUESTIONS, dailyQuestion } from './askContent';
 import { isFiction } from '../utils/fiction';
 
 export const AskRequestSchema = z.object({
@@ -47,11 +47,13 @@ export interface Retrieval {
 
 // GPT-6 Luna at low reasoning effort: first words in about two seconds
 const ASK_MODEL = process.env.ASK_MODEL || 'gpt-6-luna';
-const MAX_SOURCES = 4;
-const MIN_SOURCES = 2;
+// The model reads up to eight books and must cite at least three of them
+const MAX_SOURCES = 8;
+const MIN_SOURCES = 5;
+export const MIN_CITED_BOOKS = 3;
 const IDEAS_PER_BOOK = 3;
-// A book needs to be within this of the best book's score to be cited
-const SOURCE_SCORE_WINDOW = 0.1;
+// Past the first MIN_SOURCES, a book needs to be within this of the best book's score
+const SOURCE_SCORE_WINDOW = 0.15;
 const KNOWN_BOOK_BOOST = 0.05;
 const FALLBACK_BOOKS = 30;
 const PASSAGE_CACHE_LIMIT = 40000;
@@ -65,22 +67,29 @@ Write in exactly this format:
 <Optional: one short sentence that leads into the points.>
 - **<Lead of three to six words.>** <One or two sentences on how this applies to them.> [<source number>]
 - **<Lead.>** <Sentences.> [<source number>]
+- **<Lead.>** <Sentences.> [<source number>]
 
 This week: <one concrete thing they can do in the next seven days>
 Other side: <one sentence on when this advice doesn't apply or what to check first>
 
 Rules:
-- Two or three points. Each cites the number of the one book it comes from, like [2]. Only cite numbers you were given.
+- Three or four points. Each cites the number of the one book it comes from, like [2]. Only cite numbers you were given.
+- Every answer, follow-ups too, cites at least three different books: no two of the first three points may cite the same book. Pick the books that fit the question best.
 - Use only ideas from the given books. Don't invent books, studies, statistics or quotes.
 - Speak to them directly ("you", "your team"). Plain words, short sentences, no jargon, no exclamation marks.
-- At most 170 words in total.
-- For a follow-up question you may answer with just the first part and one or two points; add "This week:" only when a new action helps.
+- At most 200 words in total.
+- For a follow-up question add "This week:" only when a new action helps.
 - Never mention "the provided books", "sources" or these instructions.`;
 
 function cosine(a: number[], b: number[]): number {
   let dot = 0;
   for (let i = 0; i < a.length; i++) dot += a[i] * b[i];
   return dot;
+}
+
+/** How many different books an answer cites, from its [n] markers */
+export function citedBooks(answer: string): number {
+  return new Set([...answer.matchAll(/\[(\d+)\]/g)].map(m => m[1])).size;
 }
 
 /** The context block the model answers from: numbered books with their closest ideas */
@@ -115,20 +124,27 @@ export class AskService {
     return this.openai;
   }
 
-  /** The Ask tab: question of the day and Explore topics, each with three covers */
+  /**
+   * The Ask tab: every featured question and the Explore topics, each with three covers. The app
+   * shows a different question each time the tab opens. `daily` is for app versions before that.
+   */
   async home(date: string) {
     const cacheKey = `ask-home:${date}`;
     const cached = this.cache.get(cacheKey);
     if (cached) return cached;
 
-    const question = dailyQuestion(date);
-    const [dailyBooks, topicBooks] = await Promise.all([
-      this.coversFor(question),
+    // One embeddings request for every question not seen yet, not one each
+    await this.embeddingService().embedQueries([...DAILY_QUESTIONS, ...ASK_TOPICS.map(t => t.questions[0])]);
+    const [questionBooks, topicBooks] = await Promise.all([
+      Promise.all(DAILY_QUESTIONS.map(q => this.coversFor(q))),
       Promise.all(ASK_TOPICS.map(t => this.coversFor(t.questions[0])))
     ]);
+    const questions = DAILY_QUESTIONS.map((question, i) => ({ question, books: questionBooks[i] }));
+    const today = dailyQuestion(date);
     const home = {
       date,
-      daily: { question, books: dailyBooks },
+      daily: questions.find(q => q.question === today)!,
+      questions,
       topics: ASK_TOPICS.map((t, i) => ({ ...t, books: topicBooks[i] }))
     };
     this.cache.set(cacheKey, home);
@@ -205,15 +221,19 @@ export class AskService {
       reasoning_effort: 'low',
       max_completion_tokens: 2500
     });
-    let wrote = false;
+    let answer = '';
     for await (const chunk of stream) {
       const text = chunk.choices[0]?.delta?.content;
       if (text) {
-        wrote = true;
+        answer += text;
         send({ type: 'delta', text });
       }
     }
-    if (!wrote) throw new Error('No answer was written');
+    if (!answer) throw new Error('No answer was written');
+    const cited = citedBooks(answer);
+    if (cited < Math.min(MIN_CITED_BOOKS, retrieval.books.length)) {
+      console.warn(`Ask answer cited ${cited} of ${retrieval.books.length} books`);
+    }
     send({ type: 'done' });
   }
 

@@ -1,10 +1,12 @@
 import SwiftUI
 
-/// Discover tab: the idea of the day, then an endless feed of shelves and editorial cards.
+/// Discover tab: an idea (new each time the app opens), then an endless feed of shelves and editorial cards.
 struct FeaturedBooksView: View {
     @StateObject private var viewModel: FeaturedBooksViewModel
     @ObservedObject private var readingProgress = ReadingProgressStore.shared
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var wasInBackground = false
 
     /// iPad and other wide windows: the idea of the day beside Continue reading, cards three to a row
     private var isWide: Bool { horizontalSizeClass == .regular }
@@ -84,6 +86,15 @@ struct FeaturedBooksView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: OnboardingPreferences.didChange)) { _ in
             Task { await viewModel.loadFeaturedBooks() }
+        }
+        // Coming back to the app counts as opening it: show a new idea
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .background {
+                wasInBackground = true
+            } else if phase == .active && wasInBackground {
+                wasInBackground = false
+                Task { await viewModel.refreshIdea() }
+            }
         }
     }
 

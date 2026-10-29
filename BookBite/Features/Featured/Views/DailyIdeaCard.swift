@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// "Idea of the day": one short idea at the top of the Discover tab, set as a pull quote
+/// One short idea, a new one each time the app opens, at the top of the Discover tab, set as a pull quote
 /// between two rules. Tap to open the book.
 struct DailyIdeaCard: View {
     let dailyIdea: DailyIdea
@@ -12,7 +12,7 @@ struct DailyIdeaCard: View {
                 .navigationTransition(.zoom(sourceID: dailyIdea.book.id, in: zoom))
         } label: {
             VStack(alignment: .leading, spacing: 16) {
-                Text("Idea of the day")
+                Text("An idea for you")
                     .font(.caption)
                     .fontWeight(.semibold)
                     .tracking(1)

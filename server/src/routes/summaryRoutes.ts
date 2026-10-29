@@ -10,6 +10,7 @@ const generationLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 20 });
 
 // Public routes
 router.get('/daily-idea', summaryController.getDailyIdea);
+router.get('/random-idea', summaryController.getRandomIdea);
 router.get('/highlights', summaryController.getHighlights);
 router.get('/book/:bookId', summaryController.getSummaryByBookId);
 router.get('/job/:jobId', summaryController.getJobStatus);

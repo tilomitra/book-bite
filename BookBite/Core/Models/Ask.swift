@@ -4,6 +4,9 @@ import Foundation
 struct AskHome: Codable {
     let date: String
     let daily: Daily
+    /// Every featured question with its covers; the tab shows a new one each time it opens.
+    /// Optional because older servers only send `daily`.
+    let questions: [Daily]?
     let topics: [Topic]
 
     struct Daily: Codable {

@@ -67,12 +67,35 @@ export class DailyIdeaService {
     const pick = pickDailyIdea(await this.getCandidateBookIds(), date);
     if (!pick) return null;
 
+    const dailyIdea = await this.ideaFrom(pick.bookId, keyIdeas => keyIdeas[pick.round % keyIdeas.length], date);
+    if (dailyIdea) this.cache.set(cacheKey, dailyIdea);
+    return dailyIdea;
+  }
+
+  /** A different book and key idea on every call, for the app's Discover card. Not cached. */
+  async getRandomIdea(excludeBookId?: string) {
+    const ids = await this.getCandidateBookIds();
+    const candidates = ids.length > 1 ? ids.filter(id => id !== excludeBookId) : ids;
+    // A book can lack key ideas; try a few before giving up
+    for (let attempt = 0; attempt < 3 && candidates.length > 0; attempt++) {
+      const bookId = candidates[Math.floor(Math.random() * candidates.length)];
+      const idea = await this.ideaFrom(
+        bookId,
+        keyIdeas => keyIdeas[Math.floor(Math.random() * keyIdeas.length)],
+        new Date().toISOString().slice(0, 10)
+      );
+      if (idea) return idea;
+    }
+    return null;
+  }
+
+  private async ideaFrom(bookId: string, chooseIdea: (keyIdeas: unknown[]) => unknown, date: string) {
     const [bookResult, summaryResult] = await Promise.all([
-      supabase.from('books').select('*').eq('id', pick.bookId).single(),
+      supabase.from('books').select('*').eq('id', bookId).single(),
       supabase
         .from('summaries')
         .select('one_sentence_hook, key_ideas')
-        .eq('book_id', pick.bookId)
+        .eq('book_id', bookId)
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle()
@@ -88,13 +111,11 @@ export class DailyIdeaService {
     const keyIdeas = summaryResult.data?.key_ideas;
     if (!Array.isArray(keyIdeas) || keyIdeas.length === 0) return null;
 
-    const dailyIdea = {
+    return {
       date,
       book: bookResult.data,
-      idea: keyIdeas[pick.round % keyIdeas.length],
+      idea: chooseIdea(keyIdeas),
       hook: summaryResult.data?.one_sentence_hook ?? null
     };
-    this.cache.set(cacheKey, dailyIdea);
-    return dailyIdea;
   }
 }
