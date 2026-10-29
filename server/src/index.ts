@@ -9,7 +9,6 @@ import path from 'path';
 import bookRoutes from './routes/bookRoutes';
 import summaryRoutes from './routes/summaryRoutes';
 import searchRoutes from './routes/searchRoutes';
-import chatRoutes from './routes/chatRoutes';
 import ratingsRoutes from './routes/ratingsRoutes';
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
@@ -65,7 +64,6 @@ app.get('/health', (_, res) => {
 });
 
 // API routes
-app.use('/api', chatRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/summaries', summaryRoutes);
 app.use('/api/search', searchRoutes);

@@ -74,7 +74,7 @@
     <section class="solve" data-solve aria-labelledby="solve-title">
       <div class="solve-copy">
         <h2 id="solve-title">Bring a problem. Leave with a plan.</h2>
-        <p>Pick what’s on your mind. BookBite’s AI finds the books that tackle it, pulls out the steps you can try today, and answers follow-up questions about your situation using what the book actually says.</p>
+        <p>Pick what’s on your mind. BookBite’s AI finds the books that tackle it, pulls out the steps you can try today, and answers follow-up questions about your situation using what the books actually say.</p>
         <div class="problems" role="tablist" aria-label="Example problems" data-problems></div>
       </div>
       <div class="solve-card" data-solve-card aria-live="polite">
@@ -114,8 +114,8 @@
             <p>Turn your commute, workout or chores into learning time with narrated summaries that play from the lock screen.</p>
           </article>
           <article class="step" data-step="3">
-            <h2>Ask how it applies to you</h2>
-            <p>Describe your situation and get advice grounded in what the book actually says, not a generic chatbot answer.</p>
+            <h2>Ask the whole library</h2>
+            <p>Describe what’s going on. BookBite finds the books that fit and answers with steps from them, each one linked to the book it came from.</p>
           </article>
           <ol class="story-dots" aria-hidden="true"><li></li><li></li><li></li><li></li></ol>
         </div>
@@ -165,14 +165,31 @@
                 </div>
               </div>
 
-              <!-- Chat -->
-              <div class="scr scr-chat" data-scr="3">
-                <div class="scr-nav"><span></span><span>Ask Deep Work</span><span class="done">Done</span></div>
-                <div class="chat" data-chat>
-                  <div class="bubble me" data-chat-q>My job is mostly email. Where do I even start?</div>
-                  <div class="bubble book" data-chat-a></div>
+              <!-- Ask -->
+              <div class="scr scr-ask" data-scr="3">
+                <div class="scr-nav"><span class="back">‹</span><span>Ask</span><span></span></div>
+                <div class="ask-thread">
+                  <div class="bubble me" data-ask-part>My job is mostly email. How do I get real work done?</div>
+                  <div class="ask-read" data-ask-part>
+                    <span class="ask-covers">
+                      <img src="https://books.google.com/books/publisher/content/images/frontcover/lZpFCgAAQBAJ?fife=w200-h300&amp;source=gbs_api" alt="" loading="lazy">
+                      <img src="https://covers.openlibrary.org/b/id/847534-M.jpg" alt="" loading="lazy">
+                      <img src="https://books.google.com/books/publisher/content/images/frontcover/XfFvDwAAQBAJ?fife=w200-h300&amp;source=gbs_api" alt="" loading="lazy">
+                    </span>
+                    <span data-ask-read>Reading 3 books</span>
+                  </div>
+                  <p class="ask-direct" data-ask-direct></p>
+                  <div class="ask-point" data-ask-part>
+                    <p><b>Guard one deep hour.</b> Shallow work expands to fill the day unless real work gets a fixed block first.</p>
+                    <span class="ask-chip">Deep Work</span>
+                  </div>
+                  <div class="ask-point" data-ask-part>
+                    <p><b>Start with the hard thing.</b> Do your most important task before you open the inbox.</p>
+                    <span class="ask-chip">Eat That Frog!</span>
+                  </div>
+                  <div class="ask-week" data-ask-part><span>This week</span>Block 9 to 10 for one task, email closed. Check messages at 11 and 4.</div>
                 </div>
-                <div class="chat-input"><span>Ask about this book</span><i></i></div>
+                <div class="ask-input"><span>Ask a follow-up</span><i></i></div>
               </div>
             </div>
           </div>

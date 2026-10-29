@@ -40,11 +40,10 @@ struct SummaryReaderView: View {
     @State private var isFinished = false
     @State private var showsSettings = false
     @State private var chapterJumps = 0
-    /// Wide layout only: the contents column on the left and "Ask the book" on the right
+    /// Wide layout only: the contents column on the left
     @State private var showsContents = true
-    @State private var showsAsk = false
 
-    /// iPad and other wide windows: room for the contents beside the text, and to ask about it without leaving
+    /// iPad and other wide windows: room for the contents beside the text
     private var isWide: Bool { horizontalSizeClass == .regular }
 
     private static let headerID = -1
@@ -84,21 +83,12 @@ struct SummaryReaderView: View {
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarColorScheme(theme.colorScheme, for: .navigationBar)
         .toolbar { toolbarContent }
-        // Off on iPhone, where the reader keeps only its text (showsAsk is only set in wide layout).
-        // A plain binding: one built in `body` is a new value on every pass and loops the layout
-        .inspector(isPresented: $showsAsk) {
-            BookChatView(book: book)
-                .inspectorColumnWidth(min: 320, ideal: 380, max: 480)
-        }
         .tint(theme.ink)
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: theme)
         .sensoryFeedback(.impact(flexibility: .soft, intensity: 0.6), trigger: isFinished) { _, finished in finished }
         .sensoryFeedback(.selection, trigger: chapterJumps)
         .onAppear(perform: load)
         .onDisappear { record(force: true) }
-        .onChange(of: horizontalSizeClass) { _, sizeClass in
-            if sizeClass != .regular { showsAsk = false }
-        }
         .onChange(of: scenePhase) { _, phase in
             if phase != .active { record(force: true) }
         }
@@ -185,15 +175,6 @@ struct SummaryReaderView: View {
                 } else {
                     contentsMenu(document)
                 }
-            }
-
-            if isWide {
-                Button {
-                    showsAsk.toggle()
-                } label: {
-                    Image(systemName: showsAsk ? "bubble.left.fill" : "bubble.left")
-                }
-                .accessibilityLabel(showsAsk ? "Hide Ask the book" : "Ask the book")
             }
 
             Button {

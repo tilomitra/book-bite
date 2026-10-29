@@ -6,7 +6,6 @@ struct BookDetailView: View {
     @StateObject private var viewModel: BookDetailViewModel
     @ObservedObject private var audioService = AudioPlaybackService.shared
     @ObservedObject private var progressStore = ReadingProgressStore.shared
-    @State private var showingChatSheet = false
     @State private var showingAuthSheet = false
     @State private var showingAudioPlayer = false
     @State private var coverTint: Color?
@@ -59,21 +58,6 @@ struct BookDetailView: View {
                 }
                 .accessibilityLabel("Share")
             }
-        }
-        .sheet(isPresented: $showingChatSheet) {
-            NavigationStack {
-                BookChatView(book: viewModel.book)
-                    .navigationTitle(viewModel.book.title)
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button("Done") {
-                                showingChatSheet = false
-                            }
-                        }
-                    }
-            }
-            .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showingAuthSheet) {
             AuthenticationView(authService: authService)
@@ -265,28 +249,15 @@ struct BookDetailView: View {
                 readButton(for: summary)
             }
 
-            // Side by side when they fit; stacked at large text sizes
-            ViewThatFits(in: .horizontal) {
-                HStack(spacing: 12) { secondaryActions(for: summary) }
-                VStack(spacing: 12) { secondaryActions(for: summary) }
+            if summary.hasAudio {
+                secondaryButton(
+                    title: summary.formattedAudioDuration.map { "Listen · \($0)" } ?? "Listen",
+                    icon: "headphones"
+                ) {
+                    audioService.loadAudio(for: viewModel.book, summary: summary, autoPlay: true)
+                    showingAudioPlayer = true
+                }
             }
-        }
-    }
-
-    @ViewBuilder
-    private func secondaryActions(for summary: Summary) -> some View {
-        if summary.hasAudio {
-            secondaryButton(
-                title: summary.formattedAudioDuration.map { "Listen · \($0)" } ?? "Listen",
-                icon: "headphones"
-            ) {
-                audioService.loadAudio(for: viewModel.book, summary: summary, autoPlay: true)
-                showingAudioPlayer = true
-            }
-        }
-
-        secondaryButton(title: "Ask the book", icon: "bubble.left") {
-            showingChatSheet = true
         }
     }
 

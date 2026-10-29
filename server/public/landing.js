@@ -290,9 +290,12 @@
   const listenScr = $('[data-scr="2"]');
   const wave = $('[data-wave]');
   const listenAt = $('[data-listen-at]');
-  const chatQ = $('[data-chat-q]');
-  const chatA = $('[data-chat-a]');
-  const ANSWER = 'Newport’s advice is to start small and protect it. Block one hour early in the day for a single demanding task, with email closed. Then batch the shallow work into two or three set times instead of answering messages as they arrive.';
+  const askParts = $$('[data-ask-part]');
+  const askRead = $('[data-ask-read]');
+  const askDirect = $('[data-ask-direct]');
+  const ASK_DIRECT = 'Give real work a protected block before email gets the day, and answer messages in batches.';
+  // When each part of the Ask answer shows: question, books, (direct answer types), points, this week
+  const ASK_AT = [0.04, 0.12, 0.5, 0.6, 0.7];
   const STORY_HUES = [8, 32, 48, 352];
   const waveBars = [];
   if (wave) {
@@ -361,15 +364,15 @@
     listenAt.textContent = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
     listenScr.classList.toggle('is-playing', idx === 2 && !reduceMotion);
 
-    // Chat: the question lands, then the answer types out
-    chatQ.classList.toggle('is-hidden', lp < 0.06 && idx === 3);
-    const chars = Math.floor(range(lp, 0.18, 0.85) * ANSWER.length);
-    chatA.classList.toggle('is-hidden', lp < 0.12 && idx === 3);
-    const typed = ANSWER.slice(0, chars);
-    if (chatA.dataset.len !== String(chars)) {
-      chatA.textContent = typed;
-      if (chars < ANSWER.length) chatA.insertAdjacentHTML('beforeend', '<span class="caret"></span>');
-      chatA.dataset.len = chars;
+    // Ask: the question lands, the books it reads appear, then the answer writes itself in
+    const askP = idx === 3 ? lp : idx > 3 ? 1 : 0;
+    askParts.forEach((el, i) => el.classList.toggle('is-hidden', askP < ASK_AT[i]));
+    askRead.textContent = askP < 0.24 ? 'Reading 3 books' : 'Read 3 books';
+    const chars = Math.floor(range(askP, 0.24, 0.48) * ASK_DIRECT.length);
+    if (askDirect.dataset.len !== String(chars)) {
+      askDirect.textContent = ASK_DIRECT.slice(0, chars);
+      if (chars > 0 && chars < ASK_DIRECT.length) askDirect.insertAdjacentHTML('beforeend', '<span class="caret"></span>');
+      askDirect.dataset.len = chars;
     }
   }
 

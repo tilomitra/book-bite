@@ -21,7 +21,7 @@
 
 ---
 
-BookBite is an iOS app for people who want to learn from books but do not have time to read all of them. Each book gets a one-sentence hook, its key ideas, how to apply them, an honest look at its weak points, and a chaptered summary you can read in about ten minutes. You can also listen to it, or ask the book questions.
+BookBite is an iOS app for people who want to learn from books but do not have time to read all of them. Each book gets a one-sentence hook, its key ideas, how to apply them, an honest look at its weak points, and a chaptered summary you can read in about ten minutes. You can also listen to it, or ask a question about your own situation and get answers drawn from several books.
 
 The design is quiet and editorial, like a good magazine. The only color comes from the book covers.
 
@@ -40,7 +40,6 @@ BookBite is in beta on TestFlight. See the [website](https://book-bite.onrender.
 - **A reader built for long text.** Chapters with a contents menu, Paper, Sepia and Night themes, serif or sans type, and text size that follows Dynamic Type.
 - **Picks up where you stopped.** BookBite remembers your place and shows "N min left".
 - **Audio summaries** with lock-screen controls.
-- **Chat with the book.** Ask questions and get streamed answers.
 
 ### Keep
 - **Library.** Continue reading, recently opened, saved books, finished books ("12 finished this year") and offline downloads.
@@ -69,7 +68,7 @@ Sign-in (Apple or email) is optional. You can use almost all of BookBite as a gu
           ▼                   ▼           ▼              ▼                     ▼
    Supabase (Postgres   OpenAI          ElevenLabs   Google Books, NYT,    Supabase Auth
    + pgvector)          summaries,      audio        Open Library          (Apple, email)
-                        chat,
+                        Ask,
                         embeddings
 ```
 
@@ -83,7 +82,7 @@ Sign-in (Apple or email) is optional. You can use almost all of BookBite as a gu
 The landing page at [book-bite.onrender.com](https://book-bite.onrender.com/) is served by the same Express server as the API, from `server/public/`. It is plain HTML, CSS and JavaScript, with no build step and no libraries.
 
 - **A WebGL book mosaic.** The hero is about 600 real covers on a tilted table, drawn with WebGL2 shaders: rounded corners, spine shading, gloss and soft shadows. The covers drop in on load, lift toward your cursor, and part around the headline.
-- **Scroll scenes.** A cover gets bitten down to its one-sentence hook. A phone walks through key ideas, the reader, audio and chat. There is also a demo of turning an everyday problem into a book and steps, and the Idea of the Day widget.
+- **Scroll scenes.** A cover gets bitten down to its one-sentence hook. A phone walks through key ideas, the reader, audio and Ask. There is also a demo of turning an everyday problem into a book and steps, and the Idea of the Day widget.
 - **No live data needed.** Book titles and covers are a saved snapshot (`books.js`), so the page still works if the database is down. The browser can't read the cover sites' images into WebGL, so the covers are baked into one image, `covers-atlas.webp`. After you change `books.js`, rebuild it:
 
 ```bash
