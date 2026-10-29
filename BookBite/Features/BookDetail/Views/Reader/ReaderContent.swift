@@ -181,7 +181,7 @@ struct ReaderLeadIn: Equatable {
 
 // MARK: - End
 
-/// The close of the summary: a rule, a quiet line of acknowledgement, a way back.
+/// The close of the summary: a rule, a quiet line of acknowledgement, the full book, a way back.
 struct ReaderEndSection: View {
     let book: Book
     let isFinished: Bool
@@ -189,6 +189,7 @@ struct ReaderEndSection: View {
     let onClose: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.openURL) private var openURL
 
     var body: some View {
         VStack(spacing: style.size * 0.9) {
@@ -212,6 +213,28 @@ struct ReaderEndSection: View {
             }
             .accessibilityElement(children: .combine)
 
+            Menu {
+                ForEach(BookStore.allCases) { store in
+                    Button {
+                        if let url = book.purchaseURL(store: store, source: "reader") { openURL(url) }
+                    } label: {
+                        Text(store.name)
+                        Text(store.caption)
+                    }
+                }
+            } label: {
+                Text("Get the full book")
+                    .font(.system(size: style.size * 0.85, weight: .medium, design: style.typeface.design))
+                    .foregroundStyle(style.theme.background)
+                    .padding(.horizontal, 24)
+                    .frame(minHeight: 44)
+                    .background(Capsule().fill(style.theme.ink))
+                    .contentShape(Capsule())
+            }
+            .buttonStyle(.plain)
+            .padding(.top, style.size * 0.6)
+            .accessibilityHint("Opens a bookstore")
+
             Button(action: onClose) {
                 Text("Back to the book")
                     .font(.system(size: style.size * 0.85, design: style.typeface.design))
@@ -222,7 +245,6 @@ struct ReaderEndSection: View {
                     .contentShape(Capsule())
             }
             .buttonStyle(.plain)
-            .padding(.top, style.size * 0.6)
         }
         .frame(maxWidth: .infinity)
         .padding(.top, style.size * 2)

@@ -38,6 +38,9 @@ struct SettingsView: View {
 
             Section {
                 LabeledContent("Version", value: appVersion)
+            } footer: {
+                // Required by Amazon Associates for the "Get the full book" links
+                Text("As an Amazon Associate, BookBite earns from qualifying purchases.")
             }
         }
         .navigationTitle("Settings")

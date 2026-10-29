@@ -3,6 +3,7 @@ import { BookService } from '../services/bookService';
 import { BookSchema } from '../models/types';
 import { z } from 'zod';
 import { RecommendationService, RecommendationRequestSchema } from '../services/recommendationService';
+import { isPurchaseStore, purchaseUrl } from '../services/purchaseLinks';
 
 const bookService = new BookService();
 const recommendationService = new RecommendationService();
@@ -201,6 +202,31 @@ export class BookController {
       
       // Redirect to the cover URL or serve from cache
       res.redirect(book.cover_url);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // "Get the full book": redirects to the store with our affiliate id (see purchaseLinks.ts)
+  async buyBook(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const store = req.query.store ?? 'amazon';
+      if (!isPurchaseStore(store)) {
+        res.status(400).json({ error: 'Unknown store' });
+        return;
+      }
+
+      const book = await bookService.getBookById(id);
+      if (!book) {
+        res.status(404).json({ error: 'Book not found' });
+        return;
+      }
+
+      const source = typeof req.query.source === 'string' ? req.query.source.slice(0, 32) : undefined;
+      console.log(JSON.stringify({ event: 'purchase_click', bookId: id, store, source }));
+      res.set('Cache-Control', 'no-store');
+      res.redirect(302, purchaseUrl(book, store));
     } catch (error) {
       next(error);
     }
