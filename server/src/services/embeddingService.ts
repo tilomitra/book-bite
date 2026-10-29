@@ -94,6 +94,19 @@ export class EmbeddingService {
     return vectors;
   }
 
+  /** Embeds the texts not cached yet in one request and caches them for `embedQuery` */
+  async embedQueries(texts: string[]): Promise<void> {
+    const missing = [...new Set(texts)].filter(t => !this.queryCache.has(t));
+    if (missing.length === 0) return;
+    const pending = this.embed(missing);
+    missing.forEach((text, i) => {
+      const vector = pending.then(vectors => vectors[i]);
+      vector.catch(() => this.queryCache.delete(text));
+      this.queryCache.set(text, vector);
+    });
+    await pending;
+  }
+
   embedQuery(text: string): Promise<number[]> {
     let pending = this.queryCache.get(text);
     if (!pending) {

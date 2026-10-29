@@ -24,6 +24,8 @@ protocol FavoriteRepository {
 protocol DailyIdeaProviding {
     /// date is the user's local day as YYYY-MM-DD
     func fetchDailyIdea(for date: String) async throws -> DailyIdea?
+    /// A random book and key idea, different on every call; bookId is a book to skip
+    func fetchRandomIdea(excluding bookId: String?) async throws -> DailyIdea?
 }
 
 protocol HighlightsProviding {

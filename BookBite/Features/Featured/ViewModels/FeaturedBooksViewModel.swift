@@ -78,7 +78,7 @@ class FeaturedBooksViewModel: ObservableObject {
         bookRepository.clearCache()
 
         // Loads alongside the books; a failure only hides the card
-        let dailyIdeaTask = Task { await fetchDailyIdea() }
+        let dailyIdeaTask = Task { await fetchIdea() }
         let recommendationsTask = Task { await fetchRecommendations() }
 
         do {
@@ -104,7 +104,6 @@ class FeaturedBooksViewModel: ObservableObject {
         }
 
         dailyIdea = await dailyIdeaTask.value ?? dailyIdea
-        if let dailyIdea { WidgetBridge.publish(dailyIdea) }
         isLoading = false
     }
 
@@ -269,19 +268,24 @@ class FeaturedBooksViewModel: ObservableObject {
         }
     }
 
-    private func fetchDailyIdea() async -> DailyIdea? {
+    /// A new idea each time the app opens: on launch, pull to refresh and return from the background.
+    /// Only the card changes, so the feed below doesn't move.
+    func refreshIdea() async {
+        if let idea = await fetchIdea() { dailyIdea = idea }
+    }
+
+    private static let lastIdeaBookKey = "lastIdeaBookId"
+
+    private func fetchIdea() async -> DailyIdea? {
         guard let provider = bookRepository as? DailyIdeaProviding else { return nil }
-
-        // The user's local day, so the idea changes at their midnight
-        let formatter = DateFormatter()
-        formatter.calendar = Calendar(identifier: .gregorian)
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "yyyy-MM-dd"
-
+        // Skip the book shown last time, also across launches
+        let last = dailyIdea?.book.id ?? UserDefaults.standard.string(forKey: Self.lastIdeaBookKey)
         do {
-            return try await provider.fetchDailyIdea(for: formatter.string(from: Date()))
+            let idea = try await provider.fetchRandomIdea(excluding: last)
+            if let idea { UserDefaults.standard.set(idea.book.id, forKey: Self.lastIdeaBookKey) }
+            return idea
         } catch {
-            print("Failed to load daily idea: \(error)")
+            print("Failed to load idea: \(error)")
             return nil
         }
     }

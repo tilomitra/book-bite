@@ -68,6 +68,20 @@ export class SummaryController {
     }
   }
 
+  async getRandomIdea(req: Request, res: Response, next: NextFunction) {
+    try {
+      // The app sends the book it showed last, so two opens in a row show different books
+      const exclude = typeof req.query.exclude === 'string' ? req.query.exclude : undefined;
+      const idea = await dailyIdeaService.getRandomIdea(exclude);
+      if (!idea) {
+        return res.status(404).json({ error: 'Idea not found' });
+      }
+      return res.json(idea);
+    } catch (error) {
+      return next(error);
+    }
+  }
+
   async generateSummary(req: Request, res: Response, next: NextFunction) {
     try {
       const { bookId } = req.params;
