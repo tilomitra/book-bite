@@ -55,8 +55,8 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('dev'));
 }
 
-// Landing page (server/public): works from src/ under tsx and from dist/ after tsc
-app.use(express.static(path.join(__dirname, '../public'), { maxAge: '10m' }));
+// Landing page and /privacy (server/public): works from src/ under tsx and from dist/ after tsc
+app.use(express.static(path.join(__dirname, '../public'), { maxAge: '10m', extensions: ['html'] }));
 
 // Health check endpoint
 app.get('/health', (_, res) => {

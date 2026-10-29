@@ -195,6 +195,32 @@ class SupabaseAuthService: ObservableObject {
         }
     }
     
+    /// Deletes the account on the server (`DELETE /api/auth/account`, which removes the Supabase user,
+    /// their favorites and reading history). Call `clearSession()` next; it's separate so the account
+    /// screen can close before the signed-in state it shows goes away. On-device stores stay.
+    func deleteAccount() async throws {
+        guard let token = try await getAccessToken(),
+              let url = URL(string: "\(AppConfiguration.shared.baseServerURL)/auth/account") else {
+            throw AuthError.deleteAccountFailed("You need to sign in again before you can delete your account.")
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+        let (_, response) = try await URLSession.shared.data(for: request)
+        guard let status = (response as? HTTPURLResponse)?.statusCode, (200..<300).contains(status) else {
+            throw AuthError.deleteAccountFailed("Your account could not be deleted. Try again later.")
+        }
+    }
+
+    /// Forgets the local session without calling Supabase (after the account was deleted)
+    func clearSession() {
+        userDefaults.removeObject(forKey: sessionKey)
+        userDefaults.set(false, forKey: anonymousKey)
+        authState = .unauthenticated
+    }
+
     func continueAsAnonymous() {
         authState = .anonymous
         userDefaults.set(true, forKey: anonymousKey)
@@ -414,6 +440,7 @@ enum AuthError: Error, LocalizedError {
     case signUpFailed(String)
     case signInFailed(String)
     case resetPasswordFailed(String)
+    case deleteAccountFailed(String)
     case notImplemented
     
     var errorDescription: String? {
@@ -425,6 +452,8 @@ enum AuthError: Error, LocalizedError {
         case .signInFailed(let message):
             return message
         case .resetPasswordFailed(let message):
+            return message
+        case .deleteAccountFailed(let message):
             return message
         case .notImplemented:
             return "Feature not implemented"

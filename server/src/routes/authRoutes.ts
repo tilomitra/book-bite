@@ -121,28 +121,19 @@ router.get('/stats', authenticate, async (req, res) => {
 
 /**
  * DELETE /api/auth/account
- * Delete user account (soft delete by updating profile)
+ * Deletes the user from Supabase Auth. Their profile, favorites and reading history are removed
+ * with it (ON DELETE CASCADE on auth.users). Required by App Store guideline 5.1.1(v).
  */
 router.delete('/account', authenticate, async (req, res) => {
   try {
-    const userId = req.user.id;
-    
-    // Soft delete by marking account as deleted
-    const { error } = await supabase
-      .from('user_profiles')
-      .update({
-        deleted_at: new Date().toISOString(),
-        email: null,
-        display_name: 'Deleted User'
-      })
-      .eq('id', userId);
-    
+    const { error } = await supabase.auth.admin.deleteUser(req.user.id);
+
     if (error) {
       console.error('Error deleting account:', error);
       return res.status(500).json({ error: 'Failed to delete account' });
     }
-    
-    return res.json({ message: 'Account deleted successfully' });
+
+    return res.json({ message: 'Account deleted' });
   } catch (error) {
     console.error('Account deletion error:', error);
     return res.status(500).json({ error: 'Internal server error' });

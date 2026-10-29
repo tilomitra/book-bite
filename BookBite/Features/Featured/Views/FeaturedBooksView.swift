@@ -82,6 +82,9 @@ struct FeaturedBooksView: View {
         .refreshable {
             await viewModel.loadFeaturedBooks()
         }
+        .onReceive(NotificationCenter.default.publisher(for: OnboardingPreferences.didChange)) { _ in
+            Task { await viewModel.loadFeaturedBooks() }
+        }
     }
 
     /// The idea of the day and Continue reading side by side; either one alone takes the full width

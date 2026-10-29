@@ -36,6 +36,9 @@ class AudioPlaybackService: NSObject, ObservableObject {
     // Playback rate options
     static let playbackRates: [Float] = [0.75, 1.0, 1.25, 1.5, 1.75, 2.0]
 
+    /// The last chosen speed, kept across launches (also set from Settings)
+    private static let playbackRateKey = "audioPlaybackRate"
+
     // Skip interval in seconds
     static let skipInterval: TimeInterval = 15
 
@@ -43,6 +46,10 @@ class AudioPlaybackService: NSObject, ObservableObject {
 
     private override init() {
         super.init()
+        let savedRate = UserDefaults.standard.float(forKey: Self.playbackRateKey)
+        if Self.playbackRates.contains(savedRate) {
+            playbackRate = savedRate
+        }
         setupAudioSession()
         setupRemoteCommandCenter()
     }
@@ -306,6 +313,7 @@ class AudioPlaybackService: NSObject, ObservableObject {
 
     func setPlaybackRate(_ rate: Float) {
         playbackRate = rate
+        UserDefaults.standard.set(rate, forKey: Self.playbackRateKey)
         if isPlaying {
             player?.rate = rate
         }

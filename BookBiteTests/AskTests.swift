@@ -87,4 +87,15 @@ struct AskHistoryStoreTests {
         reloaded.remove(first)
         #expect(AskHistoryStore(defaults: defaults).conversations.map(\.title) == ["Two?"])
     }
+
+    @Test("Clearing removes every conversation, also after relaunch")
+    func testClear() {
+        let defaults = freshDefaults()
+        let store = AskHistoryStore(defaults: defaults)
+        store.save(AskConversation(turns: [AskTurn(question: "One?", answer: "Yes.")]))
+        store.clear()
+
+        #expect(store.conversations.isEmpty)
+        #expect(AskHistoryStore(defaults: defaults).conversations.isEmpty)
+    }
 }

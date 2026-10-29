@@ -109,6 +109,8 @@ struct ReaderSettingsPanel: View {
     /// The app's appearance outside the reader (the panel itself may be forced dark by Night),
     /// so the Paper swatch shows what Paper will look like.
     var systemColorScheme: ColorScheme?
+    /// 300 in the reader's popover; nil fills the width (Settings)
+    var width: CGFloat? = 300
 
     var body: some View {
         VStack(alignment: .leading, spacing: 22) {
@@ -117,7 +119,7 @@ struct ReaderSettingsPanel: View {
             typefacePicker
         }
         .padding(20)
-        .frame(width: 300)
+        .frame(width: width)
         .sensoryFeedback(.selection, trigger: theme)
         .sensoryFeedback(.selection, trigger: typeface)
         .sensoryFeedback(.selection, trigger: textSize)
