@@ -47,6 +47,11 @@ final class AskHistoryStore: ObservableObject {
         persist()
     }
 
+    func clear() {
+        conversations = []
+        defaults.removeObject(forKey: key)
+    }
+
     private func persist() {
         if let data = try? Self.encoder.encode(conversations) {
             defaults.set(data, forKey: key)

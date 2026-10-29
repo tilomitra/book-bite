@@ -1,0 +1,86 @@
+/* Privacy policy and other legal pages: the app's paper, ink and serif, one readable column. */
+
+:root {
+  --paper: #f7f2e8;
+  --ink: #1f1716;
+  --ink-dim: rgba(31, 23, 22, 0.62);
+  --hair: rgba(31, 23, 22, 0.14);
+  --accent: #ff5b2e;
+  --serif: "Newsreader", "New York", Georgia, serif;
+  --sans: "Geist", -apple-system, system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #14110f;
+    --ink: #ece5da;
+    --ink-dim: rgba(236, 229, 218, 0.62);
+    --hair: rgba(236, 229, 218, 0.16);
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 17px/1.6 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+::selection { background: var(--accent); color: #fff; }
+
+.legal-nav {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 20px 16px 0;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.brand img { border-radius: 7px; }
+
+.legal {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 48px 16px 96px;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--ink-dim);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 8px 0 0;
+  font: 500 clamp(36px, 7vw, 52px)/1.05 var(--serif);
+  letter-spacing: -0.02em;
+}
+
+.dek {
+  margin: 16px 0 0;
+  font: italic 400 22px/1.4 var(--serif);
+  color: var(--ink-dim);
+}
+
+h2 {
+  margin: 48px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--hair);
+  font: 500 24px/1.25 var(--serif);
+}
+
+p, ul { margin: 12px 0 0; }
+ul { padding-left: 20px; }
+li + li { margin-top: 10px; }

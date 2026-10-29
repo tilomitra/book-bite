@@ -5,6 +5,8 @@ import Foundation
 /// UI tests skip onboarding with the launch arguments `-hasCompletedOnboarding YES`.
 enum OnboardingPreferences {
     static let completedKey = "hasCompletedOnboarding"
+    /// Posted when topics or goals change after onboarding (Settings), so Discover rebuilds its shelves
+    static let didChange = Notification.Name("OnboardingPreferencesDidChange")
     private static let genresKey = "preferredGenres"
     private static let goalsKey = "readingGoals"
     private static let likedBooksKey = "likedBookIds"
