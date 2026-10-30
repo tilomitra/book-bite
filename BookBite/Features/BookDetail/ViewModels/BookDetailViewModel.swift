@@ -238,6 +238,14 @@ class BookDetailViewModel: ObservableObject {
         isLoadingFavorite = false
     }
     
+    /// After signing in from the Save prompt: saves the book, unless the account has it already
+    func saveAfterSignIn() async {
+        await loadFavoriteStatus()
+        if !isFavorite {
+            await toggleFavorite()
+        }
+    }
+
     func toggleFavorite() async {
         guard let favoriteRepository = repository as? FavoriteRepository else {
             if AppConfiguration.shared.isLoggingEnabled {

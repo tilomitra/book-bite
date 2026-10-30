@@ -6,7 +6,7 @@ struct BookDetailView: View {
     @StateObject private var viewModel: BookDetailViewModel
     @ObservedObject private var audioService = AudioPlaybackService.shared
     @ObservedObject private var progressStore = ReadingProgressStore.shared
-    @State private var showingAuthSheet = false
+    @State private var signInPrompt: SignInPrompt?
     @State private var showingAudioPlayer = false
     @State private var coverTint: Color?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -59,9 +59,7 @@ struct BookDetailView: View {
                 .accessibilityLabel("Share")
             }
         }
-        .sheet(isPresented: $showingAuthSheet) {
-            AuthenticationView(authService: authService)
-        }
+        .signInPrompt($signInPrompt)
         .sheet(isPresented: $showingAudioPlayer) {
             AudioPlayerView(audioService: audioService)
                 .presentationDetents([.large])
@@ -424,8 +422,10 @@ struct BookDetailView: View {
                 await viewModel.toggleFavorite()
             }
         } else {
-            // Saving needs an account
-            showingAuthSheet = true
+            // Saving needs an account; the book is saved as soon as they have one
+            signInPrompt = SignInPrompt(reason: .save(viewModel.book)) {
+                Task { await viewModel.saveAfterSignIn() }
+            }
         }
     }
 }

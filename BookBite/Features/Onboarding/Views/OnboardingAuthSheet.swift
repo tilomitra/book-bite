@@ -3,6 +3,8 @@ import AuthenticationServices
 
 /// Bottom sheet raised from the welcome screen: Apple, email (sign up or sign in), or browse as a guest.
 /// Calls `onFinished` once the user is signed in or chose to continue as a guest.
+/// With a `prompt` (see `SignInPrompt`) it asks for sign-in before an action: art and copy for that action,
+/// and "Not now" just closes it.
 struct OnboardingAuthSheet: View {
     @ObservedObject var authService: SupabaseAuthService
     @StateObject private var viewModel: AuthViewModel
@@ -13,9 +15,10 @@ struct OnboardingAuthSheet: View {
     @FocusState private var focusedField: Field?
     @Environment(\.dismiss) private var dismiss
 
+    let prompt: SignInPrompt.Reason?
     let onFinished: () -> Void
 
-    private static let optionsDetent = PresentationDetent.height(430)
+    private let optionsDetent: PresentationDetent
 
     enum Mode {
         case options, signUp, signIn
@@ -25,12 +28,21 @@ struct OnboardingAuthSheet: View {
         case name, email, password
     }
 
-    init(authService: SupabaseAuthService, startWithSignIn: Bool = false, onFinished: @escaping () -> Void) {
+    init(authService: SupabaseAuthService, startWithSignIn: Bool = false, prompt: SignInPrompt.Reason? = nil,
+         onFinished: @escaping () -> Void) {
         self.authService = authService
+        self.prompt = prompt
         self.onFinished = onFinished
+        // Prompts are taller: their art replaces the mark and the message is longer
+        let optionsDetent = switch prompt {
+        case .ask: PresentationDetent.height(530)
+        case .save: PresentationDetent.height(500)
+        case nil: PresentationDetent.height(430)
+        }
+        self.optionsDetent = optionsDetent
         _viewModel = StateObject(wrappedValue: AuthViewModel(authService: authService))
         _mode = State(initialValue: startWithSignIn ? .signIn : .options)
-        _detent = State(initialValue: startWithSignIn ? .large : Self.optionsDetent)
+        _detent = State(initialValue: startWithSignIn ? .large : optionsDetent)
     }
 
     var body: some View {
@@ -55,7 +67,7 @@ struct OnboardingAuthSheet: View {
         .padding(.top, 24)
         .animation(.spring(response: 0.4, dampingFraction: 0.9), value: mode)
         .animation(.easeInOut(duration: 0.2), value: viewModel.errorMessage)
-        .presentationDetents([Self.optionsDetent, .large], selection: $detent)
+        .presentationDetents([optionsDetent, .large], selection: $detent)
         .tint(.primary)
         .presentationCornerRadius(36)
         .presentationDragIndicator(.hidden)
@@ -73,14 +85,18 @@ struct OnboardingAuthSheet: View {
     private var topBar: some View {
         HStack(alignment: .top) {
             if mode == .options {
-                BookBiteMark(size: 56)
+                if let prompt {
+                    SignInPromptArt(reason: prompt)
+                } else {
+                    BookBiteMark(size: 56)
+                }
             } else {
                 Button {
                     focusedField = nil
                     viewModel.errorMessage = nil
                     confirmationEmail = nil
                     mode = .options
-                    detent = Self.optionsDetent
+                    detent = optionsDetent
                 } label: {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 16, weight: .semibold))
@@ -108,10 +124,11 @@ struct OnboardingAuthSheet: View {
 
     private var options: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("Get started")
+            Text(prompt?.title ?? "Get started")
                 .font(.system(size: 30, weight: .medium, design: .serif))
                 .tracking(-0.4)
-            Text("Save books to your library, pick up where you left off, and sync across devices.")
+                .fixedSize(horizontal: false, vertical: true)
+            Text(prompt?.message ?? "Save books to your library, pick up where you left off, and sync across devices.")
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -133,10 +150,14 @@ struct OnboardingAuthSheet: View {
             errorText
 
             Button {
-                authService.continueAsAnonymous()
-                onFinished()
+                if prompt != nil {
+                    dismiss()
+                } else {
+                    authService.continueAsAnonymous()
+                    onFinished()
+                }
             } label: {
-                Text("Browse without an account")
+                Text(prompt != nil ? "Not now" : "Browse without an account")
                     .font(.subheadline.weight(.medium))
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity)
@@ -153,7 +174,7 @@ struct OnboardingAuthSheet: View {
             Text(mode == .signUp ? "Create your account" : "Welcome back")
                 .font(.system(size: 30, weight: .medium, design: .serif))
                 .tracking(-0.4)
-            Text(mode == .signUp ? "It takes a few seconds. No spam, ever." : "Sign in to see your saved books.")
+            Text(mode == .signUp ? "It takes a few seconds. No spam, ever." : signInMessage)
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .padding(.top, 8)
@@ -257,6 +278,14 @@ struct OnboardingAuthSheet: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, 12)
                 .transition(.opacity)
+        }
+    }
+
+    private var signInMessage: String {
+        switch prompt {
+        case .ask: return "Sign in to read your answer."
+        case .save: return "Sign in to save the book."
+        case nil: return "Sign in to see your saved books."
         }
     }
 

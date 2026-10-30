@@ -16,7 +16,8 @@ final class AppStoreScreenshots: XCTestCase {
         dir = URL(fileURLWithPath: path)
         continueAfterFailure = true
         app = XCUIApplication()
-        app.launchArguments += ["-hasCompletedOnboarding", "YES", "-readerTheme", "paper"]
+        // Ask needs an account; Debug builds skip the sign-in prompt with this flag
+        app.launchArguments += ["-hasCompletedOnboarding", "YES", "-readerTheme", "paper", "-skipSignInPrompts", "YES"]
         app.launchEnvironment["BOOKBITE_SERVER_URL"] = "https://book-bite.onrender.com/api"
     }
 

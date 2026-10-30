@@ -1,6 +1,7 @@
 import SwiftUI
 
 /// Writing a question. Books that look like they answer it rise in under the text as it is typed.
+/// Anyone can write one; sending it asks a signed-out user to sign in first, with their question and books in the prompt.
 struct AskComposeView: View {
     let suggestions: [String]
     let onAsk: (String) -> Void
@@ -8,7 +9,9 @@ struct AskComposeView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var text = ""
     @State private var matches: [Book] = []
+    @State private var signInPrompt: SignInPrompt?
     @FocusState private var focused: Bool
+    @EnvironmentObject private var authService: SupabaseAuthService
 
     private let provider = DependencyContainer.shared.bookRepository as? AskProviding
 
@@ -84,13 +87,18 @@ struct AskComposeView: View {
         }
         .background(Color.paper)
         .animation(.spring(response: 0.45, dampingFraction: 0.85), value: matches.map(\.id))
+        .signInPrompt($signInPrompt)
         .onAppear { focused = true }
         .task(id: question) { await updateMatches() }
     }
 
     private func ask() {
         guard canAsk else { return }
-        onAsk(question)
+        let question = self.question
+        focused = false
+        signInPrompt = SignInPrompt.gate(.ask(question: question, books: matches), auth: authService) {
+            onAsk(question)
+        }
     }
 
     /// Waits for a pause in typing, then looks up books for what's written so far

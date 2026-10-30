@@ -8,6 +8,8 @@ struct AskConversationView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     /// Wide layout only: the cited books in a column beside the answer
     @State private var showsSources = true
+    @State private var signInPrompt: SignInPrompt?
+    @EnvironmentObject private var authService: SupabaseAuthService
 
     private var isWide: Bool { horizontalSizeClass == .regular }
 
@@ -72,6 +74,7 @@ struct AskConversationView: View {
             AskSourcesPanel(books: viewModel.conversation.turns.last?.sources ?? [])
                 .inspectorColumnWidth(min: 300, ideal: 340, max: 420)
         }
+        .signInPrompt($signInPrompt)
         .onAppear { viewModel.start() }
         .onDisappear { viewModel.stop() }
     }
@@ -82,6 +85,16 @@ struct AskConversationView: View {
         return words.count > 5 ? words.prefix(5).joined(separator: " ") + "…" : words.joined(separator: " ")
     }
 
+    /// A conversation from history can be open after signing out, so follow-ups ask for sign-in too
+    private func sendFollowUp() {
+        guard viewModel.canSend else { return }
+        let question = viewModel.input.trimmingCharacters(in: .whitespacesAndNewlines)
+        let books = viewModel.conversation.turns.last?.sources ?? []
+        signInPrompt = SignInPrompt.gate(.ask(question: question, books: books), auth: authService) {
+            viewModel.sendInput()
+        }
+    }
+
     private var followUpBar: some View {
         HStack(spacing: 10) {
             TextField("Ask a follow-up", text: $viewModel.input, axis: .vertical)
@@ -89,7 +102,7 @@ struct AskConversationView: View {
                 .lineLimit(1...4)
                 .focused($inputFocused)
                 .submitLabel(.send)
-                .onSubmit(viewModel.sendInput)
+                .onSubmit(sendFollowUp)
                 .padding(.leading, 20)
                 .padding(.vertical, 15)
             if viewModel.isStreaming {
@@ -103,7 +116,7 @@ struct AskConversationView: View {
                 .accessibilityLabel("Stop")
                 .padding(.trailing, 7)
             } else {
-                AskSendButton(enabled: viewModel.canSend, action: viewModel.sendInput)
+                AskSendButton(enabled: viewModel.canSend, action: sendFollowUp)
                     .padding(.trailing, 7)
             }
         }
