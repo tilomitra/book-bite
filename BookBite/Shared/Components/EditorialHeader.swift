@@ -40,6 +40,22 @@ struct EditorialHeader<Caption: View, Trailing: View>: View {
     }
 }
 
+/// The serif heading of a section on an editorial screen. Shelves and cards share it, so the page has one rhythm.
+struct EditorialSectionTitle: View {
+    let text: String
+
+    init(_ text: String) {
+        self.text = text
+    }
+
+    var body: some View {
+        Text(text)
+            .font(.system(size: 24, weight: .medium, design: .serif))
+            .fixedSize(horizontal: false, vertical: true)
+            .accessibilityAddTraits(.isHeader)
+    }
+}
+
 extension View {
     /// Hides the navigation bar on an editorial tab root (the `EditorialHeader` replaces it) and keeps
     /// the status bar area opaque while content scrolls under it. Pushed screens show their own bar.

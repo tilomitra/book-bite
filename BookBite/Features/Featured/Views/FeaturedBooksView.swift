@@ -21,7 +21,7 @@ struct FeaturedBooksView: View {
     var body: some View {
         // The header stays visible in every state: the navigation bar is hidden, so it is the screen's title
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: 30) {
+            LazyVStack(alignment: .leading, spacing: 36) {
                 EditorialHeader(title: "Discover", caption: {
                     Text(Date.now, format: .dateTime.weekday(.wide).month(.wide).day())
                 })
@@ -248,9 +248,7 @@ struct BookShelf: View {
                         .fixedSize(horizontal: false, vertical: true)
                 } else {
                     HStack(alignment: .firstTextBaseline, spacing: 12) {
-                        Text(title)
-                            .font(.system(size: 24, weight: .medium, design: .serif))
-                            .fixedSize(horizontal: false, vertical: true)
+                        EditorialSectionTitle(title)
                         Spacer(minLength: 0)
                         seeAllLink
                             .layoutPriority(1)

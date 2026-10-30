@@ -41,13 +41,13 @@ struct MyLibraryView: View {
                 if horizontalSizeClass == .regular && !readingProgress.inProgress.isEmpty && !savedIdeas.ideas.isEmpty {
                     // iPad: what you're reading and what you kept, side by side
                     HStack(alignment: .top, spacing: 16) {
-                        ContinueReadingSection(entries: readingProgress.inProgress, maxCompactRows: 4)
+                        ContinueReadingSection(entries: readingProgress.inProgress, maxRows: 5)
                             .frame(maxWidth: .infinity, alignment: .top)
                         NotebookPreview(ideas: savedIdeas.ideas, previewCount: 4)
                             .frame(maxWidth: .infinity, alignment: .top)
                     }
                 } else {
-                    ContinueReadingSection(entries: readingProgress.inProgress, maxCompactRows: 6)
+                    ContinueReadingSection(entries: readingProgress.inProgress, maxRows: 7)
 
                     if !savedIdeas.ideas.isEmpty {
                         NotebookPreview(ideas: savedIdeas.ideas)
@@ -102,7 +102,9 @@ struct MyLibraryView: View {
             }
         }
         .sheet(isPresented: $showingAuth) {
-            AuthenticationView(authService: authService)
+            OnboardingAuthSheet(authService: authService) {
+                showingAuth = false
+            }
         }
     }
 
