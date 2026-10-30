@@ -139,7 +139,6 @@ a { color: inherit; }
 .cta .btn-light { background: var(--white); color: #000; box-shadow: none; }
 
 .foot { color: var(--text-2); font-size: 13px; padding: 8px calc(var(--gutter) * 2) calc(32px + env(safe-area-inset-bottom)); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 40px; }
-.foot span:last-child { max-width: 62ch; }
 
 /* ---------- Device: a real screen in a titanium frame. --w sets everything ---------- */
 .iphone {
