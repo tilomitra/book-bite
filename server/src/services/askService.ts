@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import NodeCache from 'node-cache';
+import { StaleCache } from '../utils/staleCache';
 import { z } from 'zod';
 import { supabase } from '../config/supabase';
 import { EmbeddingService, normalize, toVectorLiteral } from './embeddingService';
@@ -111,6 +112,8 @@ export class AskService {
   private passageVectors = new Map<string, number[]>();
   private ideaTableMissing = false;
   private cache = new NodeCache({ stdTTL: 6 * 3600, checkperiod: 600 });
+  // Takes seconds to build (an embedding and a vector search per question), so nobody waits for it after startup
+  private homeContent = new StaleCache(() => this.loadHomeContent(), 6 * 3600 * 1000);
 
   private embeddingService(): EmbeddingService {
     // Lazily, so the rest of the API runs without an OpenAI key
@@ -129,10 +132,17 @@ export class AskService {
    * shows a different question each time the tab opens. `daily` is for app versions before that.
    */
   async home(date: string) {
-    const cacheKey = `ask-home:${date}`;
-    const cached = this.cache.get(cacheKey);
-    if (cached) return cached;
+    const { questions, topics } = await this.homeContent.get();
+    const today = dailyQuestion(date);
+    return { date, daily: questions.find(q => q.question === today)!, questions, topics };
+  }
 
+  /** Builds the Ask tab at startup */
+  warm() {
+    return this.homeContent.get();
+  }
+
+  private async loadHomeContent() {
     // One embeddings request for every question not seen yet, not one each
     await this.embeddingService().embedQueries([...DAILY_QUESTIONS, ...ASK_TOPICS.map(t => t.questions[0])]);
     const [questionBooks, topicBooks] = await Promise.all([
@@ -140,15 +150,7 @@ export class AskService {
       Promise.all(ASK_TOPICS.map(t => this.coversFor(t.questions[0])))
     ]);
     const questions = DAILY_QUESTIONS.map((question, i) => ({ question, books: questionBooks[i] }));
-    const today = dailyQuestion(date);
-    const home = {
-      date,
-      daily: questions.find(q => q.question === today)!,
-      questions,
-      topics: ASK_TOPICS.map((t, i) => ({ ...t, books: topicBooks[i] }))
-    };
-    this.cache.set(cacheKey, home);
-    return home;
+    return { questions, topics: ASK_TOPICS.map((t, i) => ({ ...t, books: topicBooks[i] })) };
   }
 
   /** Books that look like they answer a question, for the covers that appear while typing */

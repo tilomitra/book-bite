@@ -92,10 +92,10 @@ struct MyLibraryView: View {
         .navigationTitle("Library")
         .editorialNavigationBar()
         .task(id: isSignedIn) {
-            await viewModel.load(isSignedIn: isSignedIn)
+            await viewModel.load(isSignedIn: isSignedIn, userId: authService.currentUser?.id)
         }
         .refreshable {
-            await viewModel.load(isSignedIn: isSignedIn)
+            await viewModel.load(isSignedIn: isSignedIn, userId: authService.currentUser?.id)
         }
         .sheet(isPresented: $showingSettings) {
             NavigationStack {

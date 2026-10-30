@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { RecommendationService, RecommendationRequestSchema } from '../services/recommendationService';
 import { isPurchaseStore, purchaseUrl } from '../services/purchaseLinks';
 
-const bookService = new BookService();
+export const bookService = new BookService();
 const recommendationService = new RecommendationService();
 
 // Clamp ?page= / ?limit= to sane integers (NaN/0 break the range math; PostgREST caps responses at 1000 rows)

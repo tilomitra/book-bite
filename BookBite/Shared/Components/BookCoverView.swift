@@ -33,21 +33,12 @@ struct BookCoverView: View {
     }
     
     var body: some View {
-        AsyncImage(url: URL.bookCover(from: coverURL)) { phase in
-            switch phase {
-            case .success(let image):
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-            case .empty where URL.bookCover(from: coverURL) != nil:
-                placeholderView
-            case .failure(_), .empty:
-                if let title {
-                    TypographicCover(title: title, author: author ?? "")
-                } else {
-                    placeholderView
-                }
-            @unknown default:
+        CoverImageView(coverURL: coverURL, width: size.dimensions.width, contentMode: .fit) {
+            placeholderView
+        } failure: {
+            if let title {
+                TypographicCover(title: title, author: author ?? "")
+            } else {
                 placeholderView
             }
         }

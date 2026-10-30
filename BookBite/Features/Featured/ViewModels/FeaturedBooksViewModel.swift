@@ -1,4 +1,4 @@
-import Foundation
+import UIKit
 import Combine
 
 /// One item of the Discover feed below the idea of the day
@@ -19,6 +19,16 @@ enum DiscoverBlock: Identifiable {
     }
 }
 
+/// Everything the feed is built from, kept on disk so Discover opens at once. Each launch shows the
+/// last snapshot in a new order and fetches the next one behind the scenes, so the page never
+/// reshuffles while someone reads it.
+struct DiscoverSnapshot: Codable {
+    let featuredBooks: [Book]
+    let nytBestsellerBooks: [Book]
+    let recommendations: Recommendations?
+    let highlights: HighlightsPage?
+}
+
 @MainActor
 class FeaturedBooksViewModel: ObservableObject {
     @Published var dailyIdea: DailyIdea?
@@ -31,6 +41,9 @@ class FeaturedBooksViewModel: ObservableObject {
     @Published var error: Error?
 
     private let bookRepository: BookRepository
+    private let cache: CacheService
+    /// The newest snapshot, for the next visit
+    private var snapshot: DiscoverSnapshot?
     private var featuredBooks: [Book] = []
     private var nytBestsellerBooks: [Book] = []
     /// Personal shelves and per-book scores from the server; nil before they load or if they fail
@@ -72,11 +85,19 @@ class FeaturedBooksViewModel: ObservableObject {
     ]
     private static let highlightShelfTitles = ["More to explore", "Keep reading", "Also worth a look", "From the stacks"]
 
-    init(bookRepository: BookRepository) {
-        self.bookRepository = bookRepository
+    private static let snapshotKey = "discover"
 
-        Task {
-            await loadFeaturedBooks()
+    init(bookRepository: BookRepository, cache: CacheService = .shared) {
+        self.bookRepository = bookRepository
+        self.cache = cache
+
+        // Read here, not in a task, so the feed is there in the first frame
+        snapshot = cache.snapshot(DiscoverSnapshot.self, key: Self.snapshotKey)
+        if snapshot != nil {
+            showSnapshot()
+            Task { await refreshSnapshot() }
+        } else {
+            Task { await loadFeaturedBooks() }
         }
     }
 
@@ -84,32 +105,106 @@ class FeaturedBooksViewModel: ObservableObject {
         !isLoading && error == nil && booksByGenre.isEmpty
     }
 
+    /// Launch, and return after a while: a new order at once from the last snapshot, and the next snapshot
+    /// fetched behind it. Waits for the network only when there is no snapshot yet.
+    func startVisit() async {
+        guard snapshot != nil else {
+            await loadFeaturedBooks()
+            return
+        }
+        showSnapshot()
+        await refreshSnapshot()
+    }
+
+    private func refreshSnapshot() async {
+        // Its own seed, so the next visit starts from different highlights
+        if let fresh = try? await fetchSnapshot(seed: Int.random(in: 1...Int(Int32.max))) {
+            save(fresh)
+        }
+    }
+
+    private func showSnapshot() {
+        guard let snapshot else { return }
+        startNewOrder()
+        apply(snapshot)
+        groupBooksByGenre()
+        // No network, so the idea doesn't swap in after the page is on screen
+        let highlights = snapshot.highlights?.items ?? []
+        if let idea = pickIdea(from: highlights) { dailyIdea = idea }
+        prepareFeed()
+        enqueue(highlights)
+        blocks = nextBlocks()
+    }
+
+    private func apply(_ snapshot: DiscoverSnapshot) {
+        featuredBooks = snapshot.featuredBooks
+        nytBestsellerBooks = snapshot.nytBestsellerBooks
+        recommendations = snapshot.recommendations ?? recommendations
+    }
+
+    /// A different book from the last one, also across launches
+    private func pickIdea(from highlights: [Highlight]) -> DailyIdea? {
+        let last = dailyIdea?.book.id ?? UserDefaults.standard.string(forKey: Self.lastIdeaBookKey)
+        guard let highlight = highlights.filter({ $0.isQuotable && $0.book.id != last }).randomElement(using: &generator) else {
+            return nil
+        }
+        UserDefaults.standard.set(highlight.book.id, forKey: Self.lastIdeaBookKey)
+        return DailyIdea(date: "", book: highlight.book, idea: highlight.idea, hook: highlight.hook)
+    }
+
+    private func fetchSnapshot(seed: Int) async throws -> DiscoverSnapshot {
+        // A failure of these two only leaves the feed plainer
+        async let recommendationsTask = fetchRecommendations()
+        async let highlightsTask = fetchFirstHighlights(seed: seed)
+        async let featuredBooksTask = bookRepository.fetchFeaturedBooks()
+        async let nytBooksTask = bookRepository.fetchNYTBestsellerBooks()
+
+        let (featured, nytBooks) = try await (featuredBooksTask, nytBooksTask)
+        return DiscoverSnapshot(
+            featuredBooks: featured,
+            nytBestsellerBooks: nytBooks,
+            recommendations: await recommendationsTask,
+            highlights: await highlightsTask
+        )
+    }
+
+    private func fetchFirstHighlights(seed: Int) async -> HighlightsPage? {
+        try? await (bookRepository as? HighlightsProviding)?.fetchHighlights(page: 1, limit: highlightsPageSize, seed: seed)
+    }
+
+    private func save(_ snapshot: DiscoverSnapshot) {
+        self.snapshot = snapshot
+        let cache = cache
+        Task.detached(priority: .utility) {
+            cache.saveSnapshot(snapshot, key: Self.snapshotKey)
+        }
+    }
+
+    /// Fetches everything and replaces the feed when it's ready; the current feed stays until then.
+    /// For pull to refresh, Try Again and changed interests, where the reader expects the newest.
     func loadFeaturedBooks() async {
         isLoading = true
         error = nil
 
-        // Clear cache to ensure fresh data
-        bookRepository.clearCache()
         startNewOrder()
 
         // Loads alongside the books; a failure only hides the card
         let dailyIdeaTask = Task { await fetchIdea() }
-        let recommendationsTask = Task { await fetchRecommendations() }
 
         do {
-            async let featuredBooksTask = bookRepository.fetchFeaturedBooks()
-            async let nytBooksTask = bookRepository.fetchNYTBestsellerBooks()
-
-            let (featured, nytBooks) = try await (featuredBooksTask, nytBooksTask)
-
-            featuredBooks = featured
-            nytBestsellerBooks = nytBooks
-            // Wait for the personal shelves too, so the page doesn't reshuffle while someone reads it
-            recommendations = await recommendationsTask.value ?? recommendations
+            let fresh = try await fetchSnapshot(seed: feedSeed)
+            apply(fresh)
             groupBooksByGenre()
             // Before the feed, so its book isn't repeated on a card
             dailyIdea = await dailyIdeaTask.value ?? dailyIdea
-            await resetFeed()
+            prepareFeed()
+            if let page = fresh.highlights {
+                enqueue(page.items)
+                nextHighlightsPage = 2
+                hasMoreHighlights = page.hasMore
+            }
+            blocks = await nextChunk()
+            save(fresh)
         } catch {
             // Don't show cancellation errors to user - they're expected during rapid refreshes
             if !(error is CancellationError) {
@@ -132,21 +227,32 @@ class FeaturedBooksViewModel: ObservableObject {
         guard !isLoadingMore, !isLoading, canLoadMore else { return }
         isLoadingMore = true
         defer { isLoadingMore = false }
-        await appendChunk()
+        blocks += await nextChunk()
     }
 
-    private func appendChunk() async {
+    private func nextChunk() async -> [DiscoverBlock] {
         // Enough for a full rotation (spotlight, three bites, passage, a shelf of eight)
         while highlightQueue.count < 14 && hasMoreHighlights {
             await fetchNextHighlights()
         }
+        return nextBlocks()
+    }
 
+    /// The next few blocks from what's already here
+    private func nextBlocks() -> [DiscoverBlock] {
         var added: [DiscoverBlock] = []
         while added.count < chunkSize, let block = nextBlock() {
             added.append(block)
         }
-        blocks.append(contentsOf: added)
         DiscoverHistory.record(added.flatMap(shownBookIds))
+
+        // Shelves show all their covers at once; have them ready before they scroll in
+        let shelfCovers = added.flatMap { block -> [String] in
+            guard case .shelf(_, let books) = block else { return [] }
+            return books.prefix(BookShelf.previewCount).compactMap(\.coverAssetName)
+        }
+        CoverImageLoader.shared.prefetch(shelfCovers, pixelWidth: CoverImageLoader.pixelWidth(forPoints: BookShelf.coverWidth(isWide: UIDevice.current.userInterfaceIdiom == .pad)))
+        return added
     }
 
     private func startNewOrder() {
@@ -174,7 +280,7 @@ class FeaturedBooksViewModel: ObservableObject {
         FeedShuffle.jittered(items, spread: spread, using: &generator)
     }
 
-    private func resetFeed() async {
+    private func prepareFeed() {
         pendingShelves = booksByGenre
         highlightQueue = []
         nextHighlightsPage = 1
@@ -188,8 +294,6 @@ class FeaturedBooksViewModel: ObservableObject {
         biteCards = 0
         highlightShelves = 0
         if let dailyIdea { markUsed(dailyIdea.book) }
-        blocks = []
-        await appendChunk()
     }
 
     private func fetchNextHighlights() async {
@@ -201,22 +305,26 @@ class FeaturedBooksViewModel: ObservableObject {
             let page = try await provider.fetchHighlights(page: nextHighlightsPage, limit: highlightsPageSize, seed: feedSeed)
             nextHighlightsPage += 1
             hasMoreHighlights = page.hasMore
-            // The server mixes the order per seed; within a page, the ones closest to the reader's taste first
-            var items = page.items
-            if let scores = recommendations?.scores, !scores.isEmpty {
-                items = items.enumerated()
-                    .sorted { (scores[$0.element.id] ?? -1, -$0.offset) > (scores[$1.element.id] ?? -1, -$1.offset) }
-                    .map(\.element)
-            }
-            // Books shown on earlier visits go to the end of the page
-            let shown = shownBefore
-            items = items.filter { !shown.contains($0.book.id) } + items.filter { shown.contains($0.book.id) }
-            highlightQueue += items.filter { !isUsed($0.book) }
+            enqueue(page.items)
         } catch {
             // The feed ends with the shelves; the next scroll to the bottom tries again
             print("Failed to load highlights: \(error)")
             if highlightQueue.isEmpty { hasMoreHighlights = false }
         }
+    }
+
+    private func enqueue(_ page: [Highlight]) {
+        // The server mixes the order per seed; within a page, the ones closest to the reader's taste first
+        var items = page
+        if let scores = recommendations?.scores, !scores.isEmpty {
+            items = items.enumerated()
+                .sorted { (scores[$0.element.id] ?? -1, -$0.offset) > (scores[$1.element.id] ?? -1, -$1.offset) }
+                .map(\.element)
+        }
+        // Books shown on earlier visits go to the end of the page
+        let shown = shownBefore
+        items = items.filter { !shown.contains($0.book.id) } + items.filter { shown.contains($0.book.id) }
+        highlightQueue += items.filter { !isUsed($0.book) }
     }
 
     private func bookKeys(_ book: Book) -> [String] {

@@ -8,14 +8,14 @@ enum CoverTint {
     private static let context = CIContext(options: [.workingColorSpace: NSNull()])
 
     static func color(for coverURL: String?) async -> Color? {
-        guard let url = URL.bookCover(from: coverURL) else { return nil }
+        guard let coverURL, let url = URL.bookCover(from: coverURL) else { return nil }
         if let cached = cache.object(forKey: url as NSURL) {
             return Color(cached)
         }
 
-        // Usually served from URLCache: the cover was just shown on the previous screen
-        guard let (data, _) = try? await URLSession.shared.data(from: url),
-              let image = CIImage(data: data) else { return nil }
+        // A small one is enough for an average, and usually in memory: the cover is on screen
+        guard let cover = await CoverImageLoader.shared.image(for: coverURL, pixelWidth: 240)?.cgImage else { return nil }
+        let image = CIImage(cgImage: cover)
 
         let filter = CIFilter.areaAverage()
         filter.inputImage = image

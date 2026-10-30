@@ -7,7 +7,7 @@ import { z } from 'zod';
 
 const summaryService = new SummaryService();
 const dailyIdeaService = new DailyIdeaService();
-const highlightService = new HighlightService();
+export const highlightService = new HighlightService();
 
 const DailyIdeaQuerySchema = z.object({
   // The client's local date, so the idea changes at the user's midnight

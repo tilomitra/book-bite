@@ -34,10 +34,14 @@ class BookDetailViewModel: ObservableObject {
     init(book: Book, repository: BookRepository) {
         self.book = book
         self.repository = repository
+        // Here, not in a task: a book read before is on the page in the first frame, and refreshes behind it
+        summary = (try? CacheService.shared.getCachedSummary(bookId: book.id))
+            ?? OfflineStorageService.shared.getOfflineSummary(bookId: book.id)
 
         Task {
-            await loadSummary()
-            await loadFavoriteStatus()
+            async let summaryLoad: Void = loadSummary()
+            async let favoriteLoad: Void = loadFavoriteStatus()
+            _ = await (summaryLoad, favoriteLoad)
             loadOfflineStatus()
         }
     }
@@ -47,21 +51,25 @@ class BookDetailViewModel: ObservableObject {
     }
     
     func loadSummary() async {
-        isLoadingSummary = true
+        // With a cached summary on the page, this is a quiet refresh
+        let hasCachedSummary = summary != nil
+        isLoadingSummary = !hasCachedSummary
         summaryError = nil
         
         do {
-            summary = try await repository.fetchSummary(for: book.id)
+            if let fresh = try await repository.fetchSummary(for: book.id) {
+                summary = fresh
+            }
         } catch let error as NetworkError {
             if case .clientError(404, _) = error {
                 // 404 means no summary exists, this is not an error state
                 // We'll show the generate button instead
                 summaryError = nil
-            } else {
+            } else if !hasCachedSummary {
                 summaryError = error
             }
         } catch {
-            summaryError = error
+            if !hasCachedSummary { summaryError = error }
         }
         
         isLoadingSummary = false

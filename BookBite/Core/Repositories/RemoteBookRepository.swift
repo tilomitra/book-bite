@@ -19,28 +19,14 @@ class RemoteBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
     
     func fetchFeaturedBooks() async throws -> [Book] {
         // Fetch books marked as featured (is_featured = true)
-        let endpoint = "books/featured"
-        let freshEndpoint = "\(endpoint)?fresh=true"
-        let response: BooksResponse = try await networkService.get(endpoint: freshEndpoint)
-        let books = response.books.filter { $0.isFeatured == true }
-        
-        // Cache the results for performance
-        try? cacheService.cacheFeaturedBooks(books)
-        
-        return books
+        let response: BooksResponse = try await networkService.get(endpoint: "books/featured")
+        return response.books.filter { $0.isFeatured == true }
     }
     
     func fetchNYTBestsellerBooks() async throws -> [Book] {
         // Fetch all NYT bestsellers (is_nyt_bestseller = true)
-        let endpoint = "books/nyt-bestsellers"
-        let freshEndpoint = "\(endpoint)?fresh=true"
-        let response: BooksResponse = try await networkService.get(endpoint: freshEndpoint)
-        let books = response.books
-        
-        // Cache the results for performance
-        try? cacheService.cacheNYTBestsellerBooks(books)
-        
-        return books
+        let response: BooksResponse = try await networkService.get(endpoint: "books/nyt-bestsellers")
+        return response.books
     }
     
     func fetchBook(by id: String) async throws -> Book? {

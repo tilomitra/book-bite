@@ -11,9 +11,24 @@ final class AskHomeViewModel: ObservableObject {
     private var deck: [AskHome.Daily] = []
 
     private let provider: AskProviding?
+    private let cache: CacheService
+    private var didRefresh = false
 
-    init(bookRepository: BookRepository) {
+    private static let snapshotKey = "ask-home"
+
+    init(bookRepository: BookRepository, cache: CacheService = .shared) {
         provider = bookRepository as? AskProviding
+        self.cache = cache
+        // Last time's page, so the tab is there when it opens
+        home = cache.snapshot(AskHome.self, key: Self.snapshotKey)
+        showNextQuestion()
+    }
+
+    /// Fetches the page before the tab first opens
+    static func preload(from bookRepository: BookRepository, cache: CacheService = .shared) async {
+        guard let provider = bookRepository as? AskProviding,
+              let home = try? await provider.fetchAskHome(date: localDate()) else { return }
+        cache.saveSnapshot(home, key: snapshotKey)
     }
 
     /// Starter questions for the compose screen when it isn't opened from a topic
@@ -23,14 +38,23 @@ final class AskHomeViewModel: ObservableObject {
     }
 
     func load() async {
-        guard let provider, home == nil else { return }
+        guard let provider, !didRefresh else { return }
         do {
-            home = try await provider.fetchAskHome(date: Self.localDate())
+            let fresh = try await provider.fetchAskHome(date: Self.localDate())
+            didRefresh = true
             didFail = false
-            showNextQuestion()
+            // Already showing a page: the new one waits for next time, so covers don't swap under the reader
+            if home == nil {
+                home = fresh
+                showNextQuestion()
+            }
+            let cache = cache
+            Task.detached(priority: .utility) {
+                cache.saveSnapshot(fresh, key: Self.snapshotKey)
+            }
         } catch {
             print("Failed to load Ask home: \(error)")
-            didFail = true
+            didFail = home == nil
         }
     }
 

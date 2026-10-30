@@ -125,111 +125,102 @@ class CategoryBooksViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var isLoadingMore: Bool = false
     @Published var error: Error?
-    @Published var hasMore: Bool = true
-    
+    @Published var hasMore: Bool = false
+
     private let category: BookCategory
     private let bookRepository: BookRepository
-    private var currentPage = 1
-    private let itemsPerPage = 20
-    
-    init(category: BookCategory, bookRepository: BookRepository) {
+    private let cache: CacheService
+    private var nextPage = 2
+    private let itemsPerPage = 40
+
+    private var snapshotKey: String {
+        let name = category.name.lowercased().filter { $0.isLetter || $0.isNumber }
+        return "category-\(name)"
+    }
+
+    init(category: BookCategory, bookRepository: BookRepository, cache: CacheService = .shared) {
         self.category = category
         self.bookRepository = bookRepository
+        self.cache = cache
+        // The first page from last time, so the list is there when the screen opens
+        books = cache.snapshot([Book].self, key: snapshotKey) ?? []
     }
-    
+
     func loadBooks() async {
         guard !isLoading else { return }
-        
+
         isLoading = true
         error = nil
-        currentPage = 1  // Reset to first page
-        
+
         do {
             // Handle special case for NYT Bestsellers category
             if category.name == "NYT Bestsellers" {
-                let allBooks = try await bookRepository.fetchNYTBestsellerBooks()
-                
-                // Sort books by popularity_score (highest first), then by title as fallback
-                books = allBooks.sorted { book1, book2 in
-                    // First priority: books with popularity_score
-                    if let score1 = book1.popularityScore, let score2 = book2.popularityScore {
-                        return score1 > score2  // Higher scores first
-                    }
-                    
-                    // Second priority: books with popularity_score over those without
-                    if book1.popularityScore != nil && book2.popularityScore == nil {
-                        return true
-                    }
-                    if book1.popularityScore == nil && book2.popularityScore != nil {
-                        return false
-                    }
-                    
-                    // Final fallback: alphabetical by title
-                    return book1.title.localizedCaseInsensitiveCompare(book2.title) == .orderedAscending
-                }
-                
+                books = Self.byPopularity(try await bookRepository.fetchNYTBestsellerBooks())
                 hasMore = false  // NYT Bestsellers are loaded all at once
             } else {
-                // Load books with proper pagination for regular categories
-                var allBooks: [Book] = []
-                var pageToLoad = 1
-                var hasMorePages = true
-                
-                // Load all pages to get all books in the category
-                while hasMorePages {
-                    let fetchedBooks = try await bookRepository.fetchBooksByCategory(
-                        category.name,
-                        page: pageToLoad,
-                        limit: 100  // Use reasonable page size
-                    )
-                    
-                    if fetchedBooks.isEmpty {
-                        hasMorePages = false
-                    } else {
-                        allBooks.append(contentsOf: fetchedBooks)
-                        pageToLoad += 1
-                        
-                        // Safety check to prevent infinite loops (max 50 pages = 5000 books)
-                        if pageToLoad > 50 {
-                            hasMorePages = false
-                        }
-                    }
-                }
-                
-                // Sort all fetched books
-                books = allBooks.sorted { book1, book2 in
-                    // First priority: books with popularity_score
-                    if let score1 = book1.popularityScore, let score2 = book2.popularityScore {
-                        return score1 > score2  // Higher scores first
-                    }
-                    
-                    // Second priority: books with popularity_score over those without
-                    if book1.popularityScore != nil && book2.popularityScore == nil {
-                        return true
-                    }
-                    if book1.popularityScore == nil && book2.popularityScore != nil {
-                        return false
-                    }
-                    
-                    // Final fallback: alphabetical by title
-                    return book1.title.localizedCaseInsensitiveCompare(book2.title) == .orderedAscending
-                }
-                
-                hasMore = false  // All books loaded
+                // The server sorts most read first, so the list can grow as the reader scrolls
+                let firstPage = try await bookRepository.fetchBooksByCategory(category.name, page: 1, limit: itemsPerPage)
+                books = firstPage
+                nextPage = 2
+                hasMore = firstPage.count == itemsPerPage
             }
-            
-            isLoading = false
+
+            prefetchCovers(books)
+
+            let snapshot = books
+            let cache = cache
+            let key = snapshotKey
+            Task.detached(priority: .utility) {
+                cache.saveSnapshot(snapshot, key: key)
+            }
         } catch {
             self.error = error
-            isLoading = false
+        }
+        isLoading = false
+    }
+
+    func onBookAppear(_ book: Book) {
+        guard hasMore, !isLoadingMore,
+              let index = books.lastIndex(where: { $0.id == book.id }),
+              index >= books.count - 10 else { return }
+        Task { await loadMoreBooks() }
+    }
+
+    private func loadMoreBooks() async {
+        isLoadingMore = true
+        defer { isLoadingMore = false }
+        do {
+            let page = try await bookRepository.fetchBooksByCategory(category.name, page: nextPage, limit: itemsPerPage)
+            let known = Set(books.map(\.id))
+            books += page.filter { !known.contains($0.id) }
+            prefetchCovers(page)
+            nextPage += 1
+            hasMore = page.count == itemsPerPage
+        } catch {
+            // The next row to appear tries again
+            print("Failed to load more books: \(error)")
         }
     }
-    
-    func onBookAppear(_ book: Book) {
-        // No longer needed since we load all books at once
+
+    /// So fast scrolling doesn't outrun the covers
+    private func prefetchCovers(_ books: [Book]) {
+        let width = BookCoverView.CoverSize.small.dimensions.width
+        CoverImageLoader.shared.prefetch(books.compactMap(\.coverAssetName), pixelWidth: CoverImageLoader.pixelWidth(forPoints: width))
     }
-    
-    private func loadMoreBooks() async {
-        // No longer needed since we load all books at once
+
+    /// Highest popularity_score first, books without one after them, then by title
+    private static func byPopularity(_ books: [Book]) -> [Book] {
+        books.sorted { book1, book2 in
+            switch (book1.popularityScore, book2.popularityScore) {
+            case let (score1?, score2?) where score1 != score2:
+                return score1 > score2
+            case (.some, .none):
+                return true
+            case (.none, .some):
+                return false
+            default:
+                return book1.title.localizedCaseInsensitiveCompare(book2.title) == .orderedAscending
+            }
+        }
     }
 }

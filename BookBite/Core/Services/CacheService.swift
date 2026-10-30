@@ -7,9 +7,13 @@ class CacheService {
     private let cacheDirectory: URL
     
     private init() {
+        let cachesPath = fileManager.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+        cacheDirectory = cachesPath.appendingPathComponent("BookBiteCache")
+
+        // Older versions kept this in Documents, where it was backed up and never purged
         let documentsPath = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        cacheDirectory = documentsPath.appendingPathComponent("BookBiteCache")
-        
+        try? fileManager.removeItem(at: documentsPath.appendingPathComponent("BookBiteCache"))
+
         // Create cache directory if it doesn't exist
         try? fileManager.createDirectory(at: cacheDirectory, withIntermediateDirectories: true)
     }
@@ -24,20 +28,16 @@ class CacheService {
         cacheDirectory.appendingPathComponent("summaries.json")
     }
     
-    private var featuredBooksPath: URL {
-        cacheDirectory.appendingPathComponent("featured_books.json")
-    }
-    
-    private var nytBestsellerBooksPath: URL {
-        cacheDirectory.appendingPathComponent("nyt_bestseller_books.json")
-    }
-    
     private func bookPath(id: String) -> URL {
         cacheDirectory.appendingPathComponent("book_\(id).json")
     }
     
     private func summaryPath(bookId: String) -> URL {
         cacheDirectory.appendingPathComponent("summary_\(bookId).json")
+    }
+
+    private func snapshotPath(_ key: String) -> URL {
+        cacheDirectory.appendingPathComponent("snapshot_\(key).json")
     }
     
     // MARK: - Book Caching
@@ -72,34 +72,20 @@ class CacheService {
         try? fileManager.removeItem(at: path)
     }
     
-    // MARK: - Featured Books Caching
-    
-    func cacheFeaturedBooks(_ books: [Book]) throws {
-        let data = try JSONEncoder().encode(books)
-        try data.write(to: featuredBooksPath)
+    // MARK: - Screen Snapshots
+
+    /// What a screen last showed, so it can open at once and refresh behind the scenes
+    func saveSnapshot<T: Encodable>(_ value: T, key: String) {
+        guard let data = try? JSONEncoder().encode(value) else { return }
+        try? data.write(to: snapshotPath(key), options: .atomic)
     }
-    
-    func getCachedFeaturedBooks() throws -> [Book]? {
-        guard fileManager.fileExists(atPath: featuredBooksPath.path) else { return nil }
-        
-        let data = try Data(contentsOf: featuredBooksPath)
-        return try JSONDecoder().decode([Book].self, from: data)
+
+    /// Nil when there is none yet, or it was written in another format
+    func snapshot<T: Decodable>(_ type: T.Type, key: String) -> T? {
+        guard let data = try? Data(contentsOf: snapshotPath(key)) else { return nil }
+        return try? JSONDecoder().decode(type, from: data)
     }
-    
-    // MARK: - NYT Bestseller Books Caching
-    
-    func cacheNYTBestsellerBooks(_ books: [Book]) throws {
-        let data = try JSONEncoder().encode(books)
-        try data.write(to: nytBestsellerBooksPath)
-    }
-    
-    func getCachedNYTBestsellerBooks() throws -> [Book]? {
-        guard fileManager.fileExists(atPath: nytBestsellerBooksPath.path) else { return nil }
-        
-        let data = try Data(contentsOf: nytBestsellerBooksPath)
-        return try JSONDecoder().decode([Book].self, from: data)
-    }
-    
+
     // MARK: - Summary Caching
     
     func cacheSummary(_ summary: Summary) throws {
