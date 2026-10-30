@@ -13,7 +13,9 @@ import ratingsRoutes from './routes/ratingsRoutes';
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import audioRoutes from './routes/audioRoutes';
-import askRoutes from './routes/askRoutes';
+import askRoutes, { askService } from './routes/askRoutes';
+import { bookService } from './controllers/bookController';
+import { highlightService } from './controllers/summaryController';
 import readingPassRoutes from './routes/readingPassRoutes';
 import { normalizeInviteCode } from './services/readingPass';
 import { invitePage } from './services/invitePage';
@@ -98,6 +100,11 @@ if (process.env.NODE_ENV !== 'test') {
   app.listen(Number(PORT), HOST, () => {
     console.log(`Server running on ${HOST}:${PORT}`);
     console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+
+    // The slow first reads, done before a reader asks. A failure here only means the first request loads them.
+    for (const warm of [() => highlightService.warm(), () => bookService.warm(), () => askService.warm()]) {
+      warm().catch(error => console.error('Warm-up failed:', error));
+    }
   });
 }
 

@@ -2,6 +2,7 @@ import { supabase } from '../config/supabase';
 import { GoogleBooksService } from './googleBooksService';
 import { Book } from '../models/types';
 import NodeCache from 'node-cache';
+import { StaleCache } from '../utils/staleCache';
 import { isNonFiction } from '../utils/fiction';
 
 // PostgREST caps a single response at 1000 rows
@@ -15,11 +16,18 @@ function sanitizeSearchTerm(term: string): string {
 export class BookService {
   private googleBooks: GoogleBooksService;
   private cache: NodeCache;
+  /** The whole table, for the category pages and counts, which filter it in memory */
+  private allBooks = new StaleCache(() => this.fetchAllBooks<Book>('*'), 30 * 60 * 1000);
 
   constructor() {
     this.googleBooks = new GoogleBooksService();
     // Cache for 15 minutes
-    this.cache = new NodeCache({ stdTTL: 900, checkperiod: 120 });
+    this.cache = new NodeCache({ stdTTL: 900, checkperiod: 120, useClones: false });
+  }
+
+  /** Loads the table at startup, so the first category page doesn't wait for it */
+  warm() {
+    return this.allBooks.get();
   }
 
   async getAllBooks(options: { 
@@ -289,6 +297,7 @@ export class BookService {
 
     // Invalidate cache
     this.cache.flushAll();
+    this.allBooks.invalidate();
 
     return data;
   }
@@ -310,6 +319,7 @@ export class BookService {
 
     // Invalidate cache
     this.cache.del(`book:${id}`);
+    this.allBooks.invalidate();
 
     return data;
   }
@@ -329,6 +339,7 @@ export class BookService {
 
     // Invalidate cache
     this.cache.del(`book:${id}`);
+    this.allBooks.invalidate();
 
     return true;
   }
@@ -411,7 +422,7 @@ export class BookService {
   }
 
   async getCategories(): Promise<{ name: string; count: number }[]> {
-    const books = await this.fetchAllBooks<{ categories: string[] | null }>('categories');
+    const books = await this.allBooks.get();
 
     const categoryCounts = new Map<string, number>();
     
@@ -507,7 +518,7 @@ export class BookService {
   }> {
     const offset = (page - 1) * limit;
 
-    const allBooks = await this.fetchAllBooks<Book>('*');
+    const allBooks = await this.allBooks.get();
 
     const filteredBooks = allBooks?.filter(book => {
       if (!book.categories || !Array.isArray(book.categories)) return false;
@@ -555,19 +566,11 @@ export class BookService {
       if (aHasCover && !bHasCover) return -1;
       if (!aHasCover && bHasCover) return 1;
       
-      // Second priority: popularity rank (lower rank = higher priority)
-      if (a.popularity_rank && b.popularity_rank) {
-        return a.popularity_rank - b.popularity_rank;
-      }
-      if (a.popularity_rank && !b.popularity_rank) return -1;
-      if (!a.popularity_rank && b.popularity_rank) return 1;
-      
-      // Final fallback: creation date (newer first)
-      if (a.created_at && b.created_at) {
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-      }
-      
-      return 0;
+      // Then most read first, the order the app shows as it pages through a category
+      const popularity = (b.popularity_score ?? -1) - (a.popularity_score ?? -1);
+      if (popularity !== 0) return popularity;
+
+      return a.title.localeCompare(b.title);
     });
 
     const paginatedBooks = sortedBooks.slice(offset, offset + limit);

@@ -65,6 +65,10 @@ struct RootView: View {
                 }
             }
             .tabViewStyle(.sidebarAdaptable)
+            // So the Ask tab has its page the first time it opens
+            .task(priority: .utility) {
+                await AskHomeViewModel.preload(from: dependencies.bookRepository)
+            }
             .onChange(of: horizontalSizeClass) { _, sizeClass in
                 if sizeClass != .regular && selectedTab == .notebook { selectedTab = .library }
             }

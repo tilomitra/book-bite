@@ -102,40 +102,20 @@ struct CacheServiceTests {
         #expect(cachedBook == nil)
     }
     
-    @Test("CacheService should cache and retrieve featured books")
-    func testFeaturedBooksCaching() throws {
+    @Test("CacheService should save and read back snapshots")
+    func testSnapshots() throws {
         let cacheService = CacheService.shared
-        let featuredBooks = [createTestBook(id: "featured-1"), createTestBook(id: "featured-2")]
-        
-        // Clear cache first
         cacheService.clearAllCache()
-        
-        // Cache featured books
-        try cacheService.cacheFeaturedBooks(featuredBooks)
-        
-        // Retrieve cached featured books
-        let cachedFeaturedBooks = try cacheService.getCachedFeaturedBooks()
-        #expect(cachedFeaturedBooks?.count == 2)
-        #expect(cachedFeaturedBooks?.first?.id == featuredBooks.first?.id)
+
+        #expect(cacheService.snapshot([Book].self, key: "test") == nil)
+
+        cacheService.saveSnapshot([createTestBook(id: "one")], key: "test")
+        #expect(cacheService.snapshot([Book].self, key: "test")?.first?.id == "one")
+
+        // Written in another format: treated as no snapshot
+        #expect(cacheService.snapshot(Int.self, key: "test") == nil)
     }
-    
-    @Test("CacheService should cache and retrieve NYT bestseller books")
-    func testNYTBestsellerBooksCaching() throws {
-        let cacheService = CacheService.shared
-        let nytBooks = [createTestBook(id: "nyt-1"), createTestBook(id: "nyt-2")]
-        
-        // Clear cache first
-        cacheService.clearAllCache()
-        
-        // Cache NYT bestseller books
-        try cacheService.cacheNYTBestsellerBooks(nytBooks)
-        
-        // Retrieve cached NYT bestseller books
-        let cachedNYTBooks = try cacheService.getCachedNYTBestsellerBooks()
-        #expect(cachedNYTBooks?.count == 2)
-        #expect(cachedNYTBooks?.first?.id == nytBooks.first?.id)
-    }
-    
+
     @Test("CacheService should cache and retrieve summaries")
     func testSummaryCaching() throws {
         let cacheService = CacheService.shared
@@ -231,15 +211,11 @@ struct CacheServiceTests {
         let cachedBooks = try cacheService.getCachedBooks()
         let cachedBook = try cacheService.getCachedBook(id: "nonexistent")
         let cachedSummary = try cacheService.getCachedSummary(bookId: "nonexistent")
-        let cachedFeatured = try cacheService.getCachedFeaturedBooks()
-        let cachedNYT = try cacheService.getCachedNYTBestsellerBooks()
         
         // All should return nil without throwing
         #expect(cachedBooks == nil)
         #expect(cachedBook == nil)
         #expect(cachedSummary == nil)
-        #expect(cachedFeatured == nil)
-        #expect(cachedNYT == nil)
         
         // Cache status checks should return false
         #expect(!cacheService.isBookCached(id: "nonexistent"))

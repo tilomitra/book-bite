@@ -114,11 +114,10 @@ struct IdeaShareCard: View {
         return renderer.uiImage
     }
 
-    /// Downloads the cover for the card. Usually served from URLCache: the page just showed it.
+    /// Loads the cover for the card
     static func loadCover(for book: Book) async -> UIImage? {
-        guard let url = URL.bookCover(from: book.coverAssetName),
-              let (data, _) = try? await URLSession.shared.data(from: url) else { return nil }
-        return UIImage(data: data)
+        guard let cover = book.coverAssetName else { return nil }
+        return await CoverImageLoader.shared.image(for: cover, pixelWidth: 720)
     }
 }
 

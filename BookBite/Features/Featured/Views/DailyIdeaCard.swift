@@ -1,66 +1,52 @@
 import SwiftUI
 
-/// One short idea, a new one each time the app opens, at the top of the Discover tab, set as a pull quote
-/// between two rules. Tap to open the book.
+/// One short idea, a new one each time the app opens, on a card near the top of the Discover tab.
+/// Tap to open the book.
 struct DailyIdeaCard: View {
     let dailyIdea: DailyIdea
     @Namespace private var zoom
 
     var body: some View {
-        NavigationLink {
-            BookDetailView(book: dailyIdea.book)
-                .navigationTransition(.zoom(sourceID: dailyIdea.book.id, in: zoom))
-        } label: {
-            VStack(alignment: .leading, spacing: 16) {
-                Text("An idea for you")
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .tracking(1)
-                    .foregroundColor(.secondary)
-                    .textCase(.uppercase)
+        VStack(alignment: .leading, spacing: 14) {
+            EditorialSectionTitle("An idea for you")
 
-                Text("“\(dailyIdea.idea.idea)”")
-                    .font(.system(size: 25, design: .serif))
-                    .lineSpacing(3)
-                    .foregroundColor(.primary)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
+            NavigationLink {
+                BookDetailView(book: dailyIdea.book)
+                    .navigationTransition(.zoom(sourceID: dailyIdea.book.id, in: zoom))
+            } label: {
+                VStack(alignment: .leading, spacing: 18) {
+                    Text("“\(dailyIdea.idea.idea)”")
+                        .font(.system(size: 22, design: .serif))
+                        .lineSpacing(3)
+                        .foregroundColor(.primary)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
 
-                HStack(spacing: 12) {
-                    EditorialCover(book: dailyIdea.book, width: 34)
-                        .zoomSource(id: dailyIdea.book.id, in: zoom)
+                    HStack(spacing: 12) {
+                        EditorialCover(book: dailyIdea.book, width: 30)
+                            .zoomSource(id: dailyIdea.book.id, in: zoom)
 
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(dailyIdea.book.title)
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.primary)
-                            .lineLimit(1)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(dailyIdea.book.shelfTitle)
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
 
-                        Text(dailyIdea.book.formattedAuthors)
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-                            .lineLimit(1)
+                            Text(dailyIdea.book.shelfAuthor)
+                                .font(.footnote)
+                                .foregroundColor(.secondary)
+                        }
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
                     }
-
-                    Spacer()
-
-                    Image(systemName: "chevron.right")
-                        .font(.footnote.weight(.semibold))
-                        .foregroundColor(.secondary)
                 }
+                .padding(20)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.paperRaised, in: .rect(cornerRadius: 16))
+                .contentShape(.rect(cornerRadius: 16))
             }
-            .padding(.vertical, 22)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .overlay(alignment: .top) {
-                Rectangle().fill(Color.primary).frame(height: 1)
-            }
-            .overlay(alignment: .bottom) {
-                Rectangle().fill(Color.primary.opacity(0.12)).frame(height: 1)
-            }
-            .contentShape(Rectangle())
+            .buttonStyle(.plain)
         }
-        .buttonStyle(.plain)
         .padding(.horizontal, 20)
     }
 }

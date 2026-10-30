@@ -25,19 +25,10 @@ struct OfflineAwareBookCoverView: View {
                     .aspectRatio(contentMode: .fit)
             } else {
                 // Fall back to network loading
-                AsyncImage(url: URL.bookCover(from: coverURL)) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    case .failure:
-                        placeholderView
-                    case .empty:
-                        placeholderView
-                    @unknown default:
-                        placeholderView
-                    }
+                CoverImageView(coverURL: coverURL, width: size.dimensions.width, contentMode: .fit) {
+                    placeholderView
+                } failure: {
+                    placeholderView
                 }
             }
         }

@@ -3,7 +3,7 @@ import rateLimit from 'express-rate-limit';
 import { AskRequestSchema, AskService, MatchRequestSchema, AskEvent } from '../services/askService';
 
 const router = express.Router();
-const askService = new AskService();
+export const askService = new AskService();
 
 // Each answer is an LLM call; typing previews are one embedding each
 const askLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 40 });

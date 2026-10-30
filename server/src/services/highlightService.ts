@@ -2,6 +2,7 @@ import { supabase } from '../config/supabase';
 import NodeCache from 'node-cache';
 import { isFiction } from '../utils/fiction';
 import { jitterByRank, seededRandom } from '../utils/shuffle';
+import { StaleCache } from '../utils/staleCache';
 
 /** Stable per book (and seed), so a book shows the same key idea on every page of one feed */
 function ideaIndex(key: string, count: number) {
@@ -32,7 +33,14 @@ function toCandidate({ summaries, ...book }: any): Candidate | null {
  * idea per book are mixed, so the feed is different every time but stays the same while one visit pages through it.
  */
 export class HighlightService {
-  private cache = new NodeCache({ stdTTL: 1800, checkperiod: 300 });
+  // useClones off: cloning the whole candidate list on every read took over a second on Render
+  private cache = new NodeCache({ stdTTL: 1800, checkperiod: 300, useClones: false });
+  private candidates = new StaleCache(() => this.loadCandidates(), 30 * 60 * 1000);
+
+  /** Loads the candidates at startup, so the first reader doesn't wait for the full scan */
+  warm() {
+    return this.candidates.get();
+  }
 
   async getHighlights(page: number, limit: number, seed?: number) {
     return seed === undefined ? this.getRankedPage(page, limit) : this.getMixedPage(page, limit, seed);
@@ -70,7 +78,7 @@ export class HighlightService {
   }
 
   private async getMixedPage(page: number, limit: number, seed: number) {
-    const ordered = jitterByRank(await this.loadCandidates(), seededRandom(seed));
+    const ordered = jitterByRank(await this.candidates.get(), seededRandom(seed));
     const offset = (page - 1) * limit;
     const items = ordered.slice(offset, offset + limit).map(({ book, hook, keyIdeas }) => ({
       book,
@@ -80,11 +88,8 @@ export class HighlightService {
     return { items, page, hasMore: offset + limit < ordered.length };
   }
 
-  /** Every non-fiction book with a summary, most read first; cached, since each seed reorders the same list */
+  /** Every non-fiction book with a summary, most read first; each seed reorders the same list */
   private async loadCandidates(): Promise<Candidate[]> {
-    const cached = this.cache.get<Candidate[]>('highlights:candidates');
-    if (cached) return cached;
-
     // PostgREST returns at most 1000 rows per request
     const pageSize = 1000;
     const candidates: Candidate[] = [];
@@ -107,7 +112,6 @@ export class HighlightService {
       if (rows.length < pageSize) break;
     }
 
-    this.cache.set('highlights:candidates', candidates);
     return candidates;
   }
 }

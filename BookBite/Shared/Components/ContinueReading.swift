@@ -57,54 +57,41 @@ struct ReadingProgressBar: View {
     }
 }
 
-/// "Continue reading": the most recent unfinished summary large, the next few as compact rows.
+/// "Continue reading": unfinished summaries, newest first, as equal rows on one card.
 /// Tapping opens the book page with the zoom transition from the cover.
 struct ContinueReadingSection: View {
     let entries: [ReadingProgressStore.Entry]
-    /// How many more books to list below the main one
-    var maxCompactRows = 3
+    /// How many books to list
+    var maxRows = 3
 
     @Namespace private var zoom
 
     var body: some View {
-        if let first = entries.first {
+        if !entries.isEmpty {
             VStack(alignment: .leading, spacing: 14) {
-                Text("Continue reading")
-                    .font(.caption.weight(.semibold))
-                    .tracking(1.2)
-                    .textCase(.uppercase)
-                    .foregroundStyle(.secondary)
-                    .accessibilityAddTraits(.isHeader)
+                EditorialSectionTitle("Continue reading")
 
-                link(to: first.book) {
-                    ContinueReadingFeatureRow(entry: first, zoom: zoom)
-                }
-
-                let others = entries.dropFirst().prefix(maxCompactRows)
-                if !others.isEmpty {
-                    VStack(spacing: 0) {
-                        ForEach(others) { entry in
-                            Divider()
-                            link(to: entry.book) {
-                                ContinueReadingCompactRow(entry: entry, zoom: zoom)
-                            }
+                let rows = Array(entries.prefix(maxRows))
+                VStack(spacing: 0) {
+                    ForEach(rows) { entry in
+                        if entry.id != rows.first?.id {
+                            // Starts at the text, so the covers read as one column
+                            Divider().padding(.leading, 62)
                         }
+                        NavigationLink {
+                            BookDetailView(book: entry.book)
+                                .navigationTransition(.zoom(sourceID: entry.book.id, in: zoom))
+                        } label: {
+                            ContinueReadingRow(entry: entry, zoom: zoom)
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .padding(.top, 4)
                 }
+                .padding(.horizontal, 16)
+                .background(Color.paperRaised, in: .rect(cornerRadius: 16))
             }
             .padding(.horizontal, 20)
         }
-    }
-
-    private func link<Label: View>(to book: Book, @ViewBuilder label: () -> Label) -> some View {
-        NavigationLink {
-            BookDetailView(book: book)
-                .navigationTransition(.zoom(sourceID: book.id, in: zoom))
-        } label: {
-            label()
-        }
-        .buttonStyle(.plain)
     }
 }
 
@@ -123,83 +110,32 @@ private struct ReadingStatusText: View {
     }
 }
 
-private struct ContinueReadingFeatureRow: View {
+/// Cover, title, time left and a hairline of progress. The whole row is the tap target.
+private struct ContinueReadingRow: View {
     let entry: ReadingProgressStore.Entry
     let zoom: Namespace.ID
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        // At accessibility text sizes the text goes under the cover instead of squeezing beside it
-        let layout = dynamicTypeSize.isAccessibilitySize
-            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 16))
-            : AnyLayout(HStackLayout(alignment: .top, spacing: 18))
-
-        layout {
-            EditorialCover(book: entry.book, width: 76)
+        HStack(spacing: 18) {
+            EditorialCover(book: entry.book, width: 44)
                 .zoomSource(id: entry.book.id, in: zoom)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(entry.book.shelfTitle)
-                    .font(.system(.title3, design: .serif, weight: .medium))
-                    .foregroundStyle(.primary)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Text(entry.book.shelfAuthor)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-
-                Spacer(minLength: 14)
-
-                ReadingProgressBar(fraction: entry.fraction)
-                    .padding(.bottom, 6)
-
-                HStack {
-                    ReadingStatusText(entry: entry)
-                    Spacer(minLength: 8)
-                    Image(systemName: "arrow.right")
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.primary)
-                }
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .multilineTextAlignment(.leading)
-        .contentShape(Rectangle())
-        .accessibilityElement(children: .combine)
-        .accessibilityValue(Text("\(entry.fraction, format: .percent.precision(.fractionLength(0))) read"))
-        .accessibilityHint("Opens the book")
-    }
-}
-
-private struct ContinueReadingCompactRow: View {
-    let entry: ReadingProgressStore.Entry
-    let zoom: Namespace.ID
-
-    var body: some View {
-        HStack(spacing: 14) {
-            EditorialCover(book: entry.book, width: 32)
-                .zoomSource(id: entry.book.id, in: zoom)
-
-            VStack(alignment: .leading, spacing: 5) {
-                Text(entry.book.shelfTitle)
-                    .font(.subheadline.weight(.semibold))
+                    .font(.system(.body, design: .serif, weight: .medium))
                     .foregroundStyle(.primary)
                     .fixedSize(horizontal: false, vertical: true)
 
                 ReadingStatusText(entry: entry)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
+
+                ReadingProgressBar(fraction: entry.fraction)
+                    .padding(.top, 6)
             }
-
-            Spacer(minLength: 8)
-
-            Image(systemName: "chevron.right")
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(.tertiary)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.vertical, 12)
+        .padding(.vertical, 14)
         .multilineTextAlignment(.leading)
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)

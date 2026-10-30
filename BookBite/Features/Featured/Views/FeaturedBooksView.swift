@@ -21,7 +21,7 @@ struct FeaturedBooksView: View {
     var body: some View {
         // The header stays visible in every state: the navigation bar is hidden, so it is the screen's title
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: 30) {
+            LazyVStack(alignment: .leading, spacing: 36) {
                 EditorialHeader(title: "Discover", caption: {
                     Text(Date.now, format: .dateTime.weekday(.wide).month(.wide).day())
                 })
@@ -97,7 +97,7 @@ struct FeaturedBooksView: View {
             } else if phase == .active, let since = backgroundedAt {
                 backgroundedAt = nil
                 if Date.now.timeIntervalSince(since) >= freshFeedAfter {
-                    Task { await viewModel.loadFeaturedBooks() }
+                    Task { await viewModel.startVisit() }
                 } else {
                     Task { await viewModel.refreshIdea() }
                 }
@@ -209,6 +209,7 @@ struct BookShelf: View {
     let books: [Book]
 
     static let previewCount = 12
+    static func coverWidth(isWide: Bool) -> CGFloat { isWide ? 136 : 118 }
     private var previewCount: Int { Self.previewCount }
     @Namespace private var zoom
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -248,9 +249,7 @@ struct BookShelf: View {
                         .fixedSize(horizontal: false, vertical: true)
                 } else {
                     HStack(alignment: .firstTextBaseline, spacing: 12) {
-                        Text(title)
-                            .font(.system(size: 24, weight: .medium, design: .serif))
-                            .fixedSize(horizontal: false, vertical: true)
+                        EditorialSectionTitle(title)
                         Spacer(minLength: 0)
                         seeAllLink
                             .layoutPriority(1)
@@ -273,7 +272,7 @@ struct BookShelf: View {
                             BookDetailView(book: book)
                                 .navigationTransition(.zoom(sourceID: book.id, in: zoom))
                         } label: {
-                            ShelfBookCard(book: book, coverWidth: horizontalSizeClass == .regular ? 136 : 118, zoomNamespace: zoom)
+                            ShelfBookCard(book: book, coverWidth: Self.coverWidth(isWide: horizontalSizeClass == .regular), zoomNamespace: zoom)
                         }
                         .buttonStyle(.plain)
                     }
@@ -360,33 +359,16 @@ struct EditorialCover: View {
         )
     }
 
-    /// AsyncImage reports a load cancelled by a re-render as a failure and never retries, so retry once
-    @State private var attempt = 0
-
     var body: some View {
-        AsyncImage(url: URL.bookCover(from: coverURL)) { phase in
-            switch phase {
-            case .success(let image):
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            case .empty where URL.bookCover(from: coverURL) != nil:
+        CoverImageView(coverURL: coverURL, width: width) {
+            BookPlaceholderView.flexible(cornerRadius: 0, showLoading: false)
+        } failure: {
+            if let title {
+                TypographicCover(title: title, author: author ?? "")
+            } else {
                 BookPlaceholderView.flexible(cornerRadius: 0, showLoading: false)
-            case .failure where attempt == 0:
-                BookPlaceholderView.flexible(cornerRadius: 0, showLoading: false)
-                    .task {
-                        try? await Task.sleep(for: .milliseconds(300))
-                        attempt += 1
-                    }
-            default:
-                if let title {
-                    TypographicCover(title: title, author: author ?? "")
-                } else {
-                    BookPlaceholderView.flexible(cornerRadius: 0, showLoading: false)
-                }
             }
         }
-        .id(attempt)
         .frame(width: width, height: width * 1.5)
         .clipShape(shape)
         .overlay(shape.stroke(Color.primary.opacity(0.08), lineWidth: 0.5))

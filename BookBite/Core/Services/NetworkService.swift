@@ -23,6 +23,14 @@ class NetworkService: ObservableObject {
     
     // MARK: - Generic Request Methods
     
+    // Creating a formatter is slow, and a page of books has hundreds of dates
+    private static let fractionalDateFormatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }()
+    private static let dateFormatter = ISO8601DateFormatter()
+
     /// Decoder for server/Supabase JSON; dates come as ISO8601, with or without fractional seconds
     static func makeDecoder() -> JSONDecoder {
         let decoder = JSONDecoder()
@@ -31,15 +39,12 @@ class NetworkService: ObservableObject {
             let dateString = try container.decode(String.self)
             
             // Try ISO8601 with microseconds first (server format)
-            let microsecondsFormatter = ISO8601DateFormatter()
-            microsecondsFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-            if let date = microsecondsFormatter.date(from: dateString) {
+            if let date = fractionalDateFormatter.date(from: dateString) {
                 return date
             }
             
             // Fallback to standard ISO8601
-            let standardFormatter = ISO8601DateFormatter()
-            if let date = standardFormatter.date(from: dateString) {
+            if let date = dateFormatter.date(from: dateString) {
                 return date
             }
             

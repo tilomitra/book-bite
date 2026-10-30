@@ -236,7 +236,6 @@ struct QuickBitesCard: View {
                     Text(hook)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                        .lineLimit(3)
                         .padding(.top, 2)
                 }
             }

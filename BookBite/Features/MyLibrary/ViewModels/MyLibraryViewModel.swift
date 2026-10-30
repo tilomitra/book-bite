@@ -9,13 +9,16 @@ final class MyLibraryViewModel: ObservableObject {
 
     private let repository: BookRepository
     private let offlineStorage: OfflineStorageService
+    private let cache: CacheService
 
-    init(repository: BookRepository, offlineStorage: OfflineStorageService = .shared) {
+    init(repository: BookRepository, offlineStorage: OfflineStorageService = .shared, cache: CacheService = .shared) {
         self.repository = repository
         self.offlineStorage = offlineStorage
+        self.cache = cache
     }
 
-    func load(isSignedIn: Bool) async {
+    /// `userId` keeps one account's saved books from showing on another's Library
+    func load(isSignedIn: Bool, userId: String? = nil) async {
         downloadedBooks = offlineStorage.getAllOfflineBooks()
             .sorted { $0.downloadedAt > $1.downloadedAt }
             .compactMap { offlineStorage.getOfflineBook(id: $0.bookId) }
@@ -24,9 +27,20 @@ final class MyLibraryViewModel: ObservableObject {
             savedBooks = []
             return
         }
+        let snapshotKey = userId.map { "favorites-\($0)" }
+        if savedBooks.isEmpty, let snapshotKey {
+            savedBooks = cache.snapshot([Book].self, key: snapshotKey) ?? []
+        }
         do {
-            savedBooks = try await favorites.fetchFavorites()
+            let books = try await favorites.fetchFavorites()
+            savedBooks = books
             savedError = nil
+            if let snapshotKey {
+                let cache = cache
+                Task.detached(priority: .utility) {
+                    cache.saveSnapshot(books, key: snapshotKey)
+                }
+            }
         } catch {
             if !(error is CancellationError) { savedError = error }
         }

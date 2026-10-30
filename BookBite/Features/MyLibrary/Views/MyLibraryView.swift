@@ -23,11 +23,17 @@ struct MyLibraryView: View {
                     Button {
                         showingSettings = true
                     } label: {
-                        Image(systemName: isSignedIn ? "person.crop.circle.fill" : "person.crop.circle")
-                            .font(.system(size: 26))
-                            .foregroundColor(.primary)
-                            .frame(width: 44, height: 44)
-                            .contentShape(Rectangle())
+                        Group {
+                            if isSignedIn, let user = authService.currentUser {
+                                AccountInitial(user: user, size: 34)
+                            } else {
+                                Image(systemName: "person.crop.circle")
+                                    .font(.system(size: 26))
+                                    .foregroundColor(.primary)
+                            }
+                        }
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
                     }
                     .accessibilityLabel("Account and settings")
                 })
@@ -41,13 +47,13 @@ struct MyLibraryView: View {
                 if horizontalSizeClass == .regular && !readingProgress.inProgress.isEmpty && !savedIdeas.ideas.isEmpty {
                     // iPad: what you're reading and what you kept, side by side
                     HStack(alignment: .top, spacing: 16) {
-                        ContinueReadingSection(entries: readingProgress.inProgress, maxCompactRows: 4)
+                        ContinueReadingSection(entries: readingProgress.inProgress, maxRows: 5)
                             .frame(maxWidth: .infinity, alignment: .top)
                         NotebookPreview(ideas: savedIdeas.ideas, previewCount: 4)
                             .frame(maxWidth: .infinity, alignment: .top)
                     }
                 } else {
-                    ContinueReadingSection(entries: readingProgress.inProgress, maxCompactRows: 6)
+                    ContinueReadingSection(entries: readingProgress.inProgress, maxRows: 7)
 
                     if !savedIdeas.ideas.isEmpty {
                         NotebookPreview(ideas: savedIdeas.ideas)
@@ -86,10 +92,10 @@ struct MyLibraryView: View {
         .navigationTitle("Library")
         .editorialNavigationBar()
         .task(id: isSignedIn) {
-            await viewModel.load(isSignedIn: isSignedIn)
+            await viewModel.load(isSignedIn: isSignedIn, userId: authService.currentUser?.id)
         }
         .refreshable {
-            await viewModel.load(isSignedIn: isSignedIn)
+            await viewModel.load(isSignedIn: isSignedIn, userId: authService.currentUser?.id)
         }
         .sheet(isPresented: $showingSettings) {
             NavigationStack {
@@ -102,7 +108,9 @@ struct MyLibraryView: View {
             }
         }
         .sheet(isPresented: $showingAuth) {
-            AuthenticationView(authService: authService)
+            OnboardingAuthSheet(authService: authService) {
+                showingAuth = false
+            }
         }
     }
 

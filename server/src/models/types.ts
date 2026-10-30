@@ -21,6 +21,7 @@ export const BookSchema = z.object({
   google_books_id: z.string().nullable().optional(),
   open_library_id: z.string().nullable().optional(),
   popularity_rank: z.number().int().nullable().optional(),
+  popularity_score: z.number().nullable().optional(),
   is_featured: z.boolean().default(false),
   is_nyt_bestseller: z.boolean().default(false).optional(),
   nyt_rank: z.number().int().nullable().optional(),

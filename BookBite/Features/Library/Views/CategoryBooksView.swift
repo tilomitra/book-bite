@@ -16,7 +16,7 @@ struct CategoryBooksView: View {
         Group {
             if viewModel.isLoading && viewModel.books.isEmpty {
                 ConsistentLoadingView(style: .primary, message: "Loading books...")
-            } else if let error = viewModel.error {
+            } else if let error = viewModel.error, viewModel.books.isEmpty {
                 ContentUnavailableView {
                     Label("Can't load books", systemImage: "wifi.slash")
                 } description: {
@@ -34,6 +34,7 @@ struct CategoryBooksView: View {
                     NavigationLink(destination: BookDetailView(book: book)) {
                         SearchResultRow(book: book)
                     }
+                    .onAppear { viewModel.onBookAppear(book) }
                 }
                 .listStyle(.plain)
             }
@@ -41,9 +42,7 @@ struct CategoryBooksView: View {
         .navigationTitle(category.name)
         .navigationBarTitleDisplayMode(.large)
         .task {
-            if viewModel.books.isEmpty {
-                await viewModel.loadBooks()
-            }
+            await viewModel.loadBooks()
         }
     }
 }

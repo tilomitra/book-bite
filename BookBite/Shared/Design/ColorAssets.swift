@@ -21,6 +21,13 @@ extension Color {
             ? UIColor(red: 18 / 255, green: 17 / 255, blue: 16 / 255, alpha: 1)
             : UIColor(red: 250 / 255, green: 248 / 255, blue: 244 / 255, alpha: 1)
     })
+
+    /// A card lying on `paper`: a step darker in light mode, a step lighter in dark mode.
+    static let paperRaised = Color(UIColor { traits in
+        traits.userInterfaceStyle == .dark
+            ? UIColor(red: 32 / 255, green: 30 / 255, blue: 28 / 255, alpha: 1)
+            : UIColor(red: 241 / 255, green: 237 / 255, blue: 230 / 255, alpha: 1)
+    })
 }
 
 // MARK: - Custom Color Initializers

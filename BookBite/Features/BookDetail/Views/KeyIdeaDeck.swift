@@ -1,11 +1,12 @@
 import SwiftUI
 
-/// A book's key ideas as a deck of cards, one idea per page. Swipe (or use the chevrons) to turn;
-/// each card can be kept in the notebook or shared as a typeset quote image.
+/// A book's key ideas as a real stack of cards. Swipe the top card off to the left (or use the chevrons)
+/// and the next one rises into its place; swipe right to bring the last card back. Each card can be kept in
+/// the notebook or shared as a typeset quote image.
 ///
-/// Pages are full width so the scroll position is always exactly one card. The cards still under
-/// the current one show as edges beneath it, so it reads as a deck. All pages share the height of the
-/// tallest card, which grows with its text and Dynamic Type instead of clipping.
+/// Every card's place comes from one number, `deckPosition`, so a card follows the finger and finishes
+/// the same way whether it was dragged or turned with a chevron. All cards share the height of the tallest,
+/// which grows with its text and Dynamic Type instead of clipping.
 struct KeyIdeaDeck: View {
     let ideas: [KeyIdea]
     let book: Book
@@ -17,39 +18,37 @@ struct KeyIdeaDeck: View {
     @ScaledMetric(relativeTo: .title3) private var minCardHeight: CGFloat = 230
     @AccessibilityFocusState private var focusedCard: Int?
 
-    @State private var position: Int? = 0
+    /// Index of the top card
+    @State private var current = 0
+    /// How far the top card has been dragged, in cards: 1 = gone left, -1 = the previous card fully back
+    @State private var dragProgress: CGFloat = 0
+    @State private var deckWidth: CGFloat = 0
     @State private var cover: UIImage?
     @State private var coverLoaded = false
     @State private var shareImage: RenderedShare?
 
-    private var current: Int { min(max(position ?? 0, 0), max(ideas.count - 1, 0)) }
     private var resolvedTint: Color { tint ?? Color(TypographicCover.cloth(for: book.title)) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(alignment: .top, spacing: 0) {
-                    ForEach(ideas.indices, id: \.self) { index in
-                        page(index)
-                            .containerRelativeFrame(.horizontal)
-                            .id(index)
-                    }
+            ZStack {
+                ForEach(ideas.indices, id: \.self) { index in
+                    stacked(index)
                 }
-                // Every page takes the tallest card's height
-                .fixedSize(horizontal: false, vertical: true)
-                .scrollTargetLayout()
             }
-            .scrollTargetBehavior(.paging)
-            .scrollPosition(id: $position)
+            // Every card takes the tallest card's height
+            .fixedSize(horizontal: false, vertical: true)
+            // Room for the shadow above, and the edges of the cards underneath below
+            .padding(.top, 8)
+            .padding(.bottom, 26)
+            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { deckWidth = $0 }
+            .gesture(HorizontalPan(canStart: canTurn, onChanged: dragged, onEnded: released))
             .sensoryFeedback(.impact(flexibility: .soft, intensity: 0.5), trigger: current)
 
             if ideas.count > 1 {
                 pager
-                    .padding(.horizontal, 20)
             }
         }
-        // Bleed to the screen edges: each page pads its own card, so swiping uses the full width
-        .padding(.horizontal, -20)
         .task {
             cover = await IdeaShareCard.loadCover(for: book)
             coverLoaded = true
@@ -59,24 +58,54 @@ struct KeyIdeaDeck: View {
         }
     }
 
-    // MARK: - Page
+    // MARK: - Stack
 
-    private func page(_ index: Int) -> some View {
+    /// Far enough for a card to clear the screen edge
+    private var throwDistance: CGFloat { deckWidth + 60 }
+    private var deckPosition: CGFloat { CGFloat(current) + dragProgress }
+
+    private func stacked(_ index: Int) -> some View {
+        // Above zero the card is that many places under the top; below zero it has left the stack
+        let place = CGFloat(index) - deckPosition
+        let under = max(place, 0)
+        let gone = min(place, 0)
         // With Reduce Motion the turning card only fades
-        let scales = !reduceMotion
+        let moves = !reduceMotion
+
         return card(index)
-            .background(alignment: .bottom) { deckEdges(below: index) }
-            .padding(.horizontal, 20)
-            // Room for the shadow above, and the edges of the cards underneath below
-            .padding(.top, 8)
-            .padding(.bottom, 26)
-            .scrollTransition(.interactive, axis: .horizontal) { content, phase in
-                content
-                    .opacity(phase.isIdentity ? 1 : 0.35)
-                    .scaleEffect(phase.isIdentity || !scales ? 1 : 0.95)
-            }
-            // VoiceOver sees only the current card; the adjustable action turns the page
+            .scaleEffect(moves ? 1 - min(under, 3) * 0.04 : 1, anchor: .bottom)
+            .offset(y: moves ? min(under, 3) * 8 : 0)
+            .rotationEffect(.degrees(moves ? Double(gone) * 10 : 0), anchor: .bottom)
+            .offset(x: moves ? gone * throwDistance : 0)
+            // Two cards show under the top one; the rest wait out of sight
+            .opacity(Double(moves ? 1 : 1 + gone) * Double(min(1, max(0, 3 - place))))
+            .zIndex(Double(-index))
+            .allowsHitTesting(index == current)
+            // VoiceOver sees only the top card; the adjustable action turns it
             .accessibilityHidden(index != current)
+    }
+
+    /// On the first card a swipe right has nothing to bring back, so it stays the system's back gesture
+    private func canTurn(rightward: Bool) -> Bool {
+        rightward ? current > 0 : current < ideas.count - 1
+    }
+
+    private func dragged(by translation: CGFloat) {
+        guard throwDistance > 0 else { return }
+        let progress = -translation / throwDistance
+        dragProgress = canTurn(rightward: progress < 0) ? progress : progress * 0.12
+    }
+
+    private func released(translation: CGFloat, velocity: CGFloat) {
+        let flung = translation + velocity * 0.2
+        var target = current
+        if abs(flung) > deckWidth * 0.3 {
+            target = min(max(current + (flung < 0 ? 1 : -1), 0), ideas.count - 1)
+        }
+        withAnimation(reduceMotion ? .easeOut(duration: 0.2) : .smooth(duration: 0.35)) {
+            current = target
+            dragProgress = 0
+        }
     }
 
     private func card(_ index: Int) -> some View {
@@ -118,23 +147,6 @@ struct KeyIdeaDeck: View {
                 .shadow(color: .black.opacity(0.06), radius: 14, y: 6)
         }
         .overlay { Self.cardShape.stroke(Color.primary.opacity(0.07), lineWidth: 0.5) }
-    }
-
-    /// The edges of up to two cards under this one, so the stack reads as a deck.
-    private func deckEdges(below index: Int) -> some View {
-        let remaining = min(2, ideas.count - 1 - index)
-        return ZStack(alignment: .bottom) {
-            ForEach(Array((0..<remaining).reversed()), id: \.self) { depth in
-                let level = CGFloat(depth + 1)
-                Self.cardShape
-                    .fill(Self.cardSurface)
-                    .overlay { Self.cardShape.stroke(Color.primary.opacity(0.06), lineWidth: 0.5) }
-                    .opacity(1 - Double(depth) * 0.35)
-                    .padding(.horizontal, 12 * level)
-                    .offset(y: 6 * level)
-            }
-        }
-        .accessibilityHidden(true)
     }
 
     // MARK: - Actions on a card
@@ -232,11 +244,11 @@ struct KeyIdeaDeck: View {
     private func move(by delta: Int, announce: Bool = false) {
         let target = min(max(current + delta, 0), ideas.count - 1)
         guard target != current else { return }
-        withAnimation(reduceMotion ? nil : .smooth(duration: 0.4)) {
-            position = target
+        withAnimation(reduceMotion ? .easeOut(duration: 0.2) : .smooth(duration: 0.4)) {
+            current = target
         }
         if announce {
-            // Follow the page with VoiceOver: the old card is now hidden
+            // Follow the top card with VoiceOver: the old card is now hidden
             Task { @MainActor in
                 try? await Task.sleep(for: .milliseconds(150))
                 focusedCard = target
@@ -281,4 +293,53 @@ struct KeyIdeaDeck: View {
             ? UIColor(red: 30 / 255, green: 29 / 255, blue: 27 / 255, alpha: 1)
             : UIColor(red: 255 / 255, green: 254 / 255, blue: 251 / 255, alpha: 1)
     })
+}
+
+/// A pan that starts only on a mostly sideways drag the deck can use, so a vertical swipe on a card
+/// still scrolls the page. It goes before the navigation stack's swipe back, which covers the whole screen.
+private struct HorizontalPan: UIGestureRecognizerRepresentable {
+    let canStart: (_ rightward: Bool) -> Bool
+    let onChanged: (CGFloat) -> Void
+    let onEnded: (_ translation: CGFloat, _ velocity: CGFloat) -> Void
+
+    func makeCoordinator(converter: CoordinateSpaceConverter) -> Coordinator { Coordinator() }
+
+    func makeUIGestureRecognizer(context: Context) -> UIPanGestureRecognizer {
+        let recognizer = UIPanGestureRecognizer()
+        recognizer.delegate = context.coordinator
+        return recognizer
+    }
+
+    func updateUIGestureRecognizer(_ recognizer: UIPanGestureRecognizer, context: Context) {
+        context.coordinator.canStart = canStart
+    }
+
+    func handleUIGestureRecognizerAction(_ recognizer: UIPanGestureRecognizer, context: Context) {
+        let translation = recognizer.translation(in: recognizer.view).x
+        switch recognizer.state {
+        case .changed:
+            onChanged(translation)
+        case .ended:
+            onEnded(translation, recognizer.velocity(in: recognizer.view).x)
+        case .cancelled, .failed:
+            onEnded(0, 0)
+        default:
+            break
+        }
+    }
+
+    final class Coordinator: NSObject, UIGestureRecognizerDelegate {
+        var canStart: (_ rightward: Bool) -> Bool = { _ in true }
+
+        func gestureRecognizerShouldBegin(_ recognizer: UIGestureRecognizer) -> Bool {
+            guard let pan = recognizer as? UIPanGestureRecognizer else { return true }
+            let velocity = pan.velocity(in: pan.view)
+            return abs(velocity.x) > abs(velocity.y) && canStart(velocity.x > 0)
+        }
+
+        func gestureRecognizer(_ recognizer: UIGestureRecognizer,
+                               shouldBeRequiredToFailBy other: UIGestureRecognizer) -> Bool {
+            !(other.view is UIScrollView)
+        }
+    }
 }
