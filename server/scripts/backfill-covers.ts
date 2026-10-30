@@ -10,7 +10,8 @@
  *      study guides and summaries excluded)
  *   3. Apple Books artwork, looked up by ISBN (never by title: titles match the wrong book)
  *   4. Open Library large cover
- *   5. The current cover_url
+ *   5. The current cover_url (never a cover hotlinked from a summary company such as Headway:
+ *      we have no rights to their images)
  *
  * If none is that sharp, the largest candidate at least FALLBACK_MIN_WIDTH px wide is kept:
  * a soft but recognisable cover beats a designed one.
@@ -28,6 +29,7 @@
  *   --force     Re-check books whose cover is already from Google publisher / Apple
  *   --report    Write every decision (old URL, new URL, source, rejections) as JSON
  *   --ids       Only these book ids (comma-separated); implies --force
+ *   --unlicensed  Only books whose cover is hotlinked from an UNLICENSED_COVER_HOSTS host
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -75,6 +77,7 @@ const options = {
   limit: args.includes('--limit') ? parseInt(args[args.indexOf('--limit') + 1], 10) : undefined,
   report: args.includes('--report') ? args[args.indexOf('--report') + 1] : undefined,
   ids: args.includes('--ids') ? args[args.indexOf('--ids') + 1].split(',') : undefined,
+  unlicensed: args.includes('--unlicensed'),
 };
 
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!, {
@@ -86,6 +89,10 @@ const googlePublisherUrl = (id: string) =>
 
 const isHighResSource = (url: string | null) =>
   !!url && (url.includes('/books/publisher/content/images/frontcover/') || url.includes('mzstatic.com'));
+
+// Covers from other summary apps: never kept, so these books get a real cover or the typographic one.
+const UNLICENSED_COVER_HOSTS = ['makeheadway.com', 'storyblok.com'];
+const isUnlicensedCover = (url: string | null) => !!url && UNLICENSED_COVER_HOSTS.some(host => url.includes(host));
 
 type Measured = { width: number; height: number };
 
@@ -181,7 +188,7 @@ async function processBook(book: BookRow): Promise<Result> {
       return url ? [{ source: 'apple', url }] : [];
     },
     async () => (isbns.length ? [{ source: 'openlibrary', url: `https://covers.openlibrary.org/b/isbn/${isbns[0]}-L.jpg?default=false` }] : []),
-    async () => (book.cover_url ? [{ source: 'current', url: book.cover_url }] : []),
+    async () => (book.cover_url && !isUnlicensedCover(book.cover_url) ? [{ source: 'current', url: book.cover_url }] : []),
   ];
 
   let fallback: Result['chosen'];
@@ -218,7 +225,11 @@ async function fetchBooks(): Promise<BookRow[]> {
     books.push(...(data as BookRow[]));
     if (data.length < 1000) break;
   }
-  const todo = options.force || options.ids ? books : books.filter(book => !isHighResSource(book.cover_url));
+  const todo = options.unlicensed
+    ? books.filter(book => isUnlicensedCover(book.cover_url))
+    : options.force || options.ids
+      ? books
+      : books.filter(book => !isHighResSource(book.cover_url));
   return options.limit ? todo.slice(0, options.limit) : todo;
 }
 
