@@ -37,6 +37,8 @@ export interface Rating {
 }
 
 const BATCH_SIZE = 30;
+// Batches in flight at once; each takes ~30 s (a reasoning model)
+const CONCURRENCY = 4;
 
 function prompt(list: string): string {
   return `BookBite is an app with summaries of non-fiction books: key ideas, how to apply them, and answers to readers' problems drawn from ideas across the catalogue. Rate each book below for the catalogue.
@@ -65,7 +67,11 @@ export async function rateBooks(
 ): Promise<(Rating | undefined)[]> {
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   const ratings: (Rating | undefined)[] = new Array(books.length).fill(undefined);
-  for (let i = 0; i < books.length; i += BATCH_SIZE) {
+  const starts: number[] = [];
+  for (let i = 0; i < books.length; i += BATCH_SIZE) starts.push(i);
+  let done = 0;
+
+  const rateBatch = async (i: number) => {
     const batch = books.slice(i, i + BATCH_SIZE);
     const list = batch
       .map((b, n) => `${n + 1}. "${b.title}" by ${b.author}${b.year ? ` (${b.year})` : ''}${b.note ? ` [${b.note}]` : ''}`)
@@ -92,7 +98,13 @@ export async function rateBooks(
     } catch (error) {
       console.log(`   Rating batch failed: ${error instanceof Error ? error.message : error}`);
     }
-    onProgress?.(Math.min(i + BATCH_SIZE, books.length), books.length);
-  }
+    done += batch.length;
+    onProgress?.(done, books.length);
+  };
+
+  const worker = async () => {
+    for (let i = starts.shift(); i !== undefined; i = starts.shift()) await rateBatch(i);
+  };
+  await Promise.all(Array.from({ length: CONCURRENCY }, worker));
   return ratings;
 }
