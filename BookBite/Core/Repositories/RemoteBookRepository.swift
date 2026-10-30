@@ -98,8 +98,8 @@ class RemoteBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
         }
     }
 
-    func fetchHighlights(page: Int, limit: Int) async throws -> HighlightsPage {
-        return try await networkService.get(endpoint: "summaries/highlights?page=\(page)&limit=\(limit)")
+    func fetchHighlights(page: Int, limit: Int, seed: Int) async throws -> HighlightsPage {
+        return try await networkService.get(endpoint: "summaries/highlights?page=\(page)&limit=\(limit)&seed=\(seed)")
     }
 
     func fetchRecommendations(_ request: RecommendationRequest) async throws -> Recommendations {

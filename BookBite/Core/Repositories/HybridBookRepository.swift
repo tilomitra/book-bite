@@ -62,8 +62,8 @@ class HybridBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
         return try await remoteRepository.fetchRandomIdea(excluding: bookId)
     }
 
-    func fetchHighlights(page: Int, limit: Int) async throws -> HighlightsPage {
-        return try await remoteRepository.fetchHighlights(page: page, limit: limit)
+    func fetchHighlights(page: Int, limit: Int, seed: Int) async throws -> HighlightsPage {
+        return try await remoteRepository.fetchHighlights(page: page, limit: limit, seed: seed)
     }
 
     func fetchRecommendations(_ request: RecommendationRequest) async throws -> Recommendations {
