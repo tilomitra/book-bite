@@ -59,7 +59,7 @@ interface BookRow {
 }
 
 interface Candidate {
-  source: 'google' | 'google-edition' | 'apple' | 'openlibrary' | 'current';
+  source: 'google' | 'google-edition' | 'apple' | 'apple-edition' | 'openlibrary' | 'openlibrary-edition' | 'current';
   url: string;
 }
 
@@ -176,6 +176,34 @@ async function appleArtwork(isbns: string[]): Promise<string | null> {
   return null;
 }
 
+/** Open Library works with the same title and author surname: their ISBNs and cover ids. Headway imports often carry an ISBN no store knows. */
+async function openLibraryMatches(book: BookRow): Promise<{ isbns: string[]; coverIds: number[] }> {
+  const empty = { isbns: [], coverIds: [] };
+  const surname = book.authors?.[0]?.split(' ').pop()?.toLowerCase();
+  if (!surname) return empty;
+  const query = new URLSearchParams({
+    title: book.title.split(':')[0],
+    author: surname,
+    lang: 'en',
+    limit: '5',
+    fields: 'title,author_name,cover_i,isbn',
+  });
+  try {
+    const response = await fetch(`https://openlibrary.org/search.json?${query}`);
+    const json: any = await response.json();
+    const works = (json.docs ?? []).filter((doc: any) =>
+      normalize(doc.title ?? '') === normalize(book.title)
+      && !NOT_THE_BOOK.test(doc.title ?? '')
+      && (doc.author_name ?? []).some((author: string) => author.toLowerCase().includes(surname)));
+    return {
+      isbns: works.flatMap((doc: any) => doc.isbn ?? []).filter((isbn: string) => /^97[89]\d{10}$/.test(isbn)).slice(0, 4),
+      coverIds: works.map((doc: any) => doc.cover_i).filter(Boolean).slice(0, 3),
+    };
+  } catch {
+    return empty;
+  }
+}
+
 async function processBook(book: BookRow): Promise<Result> {
   const result: Result = { book, rejected: [] };
   const isbns = [book.isbn13, book.isbn10].filter((isbn): isbn is string => !!isbn);
@@ -188,6 +216,14 @@ async function processBook(book: BookRow): Promise<Result> {
       return url ? [{ source: 'apple', url }] : [];
     },
     async () => (isbns.length ? [{ source: 'openlibrary', url: `https://covers.openlibrary.org/b/isbn/${isbns[0]}-L.jpg?default=false` }] : []),
+    async () => {
+      const matches = await openLibraryMatches(book);
+      const url = await appleArtwork(matches.isbns.filter(isbn => !isbns.includes(isbn)));
+      return [
+        ...(url ? [{ source: 'apple-edition' as const, url }] : []),
+        ...matches.coverIds.map(id => ({ source: 'openlibrary-edition' as const, url: `https://covers.openlibrary.org/b/id/${id}-L.jpg?default=false` })),
+      ];
+    },
     async () => (book.cover_url && !isUnlicensedCover(book.cover_url) ? [{ source: 'current', url: book.cover_url }] : []),
   ];
 

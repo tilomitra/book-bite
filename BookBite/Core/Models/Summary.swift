@@ -128,4 +128,23 @@ struct ApplicationPoint: Identifiable, Codable {
 struct Citation: Codable, Hashable {
     let source: String
     let url: String?
+
+    /// A link worth following. Generated citations often point at a site's home page
+    /// ("https://www.nytimes.com"), which proves nothing, so those stay plain text.
+    var link: URL? {
+        guard let url, let parsed = URL(string: url), parsed.scheme?.lowercased() == "https",
+              parsed.host != nil, parsed.path.count > 1 else { return nil }
+        return parsed
+    }
+}
+
+extension Summary {
+    /// Citations to show: named sources, each once
+    var displayCitations: [Citation] {
+        var seen = Set<String>()
+        return citations.filter { citation in
+            let name = citation.source.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            return !name.isEmpty && seen.insert(name).inserted
+        }
+    }
 }
