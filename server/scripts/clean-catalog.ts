@@ -16,8 +16,10 @@
  *
  * A book is removed when:
  *   - it is fiction (isFiction), or
- *   - the model rates it 1–2, or 3 with fewer than 50 Open Library readers.
- * Known books (featured, NYT, or 100+ readers) are removed only for fiction or a rating of 1.
+ *   - the model rates it 1–2 (3 is a real but minor book: it stays).
+ * Known books (featured, NYT, or 100+ readers) are removed only for fiction: the model doesn't know
+ * books newer than its training data and rates real bestsellers 1 ("could not verify"). For the same
+ * reason a 1 doesn't remove a book published in the last 3 years.
  * Books someone saved or has in their reading history are never removed (listed as kept).
  * Books the model did not rate (a failed batch) are kept.
  *
@@ -42,7 +44,6 @@ import { JUNK_TITLE, rateBooks } from './lib/bookVetting';
 config();
 
 const KNOWN_READERS = 100;
-const OBSCURE_READERS = 50;
 const PAGE_SIZE = 1000;
 const BACKUP_PATH = path.join(__dirname, 'data', 'removed-books-backup.jsonl');
 
@@ -151,9 +152,8 @@ async function findRemovals() {
       return;
     }
     const readers = book.popularity_score || 0;
-    const remove = isKnown(book)
-      ? rating.score <= 1
-      : rating.score <= 2 || (rating.score === 3 && readers < OBSCURE_READERS);
+    const recent = (book.published_year || 0) >= new Date().getFullYear() - 2;
+    const remove = !isKnown(book) && (rating.score === 2 || (rating.score <= 1 && !recent));
     if (remove) consider(book, `rated ${rating.score}, ${readers} readers: ${rating.reason ?? ''}`);
   });
 

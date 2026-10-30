@@ -49,7 +49,7 @@ function prompt(list: string): string {
 2 = not a good fit: textbook, reference work, academic monograph, conference proceedings, anthology, poetry, a companion to another book, a primary religious text, a political tract or a celebrity book without ideas
 1 = fiction, a children's book, a summary/workbook of another book, self-published filler, or unknown to you
 
-Rules: rate 1 if you are not sure the book exists as described. Pick the genre from: ${GENRES.join(', ')}.
+Rules: rate 1 if you are not sure the book exists as described. Business fables and philosophical narratives written to teach ideas (The Goal, The Phoenix Project, Zen and the Art of Motorcycle Maintenance) count as non-fiction. Pick the genre from: ${GENRES.join(', ')}.
 
 Books:
 ${list}

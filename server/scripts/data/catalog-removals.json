@@ -1,0 +1,4526 @@
+[
+  {
+    "id": "57ea9138-59fe-451d-9216-483c993e3975",
+    "title": "Siddhartha",
+    "author": "Hermann Hesse",
+    "reason": "fiction"
+  },
+  {
+    "id": "cebb57cc-ee36-4b1d-93fe-959335664edc",
+    "title": "How to Read a Book",
+    "author": "Monica Wood",
+    "reason": "fiction"
+  },
+  {
+    "id": "bdc5daec-7aaa-4f3d-8d0c-7f1696b19bf2",
+    "title": "Lord Jim",
+    "author": "Conrad Joseph,",
+    "reason": "fiction"
+  },
+  {
+    "id": "d5385bd6-8dc5-4a6f-8463-55e4cecf3d02",
+    "title": "Polaroids from the Dead",
+    "author": "Douglas Coupland",
+    "reason": "fiction"
+  },
+  {
+    "id": "e1c0717f-f7ae-48da-b1f3-c125a12a1b7a",
+    "title": "Lady and the Tramp",
+    "author": "Unknown",
+    "reason": "fiction"
+  },
+  {
+    "id": "8c6e9580-ed7e-40a0-ba1a-c817132ab71b",
+    "title": "Outlaws",
+    "author": "Javier Cercas",
+    "reason": "fiction"
+  },
+  {
+    "id": "f56539e2-e295-46df-8bcd-c89ff91751f7",
+    "title": "A Persian Requiem",
+    "author": "Sīmīn Dānishvar",
+    "reason": "fiction"
+  },
+  {
+    "id": "ea5729e4-6bf8-4a50-9438-541b360685a2",
+    "title": "The Taming of the Shrew",
+    "author": "William Shakespeare",
+    "reason": "fiction"
+  },
+  {
+    "id": "a58616ee-664f-4715-abcd-2f73b2a97399",
+    "title": "The Secret Garden",
+    "author": "Frances Hodgson Burnett",
+    "reason": "fiction"
+  },
+  {
+    "id": "2468608d-d063-40d8-98f2-cda055323188",
+    "title": "The Magazine of American History with Notes and Queries",
+    "author": "Martha Joanna Lamb",
+    "reason": "fiction"
+  },
+  {
+    "id": "093c2c67-4e6b-4712-8081-f11b6dbf4671",
+    "title": "Men, Women, and Gods",
+    "author": "Fedwa Malti-Douglas",
+    "reason": "fiction"
+  },
+  {
+    "id": "b28aa8eb-bf1b-4384-947b-c4688bd1585e",
+    "title": "Catalogue of the Public Library of the City of Detroit",
+    "author": "Henry M. Crittenden",
+    "reason": "fiction"
+  },
+  {
+    "id": "3fa3fd39-a09e-4cf8-ac27-2e56f480df8f",
+    "title": "The Alchemist",
+    "author": "Paulo Coelho",
+    "reason": "fiction"
+  },
+  {
+    "id": "02e9e495-b5b8-4c43-bb90-31feb3c8017d",
+    "title": "It's a Kind of Magic",
+    "author": "Carole Matthews",
+    "reason": "fiction"
+  },
+  {
+    "id": "f52eea6c-8cb6-449f-9cf5-abf877e1ce1e",
+    "title": "Rising Sun",
+    "author": "Michael Crichton",
+    "reason": "fiction"
+  },
+  {
+    "id": "661aeea7-e982-4fe7-9ea1-d560f60149c0",
+    "title": "Where the Crawdads Sing: Reese's Book Club",
+    "author": "Delia Owens",
+    "reason": "fiction"
+  },
+  {
+    "id": "77076fd9-bf6b-403e-a084-05696605df07",
+    "title": "The Hobbit, Or, There and Back Again",
+    "author": "J. R. R. Tolkien",
+    "reason": "fiction"
+  },
+  {
+    "id": "6b1ea393-6488-4b36-831f-56fa9f108cb1",
+    "title": "The Bhagavad Gita",
+    "author": "Eknath Easwaran",
+    "reason": "rated 2, 10 readers: A translation of a primary religious text."
+  },
+  {
+    "id": "70cdfaf7-5f32-4184-9f9e-2cc03e2dbfc9",
+    "title": "Becoming a Supple Leopard",
+    "author": "Kelly Starrett",
+    "reason": "rated 2, 33 readers: Primarily a detailed technical manual for mobility and movement training."
+  },
+  {
+    "id": "5de76962-d8b4-495a-a594-1f4150277d78",
+    "title": "Starting Strength",
+    "author": "Mark Rippetoe",
+    "reason": "rated 2, 40 readers: Primarily a technical strength-training manual rather than general nonfiction."
+  },
+  {
+    "id": "aa12d5bc-4b5d-4ce8-9729-7548c8df6337",
+    "title": "Sophie's World",
+    "author": "Jostein Gaarder",
+    "reason": "rated 1, 10 readers: A philosophical novel, not a nonfiction book."
+  },
+  {
+    "id": "027a456c-1290-4ec5-863e-ac41a2155857",
+    "title": "Self-Discipline in Difficult Times",
+    "author": "Martin Meadows",
+    "reason": "rated 1, 0 readers: A niche self-published title with limited catalogue-wide value."
+  },
+  {
+    "id": "7f77821a-46fe-4434-a45f-065a6b5cd12b",
+    "title": "How to Be a Bawse",
+    "author": "Lilly Singh",
+    "reason": "rated 2, 57 readers: Celebrity-oriented advice offers limited depth beyond familiar motivational lessons."
+  },
+  {
+    "id": "60c54474-32d2-4b2a-845a-d759685045d9",
+    "title": "Turning the Flywheel",
+    "author": "Jim Collins",
+    "reason": "rated 2, 4 readers: A short companion monograph to Collins's earlier work."
+  },
+  {
+    "id": "b2e8b91c-9f4f-4f96-ac05-1357b860fff0",
+    "title": "Million Dollar Habits",
+    "author": "Stellan Moreira",
+    "reason": "rated 1, 0 readers: Not confident this title exists as described."
+  },
+  {
+    "id": "16e38d1b-1d38-464b-ab27-4b935179f2c4",
+    "title": "Capital Gaines",
+    "author": "Chip Gaines",
+    "reason": "rated 2, 2 readers: Celebrity memoir with limited transferable ideas for a practical summary."
+  },
+  {
+    "id": "bfe914e6-8fdb-43b2-b91b-27c5c3c5e7a0",
+    "title": "The Storyteller",
+    "author": "Dave Grohl",
+    "reason": "rated 2, 44 readers: A celebrity memoir, rather than a book centered on transferable ideas."
+  },
+  {
+    "id": "dcf4936a-3bd2-4660-8249-e2492236e09e",
+    "title": "I Am Zlatan",
+    "author": "Zlatan Ibrahimović",
+    "reason": "rated 2, 57 readers: A sports celebrity autobiography with limited general-purpose lessons."
+  },
+  {
+    "id": "eff824e5-f8f8-4006-bc91-abb7e3eb3e2e",
+    "title": "HBR’s 10 Must Reads on Emotional Intelligence",
+    "author": "Harvard Business Review",
+    "reason": "rated 2, 9 readers: An anthology of articles rather than a single cohesive book."
+  },
+  {
+    "id": "a14131ba-715d-4c1c-9b6b-b62f46bd0d04",
+    "title": "True Love",
+    "author": "Jennifer Lopez",
+    "reason": "rated 2, 3 readers: A celebrity memoir with limited broader practical or conceptual value."
+  },
+  {
+    "id": "0f263578-c276-49ce-a30f-9a8a4a8b2281",
+    "title": "Want",
+    "author": "Gillian Anderson",
+    "reason": "rated 2, 28 readers: An anthology of anonymous sexual fantasies, rather than a practical idea-based book."
+  },
+  {
+    "id": "bc0a9ffd-3c37-4533-b253-2a3b00af673b",
+    "title": "Poems & Prayers",
+    "author": "Matthew McConaughey",
+    "reason": "rated 2, 3 readers: Primarily a poetry collection, which is outside the catalogue's nonfiction fit."
+  },
+  {
+    "id": "0e275ee6-f8e7-4d9c-9f34-a2c2755b7750",
+    "title": "Don’t Burn This Book",
+    "author": "Dave Rubin",
+    "reason": "rated 2, 9 readers: Primarily a partisan political polemic rather than broadly applicable nonfiction."
+  },
+  {
+    "id": "0554a32c-fe88-4c16-a421-115f3aadcdfe",
+    "title": "Invent & Wander",
+    "author": "Jeff Bezos",
+    "reason": "rated 2, 63 readers: A compilation of Bezos’s letters and speeches, rather than a cohesive book."
+  },
+  {
+    "id": "5ba3d43c-ac8c-4cb1-a7ab-f63e98b13f0d",
+    "title": "Unfinished",
+    "author": "Priyanka Chopra Jonas",
+    "reason": "rated 2, 96 readers: Celebrity memoir, with limited transferable ideas for a practical-summary catalogue."
+  },
+  {
+    "id": "b411aa28-7bd2-4e30-b1f1-bf087a9e3425",
+    "title": "Go Pro",
+    "author": "Eric Worre",
+    "reason": "rated 2, 84 readers: Promotional network-marketing advice makes it a poor fit for broad readers."
+  },
+  {
+    "id": "b0b5f04d-44cd-4ae0-8b94-2eeb52c2d1a8",
+    "title": "The Law of Attraction",
+    "author": "David R. Hooper",
+    "reason": "rated 1, 0 readers: Could not confidently identify this specific title and author."
+  },
+  {
+    "id": "64baa267-2c3e-4fb3-9138-725c60926b2b",
+    "title": "In Therapy We Trust",
+    "author": "Eva S. Moskowitz",
+    "reason": "rated 2, 3 readers: An academic history of therapy culture, rather than an applied guide."
+  },
+  {
+    "id": "877c363b-1685-462d-bae2-fc82f721ea37",
+    "title": "I Suck at Relationships So You Don't Have To",
+    "author": "Bethenny Frankel",
+    "reason": "rated 2, 5 readers: Celebrity relationship advice; less suited to the catalogue’s core."
+  },
+  {
+    "id": "a253ce95-f7d5-4253-a182-1f38ac851f2a",
+    "title": "Self-Help, Inc.",
+    "author": "Micki McGee",
+    "reason": "rated 2, 3 readers: Academic study of the self-help industry, rather than a practical guide."
+  },
+  {
+    "id": "3c5436b0-91fc-442d-a13a-12ee2e1305ea",
+    "title": "Summary and Analysis of Quiet: The Power of Introverts in a World That Can't Stop Talking",
+    "author": "Worth Books",
+    "reason": "rated 1, 2 readers: This is a summary of another book, not an original work."
+  },
+  {
+    "id": "3bb6d009-e560-438c-8432-a7ba149a6c86",
+    "title": "Literary Studies and Human Flourishing",
+    "author": "James F. English",
+    "reason": "rated 2, 0 readers: Specialist academic monograph on literary studies and human flourishing."
+  },
+  {
+    "id": "fae4c931-5427-4346-9e90-412465db36ab",
+    "title": "Transnational Popular Psychology and the Global Self-Help Industry",
+    "author": "Daniel Nehring",
+    "reason": "rated 2, 0 readers: Academic monograph examining the global self-help industry."
+  },
+  {
+    "id": "d1489392-b1a1-4d2a-a4aa-c19bbc9ec9cb",
+    "title": "The Poetry Pharmacy Forever",
+    "author": "William Sieghart",
+    "reason": "rated 2, 0 readers: A poetry collection, rather than a nonfiction ideas guide."
+  },
+  {
+    "id": "3235c484-a39e-473a-b690-93477485937b",
+    "title": "Breaking Free...from Me",
+    "author": "J. Matthew Nance",
+    "reason": "rated 1, 0 readers: Unable to confidently verify this book as described."
+  },
+  {
+    "id": "5838799c-ee37-416e-b7d7-8e391a35cad2",
+    "title": "Das schöne Selbst",
+    "author": "Jens Elberfeld",
+    "reason": "rated 2, 0 readers: Specialist German-language academic work, not a practical self-help guide."
+  },
+  {
+    "id": "b3312161-1a0f-41a9-818c-fcd213580846",
+    "title": "Children and the Politics of Sexuality",
+    "author": "Liza Tsaliki",
+    "reason": "rated 2, 0 readers: Academic study of children, sexuality, and politics."
+  },
+  {
+    "id": "8319711d-599b-4eb2-a555-815b1a80dbd5",
+    "title": "Albert Camus as Philosopher and Political Thinker",
+    "author": "Tommaso Visone",
+    "reason": "rated 2, 0 readers: Specialist academic study of Camus as philosopher and political thinker."
+  },
+  {
+    "id": "3e9ca630-ddf1-45a7-93b4-46ebc735b078",
+    "title": "Shyness and Society",
+    "author": "Susie Scott",
+    "reason": "rated 2, 2 readers: A niche academic study of shyness and social life."
+  },
+  {
+    "id": "185c06da-80a2-4188-80cf-2a014252a4e3",
+    "title": "Transcending Self-interest",
+    "author": "Heidi A. Wayment",
+    "reason": "rated 2, 0 readers: An academic edited collection, rather than a practical reader’s guide."
+  },
+  {
+    "id": "e9b3f6fe-dfc3-4c64-a6ef-4339b15eea10",
+    "title": "The Self Explained",
+    "author": "Roy F. Baumeister",
+    "reason": "rated 1, 0 readers: Unable to verify this title by Roy F. Baumeister."
+  },
+  {
+    "id": "1150e42b-63f0-43c7-ae04-e00f732790b7",
+    "title": "The Road to Freedom",
+    "author": "Peter Allman",
+    "reason": "rated 1, 0 readers: Unable to verify this book as described."
+  },
+  {
+    "id": "db464f13-1bdb-4c63-8387-49cadc71be6a",
+    "title": "On Willing Selves",
+    "author": "Sabine Maasen",
+    "reason": "rated 2, 0 readers: A specialized scholarly work, not suited to a broad summary catalogue."
+  },
+  {
+    "id": "c2855e1b-c085-47c1-a3f1-77d8761fd425",
+    "title": "Wellbeing and Aspirational Culture",
+    "author": "Kevin Moore",
+    "reason": "rated 1, 0 readers: Unable to verify this title as described."
+  },
+  {
+    "id": "88a9b530-726a-43d1-8ad3-4b24d1853fb1",
+    "title": "Vegetarian Times ",
+    "author": "Unknown",
+    "reason": "rated 1, 0 readers: This appears to be a magazine title, not a verifiable book."
+  },
+  {
+    "id": "c7634633-ef0b-46d5-a4f0-64aa6a696508",
+    "title": "Cool Best-Ever Brunches: Beyond the Basics for Kids Who Cook",
+    "author": "Lisa Wagner",
+    "reason": "rated 2, 0 readers: A children’s cookbook focused on recipes, not broader ideas."
+  },
+  {
+    "id": "c92093bf-da34-46bc-a6c8-02c0cad620f5",
+    "title": "Moghlai Khana",
+    "author": "Tarla Dalal",
+    "reason": "rated 2, 0 readers: A regional recipe collection with limited summary value."
+  },
+  {
+    "id": "1853f4a2-16b4-4b27-85eb-e93dee8e801f",
+    "title": "A Philosophy of Recipes",
+    "author": "Andrea Borghini",
+    "reason": "rated 2, 0 readers: A specialized philosophical work, rather than a broadly applicable guide."
+  },
+  {
+    "id": "192598e2-d12a-4ae5-8157-1212446768c5",
+    "title": "Step-by-step Cooking",
+    "author": "Gary Rhodes",
+    "reason": "rated 1, 0 readers: Unable to verify this Gary Rhodes title as described."
+  },
+  {
+    "id": "b8d09eb1-fabc-45ab-84c1-c2b27565eaa9",
+    "title": "The Complete Slow Cooking for Two",
+    "author": "LInda Larsen",
+    "reason": "rated 2, 5 readers: A practical recipe book, not a strong fit for idea summaries."
+  },
+  {
+    "id": "b6968dfc-a11a-4447-b0a8-aa9f8c768b8b",
+    "title": "201 Fat-burning Recipes",
+    "author": "Cathi Graham",
+    "reason": "rated 2, 1 readers: A recipe collection, with limited material for a ideas-based summary."
+  },
+  {
+    "id": "1656eb19-eac7-4a84-b3b8-57155a0adc68",
+    "title": "Cook Book of Tried Recipes",
+    "author": "Unknown",
+    "reason": "rated 1, 0 readers: Unable to verify this book from the title and author details."
+  },
+  {
+    "id": "f3113e9f-0683-489e-a216-c76f5a559070",
+    "title": "Seventeenth-Century English Recipe Books: Cooking, Physic and Chirurgery in the Works of Elizabeth Talbot Grey and Aletheia Talbot Howard",
+    "author": "Elizabeth Spiller",
+    "reason": "rated 2, 0 readers: A specialized academic study of historical recipe books."
+  },
+  {
+    "id": "637d9353-70e0-42f7-8fbd-4fcde143eb83",
+    "title": "The Cooking of Greece",
+    "author": "Matthew Locricchio",
+    "reason": "rated 2, 2 readers: A regional cookbook, rather than a book of broadly applicable ideas."
+  },
+  {
+    "id": "c7b7b869-3a5d-439e-98ed-31bb40efe6e8",
+    "title": "Delicious Dishes for Diabetics",
+    "author": "Robin Ellis",
+    "reason": "rated 2, 1 readers: A diabetes-focused cookbook with practical recipes, not broader insights."
+  },
+  {
+    "id": "dd3cde1d-77f6-4e3a-a1a6-520e8b40ca8a",
+    "title": "The Everything Meals For A Month Cookbook",
+    "author": "Linda Larsen",
+    "reason": "rated 2, 5 readers: A meal-planning cookbook, not a strong fit for idea summaries."
+  },
+  {
+    "id": "58b61a6c-2e27-40dc-92e7-298b840cf0f8",
+    "title": "Favorite Dishes",
+    "author": "Carrie V. Shuman",
+    "reason": "rated 1, 2 readers: Unable to verify this title and author."
+  },
+  {
+    "id": "af6beeff-12e7-409b-8ff8-16d4aa8df1a6",
+    "title": "Catalog",
+    "author": "Food and Nutrition Information Center (U.S.)",
+    "reason": "rated 2, 0 readers: A reference catalog, rather than a reader-oriented nonfiction book."
+  },
+  {
+    "id": "f8826e8f-2fe5-4f0c-b1f7-925cec70c090",
+    "title": "Recipes, American Cooking",
+    "author": "Dale M. Brown (Author and editor at Time-Life Books)",
+    "reason": "rated 2, 0 readers: A cookbook volume focused on recipes rather than generalizable ideas."
+  },
+  {
+    "id": "6f65c853-0d17-4ca6-a1d2-65c45de584c3",
+    "title": "Digital Food TV",
+    "author": "Michelle Phillipov",
+    "reason": "rated 2, 0 readers: A specialized academic study of food television and digital media."
+  },
+  {
+    "id": "275d931a-8a4c-407e-98e4-af8e2b362ebb",
+    "title": "Recherché Entrées - A Collection of the Latest and Most Popular Dishes",
+    "author": "Charles Herman Senn",
+    "reason": "rated 2, 0 readers: A historical recipe collection, not a strong fit for idea summaries."
+  },
+  {
+    "id": "8296055b-80ed-4ff5-bae5-101d2ea15a9c",
+    "title": "The Food Network Recipe",
+    "author": "Emily L. Newman",
+    "reason": "rated 2, 0 readers: An edited collection, rather than a single practical nonfiction guide."
+  },
+  {
+    "id": "fd0260dc-1b76-4a92-91a0-340395ca03db",
+    "title": "Cool Gulf Coast Cooking: Easy and Fun Regional Recipes",
+    "author": "Alex Kuskowski",
+    "reason": "rated 2, 0 readers: A regional recipe book, with limited scope for idea summaries."
+  },
+  {
+    "id": "8965ad2a-1a62-4e9f-8265-e69d9c40e3ee",
+    "title": "The Best Plant-Based Cooking Recipes",
+    "author": "Brian Smith",
+    "reason": "rated 1, 0 readers: Could not verify this title and author combination."
+  },
+  {
+    "id": "83843e88-596e-4edb-a0b5-2cb633f8dc33",
+    "title": "Canadian Literary Landmarks",
+    "author": "John Robert Colombo",
+    "reason": "rated 2, 0 readers: A literary landmarks reference rather than an idea-driven book."
+  },
+  {
+    "id": "3899bb6f-bf67-4a5c-8d3b-3ddcc5e61ce0",
+    "title": "Ceylon, the Land of Eternal Charm",
+    "author": "Ali Foad Toulba",
+    "reason": "rated 1, 0 readers: Could not verify this title and author combination."
+  },
+  {
+    "id": "a818e535-6349-4929-8596-fdb866d87f7e",
+    "title": "Moscow Days",
+    "author": "Galina Dutkina",
+    "reason": "rated 1, 1 readers: Could not verify this title and author combination."
+  },
+  {
+    "id": "fa280b72-ea75-4068-a5dc-f898100512a4",
+    "title": "When Cats Reigned Like Kings",
+    "author": "Georgie Anne Geyer",
+    "reason": "rated 1, 2 readers: Could not verify this title and author combination."
+  },
+  {
+    "id": "fdcb75ce-473a-460a-895a-be345a8cfada",
+    "title": "Frommer'sTurkey",
+    "author": "Lynn A. Levine",
+    "reason": "rated 2, 0 readers: A destination guidebook, primarily a practical reference work."
+  },
+  {
+    "id": "c45c86ec-2583-4221-bfb6-d99eabb1473d",
+    "title": "Architectural Guidebook to New York City",
+    "author": "Francis Morrone",
+    "reason": "rated 2, 2 readers: An architectural reference guide rather than a general-interest ideas book."
+  },
+  {
+    "id": "2580fbc1-336c-4e39-9445-658e82d5ffc8",
+    "title": "The Rough Guide to Venice & the Veneto",
+    "author": "Rough Guides",
+    "reason": "rated 2, 0 readers: A practical travel guide, not a book of lasting ideas."
+  },
+  {
+    "id": "f38539e6-ab1c-4c6f-bcdc-9b682673e6ac",
+    "title": "Germany",
+    "author": "Eric Solsten",
+    "reason": "rated 2, 0 readers: A country-study reference work, not a reader-friendly ideas book."
+  },
+  {
+    "id": "2f2330ab-9502-45a9-99be-070999e523ca",
+    "title": "Coping with Tourists",
+    "author": "Jeremy Boissevain",
+    "reason": "rated 2, 1 readers: A specialized academic study of tourism and local communities."
+  },
+  {
+    "id": "ba54b720-55ef-4913-9a86-7ce2985c3831",
+    "title": "Sustainable Tourism in Protected Areas",
+    "author": "Paul F. J. Eagles",
+    "reason": "rated 2, 0 readers: A technical reference on tourism policy and protected areas."
+  },
+  {
+    "id": "c45391dc-454a-456b-bde8-9b9de30c5de0",
+    "title": "The Oxford Illustrated History of the Renaissance",
+    "author": "Gordon Campbell",
+    "reason": "rated 2, 3 readers: An illustrated survey and reference work on Renaissance history."
+  },
+  {
+    "id": "10ca977d-aadc-46f5-a29a-447e10aa9278",
+    "title": "Music and Memory",
+    "author": "Bob Snyder",
+    "reason": "rated 2, 2 readers: A scholarly monograph on music cognition and memory."
+  },
+  {
+    "id": "7e92c07a-61ec-4c42-84bd-83ea3e7082f1",
+    "title": "Mendelssohn and Victorian England",
+    "author": "ColinTimothy Eatock",
+    "reason": "rated 2, 0 readers: A specialized academic study of Mendelssohn and Victorian culture."
+  },
+  {
+    "id": "9b280b33-1a7d-4ece-a4fe-61c05e6de3ca",
+    "title": "Monteverdi and the End of the Renaissance",
+    "author": "Gary Tomlinson",
+    "reason": "rated 2, 0 readers: A specialized academic monograph on Renaissance music."
+  },
+  {
+    "id": "844948b4-e5e2-4b13-893d-46a9526e2d44",
+    "title": "Excursions in World Music",
+    "author": "Timothy Rommen",
+    "reason": "rated 2, 3 readers: A world-music textbook rather than a general-interest book."
+  },
+  {
+    "id": "2a28159d-46d7-4b74-b74c-af71507cdb62",
+    "title": "The 100 Greatest Bands of All Time",
+    "author": "David V. Moskowitz",
+    "reason": "rated 2, 0 readers: Reference survey of bands, not an ideas-led book."
+  },
+  {
+    "id": "bcfeebfb-b008-4b38-b320-169152ddb79f",
+    "title": "This Ain't the Summer of Love",
+    "author": "Steve Waksman",
+    "reason": "rated 2, 3 readers: Specialist academic study of punk and heavy metal."
+  },
+  {
+    "id": "07211c34-8607-42cc-a6b7-c3a05691a4ba",
+    "title": "Introduction to Post-Tonal Theory",
+    "author": "Joseph N. Straus",
+    "reason": "rated 2, 1 readers: Music-theory textbook rather than a general reader’s guide."
+  },
+  {
+    "id": "78687cd7-db70-43c9-9200-fad92f444029",
+    "title": "Music, Culture and Identity in the Muslim World",
+    "author": "Kamal Salhi",
+    "reason": "rated 2, 1 readers: Specialist academic collection on music and identity."
+  },
+  {
+    "id": "3e644c04-8a85-4e65-aa6f-812a0e50e010",
+    "title": "Ancient Traditions of the Virgin Mary's Dormition and Assumption",
+    "author": "Stephen J. Shoemaker",
+    "reason": "rated 2, 1 readers: Academic study of early Christian traditions, not practical spirituality."
+  },
+  {
+    "id": "32399fbb-d9f2-4a70-875e-f43411f32038",
+    "title": "Music, the Arts, and Ideas",
+    "author": "Leonard B. Meyer",
+    "reason": "rated 2, 4 readers: Scholarly monograph on music aesthetics and theory."
+  },
+  {
+    "id": "cc6d1ac5-b58d-471a-9025-d53370513c79",
+    "title": "Hungry Listening",
+    "author": "Dylan Robinson",
+    "reason": "rated 2, 1 readers: Specialist academic monograph on Indigenous sound studies."
+  },
+  {
+    "id": "7906514d-c4de-4bb3-82c0-6f47bb1dc773",
+    "title": "From Good Goddess to Vestal Virgins",
+    "author": "Ariadne Staples",
+    "reason": "rated 2, 1 readers: Specialist academic study of Roman religion and priesthood."
+  },
+  {
+    "id": "29f9eb63-6068-44a8-aa9b-68f54139f6d3",
+    "title": "The Oxford Handbook of the Archaeology and Anthropology of Rock Art",
+    "author": "Bruno David",
+    "reason": "rated 2, 1 readers: Reference handbook for specialists in rock-art research."
+  },
+  {
+    "id": "b2dabd15-b45f-4e1f-99c7-767387ccafe0",
+    "title": "The Man who Planted Trees",
+    "author": "Jean Giono",
+    "reason": "rated 1, 16 readers: Fictional allegory, not a nonfiction book."
+  },
+  {
+    "id": "a3af3efe-99e0-4168-94e5-e7b642109e40",
+    "title": "Companion to Medieval and Renaissance Music",
+    "author": "Tess Knighton",
+    "reason": "rated 2, 4 readers: Reference companion to medieval and Renaissance music."
+  },
+  {
+    "id": "be5987f6-1d57-4bfc-a908-e881c1322db5",
+    "title": "The Nature of Cultural Heritage, and the Culture of Natural Heritage",
+    "author": "David Lowenthal",
+    "reason": "rated 2, 0 readers: Specialist academic monograph on heritage concepts."
+  },
+  {
+    "id": "ef81bfe3-352c-4533-8a8c-792326455f97",
+    "title": "Thais",
+    "author": "Anatole France",
+    "reason": "rated 1, 11 readers: A novel, not a nonfiction guide to ideas."
+  },
+  {
+    "id": "e23b3119-7bdf-46ea-b4c7-ee04c8b6b3dd",
+    "title": "三國志演義 : Romance of the three kingdoms",
+    "author": "Guanzhong Luo",
+    "reason": "rated 1, 0 readers: Classic historical novel, not nonfiction."
+  },
+  {
+    "id": "9c54a1cc-3757-4cbc-b5c2-9c8c888d1195",
+    "title": "Japanese Media Cultures in Japan and Abroad: Transnational Consumption of Manga, Anime, and Media-Mixes",
+    "author": " Manuel Hernández-Pérez",
+    "reason": "rated 2, 0 readers: Specialist academic study of transnational media consumption."
+  },
+  {
+    "id": "19d6350b-2194-4297-b534-7ed038bea76a",
+    "title": "Metalworking through History",
+    "author": "Ana M. Lopez",
+    "reason": "rated 2, 0 readers: Reference-style survey rather than an ideas-focused book."
+  },
+  {
+    "id": "a94fcea5-8404-4aaa-ba56-6f98d4ff0d5b",
+    "title": "Leonardo Da Vinci",
+    "author": "Leonardo (da Vinci)",
+    "reason": "rated 1, 0 readers: Unclear bibliographic description; cannot verify this edition as stated."
+  },
+  {
+    "id": "9abf8b0e-fb25-4550-8c47-f0c131d8c20d",
+    "title": "The Society of the Spectacle",
+    "author": "Guy Debord",
+    "reason": "rated 2, 6 readers: Influential political tract, outside the catalogue’s intended fit."
+  },
+  {
+    "id": "0cc3c22d-8dba-4082-9b8c-5f72ed7f15c6",
+    "title": "Christian Responses to Roman Art and Architecture",
+    "author": "Laura Salah Nasrallah",
+    "reason": "rated 2, 0 readers: Specialist academic monograph on early Christian art."
+  },
+  {
+    "id": "48f6de6b-337c-401a-a91f-3f9e0f306356",
+    "title": "Electronic Literature",
+    "author": "N. Katherine Hayles",
+    "reason": "rated 2, 2 readers: Scholarly monograph on electronic literature."
+  },
+  {
+    "id": "9e6f2822-cb3d-43f6-8fe4-95a941ea9912",
+    "title": "Art and the Academy in the Nineteenth Century",
+    "author": "Rafael Cardoso Denis",
+    "reason": "rated 2, 1 readers: Specialist academic monograph on nineteenth-century art education."
+  },
+  {
+    "id": "294ef658-cf1c-4721-805e-343ec579a25c",
+    "title": "Robert Smithson",
+    "author": "Robert Smithson",
+    "reason": "rated 2, 4 readers: Art monograph, not a practical idea-focused nonfiction title."
+  },
+  {
+    "id": "2ae8e994-bb11-4bd4-a83e-f3fbb97771ea",
+    "title": "Serious Games",
+    "author": "Ute Ritterfeld",
+    "reason": "rated 2, 1 readers: Academic collection on serious games, rather than an accessible guide."
+  },
+  {
+    "id": "1e7aa689-dd31-41ff-aa56-6091f3766262",
+    "title": "Working Class Radicalism in Mid-Victorian England",
+    "author": "Trygve Tholfsen",
+    "reason": "rated 2, 3 readers: Specialized academic monograph on Victorian working-class politics."
+  },
+  {
+    "id": "eb60f114-5900-461e-aab5-999fbfdd1fb2",
+    "title": "I Love to Keep My Room Clean Îmi place să am camera curată",
+    "author": "Shelley Admont",
+    "reason": "rated 1, 0 readers: Children’s picture book, not a nonfiction ideas title."
+  },
+  {
+    "id": "5efe6594-b747-49b3-a6af-e04ad13d2d6b",
+    "title": "The Logic of Reliable Inquiry",
+    "author": "Kevin T. Kelly",
+    "reason": "rated 2, 1 readers: Technical academic monograph on formal epistemology."
+  },
+  {
+    "id": "8989aec5-fd76-4d31-b7d4-2d48f4d05695",
+    "title": "Phonological Skills and Learning to Read",
+    "author": "Usha Goswami",
+    "reason": "rated 2, 3 readers: Specialized academic text on reading development and phonology."
+  },
+  {
+    "id": "a6b0eea1-a258-4d3c-a6d8-6208230a428d",
+    "title": "Youth Studies",
+    "author": "Andy Furlong",
+    "reason": "rated 2, 4 readers: Textbook-style introduction to the academic field of youth studies."
+  },
+  {
+    "id": "be0e6224-7eeb-4153-a897-f25ff79f99ef",
+    "title": "How the Immune System Works, Includes Desktop Edition",
+    "author": "Lauren Sompayrac",
+    "reason": "rated 2, 0 readers: Concise instructional textbook on immunology."
+  },
+  {
+    "id": "433ca38f-cb1d-43a0-9aa9-72ae1392a4b6",
+    "title": "Developing Student Autonomy in Learning",
+    "author": "David Boud",
+    "reason": "rated 2, 2 readers: Academic education volume focused on student learning practices."
+  },
+  {
+    "id": "48b52a6a-a668-455b-8db2-fe0b8c275764",
+    "title": "Athleticism in the Victorian and Edwardian Public School",
+    "author": "J. A. Mangan",
+    "reason": "rated 2, 1 readers: Specialized scholarly history of British public-school athletics."
+  },
+  {
+    "id": "ca8b3bf2-b25a-466c-9c9e-3f957a07fbe3",
+    "title": "Pinocchio",
+    "author": "Carlo Collodi",
+    "reason": "rated 1, 66 readers: Classic work of fiction."
+  },
+  {
+    "id": "451f40c7-458f-40b1-b29d-b78d4126acc6",
+    "title": "The Middle East For Dummies",
+    "author": "Craig S. Davis",
+    "reason": "rated 2, 2 readers: Broad reference guide, rather than a focused ideas-driven book."
+  },
+  {
+    "id": "cd357dd8-b702-45a5-a9fb-723d970ae155",
+    "title": "Readings in the History of Education",
+    "author": "Ellwood Patterson Cubberley",
+    "reason": "rated 2, 0 readers: Historical readings anthology."
+  },
+  {
+    "id": "b5b5b2e6-3666-42a0-b42f-0d3ed2afd451",
+    "title": "Onna Rashiku (Like A Woman)",
+    "author": "Karen Ogulnick",
+    "reason": "rated 2, 2 readers: Specialized academic study of gender and Japanese language."
+  },
+  {
+    "id": "daf7e855-fb83-43ae-a1c0-68150439968f",
+    "title": "Rationality and Freedom",
+    "author": "Amartya Sen",
+    "reason": "rated 2, 8 readers: Collection of academic essays on political philosophy and economics."
+  },
+  {
+    "id": "587f83ad-d734-477a-bdad-87a0001e928e",
+    "title": "Distributed Leadership",
+    "author": "James P. Spillane",
+    "reason": "rated 2, 6 readers: Specialized academic theory of school leadership."
+  },
+  {
+    "id": "e1b54fc4-6848-40aa-ba5d-4f3e76e84418",
+    "title": "Indigenous Education through Dance and Ceremony",
+    "author": "E. Colín",
+    "reason": "rated 2, 0 readers: Niche scholarly treatment of Indigenous education practices."
+  },
+  {
+    "id": "90fc180d-0cf6-4e90-a1f2-f8de50bf04ba",
+    "title": "Visions of Empire",
+    "author": "David Philip Miller",
+    "reason": "rated 2, 2 readers: Specialized academic scholarship on empire and science."
+  },
+  {
+    "id": "6e7ba2a9-3c56-4109-b6f9-15372167e161",
+    "title": "States of Imagination",
+    "author": "Thomas Blom Hansen",
+    "reason": "rated 2, 0 readers: An academic edited collection, rather than a single practical book."
+  },
+  {
+    "id": "aa677a6d-f388-478f-9ad9-0d29f0c2d517",
+    "title": "Encyclopedia of Anthropology",
+    "author": "H. James Birx",
+    "reason": "rated 2, 0 readers: An encyclopedia and reference work, not suited to a summary."
+  },
+  {
+    "id": "b6927596-336e-4d28-8d1b-cd091593fafd",
+    "title": "The Evolution and History of Human Populations in South Asia",
+    "author": "Michael D. Petraglia",
+    "reason": "rated 2, 0 readers: A specialized academic edited volume on population history."
+  },
+  {
+    "id": "04432561-03fc-4c41-b840-a56de68957d4",
+    "title": "Pursuits of Happiness",
+    "author": "Gordon Mathews",
+    "reason": "rated 2, 1 readers: The title is an academic edited collection, not a single-author book."
+  },
+  {
+    "id": "90f0d1c4-4466-4e0b-ae65-df492d9bef67",
+    "title": "The Social Anthropology of Complex Societies",
+    "author": "Michael Banton",
+    "reason": "rated 2, 1 readers: An academic collection focused on a specialized field."
+  },
+  {
+    "id": "989d40ef-2e44-4868-a63c-ddaa2eecd267",
+    "title": "Taking Sides",
+    "author": "Heidi Armbruster",
+    "reason": "rated 2, 0 readers: An academic edited collection on fieldwork and ethics."
+  },
+  {
+    "id": "00237098-7901-4a67-add5-3ec070e9f0dc",
+    "title": "Scribbles from the Den",
+    "author": "Dibussi Tande",
+    "reason": "rated 1, 0 readers: I cannot verify this title as described."
+  },
+  {
+    "id": "a0385802-8e7d-4f99-b7f2-399e26e71140",
+    "title": "Girlhood and the Politics of Place",
+    "author": "Claudia Mitchell",
+    "reason": "rated 2, 1 readers: An academic edited collection, not a general-audience book."
+  },
+  {
+    "id": "9db080e0-5431-4fa4-b57c-2eeda4f171d4",
+    "title": "Dictionary of the Modern Politics of South-East Asia",
+    "author": "Michael Leifer",
+    "reason": "rated 2, 1 readers: A political dictionary and reference work."
+  },
+  {
+    "id": "bb2e38ba-6158-4a0c-ba85-130f42b74832",
+    "title": "The Situated Politics of Belonging",
+    "author": "Nira Yuval-Davis",
+    "reason": "rated 1, 2 readers: This is known as an article, not a book as described."
+  },
+  {
+    "id": "934943cd-0123-49d4-8cb4-f19611c7d15e",
+    "title": "A treatise on government",
+    "author": "Aristotle",
+    "reason": "rated 2, 0 readers: A primary political-philosophical text, outside the catalogue fit."
+  },
+  {
+    "id": "3629647b-7236-4ace-bce1-eeefe1bc0c87",
+    "title": "Jewish History, Jewish Religion",
+    "author": "Israel Shahak",
+    "reason": "rated 2, 12 readers: A polemical political tract rather than a balanced history."
+  },
+  {
+    "id": "0d5b7761-232b-4270-acea-b8041dc0d1e7",
+    "title": "Everyday Forms of State Formation",
+    "author": "Gilbert Michael Joseph",
+    "reason": "rated 2, 0 readers: A specialized academic edited collection on Mexican state formation."
+  },
+  {
+    "id": "b7353920-2dee-454f-82d4-31c4e6360ddb",
+    "title": "Weber",
+    "author": "Max Weber",
+    "reason": "rated 1, 4 readers: I cannot verify a book with this title and author as described."
+  },
+  {
+    "id": "4afddf3b-b85c-418b-bb12-b2d2e54ab91f",
+    "title": "Evolution of the Social Contract",
+    "author": "Brian Skyrms",
+    "reason": "rated 2, 1 readers: Specialized academic work on evolutionary game theory and social contracts."
+  },
+  {
+    "id": "6688f512-bd4d-44c9-8dc4-ffa91b3c2b5e",
+    "title": "Nations and Nationalism Since 1780",
+    "author": "E. J. Hobsbawm",
+    "reason": "rated 2, 28 readers: Important but specialized scholarly study of nationalism."
+  },
+  {
+    "id": "732a4557-7da1-4ca6-80f2-5f628d3da497",
+    "title": "The Politics of Aristotle",
+    "author": "Aristotle",
+    "reason": "rated 2, 1 readers: Foundational ancient political treatise, not a practical nonfiction fit."
+  },
+  {
+    "id": "dd81d43b-11d1-48b4-bf6b-0cfd4b5c85e8",
+    "title": "The Prospects of Industrial Civilization",
+    "author": "Bertrand Russell",
+    "reason": "rated 2, 2 readers: Dated political argument rather than a broadly useful modern guide."
+  },
+  {
+    "id": "3b65a162-fbce-47ce-8b63-dd10edf3b3ed",
+    "title": "The Transformation of European Politics, 1763-1848",
+    "author": "Paul W. Schroeder",
+    "reason": "rated 2, 4 readers: Detailed specialist academic study of European diplomacy."
+  },
+  {
+    "id": "1b57c6e8-ee31-453d-910c-644ed7d8aa60",
+    "title": "Masculinities",
+    "author": "R. W. Connell",
+    "reason": "rated 2, 57 readers: Influential but demanding academic work in gender theory."
+  },
+  {
+    "id": "b1a736b6-1e58-4b20-8d01-aeb6f72f195b",
+    "title": "The Oxford Handbook of Food History",
+    "author": "Jeffrey M. Pilcher",
+    "reason": "rated 2, 3 readers: Reference handbook, rather than a focused reader-friendly book."
+  },
+  {
+    "id": "1e3e7e03-4ac1-48ac-8b1d-1c618f86a965",
+    "title": "Principles of Sociology",
+    "author": "Herbert Spencer",
+    "reason": "rated 2, 9 readers: Large, dated scholarly treatise on sociology."
+  },
+  {
+    "id": "bd6a4b0b-3b42-46f0-8435-08cadf172ead",
+    "title": "Nietzsche and Early German and Austrian Sociology",
+    "author": "Franz Solms-Laubach (Graf zu.)",
+    "reason": "rated 2, 0 readers: Specialized academic monograph on intellectual history."
+  },
+  {
+    "id": "c0ed82b1-5ad2-46d0-8c95-9eff3f29412f",
+    "title": "New Rules For Sociolog Methd",
+    "author": "Anthony Giddens",
+    "reason": "rated 2, 0 readers: Established but specialist work on sociological methodology."
+  },
+  {
+    "id": "3833a822-c83f-45cf-8d16-a89440a5a4cd",
+    "title": "From Hegel to Nietzsche",
+    "author": "Karl Löwith",
+    "reason": "rated 2, 1 readers: Dense scholarly history of nineteenth-century philosophy."
+  },
+  {
+    "id": "33926383-0384-4f75-9ddd-17eee0f39acb",
+    "title": "The Division of Labour in Society",
+    "author": "Émile Durkheim",
+    "reason": "rated 2, 0 readers: Canonical but specialized academic sociology monograph."
+  },
+  {
+    "id": "c4c2d885-691e-45b9-97be-872076ccbf65",
+    "title": "Colonizing Sex",
+    "author": "Sabine Frühstück",
+    "reason": "rated 2, 2 readers: Specialist academic study of sexuality and Japanese colonialism."
+  },
+  {
+    "id": "91f31f3c-2b71-4489-a37d-709296c3c730",
+    "title": "The Field of Cultural Production",
+    "author": "Pierre Bourdieu",
+    "reason": "rated 2, 22 readers: Collection of specialist essays on cultural theory."
+  },
+  {
+    "id": "8f707f6d-be2d-44ca-ba98-bb3824cca0d4",
+    "title": "On Social Structure and Science",
+    "author": "Robert K. Merton",
+    "reason": "rated 2, 1 readers: Collection of scholarly essays, not a practical single-topic guide."
+  },
+  {
+    "id": "65302d87-1fbb-407b-8e8f-888af21d9646",
+    "title": "The Student's Companion to Social Policy",
+    "author": "Pete Alcock",
+    "reason": "rated 2, 4 readers: Student reference companion rather than a standalone ideas book."
+  },
+  {
+    "id": "2979d60a-0792-4af4-8069-28bb4da635e8",
+    "title": "Handbook of Social Theory",
+    "author": "George Ritzer",
+    "reason": "rated 2, 1 readers: Handbook and reference work for academic social theory."
+  },
+  {
+    "id": "47e72c91-9fce-422b-862b-51230475dcb6",
+    "title": "Emile Durkheim on Morality and Society",
+    "author": "Emile Durkheim",
+    "reason": "rated 2, 0 readers: Anthology of Durkheim's writings on morality and society."
+  },
+  {
+    "id": "33813901-8d5f-467a-b024-44dd405b0a23",
+    "title": "Ideology and Utopia",
+    "author": "Karl Mannheim",
+    "reason": "rated 2, 4 readers: Important but specialized theoretical monograph."
+  },
+  {
+    "id": "f647bf48-a9b9-4846-bb4d-9cd5ad26f120",
+    "title": "Purity and Danger",
+    "author": "Mary Douglas",
+    "reason": "rated 2, 21 readers: Influential but specialized academic work in anthropology."
+  },
+  {
+    "id": "bee05dc7-8965-4518-bf5b-6ff3a1fe95b1",
+    "title": "For Weber",
+    "author": "Bryan S. Turner",
+    "reason": "rated 2, 0 readers: Specialist academic study of Max Weber's sociology."
+  },
+  {
+    "id": "8a5e216c-c205-4bd9-82ba-2c484f220979",
+    "title": "The Social System",
+    "author": "Talcott Parsons",
+    "reason": "rated 2, 13 readers: Dense theoretical treatise, primarily suited to academic study."
+  },
+  {
+    "id": "5de269e9-0e60-4a3f-aaf1-a5f187b2dc74",
+    "title": "Religions of the Silk Road",
+    "author": "R. Foltz",
+    "reason": "rated 2, 4 readers: A scholarly, specialized history rather than a broadly applicable nonfiction guide."
+  },
+  {
+    "id": "bf7e8d6e-5199-4cf6-b290-8aeb0c69b170",
+    "title": "In the Field",
+    "author": "Robert G. Burgess",
+    "reason": "rated 2, 1 readers: A field-research methods textbook."
+  },
+  {
+    "id": "fdacf067-0986-44a6-b0f3-bac18f284886",
+    "title": "The Division of Labor in Society",
+    "author": "Emile Durkheim",
+    "reason": "rated 2, 0 readers: An influential but specialized academic monograph."
+  },
+  {
+    "id": "37e6c2fa-d9a6-483c-8446-1b20bf3d7c38",
+    "title": "Hegel: Lectures on the Philosophy of Religion",
+    "author": "Hegel",
+    "reason": "rated 2, 0 readers: A primary philosophical text and lecture collection."
+  },
+  {
+    "id": "4d5d9765-4436-4624-8295-1e33f9327289",
+    "title": "Handbook of New Spiritual Consciousness",
+    "author": "Ferenc Margitics",
+    "reason": "rated 1, 1 readers: I cannot verify this book as described."
+  },
+  {
+    "id": "c96fdde3-d9db-4489-8c5f-b843eb2a8e65",
+    "title": "Nurturing Children's Spirituality",
+    "author": "Holly Allen",
+    "reason": "rated 2, 0 readers: A specialized collection on children's spirituality."
+  },
+  {
+    "id": "074066e0-22f1-4894-b4a2-e4f182b64cec",
+    "title": "Quantum Religion",
+    "author": "Sylvester L. Steffen",
+    "reason": "rated 1, 0 readers: I cannot verify this book as described."
+  },
+  {
+    "id": "41d9936a-0885-438f-8b2e-203e69824173",
+    "title": "Ecologically Conscious Organizations",
+    "author": "András Ócsai",
+    "reason": "rated 2, 0 readers: A specialized academic work on organizations."
+  },
+  {
+    "id": "11c41cf6-d9c2-4aa5-aba4-ed8aa6097a14",
+    "title": "Spinoza in the light of spiritual development",
+    "author": "Toon van Eijk",
+    "reason": "rated 1, 0 readers: I cannot verify this book as described."
+  },
+  {
+    "id": "a8079ccc-a278-494e-9741-38423b52c177",
+    "title": "Spiritually Integrated Psychotherapy",
+    "author": "Len Sperry",
+    "reason": "rated 2, 0 readers: A professional psychotherapy resource, not a general-reader summary fit."
+  },
+  {
+    "id": "63896285-a4b4-4b65-9320-5baa346e88bf",
+    "title": "Religion and Civility",
+    "author": "Sylvester L. Steffen",
+    "reason": "rated 1, 0 readers: I cannot verify this book as described."
+  },
+  {
+    "id": "3fc5ca35-5db9-4819-9b4a-19ed9ce64c3d",
+    "title": "Spirituality in Social Work Practice",
+    "author": "Ronald K. Bullis",
+    "reason": "rated 2, 0 readers: A specialized professional social-work resource."
+  },
+  {
+    "id": "4e9a5dc6-57e1-44ec-93db-8c760b2546c5",
+    "title": "The Oxford Handbook of Psychology and Spirituality",
+    "author": "Lisa J. Miller",
+    "reason": "rated 2, 1 readers: An academic handbook and reference work."
+  },
+  {
+    "id": "2a48a911-6e52-4a6f-9dd6-d0880e300100",
+    "title": "Understanding New Perspectives of Spirituality",
+    "author": "Edie Lanphar",
+    "reason": "rated 1, 0 readers: I cannot verify this book as described."
+  },
+  {
+    "id": "6c7b39fa-6477-4e14-a96c-18d42cc43408",
+    "title": "Handbook of Workplace Spirituality and Organizational Performance",
+    "author": "Giacalone",
+    "reason": "rated 2, 2 readers: A specialized academic handbook."
+  },
+  {
+    "id": "66cb3305-5309-4c49-a9da-bb9d33608d0b",
+    "title": "Spiritual Humanism",
+    "author": "Louis Carini",
+    "reason": "rated 1, 0 readers: I cannot verify this book as described."
+  },
+  {
+    "id": "b8cea610-504e-49c4-aa6f-2af012c57701",
+    "title": "Anatomy of Spirituality: Portrait of the Soul",
+    "author": "Chander Behl",
+    "reason": "rated 1, 0 readers: I cannot verify this book as described."
+  },
+  {
+    "id": "c452d65d-b72e-4e12-b384-0ded6528474b",
+    "title": "THE SPIRITUAL CONSCIOUSNESS SCALE (handbook)",
+    "author": "Margitics Ferenc Ph.D.",
+    "reason": "rated 1, 0 readers: I cannot verify this handbook as described."
+  },
+  {
+    "id": "474809fb-8e75-450f-9ffb-539149dd9053",
+    "title": "Spiritual Truths in Search for Higher Levels of Well-Being",
+    "author": "Raul Llanos MD",
+    "reason": "rated 1, 0 readers: I cannot verify this book as described."
+  },
+  {
+    "id": "5450d6ee-bd0e-4b58-9325-0d2b29c99de9",
+    "title": "The Conscious Cyborg Spirituality in the Age of AI",
+    "author": "Holly Arin",
+    "reason": "rated 1, 0 readers: I cannot verify this title and author as described."
+  },
+  {
+    "id": "3fd518b9-34c0-407f-9e95-01c793d1f802",
+    "title": "Neuroscience, Consciousness and Spirituality",
+    "author": "Harald Walach",
+    "reason": "rated 2, 2 readers: An academic edited volume, not a general-reader guide."
+  },
+  {
+    "id": "1dffce1a-62fc-4cde-b442-d87cf387c2ec",
+    "title": "Money - Spirituality - Consciousness",
+    "author": "Mayuri Onerheim",
+    "reason": "rated 1, 0 readers: I cannot verify this book as described."
+  },
+  {
+    "id": "a2e6aed5-57e6-409e-a8c8-08b99b615806",
+    "title": "What Is Islam?",
+    "author": "Shahab Ahmed",
+    "reason": "rated 2, 3 readers: A significant but specialized academic monograph on Islam."
+  },
+  {
+    "id": "663a2a25-bb2d-427e-8865-a863f4f26a98",
+    "title": "Boundaries, Dynamics and Construction of Traditions in South Asia",
+    "author": "Federico Squarcini",
+    "reason": "rated 2, 0 readers: Specialist academic collection on South Asian religious traditions."
+  },
+  {
+    "id": "4bbd0cfe-f1d9-4bc9-8487-5a4bfae7d71d",
+    "title": "Myth and Method",
+    "author": "Laurie L. Patton",
+    "reason": "rated 2, 0 readers: Scholarly essay collection on theories and methods of myth."
+  },
+  {
+    "id": "330f4dce-04e8-4e80-b595-4e313dd9205b",
+    "title": "Book of Omens",
+    "author": "Talât Tekin",
+    "reason": "rated 2, 0 readers: Scholarly translation of an ancient Turkic divination text."
+  },
+  {
+    "id": "c07dc51a-18a4-4a31-b4f9-21ba97fc561c",
+    "title": "Matthew",
+    "author": "William David Davies",
+    "reason": "rated 2, 0 readers: Specialist biblical commentary rather than a general-interest book."
+  },
+  {
+    "id": "2948767f-dd43-45d3-beb2-d8b78274db1a",
+    "title": "Against Celsus",
+    "author": "Origen",
+    "reason": "rated 2, 0 readers: Primary Christian apologetic text, not a modern idea guide."
+  },
+  {
+    "id": "76ef8127-f8ba-49dc-90a1-cd14d43fef8c",
+    "title": "A Record of Buddhistic Kingdoms",
+    "author": "Faxian",
+    "reason": "rated 2, 2 readers: Primary historical travel account."
+  },
+  {
+    "id": "c703ea70-2af4-4d0b-b09d-3c08d141ae5f",
+    "title": "The Islamic Law of Personal Status",
+    "author": "Jamal J. Nasir",
+    "reason": "rated 2, 5 readers: Specialist legal reference on Islamic personal-status law."
+  },
+  {
+    "id": "90bdb90d-9e2e-4b8d-bc32-517bda96da97",
+    "title": "Notebooks, 1914-1916",
+    "author": "Ludwig Wittgenstein",
+    "reason": "rated 2, 4 readers: Primary philosophical notebooks, not a practical nonfiction guide."
+  },
+  {
+    "id": "f18bf289-d8a8-4727-a17e-c54982bd620d",
+    "title": "The Individual and the Cosmos in Renaissance Philosophy",
+    "author": "Ernst Cassirer",
+    "reason": "rated 2, 0 readers: Specialist academic monograph on Renaissance thought."
+  },
+  {
+    "id": "473b4326-3d2a-478f-a5d5-677b52f6dddd",
+    "title": "A History of Arabic Astronomy",
+    "author": "George Saliba",
+    "reason": "rated 2, 1 readers: Specialist academic monograph on Arabic astronomy."
+  },
+  {
+    "id": "61b31124-b860-4825-9f7f-712e75732fb9",
+    "title": "Basics of Biblical Greek Grammar",
+    "author": "William D. Mounce",
+    "reason": "rated 2, 11 readers: Biblical Greek grammar textbook."
+  },
+  {
+    "id": "e04027c0-d285-401c-8e98-4fc14600848a",
+    "title": "The Poetic Edda",
+    "author": "Carolyne Larrington",
+    "reason": "rated 2, 8 readers: Poetry anthology and primary source, rather than idea-focused nonfiction."
+  },
+  {
+    "id": "3e6ee9d7-2fa6-4ac3-ba16-4d7e4e7c0d48",
+    "title": "Plato: Laws 10",
+    "author": "Plato",
+    "reason": "rated 2, 0 readers: Primary Platonic dialogue."
+  },
+  {
+    "id": "95471d96-7143-4e12-935c-5133dff795c6",
+    "title": "The Myth of Disenchantment",
+    "author": "Jason Ananda Josephson Storm",
+    "reason": "rated 2, 4 readers: Academic monograph on disenchantment and modernity."
+  },
+  {
+    "id": "fc36a2f6-65a4-4bc7-b987-2929942b9115",
+    "title": "The Struggle for Recognition",
+    "author": "Axel Honneth",
+    "reason": "rated 2, 2 readers: Specialist academic work in social and political theory."
+  },
+  {
+    "id": "8cdbfe69-21bb-4e2f-8798-90f19c83550a",
+    "title": "Arguing about Gods",
+    "author": "Graham Oppy",
+    "reason": "rated 2, 1 readers: Specialist academic monograph on arguments about God."
+  },
+  {
+    "id": "4af76a9b-20cd-4e53-8d31-606312c2e457",
+    "title": "Madness and Civilization",
+    "author": "Michel Foucault",
+    "reason": "rated 2, 14 readers: Influential but specialist academic monograph on madness and institutions."
+  },
+  {
+    "id": "4b699ec4-5068-4534-8c3a-151552af3632",
+    "title": "Hobbes: On the Citizen",
+    "author": "Thomas Hobbes",
+    "reason": "rated 2, 0 readers: Primary political philosophy text."
+  },
+  {
+    "id": "a795a70c-b7e1-4c16-9a17-a038ed9442d4",
+    "title": "The Cambridge Companion to the Stoics",
+    "author": "Brad Inwood",
+    "reason": "rated 2, 7 readers: Scholarly companion collection rather than a single practical argument."
+  },
+  {
+    "id": "14a03ec7-6ef1-4822-80d6-099c2b4ea973",
+    "title": "Oxford Textbook of Community Mental Health",
+    "author": "Graham Thornicroft",
+    "reason": "rated 2, 3 readers: Professional textbook intended for community mental health practitioners."
+  },
+  {
+    "id": "a4a30896-11dd-4bf3-8a5a-e88ae156a168",
+    "title": "Research Grants Index",
+    "author": "National Institutes of Health (U.S.). Division of Research Grants",
+    "reason": "rated 2, 0 readers: Administrative index and reference material, not a general-interest book."
+  },
+  {
+    "id": "34b75659-650f-42b2-9354-d8fc5dc576ce",
+    "title": "Publication Catalog of the U.S. Department of Health and Human Services",
+    "author": "United States. Department of Health and Human Services",
+    "reason": "rated 2, 0 readers: Government publications catalog, a reference work rather than idea-driven nonfiction."
+  },
+  {
+    "id": "68621ef0-41b2-4a0b-9d43-b588cff6a4c2",
+    "title": "Vital & Health Statistics",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: Statistical government publication series, primarily reference material."
+  },
+  {
+    "id": "508eb0b3-240b-439d-ad5f-35b56e7bfc49",
+    "title": "Adolescent Health: Background and the effectiveness of selected prevention and treatment services",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: Specialized report on services, not a broadly applicable nonfiction guide."
+  },
+  {
+    "id": "d60ed7b1-1167-4358-aba0-4c32b03e468e",
+    "title": "Handbook of Mental Illness in the Mentally Retarded",
+    "author": "F.J. Menolascino",
+    "reason": "rated 2, 0 readers: Specialist handbook, with a dated title and clinical focus."
+  },
+  {
+    "id": "6d775852-ca81-44e3-bd0f-cf3d252e7c97",
+    "title": "Handbook on Animal-Assisted Therapy",
+    "author": "Megan Mueller",
+    "reason": "rated 2, 0 readers: Professional handbook and reference work for a specialized field."
+  },
+  {
+    "id": "8aa2fdc9-03d1-449e-b17f-1ed651f9eecd",
+    "title": "Use of Health and Mental Health Outpatient Services in Four Organized Health Care Settings",
+    "author": "Irving D. Goldberg",
+    "reason": "rated 2, 0 readers: Specialized research report rather than a general-interest nonfiction book."
+  },
+  {
+    "id": "27a7b368-1477-46a6-9e66-a12630b38e33",
+    "title": "Psychosocial Conceptual Practice Models in Occupational Therapy",
+    "author": "Moses N. Ikiugu",
+    "reason": "rated 2, 0 readers: Academic occupational therapy monograph for a specialist readership."
+  },
+  {
+    "id": "789328f2-47ca-4178-acf8-0f65b35a33d1",
+    "title": "Crouch and Alers Occupational Therapy in Psychiatry and Mental Health",
+    "author": "Rosemary Crouch",
+    "reason": "rated 2, 0 readers: Professional textbook on occupational therapy and mental health."
+  },
+  {
+    "id": "bb25fe25-ec55-436b-829c-597dee6355e9",
+    "title": "Textbook of Mental Health and Psychiatric Nursing: Principles and Practice",
+    "author": "Sailaxmi Gandhi",
+    "reason": "rated 2, 0 readers: Nursing textbook aimed at students and clinical practitioners."
+  },
+  {
+    "id": "19d6d782-a57c-468b-ae9d-c2cd73b15bf1",
+    "title": "Mental Health Interventions and Services for Vulnerable Children and Young People",
+    "author": "Panos Vostanis",
+    "reason": "rated 2, 0 readers: Academic professional text focused on specialist services and interventions."
+  },
+  {
+    "id": "7287cc83-073c-4df0-af08-920f86f751c9",
+    "title": "The Praeger Handbook of Community Mental Health Practice",
+    "author": "Doreen Maller",
+    "reason": "rated 2, 0 readers: Community mental health handbook, primarily a professional reference."
+  },
+  {
+    "id": "56cdc3cc-4ad4-46d3-828b-fdc1123eb49b",
+    "title": "Mental Health Services: A Public Health Perspective",
+    "author": "Bruce Lubotsky Levin",
+    "reason": "rated 2, 0 readers: Academic treatment of mental health services from a public health perspective."
+  },
+  {
+    "id": "646d3b2b-42b4-4d6c-ae05-b690f217b107",
+    "title": "Psychiatric and Mental Health Nursing",
+    "author": "Ruth Elder",
+    "reason": "rated 2, 1 readers: Professional nursing textbook rather than general-interest nonfiction."
+  },
+  {
+    "id": "f8e116fa-56b5-4cde-a7e7-2b614647dadc",
+    "title": "Mental Health and Psychiatric Nursing",
+    "author": "Janet L. Davies",
+    "reason": "rated 2, 0 readers: Specialist textbook on psychiatric and mental health nursing."
+  },
+  {
+    "id": "99fbaaf3-1cae-467e-af57-ae54efbddb25",
+    "title": "Occupational Therapy for Mental Health",
+    "author": "Catana Brown",
+    "reason": "rated 2, 1 readers: Occupational therapy textbook, rather than a general-audience ideas book."
+  },
+  {
+    "id": "f61013dc-91e6-4093-943b-e6508d25b757",
+    "title": "Psychiatric-mental Health Nursing",
+    "author": "Sheila L. Videbeck",
+    "reason": "rated 2, 22 readers: Established psychiatric nursing textbook and clinical reference."
+  },
+  {
+    "id": "ea6c488d-969d-436d-b48e-79257aa5af38",
+    "title": "Occupational Therapy in Mental Health",
+    "author": "Catana Brown",
+    "reason": "rated 2, 4 readers: Occupational therapy textbook for professional training."
+  },
+  {
+    "id": "62241a26-d3c8-4582-9ae2-03842f2474bc",
+    "title": "Occupational Therapy in Psychiatry and Mental Health",
+    "author": "Rosemary Crouch",
+    "reason": "rated 2, 5 readers: Professional textbook on occupational therapy in psychiatric settings."
+  },
+  {
+    "id": "1a1bd829-0e84-4b1d-9f45-c899f8506e4a",
+    "title": "The Occupational Ergonomics Handbook",
+    "author": "Waldemar Karwowski",
+    "reason": "rated 2, 0 readers: Technical reference handbook, not a general-audience book."
+  },
+  {
+    "id": "3ef104c2-25b5-453a-94c2-26e173b10188",
+    "title": "Popular Mechanics",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: A magazine issue, not a standalone ideas-focused book."
+  },
+  {
+    "id": "17d729ae-9856-4354-9f2d-2b62ed93d81c",
+    "title": "Sports and Active Living during the Covid-19 Pandemic",
+    "author": "Solfrid Bratland-Sanda",
+    "reason": "rated 2, 0 readers: Specialist academic collection on sport during the pandemic."
+  },
+  {
+    "id": "6d8a9493-282b-43be-a830-e429bbdf1be7",
+    "title": "Training in Units",
+    "author": "United States. Department of the Army",
+    "reason": "rated 2, 0 readers: Military training manual rather than a general-audience book."
+  },
+  {
+    "id": "c01fdb7a-b955-48b5-9fdf-5f549449f135",
+    "title": "BTEC National Sport",
+    "author": "George Caplan",
+    "reason": "rated 2, 0 readers: Vocational sport course textbook."
+  },
+  {
+    "id": "ef79760d-0e32-41c7-9504-85189071a6e2",
+    "title": "Weekly World News",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: A magazine issue, not a standalone ideas-focused book."
+  },
+  {
+    "id": "516e390c-bac6-4582-80be-26509f42441b",
+    "title": "Popular Mechanics",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: A magazine issue, not a standalone ideas-focused book."
+  },
+  {
+    "id": "b1c4bd33-de5b-4372-9352-a4f3f03c7e91",
+    "title": "Handbook of Behavioral Medicine",
+    "author": "Andrew Steptoe",
+    "reason": "rated 2, 0 readers: Specialist reference handbook in behavioral medicine."
+  },
+  {
+    "id": "707bd9dc-837d-47dc-8a30-ce8f5113787d",
+    "title": "Health Opportunities Through Physical Education",
+    "author": "Charles B. Corbin",
+    "reason": "rated 2, 1 readers: Physical education textbook for educators."
+  },
+  {
+    "id": "fb9736cb-6fb2-4002-b8ee-7ef7306ce395",
+    "title": "Reconceptualizing Physical Education",
+    "author": "Ang Chen",
+    "reason": "rated 2, 0 readers: Academic work for physical education researchers and professionals."
+  },
+  {
+    "id": "9ee276fb-51bb-453f-b441-0da43a8b6027",
+    "title": "Wellness and Physical Therapy",
+    "author": "Fair",
+    "reason": "rated 1, 3 readers: Could not verify this title and author combination."
+  },
+  {
+    "id": "2a0ed080-b283-4c62-ac2d-261a278e3503",
+    "title": "Science and Soccer",
+    "author": "Thomas Reilly",
+    "reason": "rated 2, 1 readers: Specialist scientific reference on soccer."
+  },
+  {
+    "id": "2c110831-0898-4411-aa7e-f17ce4109bb4",
+    "title": "Principles and Practice of Resistance Training",
+    "author": "Michael H. Stone",
+    "reason": "rated 2, 10 readers: Technical training text for strength professionals."
+  },
+  {
+    "id": "6e71b5b1-40b1-487c-8c54-180f2163eb0f",
+    "title": "Mapping Leisure across Borders",
+    "author": "Gianna Cappello",
+    "reason": "rated 2, 0 readers: Specialist academic work on leisure studies."
+  },
+  {
+    "id": "95211fe6-f61c-4b8f-b236-040941b73eec",
+    "title": "Official Gazette of the United States Patent and Trademark Office",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: Official patent and trademark reference publication."
+  },
+  {
+    "id": "d29b601e-9fc3-4818-b5e5-4ae5415ccf58",
+    "title": "Physical Activity and Health",
+    "author": "Kelli McCormack Brown",
+    "reason": "rated 2, 0 readers: Academic text on physical activity and health."
+  },
+  {
+    "id": "46ce66e9-4091-4e0e-9a32-59b41fb5cbb5",
+    "title": "Jet",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: A magazine issue, not a standalone ideas-focused book."
+  },
+  {
+    "id": "4582366d-b2e7-4baa-aa04-12e467916ea8",
+    "title": "Special Forces Fitness Training",
+    "author": "Augusta DeJuan  Hathaway",
+    "reason": "rated 1, 0 readers: Could not verify this title and author combination."
+  },
+  {
+    "id": "079e3233-4c79-4124-b381-dbffa2995be0",
+    "title": "Fitness Programming and Physical Disability",
+    "author": "Patricia D. Miller",
+    "reason": "rated 2, 0 readers: Specialist professional reference on disability fitness programming."
+  },
+  {
+    "id": "f45eec6b-b112-4fe0-b1a7-75c79fc03263",
+    "title": "The Official U.S. Army Fitness Training Handbook",
+    "author": "Department of the Army",
+    "reason": "rated 2, 0 readers: Official military fitness training manual."
+  },
+  {
+    "id": "eb734d17-171a-4bb2-826e-e267db487b61",
+    "title": "Unleashing Your Potential: A Comprehensive Guide to Functional Fitness",
+    "author": "Cassandra Fenyk",
+    "reason": "rated 1, 0 readers: Could not verify this title and author combination."
+  },
+  {
+    "id": "2d4c4cc6-20d6-439f-b64c-231fe6c3a344",
+    "title": "The Complete Guide to Suspended Fitness Training",
+    "author": "Ben Pratt",
+    "reason": "rated 1, 0 readers: Could not verify this title and author combination."
+  },
+  {
+    "id": "800599aa-ef89-4503-a641-e1b64d5989ca",
+    "title": "Library of Congress Subject Headings",
+    "author": "Library of Congress. Subject Cataloging Division",
+    "reason": "rated 2, 0 readers: Library cataloging reference work, not a practical general-reader book."
+  },
+  {
+    "id": "8c1e873f-0555-4eaf-850f-b40c7385c9e6",
+    "title": "CRISP Thesaurus",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: A specialized information-retrieval thesaurus, primarily a reference tool."
+  },
+  {
+    "id": "1fa5c7c3-0545-48a7-a140-032d96be0fed",
+    "title": "SOCIAL AND ECONOMIC DEVELOPMENT – Volume I",
+    "author": "Salustiano del Campo ,Tomoko Hamada ,Giancarlo Barbiroli,Saskia Sassen, Eleonora Barbieri-Masini, Paul Nchoji Nkwi, Owen Sichone, Abubakar Momoh",
+    "reason": "rated 2, 0 readers: Scholarly multi-author volume, better suited to academic reference."
+  },
+  {
+    "id": "2fc2dcde-a266-41f5-b236-1459632728ce",
+    "title": "Dietary Goals for the United States, Supplemental Views",
+    "author": "United States. Congress. Senate. Select Committee on Nutrition and Human Needs",
+    "reason": "rated 2, 0 readers: Congressional policy material, rather than an accessible practical book."
+  },
+  {
+    "id": "17574eb8-d3c7-4cce-b9a6-fe08644cd65e",
+    "title": "Public Health Service Publication",
+    "author": "United States. Public Health Service",
+    "reason": "rated 1, 0 readers: Generic series-like title; cannot verify a distinct book as described."
+  },
+  {
+    "id": "d74b1ecd-a533-459b-a655-63fff94953cf",
+    "title": "Sustainable Diets",
+    "author": "Barbara Burlingame",
+    "reason": "rated 2, 0 readers: Specialist nutrition work, not a broad, reader-focused guide."
+  },
+  {
+    "id": "ca20dc56-32f6-4f28-81b2-5d4ff7169cbf",
+    "title": "A-E",
+    "author": "Library of Congress. Office for Subject Cataloging Policy",
+    "reason": "rated 2, 0 readers: Library subject-heading reference, not a general-interest book."
+  },
+  {
+    "id": "134942c8-a8a3-4436-8a94-70ae64a569b6",
+    "title": "Food, Nutrition and the Media",
+    "author": "Valentina Marinescu",
+    "reason": "rated 2, 0 readers: Specialized academic treatment of food, nutrition, and media."
+  },
+  {
+    "id": "99f148f6-3fb4-4f26-af5d-717f7246ea6a",
+    "title": "Krause and Mahan's Food and the Nutrition Care Process, 16e, E-Book",
+    "author": "Janice L Raymond",
+    "reason": "rated 2, 0 readers: Clinical nutrition textbook and professional reference."
+  },
+  {
+    "id": "7cd85b45-b90a-43b9-a980-f63bc5a86ed0",
+    "title": "Catalog. Supplement - Food and Nutrition Information and Educational Materials Center",
+    "author": "Food and Nutrition Information and Educational Materials Center (U.S.)",
+    "reason": "rated 2, 0 readers: Catalog of educational materials, not a standalone idea-driven book."
+  },
+  {
+    "id": "92bfadda-4889-455b-95b0-1f5b48a200ee",
+    "title": "Library of Congress Subject Headings: A-E",
+    "author": "Library of Congress. Subject Cataloging Division",
+    "reason": "rated 2, 0 readers: Library cataloging reference work."
+  },
+  {
+    "id": "0d4f9ef9-db1c-43ba-a5fb-efd3598e95f3",
+    "title": "Nutrition and Diet Therapy",
+    "author": "Peggy Stanfield",
+    "reason": "rated 2, 4 readers: Nutrition and diet therapy textbook."
+  },
+  {
+    "id": "8b4530ce-79b8-4554-9dd8-a93929e444c5",
+    "title": "Medical and Health Related Sciences Thesaurus",
+    "author": "National Institutes of Health (U.S.)",
+    "reason": "rated 2, 0 readers: Medical terminology thesaurus, intended as a reference tool."
+  },
+  {
+    "id": "28f361c1-1a09-4c73-b7b3-6de2ea15f847",
+    "title": "Handbook of Nutrition, Diet, and the Eye",
+    "author": "Victor R Preedy",
+    "reason": "rated 2, 0 readers: Specialist clinical handbook and reference work."
+  },
+  {
+    "id": "f7652481-7c96-4e65-a467-2f1a689d130c",
+    "title": "Nurturing Sustainable Nutrition Through Innovations in Food Science and Technology",
+    "author": "Giuseppe Poli",
+    "reason": "rated 2, 0 readers: Technical scholarly volume on food science and nutrition."
+  },
+  {
+    "id": "e892d326-bf86-4b04-9835-6d9a539fe0ee",
+    "title": "Healthy Foods and Dietary Patterns in Modern Consumer",
+    "author": "Prisco Piscitelli",
+    "reason": "rated 2, 0 readers: Specialized academic treatment of food patterns and consumers."
+  },
+  {
+    "id": "8dc711ee-a25e-4026-9d8e-9332a6a9e918",
+    "title": "The State of Food Security and Nutrition in the World 2020",
+    "author": "Food and Agriculture Organization of the United Nations ",
+    "reason": "rated 2, 0 readers: Important institutional report, but primarily research and reference material."
+  },
+  {
+    "id": "632d5261-a865-4050-87d4-d909fed7e547",
+    "title": "Food and Nutrition Information and Educational Materials Center catalog",
+    "author": "Food and Nutrition Information Center (U.S.).",
+    "reason": "rated 2, 0 readers: Library catalog of educational resources, not a standalone guide."
+  },
+  {
+    "id": "b31ac7f8-0200-4eb2-9beb-056f43205600",
+    "title": "Food and Nutrition",
+    "author": "Anita Tull",
+    "reason": "rated 2, 23 readers: A food and nutrition textbook rather than a general-reader book."
+  },
+  {
+    "id": "56c26206-2f65-4d4f-9fd9-32b260e99aa7",
+    "title": "Nutrition, Diet Therapy, and the Liver",
+    "author": "Victor R. Preedy",
+    "reason": "rated 2, 0 readers: Specialist clinical reference focused on liver nutrition."
+  },
+  {
+    "id": "19ead757-93ef-4d0e-95d4-e78f171f8e95",
+    "title": "Handbook of Nutrition and Diet",
+    "author": "Desai",
+    "reason": "rated 2, 1 readers: Nutrition handbook and reference work."
+  },
+  {
+    "id": "58527489-23f6-4193-ab1b-7adc14f2e1b1",
+    "title": "Sustainable Diets, Food, and Nutrition",
+    "author": "National Academies of Sciences, Engineering, and Medicine",
+    "reason": "rated 2, 0 readers: National Academies scholarly report, not a reader-oriented guide."
+  },
+  {
+    "id": "99820f0a-9ba5-4806-934b-b9bd7b7445df",
+    "title": "Integrative Medicine",
+    "author": "David Peters",
+    "reason": "rated 2, 0 readers: Professional reference on integrative medicine."
+  },
+  {
+    "id": "63ce0d9b-19cc-4c9c-b122-7e097b9541a0",
+    "title": "Positive Psychology",
+    "author": "Alan Carr",
+    "reason": "rated 2, 20 readers: Academic textbook rather than a broadly accessible practical psychology book."
+  },
+  {
+    "id": "a803e672-ecde-44a6-a7f3-2b688673e1d9",
+    "title": "Handbook of Religion and Health",
+    "author": "Harold G. Koenig",
+    "reason": "rated 2, 4 readers: Comprehensive scholarly handbook, primarily a reference work."
+  },
+  {
+    "id": "5e1ffb36-6441-41ef-bc60-43794cda889f",
+    "title": "Science and Health with Key to the Scriptures",
+    "author": "Mary Baker Eddy",
+    "reason": "rated 2, 4 readers: Primary religious text, rather than an applied nonfiction guide."
+  },
+  {
+    "id": "4ebbd36a-a315-4629-a7a5-e9d77400bdba",
+    "title": "The Meaning of Illness",
+    "author": "Marc Augé",
+    "reason": "rated 1, 0 readers: Unsure this title exists as described."
+  },
+  {
+    "id": "2fb8e433-64c0-4739-8568-42ec330d2294",
+    "title": "Core Concepts in Health",
+    "author": "Jennifer D. Irwin",
+    "reason": "rated 2, 1 readers: Health textbook, outside the catalogue’s summary focus."
+  },
+  {
+    "id": "b681e447-4b5a-45ef-992e-a891ad134cbf",
+    "title": "Researching Health",
+    "author": "Mike Saks",
+    "reason": "rated 2, 1 readers: Academic research methods text."
+  },
+  {
+    "id": "7a790da1-0faf-40cf-bdd5-7803eb6a2898",
+    "title": "Encyclopedia of Family Health",
+    "author": "David B. Jacoby",
+    "reason": "rated 2, 1 readers: Reference encyclopedia, not suited to a summary."
+  },
+  {
+    "id": "cefe0759-89e9-48ae-a2e0-e1b4a37447ae",
+    "title": "Principles of Gender-specific Medicine",
+    "author": "Marianne J. Legato",
+    "reason": "rated 2, 1 readers: Specialist medical reference work."
+  },
+  {
+    "id": "ed5f7b4c-caf6-41ce-8be4-e3ed0515cc22",
+    "title": "Health",
+    "author": "Rebecca J. Donatelle",
+    "reason": "rated 2, 12 readers: College health textbook."
+  },
+  {
+    "id": "d703ad55-86b8-4496-b859-cca7c9318dc7",
+    "title": "Health, Stress, and Coping",
+    "author": "Aaron Antonovsky",
+    "reason": "rated 2, 72 readers: Important but primarily an academic monograph."
+  },
+  {
+    "id": "673fd8ce-9219-4d0f-bbe2-bebdc76536d8",
+    "title": "Handbook of Self-Regulation",
+    "author": "Monique Boekaerts",
+    "reason": "rated 2, 9 readers: Scholarly handbook and reference work."
+  },
+  {
+    "id": "8726e85f-80c9-479c-91bd-77cbbc404e31",
+    "title": "Essential Concepts for Healthy Living",
+    "author": "Sandra Alters",
+    "reason": "rated 2, 1 readers: Health textbook."
+  },
+  {
+    "id": "c69754ad-2a67-4e25-9c56-1fc0626143c4",
+    "title": "Health, the Basics",
+    "author": "Rebecca J. Donatelle",
+    "reason": "rated 2, 3 readers: Health textbook."
+  },
+  {
+    "id": "e399877f-4e83-4439-a23b-188a18440272",
+    "title": "An Invitation to Health",
+    "author": "Dianne R. Hales",
+    "reason": "rated 2, 3 readers: Health textbook."
+  },
+  {
+    "id": "02aca621-efa3-4cb3-b6d0-5835be3cf157",
+    "title": "Herbert E. Bolton and the Historiography of the Americas",
+    "author": "Russell Magnaghi",
+    "reason": "rated 2, 2 readers: Specialist academic historiography study."
+  },
+  {
+    "id": "e14320b4-eefb-48ba-9fd4-e5f4e4522ba5",
+    "title": "Virtual America",
+    "author": "John Opie",
+    "reason": "rated 1, 0 readers: Unsure this title exists as described."
+  },
+  {
+    "id": "482b4512-02c7-47f2-8b40-7b027aaa1768",
+    "title": "Teaching Social Studies",
+    "author": "James Litle",
+    "reason": "rated 2, 0 readers: Teaching textbook, outside the catalogue’s summary focus."
+  },
+  {
+    "id": "779954ee-86a1-4e22-91d1-94a13da54568",
+    "title": "The American Catalogue",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: Historical reference catalogue."
+  },
+  {
+    "id": "9bac0135-48de-4216-8417-7d2754f626ec",
+    "title": "Enemy Images in American History",
+    "author": "Ragnhild Fiebig-von Hase",
+    "reason": "rated 2, 0 readers: Specialist scholarly collection on historical representations."
+  },
+  {
+    "id": "be94eedc-5029-44a2-87ab-6ad244327aee",
+    "title": "Ebony",
+    "author": "Unknown",
+    "reason": "rated 1, 0 readers: Appears to be a magazine issue, not a book."
+  },
+  {
+    "id": "907dad82-091a-441f-b143-e07088e2bc13",
+    "title": "Slavery, Race and American History",
+    "author": "John David Smith",
+    "reason": "rated 2, 1 readers: Scholarly collection rather than an accessible general-interest book."
+  },
+  {
+    "id": "9542ef8f-e779-4202-acc4-f4e8657e7f24",
+    "title": "Chinese America: History and Perspectives 2001",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: Scholarly journal or proceedings volume."
+  },
+  {
+    "id": "f4dba104-8d0f-46bd-bea5-d1b956fcb55b",
+    "title": "Focus on U.S. History",
+    "author": "Kathy Sammis",
+    "reason": "rated 2, 0 readers: U.S. history teaching text."
+  },
+  {
+    "id": "991692db-b6ed-4885-a8fd-0e10f414984c",
+    "title": "Chinese America: History and Perspectives 1987",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: Scholarly journal or proceedings volume."
+  },
+  {
+    "id": "92f32a94-57ab-4766-b341-a694f28131d5",
+    "title": "Annual Report of the American Historical Association",
+    "author": "American Historical Association",
+    "reason": "rated 2, 0 readers: Historical association report and reference material."
+  },
+  {
+    "id": "f8e6e53c-d884-429d-bcc0-ae8de9a68128",
+    "title": "This Day in American History, 4th ed.",
+    "author": "Ernie Gross",
+    "reason": "rated 2, 0 readers: Chronological reference work, not an idea-driven book."
+  },
+  {
+    "id": "935a242e-535e-4e8e-8152-0c23fe0e422e",
+    "title": "The Oxford Handbook of Central American History",
+    "author": "Robert H. Holden",
+    "reason": "rated 1, 0 readers: Could not verify this title and author combination."
+  },
+  {
+    "id": "d06bf015-ee78-47e7-afa0-d7c549f264a0",
+    "title": "Church And State In American History",
+    "author": "John F Wilson",
+    "reason": "rated 2, 0 readers: A historical reference or anthology rather than an idea-focused book."
+  },
+  {
+    "id": "aa3bffbc-7c24-47d6-a01d-14eebcce8989",
+    "title": "Teaching American History in a Global Context",
+    "author": "Carl J. Guarneri",
+    "reason": "rated 2, 0 readers: Teaching-focused collection, not a suitable standalone summary."
+  },
+  {
+    "id": "907d533a-3bd3-42e2-bfcb-a8ce374480aa",
+    "title": "Food and Drink in American History",
+    "author": "Andrew F. Smith",
+    "reason": "rated 2, 0 readers: An encyclopedic reference work on food and drink."
+  },
+  {
+    "id": "43fe5295-d6e1-44c4-87ca-2d507d04023c",
+    "title": "The American History Highway: A Guide to Internet Resources on U.S., Canadian, and Latin American History",
+    "author": "Dennis A. Trinkle",
+    "reason": "rated 2, 1 readers: A research guide to internet resources, not an idea-driven book."
+  },
+  {
+    "id": "a0f83f71-c8fd-4a20-9420-a334491c14fe",
+    "title": "Manifest Destiny and Mission in American History",
+    "author": "Frederick Merk",
+    "reason": "rated 2, 2 readers: A specialized academic historical monograph."
+  },
+  {
+    "id": "01caf0b8-f573-48ee-a325-72266a77cc02",
+    "title": "American History",
+    "author": "Marcius Willson",
+    "reason": "rated 2, 0 readers: An outdated school textbook."
+  },
+  {
+    "id": "0900666b-85eb-4603-b3df-9ffb5d5d16e0",
+    "title": "The United States Army",
+    "author": "George D. Bennett",
+    "reason": "rated 1, 0 readers: Could not verify this title and author combination."
+  },
+  {
+    "id": "c290491d-1ca2-4e3c-bc7c-1dc13224a127",
+    "title": "The British Empire and the Second World War",
+    "author": "Ashley Jackson",
+    "reason": "rated 2, 2 readers: A specialized academic history rather than a practical or broadly applicable read."
+  },
+  {
+    "id": "a76e9cc2-ca1d-44ed-aa35-6a3a57d1fa41",
+    "title": "Subject Headings Used in the Dictionary Catalogs of the Library of Congress",
+    "author": "Library of Congress",
+    "reason": "rated 2, 0 readers: A cataloging reference work."
+  },
+  {
+    "id": "db38bb72-cc62-4e75-906e-ab14af3149ad",
+    "title": "Almanac of American Military History",
+    "author": "Spencer C. Tucker",
+    "reason": "rated 2, 0 readers: A military-history almanac and reference work."
+  },
+  {
+    "id": "d38cfed0-9fbf-4ad9-a819-a3f8f781a514",
+    "title": "Library of Congress Subject Headings",
+    "author": "Library of Congress",
+    "reason": "rated 2, 2 readers: A library cataloging reference work."
+  },
+  {
+    "id": "3aca2dea-b4f2-4eb7-b0f9-6ae589bda434",
+    "title": "The Soviet High Command: a Military-political History, 1918-1941",
+    "author": "John Erickson",
+    "reason": "rated 2, 0 readers: A specialized academic military history."
+  },
+  {
+    "id": "4249b359-025d-4d2c-b2f4-ffb88c3a69ca",
+    "title": "The Historical Foundations of World Order",
+    "author": "Douglas Johnston",
+    "reason": "rated 2, 0 readers: A specialized academic monograph."
+  },
+  {
+    "id": "6eee164a-4f48-4c8b-b323-a4457a489231",
+    "title": "The Routledge Handbook of American Military and Diplomatic History",
+    "author": "Christos Frentzos",
+    "reason": "rated 2, 0 readers: An edited handbook, primarily a scholarly reference."
+  },
+  {
+    "id": "53ea0a48-05cb-430c-9c0b-7a70c9b213db",
+    "title": "Library of Congress Subject Headings",
+    "author": "Library of Congress. Cataloging Policy and Support Office",
+    "reason": "rated 2, 2 readers: A library cataloging reference work."
+  },
+  {
+    "id": "2a2a7338-a2f7-4101-93a4-1c69b3e44f46",
+    "title": "Publications of the U.S. Army Center of Military History",
+    "author": "Center of Military History",
+    "reason": "rated 2, 0 readers: A publications list, not a narrative or idea-focused book."
+  },
+  {
+    "id": "adc7ef2c-eb61-450a-a9d5-0fc6e753fa2d",
+    "title": "Communication and the First World War",
+    "author": "John Griffiths",
+    "reason": "rated 1, 0 readers: Could not confidently verify this title and author combination."
+  },
+  {
+    "id": "08b2894b-4bbb-403a-a957-77e4fe61a508",
+    "title": "American Military History, Vol. 2, The United States Army in a Global Era, 1917--2003, 2005",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: An official military-history textbook."
+  },
+  {
+    "id": "1cd66adb-ffa1-4244-8dd8-c4cfc6548f4c",
+    "title": "The British Empire and the First World War",
+    "author": "Ashley Jackson",
+    "reason": "rated 2, 1 readers: A specialized academic history of the British Empire."
+  },
+  {
+    "id": "5aa07163-7618-4b77-9fe5-fc4c080c0799",
+    "title": "World War II in Global Perspective, 1931-1953",
+    "author": "Andrew N. Buchanan",
+    "reason": "rated 2, 0 readers: A scholarly monograph rather than a broadly applicable history."
+  },
+  {
+    "id": "1d023615-33fa-4324-8778-4be61bfd1d43",
+    "title": "Researching World War I",
+    "author": "Robin Higham",
+    "reason": "rated 2, 1 readers: A research guide and reference work."
+  },
+  {
+    "id": "5edf459c-19b5-426c-bff4-d33076ba331a",
+    "title": "A Guide to the Study and Use of Military History",
+    "author": "John E. Jessup",
+    "reason": "rated 2, 0 readers: A guidebook for military-history study and research."
+  },
+  {
+    "id": "9e7de386-0200-4089-a385-4c98bdaba593",
+    "title": "The American Experience in World War II: The atomic bomb in history and memory",
+    "author": "Walter L. Hixson",
+    "reason": "rated 2, 0 readers: A specialized academic study of atomic-bomb history and memory."
+  },
+  {
+    "id": "cb248ca5-b423-4825-baa3-7fd27935fb63",
+    "title": "The World in World Wars",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: An edited scholarly collection rather than a single-author narrative."
+  },
+  {
+    "id": "67148db4-acfc-47e8-b7fd-9590bf6dd765",
+    "title": "The Art and Craft of Asian Stories",
+    "author": "Robin Hemley",
+    "reason": "rated 1, 2 readers: I’m not confident this book exists as described."
+  },
+  {
+    "id": "5579b0c0-3b1d-43a6-93df-eebfeeaaeaeb",
+    "title": "Home and Nation in Anglophone Autobiographies of Africa",
+    "author": "Lena Englund",
+    "reason": "rated 2, 0 readers: Specialist academic study of African autobiographies."
+  },
+  {
+    "id": "bc600fbc-fa63-4bc9-a891-66a223b32370",
+    "title": "Situating Josephus’ Life within Ancient Autobiography",
+    "author": "Davina Grojnowski",
+    "reason": "rated 2, 0 readers: Specialist academic study of ancient autobiography."
+  },
+  {
+    "id": "6979ab0b-c58d-400c-8a69-a9e13ae8dc2c",
+    "title": "The New Midlife Self-Writing",
+    "author": "Emily O. Wittman",
+    "reason": "rated 2, 0 readers: Specialist academic monograph on midlife self-writing."
+  },
+  {
+    "id": "d6b4b56a-31c7-4208-9326-118b2dc2e57d",
+    "title": "Disability in American Life",
+    "author": "Tamar Heller",
+    "reason": "rated 2, 1 readers: Reference-style work on disability in American life."
+  },
+  {
+    "id": "c23a0b53-37e8-44b4-b05c-bc196a3ad94a",
+    "title": "Modernist Lives",
+    "author": "Claire Battershill",
+    "reason": "rated 2, 0 readers: Academic study of modernist biography and life writing."
+  },
+  {
+    "id": "be604c24-80bc-477b-bda7-c2300d91bebd",
+    "title": "Life Stories",
+    "author": "Maureen O'Connor",
+    "reason": "rated 2, 2 readers: Specialist scholarly work, rather than a general-reader guide."
+  },
+  {
+    "id": "9925d2c5-d4da-4085-9272-4b329649ef9e",
+    "title": "Reading Cultural Representations of the Double Diaspora",
+    "author": "Maya Parmar",
+    "reason": "rated 2, 0 readers: Narrow academic study of diaspora and cultural representation."
+  },
+  {
+    "id": "ee47f0b1-87e5-4f2e-864a-811109eb75d1",
+    "title": "The Gift of Biography",
+    "author": "Shirley McLaughlin",
+    "reason": "rated 1, 0 readers: I’m not confident this book exists as described."
+  },
+  {
+    "id": "fdf3700e-a1d2-4906-8e81-70388d1ff92d",
+    "title": "Writing the Self",
+    "author": "Peter Heehs",
+    "reason": "rated 2, 0 readers: Scholarly study of autobiography, not a practical writing guide."
+  },
+  {
+    "id": "d1b04fbf-d94c-4bef-91d6-3e30eca1667e",
+    "title": "Mediating Memory",
+    "author": "Bunty Avieson",
+    "reason": "rated 2, 0 readers: Specialist academic work on media and memory."
+  },
+  {
+    "id": "5b879f88-8e55-4f15-8257-36dc91b252b9",
+    "title": "Holocaust Literature of the Second Generation",
+    "author": "M. Vaul-Grimwood",
+    "reason": "rated 2, 0 readers: Academic study of a specialized body of Holocaust literature."
+  },
+  {
+    "id": "8089d845-9af6-496f-a264-b15c496c1122",
+    "title": "Grief Memoirs",
+    "author": "Katarzyna A. Małecka",
+    "reason": "rated 2, 0 readers: Specialist scholarly examination of grief memoirs."
+  },
+  {
+    "id": "60ca98cb-2dd2-4aca-97ac-99572a4baad7",
+    "title": "Memoir",
+    "author": "G. Thomas Couser",
+    "reason": "rated 2, 4 readers: Academic introduction to memoir, rather than an applied guide."
+  },
+  {
+    "id": "bf3ed748-1e8a-4e51-9207-13ca414a3313",
+    "title": "Memoir, Autobiography and Correspondence of Jeremiah Mason",
+    "author": "Jeremiah Mason",
+    "reason": "rated 2, 0 readers: Historical primary-source memoir and correspondence."
+  },
+  {
+    "id": "5aa439c1-7d3f-41c5-a7a0-7cbf6fcbcbbe",
+    "title": "Political Autobiographies and Memoirs in Antiquity",
+    "author": "Gabriele Marasco",
+    "reason": "rated 2, 0 readers: Specialist academic collection on ancient political life writing."
+  },
+  {
+    "id": "c9258b83-b168-4d5a-a2d9-01033e1dc205",
+    "title": "The Cambridge Companion to Autobiography",
+    "author": "Maria DiBattista",
+    "reason": "rated 2, 2 readers: Scholarly companion and reference collection."
+  },
+  {
+    "id": "bfd68e91-e096-49d9-9abb-efff3d98ac53",
+    "title": "Who's Who in the New Testament",
+    "author": "Ronald Brownrigg",
+    "reason": "rated 2, 0 readers: Reference work on New Testament figures."
+  },
+  {
+    "id": "310340f1-8235-49c3-b4fe-4fe3793cfe37",
+    "title": "The Byzantine Hellene",
+    "author": "Dimiter Angelov",
+    "reason": "rated 2, 0 readers: Specialist academic biography of a Byzantine intellectual."
+  },
+  {
+    "id": "80ea28c4-b99f-42af-bc7e-b6cbbcc0a90e",
+    "title": "The Works of Samuel Johnson, LL. D.",
+    "author": "Samuel Johnson",
+    "reason": "rated 2, 0 readers: Collected works are a reference collection, not a focused book of ideas."
+  },
+  {
+    "id": "3209992e-d551-4760-b3d2-d3414cea37e8",
+    "title": "General Biography; Or Lives, Critical and Historical, of the Most Eminent Persons of All Ages, Countries, Conditions, and Professions, Arranged According to Alphabetical Order",
+    "author": "John Aikin",
+    "reason": "rated 2, 0 readers: An alphabetical biographical reference work rather than a focused narrative."
+  },
+  {
+    "id": "5c6c2ce3-1f59-4cf4-9dfb-25d049cbb1ad",
+    "title": "Plutarch's Lives, tr. by J. and W. Langhorne",
+    "author": "Plutarch",
+    "reason": "rated 2, 0 readers: A translated collection of ancient biographies, better treated as a source anthology."
+  },
+  {
+    "id": "f2250615-4bd1-43f3-868e-5be83a7508b7",
+    "title": "The Lives of the Noble Grecians and Romaines,",
+    "author": "Plutarch",
+    "reason": "rated 2, 0 readers: A classic collection of biographies, but primarily an anthology of source material."
+  },
+  {
+    "id": "23ac8076-34fb-46d6-82c9-765affa01761",
+    "title": "Plutarch's Lives Translated from the Original Greek",
+    "author": "Plutarch",
+    "reason": "rated 2, 0 readers: A translated collection of Plutarch’s ancient biographies."
+  },
+  {
+    "id": "086d8142-41d8-49c3-9c95-c4f233d25804",
+    "title": "John",
+    "author": "Cynthia Lennon",
+    "reason": "rated 2, 21 readers: A celebrity memoir, with limited fit for idea-focused summaries."
+  },
+  {
+    "id": "6d97b8ec-b577-4dab-80d6-330c7c8fdf35",
+    "title": "Plutarch's Lives",
+    "author": "Plutarch",
+    "reason": "rated 2, 10 readers: A collection of ancient biographies rather than a focused nonfiction argument."
+  },
+  {
+    "id": "d13cf958-8e49-4b69-a6fc-8a3d88d4a9b3",
+    "title": "Francis of Assisi - The Saint: Early Documents, vol. 1",
+    "author": "Regis J. Armstrong",
+    "reason": "rated 2, 0 readers: A scholarly edition of early religious documents, primarily a source collection."
+  },
+  {
+    "id": "5f922c7c-9c3c-4642-8534-e0251564d857",
+    "title": "Dictionary of Greek and Roman Biography and Mythology: Earinus-Nyx",
+    "author": "William Smith",
+    "reason": "rated 2, 9 readers: A specialist biographical and mythological dictionary, designed as a reference."
+  },
+  {
+    "id": "658782d4-0af2-45b3-877e-8c7b0dca6d93",
+    "title": "What Are the Gospels?",
+    "author": "Richard A. Burridge",
+    "reason": "rated 2, 6 readers: A scholarly study of Gospel genre, aimed mainly at academic readers."
+  },
+  {
+    "id": "726bd80a-f77b-4b12-8ad6-6f5ce4dd5ca9",
+    "title": "The Divine Comedy",
+    "author": "Henry Johnson",
+    "reason": "rated 1, 0 readers: The attribution to Henry Johnson is uncertain; the known poem is by Dante."
+  },
+  {
+    "id": "0b7ea937-bfd4-46a6-a1ba-dd1ecbd8127a",
+    "title": "An Account of the Foxglove, and Some of its Medical Uses",
+    "author": "William Withering",
+    "reason": "rated 2, 1 readers: A historical medical treatise focused on foxglove and its uses."
+  },
+  {
+    "id": "ad865dec-76c3-45f3-bd67-6ba343168d7d",
+    "title": "The Practice and Theory of Bolshevism",
+    "author": "Bertrand Russell",
+    "reason": "rated 2, 7 readers: A political tract, a category excluded from the catalogue’s preferred fit."
+  },
+  {
+    "id": "38335398-250d-4b14-83e2-258d1a1b8c04",
+    "title": "World War II",
+    "author": "Spencer C. Tucker",
+    "reason": "rated 2, 0 readers: A broad reference-style military history rather than a focused idea-driven book."
+  },
+  {
+    "id": "c6257775-d5c5-4510-befa-cbf460d0a78c",
+    "title": "Historical Dictionary of Afghanistan",
+    "author": "Thomas H. Johnson",
+    "reason": "rated 2, 0 readers: A historical dictionary is a reference work, not a narrative summary fit."
+  },
+  {
+    "id": "b229e408-2ca1-4b0c-a0f6-863b22a07289",
+    "title": "Conservatism",
+    "author": "Jerry Z. Muller",
+    "reason": "rated 2, 3 readers: An anthology of political thought, rather than a single focused argument."
+  },
+  {
+    "id": "5a33eccd-11f4-42a4-919b-d8cde1ffb526",
+    "title": "God and Reason in the Middle Ages",
+    "author": "Edward Grant",
+    "reason": "rated 2, 0 readers: Specialist academic monograph on medieval intellectual history."
+  },
+  {
+    "id": "eb3ec699-9aba-40f9-b0f0-abee3e087a3c",
+    "title": "Pocahontas's People",
+    "author": "Helen C. Rountree",
+    "reason": "rated 2, 0 readers: Scholarly ethnohistory focused on a specific Indigenous community."
+  },
+  {
+    "id": "b4a8160f-af09-4e67-9110-c5edd4fc9cb5",
+    "title": "METEOROLOGY",
+    "author": "Aristotle",
+    "reason": "rated 2, 2 readers: A primary text on ancient natural philosophy, not a modern guide."
+  },
+  {
+    "id": "03147640-7db5-4893-8fff-aefedff84860",
+    "title": "An Introduction to Book History",
+    "author": "David Finkelstein",
+    "reason": "rated 2, 2 readers: An academic introduction and textbook on book history."
+  },
+  {
+    "id": "9df07f66-2c1e-4c9c-80e5-bd8750957c0c",
+    "title": "Images of Nebuchadnezzar",
+    "author": "Ronald Herbert Sack",
+    "reason": "rated 2, 0 readers: Specialist academic study of ancient Babylonian imagery."
+  },
+  {
+    "id": "88c07367-dedf-45f0-a3aa-f3b3f8c55166",
+    "title": "The Mandaeans",
+    "author": "Jorunn Jacobsen Buckley",
+    "reason": "rated 2, 2 readers: Specialist academic study of a religious community."
+  },
+  {
+    "id": "098568f2-13fe-4cf8-9ecc-eab1a5e958eb",
+    "title": "The Language Loss of the Indigenous",
+    "author": "G. N. Devy",
+    "reason": "rated 1, 2 readers: I cannot verify this title as described."
+  },
+  {
+    "id": "95237976-209b-4669-b700-e9a8ad9d7979",
+    "title": "A Textbook of Environmental Chemistry and Pollution Control",
+    "author": "SS Dara | DD Mishra",
+    "reason": "rated 2, 0 readers: A technical textbook rather than a general-interest read."
+  },
+  {
+    "id": "7a7a3daf-395a-444b-bfa2-d4e86cf794da",
+    "title": "Evaluating Environment in International Development",
+    "author": "Juha I. Uitto",
+    "reason": "rated 2, 0 readers: Specialist academic work on development evaluation."
+  },
+  {
+    "id": "bdc9ceba-f2b2-49ce-96cd-129b980ad8bc",
+    "title": "New Ergonomics Perspective",
+    "author": "Sakae Yamamoto",
+    "reason": "rated 2, 0 readers: Technical ergonomics volume with a specialist audience."
+  },
+  {
+    "id": "917ea88f-ea97-42c2-8a7e-7603f9ecdc7e",
+    "title": "Environmental Risk and Corporate Behaviour",
+    "author": "Rui Xue",
+    "reason": "rated 2, 0 readers: Specialist academic study of corporate environmental risk."
+  },
+  {
+    "id": "fadab555-6316-4014-8228-a097a75f37c2",
+    "title": "Doing Environmental Ethics",
+    "author": "Robert Traer",
+    "reason": "rated 2, 0 readers: An instructional environmental ethics text."
+  },
+  {
+    "id": "db266ee8-4733-45c1-9a44-617b09c120d5",
+    "title": "Biomedical Index to PHS-supported Research",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: A biomedical research index and reference work."
+  },
+  {
+    "id": "efa39b13-f64e-4d63-b1af-962f7be58b2e",
+    "title": "Transdisciplinary Engineering Design Process",
+    "author": "Atila Ertas",
+    "reason": "rated 2, 0 readers: A specialist engineering design text."
+  },
+  {
+    "id": "710cb84e-e05a-47be-a89d-fb6a09a9bd8b",
+    "title": "The Development Dimension Greening Development Co-operation Lessons from the OECD Development Assistance Committee",
+    "author": "OECD",
+    "reason": "rated 2, 0 readers: An OECD policy report, primarily a reference work."
+  },
+  {
+    "id": "df252d38-c7c7-4ecd-9397-df6552041566",
+    "title": "Environmental Security in the Anthropocene",
+    "author": "Judith Nora Hardt",
+    "reason": "rated 2, 0 readers: Specialist academic treatment of environmental security."
+  },
+  {
+    "id": "5a9d6f60-18b6-429f-bd00-1173257da9a3",
+    "title": "Building Organizational Capacity and Strategic Management in Academia",
+    "author": "Kayyali, Mustafa",
+    "reason": "rated 2, 0 readers: A specialized academic book about management in higher education."
+  },
+  {
+    "id": "543fee8e-4b63-4e17-adb6-fbfaedbaf910",
+    "title": "Environmental Policy",
+    "author": "Michael E. Kraft",
+    "reason": "rated 2, 3 readers: A textbook on environmental policy."
+  },
+  {
+    "id": "b178a3b1-a52e-462d-aeb6-364c1657e735",
+    "title": "Agri-environmental Management in Europe: Sustainable Challenges and Solutions – From Policy Interventions to Practical Farm Management",
+    "author": "Kathy Lewis",
+    "reason": "rated 2, 0 readers: A specialist academic volume on European agricultural management."
+  },
+  {
+    "id": "767e9e31-a5d9-4a25-a747-fb34b58ae3e5",
+    "title": "OECD Environmental Performance Reviews: Czech Republic 2018",
+    "author": "OECD",
+    "reason": "rated 2, 0 readers: An OECD country-review report, not a general-interest book."
+  },
+  {
+    "id": "3047c8f6-31f0-4ce0-8e24-b9721d351175",
+    "title": "Global Environmental Institutions",
+    "author": "Elizabeth R. DeSombre",
+    "reason": "rated 2, 1 readers: A specialist academic treatment of global institutions."
+  },
+  {
+    "id": "c64217d9-00fd-433e-a154-f2a2a654bbdf",
+    "title": "Environmental Issues Today",
+    "author": "Robert J. Duffy",
+    "reason": "rated 2, 0 readers: A broad reference-style overview of environmental issues."
+  },
+  {
+    "id": "73d777cf-79b6-4ff0-9943-8dea236a80f4",
+    "title": "Environmental Leadership",
+    "author": "Deborah Rigling Gallagher",
+    "reason": "rated 2, 0 readers: A specialist academic work on environmental leadership."
+  },
+  {
+    "id": "f595aece-ace0-4b54-aab0-70717d4b8457",
+    "title": "Environment, Media and Communication",
+    "author": "Anders Hansen",
+    "reason": "rated 2, 1 readers: An academic textbook on environmental media and communication."
+  },
+  {
+    "id": "0babf27e-f475-4baa-8437-a42f90d93bc7",
+    "title": "Environment and Society",
+    "author": "Charles Harper",
+    "reason": "rated 2, 1 readers: Real environmental-studies textbook, primarily an academic teaching resource."
+  },
+  {
+    "id": "25c42f91-b876-4cca-b511-eb9ccd5ccccf",
+    "title": "Environmental Law in Canada",
+    "author": "Jamie Benidickson",
+    "reason": "rated 2, 0 readers: Specialist legal reference, not a general-reader ideas book."
+  },
+  {
+    "id": "c4e78c12-6659-419a-8f9d-59062f69d357",
+    "title": "Canada and Climate Change",
+    "author": "William Leiss",
+    "reason": "rated 1, 0 readers: I can't verify this title and author combination."
+  },
+  {
+    "id": "cfa78355-218e-4fc0-9af3-b8692cc9a0d9",
+    "title": "Environmental Geography",
+    "author": "Leslie A. Duram",
+    "reason": "rated 2, 1 readers: Environmental geography textbook aimed mainly at students."
+  },
+  {
+    "id": "53090f1d-f511-4975-84d4-8f0572d1b36b",
+    "title": "Issues in Global Environment: Climate and Climate Change: 2011 Edition",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: Appears to be a reference compilation rather than a reader-focused book."
+  },
+  {
+    "id": "bcd40639-53de-409a-8d4c-66c47dd3381d",
+    "title": "Environment, Climate, and Social Justice",
+    "author": "Devendraraj Madhanagopal",
+    "reason": "rated 1, 0 readers: I can't verify this title and author combination."
+  },
+  {
+    "id": "6a0df0c7-f59e-41d7-9c42-4f825480dedc",
+    "title": "Shamanism",
+    "author": "Mariko Namba Walter",
+    "reason": "rated 2, 1 readers: An academic reference work on shamanic traditions."
+  },
+  {
+    "id": "56182b8f-1b82-4711-aa3f-8c8bf749b17e",
+    "title": "Matters of Exchange",
+    "author": "Harold John Cook",
+    "reason": "rated 2, 0 readers: Scholarly history monograph for a specialist audience."
+  },
+  {
+    "id": "20bb9936-aaae-4b5a-9a5f-2009d6de7fc4",
+    "title": "Sacred Rights",
+    "author": "Daniel C. Maguire",
+    "reason": "rated 2, 0 readers: Religious and political advocacy rather than a general ideas book."
+  },
+  {
+    "id": "f61bd5a9-6eb2-40e3-8fe1-b89b6634cfd9",
+    "title": "The Aphorisms of Hippocrates",
+    "author": "Hipócrates",
+    "reason": "rated 2, 0 readers: A primary historical medical text, not practical modern guidance."
+  },
+  {
+    "id": "e4a1ef9c-30ba-43ea-bd0f-ba8ba5c83a61",
+    "title": "Dental Erosion",
+    "author": "A. Lussi",
+    "reason": "rated 2, 1 readers: Specialist dental reference for clinical and academic use."
+  },
+  {
+    "id": "b6de7949-6a9e-4884-9409-773bddd388f0",
+    "title": "Foundations of Biophilosophy",
+    "author": "Martin Mahner",
+    "reason": "rated 1, 0 readers: I can't verify this author, date, and title combination."
+  },
+  {
+    "id": "f8e408bf-e5e7-4c6c-b5d2-683a1db8561c",
+    "title": "The History of Pain",
+    "author": "Roselyne Rey",
+    "reason": "rated 2, 0 readers: Scholarly history monograph on pain."
+  },
+  {
+    "id": "df5fe69e-6ddc-4a0e-a331-d27f6b4795f7",
+    "title": "A Pest in the Land",
+    "author": "Suzanne Austin Alchon",
+    "reason": "rated 2, 1 readers: Specialist academic study of epidemics in the Americas."
+  },
+  {
+    "id": "64079f97-af53-46de-b3fb-4fad1d4d0415",
+    "title": "The Oxford Encyclopedia of the History of American Science, Medicine, and Technology",
+    "author": "Hugh Richard Slotten",
+    "reason": "rated 2, 1 readers: An encyclopedia, primarily a reference work."
+  },
+  {
+    "id": "b36c5e95-6ded-40de-b584-22c7b073d171",
+    "title": "Names, Natures and Things",
+    "author": "Syed Nomanul Haq",
+    "reason": "rated 2, 2 readers: Specialist scholarly study of medieval alchemy."
+  },
+  {
+    "id": "66c394a2-dca6-4dc8-82bc-3beeecaa4d82",
+    "title": "Alchemy Tried in the Fire",
+    "author": "William R. Newman",
+    "reason": "rated 2, 1 readers: Academic monograph on the history of alchemy."
+  },
+  {
+    "id": "29c54b11-0dea-4dcb-ae4b-0e49864c7a23",
+    "title": "Reenchanted Science",
+    "author": "Anne Harrington",
+    "reason": "rated 2, 1 readers: Scholarly history of science for a specialist readership."
+  },
+  {
+    "id": "5b372a40-3fde-472e-9041-60a0ca5a5bad",
+    "title": "Perverse Romanticism",
+    "author": "Richard C. Sha",
+    "reason": "rated 2, 1 readers: Specialist academic study of Romantic literature and ideas."
+  },
+  {
+    "id": "4dd62c56-5d8d-4717-88f9-d384a7e3c8f6",
+    "title": "The Principles and Practice of Medicine",
+    "author": "Sir William Osler",
+    "reason": "rated 2, 23 readers: Historically influential, but an outdated medical textbook."
+  },
+  {
+    "id": "3fabeab0-f56f-4a0e-91f6-a2236e5850be",
+    "title": "Colonizing Bodies",
+    "author": "Mary-Ellen Kelm",
+    "reason": "rated 2, 0 readers: Academic monograph on colonialism, health, and Indigenous bodies."
+  },
+  {
+    "id": "43b64dd5-3ee7-4dd1-8010-b7ad7ee2eeea",
+    "title": "Regression Analysis",
+    "author": "Ashish Sen",
+    "reason": "rated 2, 2 readers: Technical textbook on statistical methods."
+  },
+  {
+    "id": "28535a35-f5ba-448a-b635-c983df2328ac",
+    "title": "Cochrane Handbook for Systematic Reviews of Interventions",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: A specialist handbook and reference for systematic reviews."
+  },
+  {
+    "id": "846ebe7c-36ce-43b0-a5f0-06ff05bf219e",
+    "title": "Textbook of Family Medicine",
+    "author": "Robert E. Rakel",
+    "reason": "rated 2, 3 readers: A clinical textbook for family-medicine practitioners."
+  },
+  {
+    "id": "fe0b5d24-bae6-488b-856b-2b2a0685d1da",
+    "title": "Foundations of Quantum Theory",
+    "author": "Klaas Landsman",
+    "reason": "rated 2, 0 readers: Specialist academic monograph on the foundations of quantum theory."
+  },
+  {
+    "id": "27f7e887-8c9c-41c9-8338-238894732a4f",
+    "title": "Intermediate Physics for Medicine and Biology",
+    "author": "Russell K. Hobbie",
+    "reason": "rated 2, 2 readers: Specialized textbook for physics applied to medicine and biology."
+  },
+  {
+    "id": "d349af24-8009-4a80-bd3b-dfb9b6f4d110",
+    "title": "Miscellaneous Scientific Papers",
+    "author": "William John Macquorn Rankine",
+    "reason": "rated 2, 0 readers: Collected scientific papers rather than a focused reader-oriented book."
+  },
+  {
+    "id": "5777ec64-310c-4506-838a-e014f3499e67",
+    "title": "The Myth of the Framework",
+    "author": "Karl Raimund Popper",
+    "reason": "rated 2, 1 readers: Collection of philosophical essays, not a focused practical book."
+  },
+  {
+    "id": "abfc987a-995e-41cc-b8ce-967b538fd454",
+    "title": "Historical Encyclopedia of Natural and Mathematical Sciences",
+    "author": "Ari Ben-Menahem",
+    "reason": "rated 2, 1 readers: Reference encyclopedia rather than a narrative or idea-driven book."
+  },
+  {
+    "id": "4e9a9cda-bb1b-4b63-986d-3f1f692475e0",
+    "title": "Advanced Quantum Mechanics",
+    "author": "Franz Schwabl",
+    "reason": "rated 2, 0 readers: Advanced specialist textbook in quantum mechanics."
+  },
+  {
+    "id": "ff98d744-e329-4207-9ae1-8d59bd51ffa9",
+    "title": "The Cambridge Handbook of Physics Formulas",
+    "author": "Graham Woan",
+    "reason": "rated 2, 5 readers: Formula handbook intended primarily as a reference work."
+  },
+  {
+    "id": "8946810d-49b8-4e0a-af7f-6846f1c31982",
+    "title": "Essential Relativity",
+    "author": "W. Rindler",
+    "reason": "rated 2, 3 readers: Technical textbook on relativity."
+  },
+  {
+    "id": "4e5eeed3-1521-4bf4-abb5-689e769e45a1",
+    "title": "Dictionary of Minor Planet Names",
+    "author": "Lutz Schmadel",
+    "reason": "rated 2, 3 readers: Specialized reference dictionary of minor planet names."
+  },
+  {
+    "id": "ed93603b-a439-4a53-93e5-40c6558011c9",
+    "title": "Fatigue of Structures and Materials",
+    "author": "Jaap Schijve",
+    "reason": "rated 2, 1 readers: Technical reference work for materials and structural engineering."
+  },
+  {
+    "id": "0c995d96-bf69-4c61-8197-0897177e063e",
+    "title": "Advanced Solid State Physics",
+    "author": "Philip Phillips",
+    "reason": "rated 2, 2 readers: Advanced specialist textbook on solid-state physics."
+  },
+  {
+    "id": "d89538db-10e9-4996-be84-80690a71958e",
+    "title": "Handbook of Physics",
+    "author": "Walter Benenson",
+    "reason": "rated 2, 0 readers: Broad physics handbook designed as a reference work."
+  },
+  {
+    "id": "f600146f-c9d7-4e3c-b258-647f9dfc2eb1",
+    "title": "More Letters of Charles Darwin",
+    "author": "Charles Darwin",
+    "reason": "rated 2, 1 readers: Collection of Darwin's letters rather than a focused nonfiction argument."
+  },
+  {
+    "id": "5533dcae-87d6-47a7-9739-ec3475e15469",
+    "title": "Biology",
+    "author": "Helena Curtis",
+    "reason": "rated 2, 33 readers: Introductory biology textbook."
+  },
+  {
+    "id": "86690631-1c93-4306-8e84-81252de6de5a",
+    "title": "Edible Medicinal and Non-Medicinal Plants",
+    "author": "Lim T. K.",
+    "reason": "rated 2, 5 readers: Extensive plant reference work, not a reader-oriented idea book."
+  },
+  {
+    "id": "4def7272-47ab-4bc3-a2a6-0e2df73b1336",
+    "title": "Handbook to the Construction and Use of Insect Collection and Rearing Devices",
+    "author": "Gregory S. Paulson",
+    "reason": "rated 2, 0 readers: A technical reference handbook, not a general-readership ideas book."
+  },
+  {
+    "id": "7398156c-ae8a-412c-ad10-3b1e5e2986aa",
+    "title": "A Dictionary of Biology",
+    "author": "Robert Hine",
+    "reason": "rated 2, 2 readers: A dictionary is a reference work rather than a book of ideas."
+  },
+  {
+    "id": "9294ec7f-ab4c-4df6-b273-d7c5c67da8d9",
+    "title": "The Principles of Biology",
+    "author": "Herbert Spencer",
+    "reason": "rated 2, 9 readers: A dated foundational scientific treatise, not a practical modern read."
+  },
+  {
+    "id": "2a0bbbce-2694-4097-8f10-f448761195b1",
+    "title": "Edible Medicinal And Non-Medicinal Plants",
+    "author": "T. K. Lim",
+    "reason": "rated 2, 5 readers: A large reference work on plants, not an accessible ideas-focused book."
+  },
+  {
+    "id": "99fdc4f9-64b4-45de-a48f-7d92cdf22788",
+    "title": "Diversity of Life",
+    "author": "Lynn Margulis",
+    "reason": "rated 1, 0 readers: This title and author combination is uncertain; the familiar title is by E. O. Wilson."
+  },
+  {
+    "id": "fbdaa782-4e68-4841-b68a-dc915b079bcc",
+    "title": "Pedigree",
+    "author": "Stephen Potter",
+    "reason": "rated 1, 0 readers: I cannot verify this title as described."
+  },
+  {
+    "id": "81c831a4-b192-40e7-ae34-e8c68c13f1fc",
+    "title": "An Essay on Classification",
+    "author": "Louis Agassiz",
+    "reason": "rated 2, 0 readers: A historical scientific essay, rather than a modern reader-focused book."
+  },
+  {
+    "id": "b1b13381-65f8-4736-a17c-b6f7afc232eb",
+    "title": "Life",
+    "author": "David E. Sadava",
+    "reason": "rated 2, 19 readers: A biology textbook."
+  },
+  {
+    "id": "4d535909-028b-4f70-b481-4fa82f9fa411",
+    "title": "Biology",
+    "author": "Robert J. Brooker",
+    "reason": "rated 2, 9 readers: A biology textbook."
+  },
+  {
+    "id": "512beb55-1bed-44c6-bbcf-025d41636ba4",
+    "title": "Discourses, Biological and Geological",
+    "author": "Thomas Henry Huxley",
+    "reason": "rated 2, 0 readers: A collected volume of scientific essays."
+  },
+  {
+    "id": "3a8d417d-fd00-411c-83db-87fc726dec80",
+    "title": "A Source-book of Biological Names and Terms",
+    "author": "Edmund Carroll Jaeger",
+    "reason": "rated 2, 0 readers: A terminology reference work."
+  },
+  {
+    "id": "14b42c2c-b67d-4f0d-8f3f-0c653d846393",
+    "title": "Laboratory Life",
+    "author": "Bruno Latour",
+    "reason": "rated 2, 4 readers: An influential but specialized academic monograph on scientific practice."
+  },
+  {
+    "id": "3038a3c2-2bcd-4c68-b36e-afd28f6b736d",
+    "title": "The Marina-Sustainable Solutions for a Profitable Business",
+    "author": "Dr.Ralf Heron",
+    "reason": "rated 1, 0 readers: I cannot verify this title and author as described."
+  },
+  {
+    "id": "500d975e-6727-4773-9389-72eaaa023fdc",
+    "title": "InfoWorld",
+    "author": "Unknown",
+    "reason": "rated 1, 0 readers: InfoWorld is a magazine, and no author is identified."
+  },
+  {
+    "id": "a7d572a2-6655-41f8-be0f-5e40a28b4873",
+    "title": "Advanced Semiconductor Devices",
+    "author": "Michael S. Shur",
+    "reason": "rated 2, 0 readers: A specialist technical textbook."
+  },
+  {
+    "id": "a68248f1-2db8-4404-97a7-a25d22db1d7b",
+    "title": "Renewable Electricity - Generation Technologies",
+    "author": "Great Britain: Parliament: House of Commons: Innovation, Universities, Science and Skills Committee",
+    "reason": "rated 2, 0 readers: A parliamentary committee report, not a reader-focused book."
+  },
+  {
+    "id": "ef976e08-3aca-469f-b18c-5c063e01e002",
+    "title": "Intelligent 3D Technologies and Augmented Reality",
+    "author": "Roumen Kountchev (deceased)",
+    "reason": "rated 2, 0 readers: A specialized technical academic work on 3D technologies and augmented reality."
+  },
+  {
+    "id": "045ade12-40c0-43d6-b4b1-dd06b9e2fbbb",
+    "title": "Perfecting Human Futures",
+    "author": "J. Benjamin Hurlbut",
+    "reason": "rated 2, 0 readers: A specialized academic collection on transhumanism and technological futures."
+  },
+  {
+    "id": "81d493e2-cbde-446e-97ce-eee098ee5948",
+    "title": "Technological Pedagogical Content Knowledge",
+    "author": "Charoula Angeli",
+    "reason": "rated 2, 6 readers: An academic education-technology work, rather than a general-reader ideas book."
+  },
+  {
+    "id": "3968a255-352f-49c6-bf36-55295f721214",
+    "title": "Beyond Market Dystopia: New Ways of Living",
+    "author": "Greg Albo",
+    "reason": "rated 2, 0 readers: A political-economy critique, outside the catalogue's general nonfiction fit."
+  },
+  {
+    "id": "4e2de8f8-09e5-4edc-b318-2061e04787f2",
+    "title": "Digital Business Security Development: Management Technologies",
+    "author": "Kerr, Don",
+    "reason": "rated 1, 0 readers: Unable to verify this title and author combination."
+  },
+  {
+    "id": "6d388864-b00f-49ca-96fa-c5eafaf30c14",
+    "title": "Resources in education",
+    "author": "Unknown",
+    "reason": "rated 1, 0 readers: Generic title and unknown author make this listing unverifiable."
+  },
+  {
+    "id": "16e9a3fb-bbee-46f0-a614-ffa1b3f5afa2",
+    "title": "Particle Technology and Applications",
+    "author": "Sunggyu Lee",
+    "reason": "rated 2, 1 readers: Specialist technical reference rather than a general-reader book."
+  },
+  {
+    "id": "e3599cc8-5c80-4806-8efc-effc157d3c35",
+    "title": "Weapon Systems",
+    "author": "Unknown",
+    "reason": "rated 1, 0 readers: Generic title with no identifiable author or edition."
+  },
+  {
+    "id": "098d5e3f-07ae-4c1d-ba31-d6a9ab43c157",
+    "title": "Professional Journal of the United States Army",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: Military journal issue, not a standalone ideas-focused book."
+  },
+  {
+    "id": "227ff03e-cdff-43da-8b06-7e47d49990ea",
+    "title": "Research Anthology on Emerging Technologies and Ethical Implications in Human Enhancement",
+    "author": "Management Association, Information Resources",
+    "reason": "rated 2, 0 readers: Scholarly research anthology, outside the catalogue's summary focus."
+  },
+  {
+    "id": "c4acbfb9-6c6a-41d1-8160-8f4a7bcd8c42",
+    "title": "Military Review",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: Military professional journal, not a standalone general-reader book."
+  },
+  {
+    "id": "71b347d5-3681-4c08-9aa5-0ae54c40dcbf",
+    "title": "Search Foundations",
+    "author": "Sachi Arafat",
+    "reason": "rated 1, 0 readers: Unable to confidently identify this title as described."
+  },
+  {
+    "id": "d232c87e-7c9b-452a-a347-af91e50ccc45",
+    "title": "Precision Machining Process and Technology",
+    "author": "Shuming Yang",
+    "reason": "rated 2, 0 readers: Specialist machining textbook with a narrow technical audience."
+  },
+  {
+    "id": "ac6e5665-ecdc-4d1c-9a69-5e393f706a04",
+    "title": "The Future Knowledge Compendium",
+    "author": "Peter Ellyard",
+    "reason": "rated 1, 0 readers: Unable to verify this title as a published book."
+  },
+  {
+    "id": "aadf30ca-5853-48c0-bebe-19ad63bdd42e",
+    "title": "The Future of Technology",
+    "author": "Tom Standage",
+    "reason": "rated 1, 0 readers: Unable to confirm a Tom Standage book with this title."
+  },
+  {
+    "id": "e200fc83-c5bc-4f12-8526-c8168714279e",
+    "title": "Enterprise Innovation Ecosystem",
+    "author": "Jin Chen",
+    "reason": "rated 2, 1 readers: Specialist academic work on innovation ecosystems."
+  },
+  {
+    "id": "33aa2e86-0ebd-4b6f-ba9c-8f0be6735299",
+    "title": "Radio-Active Substances",
+    "author": "Marie Curie",
+    "reason": "rated 2, 0 readers: Important primary scientific work, but not a general-reader ideas book."
+  },
+  {
+    "id": "915e55d3-e716-4577-8f7c-726ea323a90e",
+    "title": "Metalogic",
+    "author": "Geoffrey Hunter",
+    "reason": "rated 2, 3 readers: Technical logic text aimed primarily at students and specialists."
+  },
+  {
+    "id": "b2f9e47f-082e-4076-a9e5-2ffdc7275158",
+    "title": "Encyclopedia of Global Warming and Climate Change, Second Edition",
+    "author": "S. George Philander",
+    "reason": "rated 2, 0 readers: Encyclopedic reference work rather than a focused narrative."
+  },
+  {
+    "id": "e4cfaceb-ab40-4a01-82f2-6ef984957203",
+    "title": "Astronomy",
+    "author": "Michael Zeilik",
+    "reason": "rated 2, 20 readers: Astronomy textbook, not a general-audience ideas book."
+  },
+  {
+    "id": "0ed492b1-942c-425c-a860-a15811e5bc06",
+    "title": "Reinventing The Future",
+    "author": "Thomas A. Bass",
+    "reason": "rated 2, 2 readers: Interview anthology rather than a cohesive, practical book."
+  },
+  {
+    "id": "ca909d11-c4b6-4070-ae22-e4e59e884e60",
+    "title": "Quantum Electrodynamics",
+    "author": "Walter Greiner",
+    "reason": "rated 2, 1 readers: Advanced technical physics text for specialist readers."
+  },
+  {
+    "id": "73abfa25-e9d1-4649-9a6f-110cdfc1006c",
+    "title": "On Fire: the Burning Case for a Green New Deal",
+    "author": "Naomi Klein",
+    "reason": "rated 2, 20 readers: Climate argument centered on a political program."
+  },
+  {
+    "id": "987f5dfb-effa-4743-9fae-1198fe32e40b",
+    "title": "Lung Surfactants",
+    "author": "Robert H. Notter",
+    "reason": "rated 2, 0 readers: Specialist medical-science monograph with a narrow audience."
+  },
+  {
+    "id": "fa7ac5f1-0b91-4c19-ac32-d716159a4223",
+    "title": "Molecular Mechanisms of Photosynthesis",
+    "author": "Robert E. Blankenship",
+    "reason": "rated 2, 5 readers: Advanced scientific reference focused on photosynthesis mechanisms."
+  },
+  {
+    "id": "8a98621d-2aed-484b-8806-14327773602c",
+    "title": "Reviews of Environmental Contamination and Toxicology 173",
+    "author": "George W. Ware",
+    "reason": "rated 2, 0 readers: Specialist review-series volume, not a general-reader book."
+  },
+  {
+    "id": "f8dba2b1-0dca-407a-acba-14651edc9eea",
+    "title": "Career Opportunities in the Music Industry",
+    "author": "Shelly Field",
+    "reason": "rated 2, 3 readers: Career reference guide rather than a broader ideas-focused book."
+  },
+  {
+    "id": "5a1c32f1-7d98-4cb7-90c3-bc710323bf9b",
+    "title": "Occupational Outlook Handbook",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: Government occupational reference work, not a narrative or ideas book."
+  },
+  {
+    "id": "3ba174ca-2d7e-44f9-bf9b-0cda2538c307",
+    "title": "Technology Entrepreneurship : A Treatise on Entrepreneurs and Entrepreneurship for and in Technology Ventures. Vol 1 und Vol 2.",
+    "author": "Wolfgang Runge",
+    "reason": "rated 2, 0 readers: Specialized academic treatise rather than accessible practical nonfiction."
+  },
+  {
+    "id": "45ec390a-13e9-4a8f-b450-1d099a0afb8c",
+    "title": "Meditation",
+    "author": "Unknown",
+    "reason": "rated 1, 0 readers: Cannot verify this generic title and unknown-author listing."
+  },
+  {
+    "id": "48918a95-8fc3-4015-8488-6f0d6046ed1f",
+    "title": "Army Science and Technology Master Plan",
+    "author": "United States. Department of the Army",
+    "reason": "rated 2, 0 readers: Official government planning document, not a reader-focused book."
+  },
+  {
+    "id": "a7e8b8cf-5999-4147-b6d6-d849f82eeece",
+    "title": "Dead Souls",
+    "author": "Gogol Google Translate",
+    "reason": "rated 1, 0 readers: Fiction, and this Google Translate edition is uncertain as described."
+  },
+  {
+    "id": "cdccc50a-394c-464d-81bc-04e368a566eb",
+    "title": "Making",
+    "author": "Tim Ingold",
+    "reason": "rated 2, 7 readers: An academic monograph on making, materials, and anthropology."
+  },
+  {
+    "id": "8e271fe1-6ad4-40e4-bcbf-431a04a030a1",
+    "title": "The Handbook of Tibetan Buddhist Symbols",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: A reference handbook of Buddhist symbols rather than an idea-driven read."
+  },
+  {
+    "id": "9463e6ff-9354-4245-9b1d-c322262e5edc",
+    "title": "Courtly Art of the Ancient Maya",
+    "author": "Mary Ellen Miller",
+    "reason": "rated 2, 4 readers: A specialist academic study of Maya court art."
+  },
+  {
+    "id": "0bc591ec-2b9f-46cc-893f-de6137fc6ca0",
+    "title": "Fluid Mechanics",
+    "author": "Pijush K. Kundu",
+    "reason": "rated 2, 20 readers: Technical fluid mechanics textbook, not a general-audience idea book."
+  },
+  {
+    "id": "497f9cc3-b47b-42f0-ba3b-9c55e41939db",
+    "title": "Cannabis",
+    "author": "Robert Clarke",
+    "reason": "rated 2, 3 readers: Specialist ethnobotanical reference rather than an accessible idea-driven book."
+  },
+  {
+    "id": "032499fa-6a74-4cdf-8c9b-c18450c58cb1",
+    "title": "Quantum Computation and Quantum Information",
+    "author": "Michael A. Nielsen",
+    "reason": "rated 2, 59 readers: Advanced textbook and reference work on quantum computing."
+  },
+  {
+    "id": "108bddc0-8641-46d2-9d97-416068d84342",
+    "title": "Covariant Loop Quantum Gravity",
+    "author": "Carlo Rovelli",
+    "reason": "rated 2, 7 readers: Specialist academic monograph on quantum gravity."
+  },
+  {
+    "id": "63c529e0-0409-4325-96b1-9d9c7a02dea4",
+    "title": "The Encyclopedia of Animals",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: Animal encyclopedia is a reference work, not an ideas-led book."
+  },
+  {
+    "id": "7f656c27-0cfc-4e55-bad0-366080cb44e3",
+    "title": "Industrial Chocolate Manufacture and Use",
+    "author": "Steve T. Beckett",
+    "reason": "rated 2, 5 readers: Technical industry reference rather than an accessible ideas-led book."
+  },
+  {
+    "id": "12dd56db-b610-4c0d-9dbc-7802c9d3ecac",
+    "title": "Encyclopedia of Soil Science",
+    "author": "Ward Chesworth",
+    "reason": "rated 2, 2 readers: Soil science encyclopedia is a reference work."
+  },
+  {
+    "id": "c8b5c05e-36f1-4080-b765-b7e35f70a221",
+    "title": "How We Became Posthuman",
+    "author": "N. Katherine Hayles",
+    "reason": "rated 2, 6 readers: Influential but primarily an academic monograph."
+  },
+  {
+    "id": "c149fe44-36e0-43bf-95ed-be8aa33a62c8",
+    "title": "Conservation Biology for All",
+    "author": "Navjot S. Sodhi",
+    "reason": "rated 2, 1 readers: Conservation biology textbook, outside the catalogue’s preferred fit."
+  },
+  {
+    "id": "5098db86-3bf4-443e-a3f0-5655903eebcf",
+    "title": "Year End Asset Sales, Institutions Resolution, Management, and the Strategic Plan",
+    "author": "United States. Congress. House. Committee on Banking, Finance, and Urban Affairs. Subcommittee on Financial Institutions Supervision, Regulation and Insurance. Resolution Trust Corporation Task Force",
+    "reason": "rated 2, 0 readers: Narrow congressional report focused on institutional proceedings."
+  },
+  {
+    "id": "e03add4e-dcb8-4fd3-8155-0e1e1b5e7e9f",
+    "title": "Introduction to Electronic Commerce and Social Commerce",
+    "author": "Efraim Turban",
+    "reason": "rated 2, 1 readers: Electronic commerce textbook rather than a general business read."
+  },
+  {
+    "id": "daa61e3b-3815-468d-a933-a2dfad2dc1a3",
+    "title": "The Decision Intelligence Handbook",
+    "author": "L. Y. Pratt",
+    "reason": "rated 1, 0 readers: Cannot verify this title and author combination reliably."
+  },
+  {
+    "id": "d0ca84d4-299e-4849-8db9-14236c8ba667",
+    "title": "Hair Transplant 360 - Volume 3",
+    "author": "Samuel M Lam",
+    "reason": "rated 2, 0 readers: Specialist clinical reference and companion volume."
+  },
+  {
+    "id": "ecb074bb-d63f-4387-bdab-944dda4d28bb",
+    "title": "eCommerce Economics",
+    "author": "David VanHoose",
+    "reason": "rated 2, 3 readers: Specialized academic economics textbook."
+  },
+  {
+    "id": "fbf98670-1e27-4380-a013-64af1af3d51a",
+    "title": "Managing a Service Business",
+    "author": "Unknown",
+    "reason": "rated 1, 0 readers: Cannot confidently verify this book as described."
+  },
+  {
+    "id": "b6714544-c638-4c6b-a57d-3948eab1aa52",
+    "title": "Today's Public Relations",
+    "author": "Robert L. Heath",
+    "reason": "rated 2, 1 readers: Public relations textbook, not a broad practical read."
+  },
+  {
+    "id": "bd38568c-a75c-4546-be71-45135ef45809",
+    "title": "Improving Business Performance Through Innovation in the Digital Economy",
+    "author": "Oncioiu, Ionica",
+    "reason": "rated 2, 0 readers: Specialized academic volume on digital-economy innovation."
+  },
+  {
+    "id": "3981cc8f-b201-4a4b-924c-90f93d56b4f4",
+    "title": "Misinformation and Disinformation",
+    "author": "Victoria L. Rubin",
+    "reason": "rated 2, 0 readers: Research-focused academic treatment of misinformation."
+  },
+  {
+    "id": "df60c5b3-52b5-489f-b7fa-cb696d0806be",
+    "title": "Careers in Focus",
+    "author": "Facts on File",
+    "reason": "rated 2, 1 readers: Careers reference directory rather than an ideas-led book."
+  },
+  {
+    "id": "76b51b91-3e73-4b46-8069-588a1ff1ddba",
+    "title": "Global Electronic Commerce",
+    "author": "J. Christopher Westland",
+    "reason": "rated 2, 0 readers: Dated academic treatment of electronic commerce."
+  },
+  {
+    "id": "d1c5d67a-7eaf-44a4-8723-c8d66581745f",
+    "title": "Blackwell's Five-Minute Veterinary Practice Management Consult",
+    "author": "Lowell Ackerman",
+    "reason": "rated 2, 1 readers: Veterinary practice-management reference handbook."
+  },
+  {
+    "id": "8936de70-2a10-4c6f-bfb5-20c5f8d55bbe",
+    "title": "Cultural perspectives on services marketing",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: Specialist scholarly collection on services marketing."
+  },
+  {
+    "id": "f0b600eb-3a80-4eac-81b9-7868adecd3cd",
+    "title": "Handbook of Research on Narrative Advertising",
+    "author": "Yilmaz, Recep",
+    "reason": "rated 2, 1 readers: Research handbook, not a general-audience book."
+  },
+  {
+    "id": "e7d4296f-9378-40ef-afa4-1a602f5437eb",
+    "title": "Federal Trade Commission Decisions",
+    "author": "United States. Federal Trade Commission",
+    "reason": "rated 2, 0 readers: Compilation of regulatory decisions and legal records."
+  },
+  {
+    "id": "be44528b-e385-4612-95c5-4ebb61dbbea3",
+    "title": "Integrated Organisational Communication",
+    "author": "Rachel Barker",
+    "reason": "rated 2, 0 readers: Specialized academic communication text."
+  },
+  {
+    "id": "0c9ef413-eecf-4d32-801d-ee77bd922c72",
+    "title": "Statistical Reference Index",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: Statistical reference index, not an ideas-led book."
+  },
+  {
+    "id": "86c1d755-4c36-4d34-8e73-96f3433423ee",
+    "title": "The SAGE Handbook of Public Relations",
+    "author": "Robert L. Heath",
+    "reason": "rated 2, 4 readers: Scholarly handbook and reference collection."
+  },
+  {
+    "id": "6943f77e-a525-495e-9028-728fb13cf01d",
+    "title": "VTAC eGuide 2016",
+    "author": "VTAC",
+    "reason": "rated 2, 0 readers: Admissions guide and reference material, not a general nonfiction read."
+  },
+  {
+    "id": "a97d036d-4984-42ec-bf49-2b4d23047005",
+    "title": "Advertising Management for Services",
+    "author": "Mr. Rohit Manglik",
+    "reason": "rated 2, 0 readers: A narrow advertising textbook, rather than a broadly applicable business read."
+  },
+  {
+    "id": "5a826c68-4d6c-4434-b21d-d9d7fbc60db8",
+    "title": "Media, Development and Democracy",
+    "author": "Heloisa Pait",
+    "reason": "rated 2, 0 readers: An academic monograph on media, development, and democracy."
+  },
+  {
+    "id": "a2a3a7b9-17ae-44d6-b798-494784959346",
+    "title": "Occupational Outlook Handbook",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: A reference handbook of occupational data, not a practical narrative."
+  },
+  {
+    "id": "46a5d948-196e-4eeb-9c85-2f22842bf225",
+    "title": "Area Wage Survey",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: A government wage-data reference work."
+  },
+  {
+    "id": "80f47c92-2bd2-432d-9cd5-06b86c79f4f9",
+    "title": "How To Make A Fortune On The Internet",
+    "author": "Ajay Ahuja",
+    "reason": "rated 1, 8 readers: Unable to verify this title as a reliable, substantive book."
+  },
+  {
+    "id": "659c242b-114a-4329-8763-240bf8ba11bd",
+    "title": "Official Gazette of the United States Patent and Trademark Office",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: An official patent and trademark reference publication."
+  },
+  {
+    "id": "afba4a7c-0730-49b8-8af5-4281a48c5712",
+    "title": "Bulletin of the United States Bureau of Labor Statistics",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: A historical government statistical bulletin."
+  },
+  {
+    "id": "ddccaa82-e55e-4dc8-b511-9d5e2c8e38e8",
+    "title": "The Handbook of International Advertising Research",
+    "author": "Hong Cheng",
+    "reason": "rated 2, 0 readers: A specialized academic research handbook."
+  },
+  {
+    "id": "c5a9a91c-2375-4822-ba3f-6de26b42e2b1",
+    "title": "Ebook: Advertising and Promotion",
+    "author": "Belch",
+    "reason": "rated 2, 0 readers: A marketing textbook, rather than a general-reader book."
+  },
+  {
+    "id": "082c1ec5-d581-476a-88f2-7321ba56d428",
+    "title": "Dictionary of Marketing Communications",
+    "author": "Norman A. P. Govoni",
+    "reason": "rated 2, 2 readers: A dictionary and reference work."
+  },
+  {
+    "id": "d45fa3d0-9b3b-42f1-8a68-bf82582ec65f",
+    "title": "Reducing the harm from alcohol by regulating cross-border alcohol marketing, advertising and promotion",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: A focused policy report on alcohol marketing regulation."
+  },
+  {
+    "id": "60676db0-9471-4989-b150-4d16d26ba0e9",
+    "title": "Emerging Technologies for Nurses",
+    "author": "Whende M. Carroll",
+    "reason": "rated 2, 0 readers: A professional nursing reference on emerging technologies."
+  },
+  {
+    "id": "8440e117-74b6-4f08-adcf-b2203459bd87",
+    "title": "Handbook of Research on Management Techniques and Sustainability Strategies for Handling Disruptive Situations in Corporate Settings",
+    "author": "Perez-Uribe, Rafael",
+    "reason": "rated 2, 0 readers: An academic research handbook for corporate management."
+  },
+  {
+    "id": "b24c2594-0b4b-4dc2-9753-5f10c1d0f70c",
+    "title": "Managing Disruptions in Business",
+    "author": "Rajagopal",
+    "reason": "rated 2, 1 readers: A specialized academic treatment of business disruptions."
+  },
+  {
+    "id": "04707758-59a2-4151-b4b7-88575e433ec0",
+    "title": "Successful Business Model Transformations in Disruptive Times",
+    "author": "Thomas Rudolph",
+    "reason": "rated 2, 0 readers: A specialized scholarly work on business-model transformation."
+  },
+  {
+    "id": "7cbe770a-4245-46e3-84c6-8727c5521478",
+    "title": "Purpose-driven Innovation Leadership for Sustainable Development",
+    "author": "Gaia Grant",
+    "reason": "rated 2, 1 readers: A niche academic work on innovation leadership and sustainability."
+  },
+  {
+    "id": "e62d0874-d280-4982-9a50-4607961775aa",
+    "title": "Innovation and Entrepreneurship",
+    "author": "Ralph F. Brueggemann",
+    "reason": "rated 2, 0 readers: An entrepreneurship textbook."
+  },
+  {
+    "id": "83196bf2-911c-41df-9197-5682d1d9811f",
+    "title": "The Disruptive Innovation Set (2 Books)",
+    "author": "Clayton M. Christensen",
+    "reason": "rated 2, 0 readers: A bundled set, rather than a distinct standalone book."
+  },
+  {
+    "id": "d49dd36a-5fe9-475c-b255-76234583b62e",
+    "title": "Disruptive Innovation in Chinese and Indian Businesses",
+    "author": "Peter Ping Li",
+    "reason": "rated 2, 0 readers: An academic monograph on disruptive innovation in two markets."
+  },
+  {
+    "id": "db5279ca-d52a-4644-8752-be36bb2b4852",
+    "title": "Transformational Concepts and Tools for Entrepreneurial Leadership",
+    "author": "Siyal, Saeed",
+    "reason": "rated 2, 0 readers: Specialist academic treatment rather than broadly applicable leadership reading."
+  },
+  {
+    "id": "0ae8a474-623a-4b09-b356-e942956bacfa",
+    "title": "Disruptive Technologies, Innovation and Global Redesign: Emerging Implications",
+    "author": "Ekekwe, Ndubuisi",
+    "reason": "rated 2, 0 readers: Academic edited collection focused on specialist technology and innovation research."
+  },
+  {
+    "id": "884eb012-b390-41bb-be60-f2a5fbe77df6",
+    "title": "The Future Belongs to Bold Thinkers : How to Innovate, Disrupt, and Lead Change",
+    "author": "Silas Mary",
+    "reason": "rated 1, 0 readers: Could not verify this title and author as described."
+  },
+  {
+    "id": "69f4dd83-6e3d-4a91-88c2-00c09936eacb",
+    "title": "Disruption field study",
+    "author": "Sven Schimpf",
+    "reason": "rated 1, 0 readers: Could not verify this title and author as described."
+  },
+  {
+    "id": "1ce50b08-b5e9-46e2-a477-72afd3b7d459",
+    "title": "Entrepreneurship and Digital Transformation: Managing Disruptive Innovation in a Changing Environment",
+    "author": "Víctor Jesús García Morales",
+    "reason": "rated 2, 0 readers: Academic collection on digital transformation, not a general-audience guide."
+  },
+  {
+    "id": "7b450df0-2cc2-45b4-ae8e-72e160fe5a34",
+    "title": "Business Innovation and Disruption in Publishing",
+    "author": "Robert DeFillippi",
+    "reason": "rated 2, 0 readers: Specialist academic treatment of publishing-sector change."
+  },
+  {
+    "id": "82ca432a-6320-4c61-9a90-6f7c587aff99",
+    "title": "Corporate Innovation",
+    "author": "Donald F. Kuratko",
+    "reason": "rated 2, 4 readers: Corporate innovation textbook by an established entrepreneurship scholar."
+  },
+  {
+    "id": "a4a1cd7a-61e1-4113-ae42-7cdc8ccf84c6",
+    "title": "The Future of Innovation",
+    "author": "Henri Swan",
+    "reason": "rated 1, 0 readers: Could not verify this title and author as described."
+  },
+  {
+    "id": "e68d4525-bef8-4480-ab7d-3bb1e4218597",
+    "title": "Disruptive Innovation: The Christensen Collection (The Innovator's Dilemma, The Innovator's Solution, The Innovator's DNA, and Harvard Business Review article \"How Will You Measure Your Life?\") (4 Items)",
+    "author": "Clayton M. Christensen",
+    "reason": "rated 2, 0 readers: A bundled collection, not a single focused book for summary."
+  },
+  {
+    "id": "74b3b1bf-ee7a-471d-8217-b8902c8e885f",
+    "title": "Exploring Disruptive Innovation",
+    "author": "Unknown",
+    "reason": "rated 1, 0 readers: Unknown author and unverified title."
+  },
+  {
+    "id": "da0ea367-69f7-4d9d-97be-bb310c3c8217",
+    "title": "Disruptive Innovation",
+    "author": "IntroBooks",
+    "reason": "rated 1, 0 readers: IntroBooks imprint suggests a brief derivative summary rather than substantive work."
+  },
+  {
+    "id": "a1f889c5-c73a-418a-a3fa-50923a431b1a",
+    "title": "Disruptive Innovation Explained",
+    "author": "Can Akdeniz",
+    "reason": "rated 1, 0 readers: Likely low-substance filler; author and title are not reliably established."
+  },
+  {
+    "id": "d1ef5eac-a67c-448d-af05-4424510d728f",
+    "title": "Mastering Disruption and Innovation in Product Management",
+    "author": "Christoph Fuchs",
+    "reason": "rated 1, 0 readers: Could not verify this title and author as described."
+  },
+  {
+    "id": "bf0ecfe7-3a93-4515-bba3-4d1fc8e93abe",
+    "title": "Disruptive Innovation and Digital Transformation",
+    "author": "Marguerite L. Johnson",
+    "reason": "rated 1, 0 readers: Could not verify this title and author as described."
+  },
+  {
+    "id": "7081ef14-ffa0-41db-9408-7ae78d473b4e",
+    "title": "Innovation and Disruption",
+    "author": "Jeffrey Johnson",
+    "reason": "rated 1, 0 readers: Could not verify this title and author as described."
+  },
+  {
+    "id": "768962be-9113-4d2c-8901-4a5a51fa11c4",
+    "title": "Human Resource Development",
+    "author": "John P. Wilson",
+    "reason": "rated 2, 1 readers: A human-resource-development textbook rather than a general reader's guide."
+  },
+  {
+    "id": "35876d23-2c5f-45e0-b180-4d1822455bad",
+    "title": "Research in Education",
+    "author": "Unknown",
+    "reason": "rated 1, 0 readers: Generic title and unknown author make this listing unverifiable."
+  },
+  {
+    "id": "3e448b5c-2cbc-4a6b-b238-3d21246eebb4",
+    "title": "Building Social Capital in a Multibusiness Firm",
+    "author": "Eva Bilhuber Galli",
+    "reason": "rated 2, 0 readers: Narrow academic monograph on social capital within corporations."
+  },
+  {
+    "id": "dd3ad3e3-b19e-4e5d-8297-2520fee00e11",
+    "title": "The Wiley Blackwell Handbook of the Psychology of Training, Development, and Performance Improvement",
+    "author": "Kurt Kraiger",
+    "reason": "rated 2, 1 readers: A specialist reference handbook, not a practical general-audience book."
+  },
+  {
+    "id": "cef15e83-3236-4296-bc3b-1bd37df87256",
+    "title": "Leadership in Organizations",
+    "author": "David I. Bertocci",
+    "reason": "rated 2, 0 readers: Leadership textbook rather than an accessible, idea-driven trade book."
+  },
+  {
+    "id": "f33bc907-827c-4118-99bb-af9d3d48f7ea",
+    "title": "Leading Organizations of the Future",
+    "author": "Olivier Serrat",
+    "reason": "rated 1, 0 readers: I can’t verify this title as a book."
+  },
+  {
+    "id": "e5d0b660-4012-4b04-8ebb-56cf2c30abeb",
+    "title": "Leadership, Management, and Innovation in R&D Project Teams",
+    "author": "Leon Mann",
+    "reason": "rated 2, 0 readers: A specialized academic work focused on R&D project teams."
+  },
+  {
+    "id": "c306e78c-0367-479c-a18c-6f8456575fac",
+    "title": "Talent Strategies and Leadership Development of the Public Sector",
+    "author": "Celia Lee",
+    "reason": "rated 1, 0 readers: I can’t verify this title as a book."
+  },
+  {
+    "id": "823040fe-16c6-4a5f-a85e-397fc31daa04",
+    "title": "The Routledge Companion to Talent Management",
+    "author": "Ibraiz Tarique",
+    "reason": "rated 2, 0 readers: A scholarly companion and reference work on talent management."
+  },
+  {
+    "id": "fe968d37-e70e-476f-887f-13844e6c3f32",
+    "title": "International Handbook on the Preparation and Development of School Leaders",
+    "author": "Jacky Lumby",
+    "reason": "rated 2, 0 readers: An academic handbook and reference work for school leadership."
+  },
+  {
+    "id": "2c964567-ce50-400d-bff0-5fb0a1c840e9",
+    "title": "Armstrong's Handbook of Human Resource Management Practice",
+    "author": "Michael Armstrong",
+    "reason": "rated 2, 24 readers: A widely used HR reference handbook, rather than a focused ideas book."
+  },
+  {
+    "id": "67740566-0640-4e4f-8ba8-0c2ba6239fcc",
+    "title": "The Leadership Development Journey",
+    "author": "Jen Vuhuong",
+    "reason": "rated 1, 0 readers: I can’t verify this title as a book."
+  },
+  {
+    "id": "4c1d959c-5e1d-40de-9dd5-4d363d1731fc",
+    "title": "Women's Leadership Development",
+    "author": "Gelaye Debebe",
+    "reason": "rated 2, 0 readers: A specialized academic work on women's leadership development."
+  },
+  {
+    "id": "39c4d04d-5e80-4916-8100-64d4d47567ad",
+    "title": "Reshaping the Landscape of School Leadership Development",
+    "author": "Philip Hallinger",
+    "reason": "rated 2, 0 readers: A scholarly collection focused on school leadership development."
+  },
+  {
+    "id": "4cf3bede-961e-45a3-9695-535e6470e95b",
+    "title": "Leadership Development in Practice",
+    "author": "Kevin Flinn",
+    "reason": "rated 1, 0 readers: I can’t verify this title as a book."
+  },
+  {
+    "id": "62d4ab57-b1f4-4255-b74d-568e92feb671",
+    "title": "The Center for Creative Leadership Handbook of Leadership Development",
+    "author": "Cynthia D. McCauley",
+    "reason": "rated 2, 2 readers: A useful but reference-style handbook for leadership development practitioners."
+  },
+  {
+    "id": "e08c60dd-1dd5-430a-a5fa-95671c1a046f",
+    "title": "Full Range Leadership Development",
+    "author": "Bruce J. Avolio",
+    "reason": "rated 2, 6 readers: A specialized academic treatment of a leadership model."
+  },
+  {
+    "id": "51481563-d404-4a7f-ac15-b58b501f519b",
+    "title": "Enhancing Leadership Development in Kenyan MBA Programs",
+    "author": "Benson Katulwa",
+    "reason": "rated 1, 0 readers: I can’t verify this title as a book."
+  },
+  {
+    "id": "1208070c-d80e-448c-a712-86ddeed0435a",
+    "title": "The Principles of Educational Leadership & Management",
+    "author": "Tony Bush",
+    "reason": "rated 2, 6 readers: An academic textbook on educational leadership and management."
+  },
+  {
+    "id": "021ff17d-a7a6-4607-8409-ef0f8711bf8b",
+    "title": "Golden Nuggets: a Practitioner’S Reflections on Leadership, Management and Life",
+    "author": "Dr. Raymond A. Shulstad",
+    "reason": "rated 1, 0 readers: I can’t verify this title as a substantive book."
+  },
+  {
+    "id": "0b42f28f-b855-488a-81a4-4a9c8895e165",
+    "title": "Leadership, Management and Team Working in Nursing",
+    "author": "Peter Ellis",
+    "reason": "rated 2, 3 readers: A nursing textbook covering leadership, management, and teamwork."
+  },
+  {
+    "id": "8be54dbb-5b62-4343-921e-42433a2d0208",
+    "title": "Educational Leadership, Management, and Administration through Actor-Network Theory",
+    "author": "Paolo Landri",
+    "reason": "rated 2, 1 readers: An academic monograph applying actor-network theory to educational leadership."
+  },
+  {
+    "id": "50e4762c-5b5a-47c9-a3b7-9dac38ab065c",
+    "title": "LEADERSHIP MANAGEMENT: Achieving Breakthroughts",
+    "author": "K. Barman",
+    "reason": "rated 1, 0 readers: I can’t verify this title as a book."
+  },
+  {
+    "id": "40e2c7d9-0b24-4b2e-84c0-839e30436530",
+    "title": "Effective Leadership, Management and Supervision in Health and Social Care",
+    "author": "Richard Field",
+    "reason": "rated 2, 4 readers: A professional textbook for health and social care practice."
+  },
+  {
+    "id": "41a887c3-bc82-4bbc-a82e-45242b49c2a2",
+    "title": "Effective Leadership Management",
+    "author": "Dr. Michael Adewale Adeniyi, Ph.D.",
+    "reason": "rated 1, 0 readers: I can’t verify this title as a substantive book."
+  },
+  {
+    "id": "ef371fa9-a322-4814-9c4c-feb34badedc3",
+    "title": "The Social Contract",
+    "author": "Jean-Jacques Rousseau",
+    "reason": "rated 2, 45 readers: Foundational political philosophy, but a dated primary political text."
+  },
+  {
+    "id": "c356dc21-960a-402e-86ef-02c02b8bf4f8",
+    "title": "The Science of Finance",
+    "author": "Gustav Cohn",
+    "reason": "rated 2, 0 readers: A dated academic treatise rather than an accessible practical guide."
+  },
+  {
+    "id": "94364ad3-e402-4610-bf43-1c20bf284c09",
+    "title": "Capital",
+    "author": "Karl Marx",
+    "reason": "rated 2, 14 readers: A major but dense, dated work of political economy."
+  },
+  {
+    "id": "ff9f2fda-bd7b-451e-945c-995dceb408d9",
+    "title": "Capital a Critique of Political Economy",
+    "author": "Karl Marx",
+    "reason": "rated 2, 4 readers: A major but dense, dated work of political economy."
+  },
+  {
+    "id": "3a193d49-329c-454f-93cf-2b883ceccbdc",
+    "title": "Value, Price and Profit",
+    "author": "Karl Marx",
+    "reason": "rated 2, 19 readers: A dated political-economy pamphlet rather than a practical guide."
+  },
+  {
+    "id": "9f8cf9c5-f69c-4e11-8baf-7ad4050ceccc",
+    "title": "Essentials of Econometrics",
+    "author": "Damodar N. Gujarati",
+    "reason": "rated 2, 10 readers: An econometrics textbook."
+  },
+  {
+    "id": "72f96edb-6867-462b-ab2a-75ea3e3616e7",
+    "title": "Feminist Economics Today",
+    "author": "Marianne A. Ferber",
+    "reason": "rated 2, 0 readers: An academic collection of specialist essays."
+  },
+  {
+    "id": "e07c8c91-0913-45c3-8e4c-979889f8a9c8",
+    "title": "The Poverty of Philosophy",
+    "author": "Karl Marx",
+    "reason": "rated 2, 0 readers: A dated political polemic."
+  },
+  {
+    "id": "b22bdd60-6c6a-4203-9bba-f9c2b78fa4b9",
+    "title": "The Market",
+    "author": "John O'Neill",
+    "reason": "rated 2, 1 readers: A specialized academic monograph."
+  },
+  {
+    "id": "75c0a785-135b-4fd2-bc82-6c5fa613e2f7",
+    "title": "Capital: The process of capitalist production as a whole, ed. by Frederick Engels. Tr. from the 1st German ed. by Ernest Untermann",
+    "author": "Karl Marx",
+    "reason": "rated 2, 14 readers: A dense, dated primary work of political economy."
+  },
+  {
+    "id": "9ff84b90-be37-400e-96f0-9a040f7aec98",
+    "title": "The Statesman's Year-Book",
+    "author": "J. Scott-Keltie",
+    "reason": "rated 2, 0 readers: A reference yearbook, not a book of ideas."
+  },
+  {
+    "id": "8bba62eb-d441-42eb-89a7-49ead72b62a4",
+    "title": "Information Strategy Design and Practices",
+    "author": "Sanjay Mohapatra",
+    "reason": "rated 2, 1 readers: A specialized textbook on information strategy."
+  },
+  {
+    "id": "909d1768-9488-4a80-bf4f-df489ab40b04",
+    "title": "Social Statics: Or, the Conditions Essential to Human Happiness Specified, and the First of Them Developed",
+    "author": "Herbert Spencer",
+    "reason": "rated 2, 5 readers: A dated political-philosophical treatise."
+  },
+  {
+    "id": "7db80c8f-a4b3-414b-8b7a-c8984009a6d3",
+    "title": "History of Economic Analysis",
+    "author": "Joseph A. Schumpeter",
+    "reason": "rated 2, 3 readers: A substantial academic history of economic thought."
+  },
+  {
+    "id": "65f85f88-62f4-4529-aa25-50c4a057bf68",
+    "title": "Herr Eugen Dühring's Revolution in Science (anti-Dühring)",
+    "author": "Friedrich Engels",
+    "reason": "rated 2, 4 readers: A dated political polemic."
+  },
+  {
+    "id": "c5e4c78d-6b25-4272-9fe0-d52bd334986b",
+    "title": "Principles of economics",
+    "author": "Alfred Marshall",
+    "reason": "rated 2, 40 readers: A foundational but dated economics textbook."
+  },
+  {
+    "id": "00194699-79dd-43c1-b51f-7b6d206550ed",
+    "title": "Advances in Behavioral Economics",
+    "author": "Colin F. Camerer",
+    "reason": "rated 2, 2 readers: An academic collection of specialist research."
+  },
+  {
+    "id": "c1d70f5d-8632-425d-ad37-d3455244af08",
+    "title": "The Glasgow Edition of the Works and Correspondence of Adam Smith: VI: Correspondence",
+    "author": "Adam Smith",
+    "reason": "rated 2, 0 readers: A scholarly primary-source correspondence volume."
+  },
+  {
+    "id": "75251cdf-0ca7-42f2-9d30-926f5295a7ba",
+    "title": "Handbook of Economic Growth",
+    "author": "Philippe Aghion",
+    "reason": "rated 2, 3 readers: A specialist academic handbook."
+  },
+  {
+    "id": "97fe0fd4-3ca0-4ee0-837e-efaa2caa4e0d",
+    "title": "Essays in Positive Economics",
+    "author": "Milton Friedman",
+    "reason": "rated 2, 7 readers: Influential, but an academic collection rather than an accessible guide."
+  },
+  {
+    "id": "0f2ad473-6664-4b13-9dda-cf92bde17c8f",
+    "title": "Reinventing Business Practices, Start-Ups, & Sustainability",
+    "author": "Prof.Dr.V.Sasirekha",
+    "reason": "rated 1, 0 readers: Could not verify this title and author combination."
+  },
+  {
+    "id": "b6280168-7069-4a97-b63c-121833ac5bd6",
+    "title": "Complex Systems: Innovation and Sustainability in the Digital Age",
+    "author": "Aleksei V. Bogoviz",
+    "reason": "rated 2, 0 readers: Specialist academic work, not a practical reader-oriented guide."
+  },
+  {
+    "id": "49f20765-fd40-4746-9214-f2e491456b88",
+    "title": "The Entrepreneurial Group",
+    "author": "Martin Ruef",
+    "reason": "rated 2, 0 readers: A real scholarly monograph on entrepreneurial teams."
+  },
+  {
+    "id": "13885484-765f-4e90-8c59-53e86d47c90f",
+    "title": "Proceedings of the 18th European Conference on Games Based Learning",
+    "author": "Kristine Kilsa",
+    "reason": "rated 2, 0 readers: Conference proceedings are a poor fit for idea-focused summaries."
+  },
+  {
+    "id": "255753e4-5f5a-4058-b03e-73eb5a35f88b",
+    "title": "Family Business Debates",
+    "author": "Oscar Javier Montiel Méndez",
+    "reason": "rated 2, 0 readers: Specialist academic work on family-business research."
+  },
+  {
+    "id": "41b9c261-e76f-413a-a3e9-cdb400d01e34",
+    "title": "Handbook of Research on Small Business and Entrepreneurship",
+    "author": "Elizabeth Chell",
+    "reason": "rated 2, 0 readers: Academic reference handbook, not a general-reader book."
+  },
+  {
+    "id": "1bac465c-31cc-4b9c-8e4e-d750efd47f15",
+    "title": "The Evolution of Strategic Management: Challenges in Theory and Business Practice",
+    "author": "Tomasz Kafel",
+    "reason": "rated 2, 0 readers: Specialist academic treatment of strategic-management theory."
+  },
+  {
+    "id": "ee605a1c-59f3-4fa7-9df4-a0e5fd6b7c25",
+    "title": "Handbook of Entrepreneurship Research",
+    "author": "Zoltan J. Acs",
+    "reason": "rated 2, 1 readers: Scholarly reference handbook rather than an accessible guide."
+  },
+  {
+    "id": "a9b636a2-f45a-45d5-b14d-3f0e360989e8",
+    "title": "84 Tips to a Successful Business Startup",
+    "author": "Khalid Suleimani",
+    "reason": "rated 1, 0 readers: Unverified title with little evidence of a reliable substantive book."
+  },
+  {
+    "id": "bd3c0be7-b182-4c2b-8850-467440c52605",
+    "title": "The Entrepreneur’s Guide to Risk and Decisions",
+    "author": "Thomas G. Pittz",
+    "reason": "rated 1, 0 readers: Could not verify this title as described."
+  },
+  {
+    "id": "91868804-2c7b-4062-a6d1-85dd31bfcda4",
+    "title": "Entrepreneurship Viability Index",
+    "author": "Nezameddin Faghih",
+    "reason": "rated 2, 0 readers: Specialist academic framework, rather than broadly applicable business guidance."
+  },
+  {
+    "id": "db1dfa44-e744-49fc-ac4d-8f6dd948850b",
+    "title": "Technology Entrepreneurship : A Treatise on Entrepreneurs and Entrepreneurship for and in Technology Ventures. Vol 1.",
+    "author": "Runge, Wolfgang",
+    "reason": "rated 2, 0 readers: Dense specialist treatise on technology entrepreneurship."
+  },
+  {
+    "id": "d7e79560-8f0d-48c8-b929-eea36d087b4c",
+    "title": "Entrepreneurial Place Leadership",
+    "author": "Robert Newbery",
+    "reason": "rated 2, 0 readers: Specialist academic work on regional entrepreneurship and leadership."
+  },
+  {
+    "id": "98fc4614-7cf8-4df4-b6e7-926eff09eaa8",
+    "title": "Destructive Entrepreneurship in Emerging Markets",
+    "author": "Amir Emami",
+    "reason": "rated 2, 0 readers: Academic research on entrepreneurship in emerging markets."
+  },
+  {
+    "id": "52362c5f-9068-4f1f-899a-ce0872945500",
+    "title": "New Horizons and Global Perspectives in Female Entrepreneurship Research",
+    "author": "Ufuk Alpsahin Cullen",
+    "reason": "rated 2, 0 readers: Research collection intended for an academic audience."
+  },
+  {
+    "id": "1e72875c-52b9-43be-915c-9379b7f6a6c2",
+    "title": "Global Entrepreneurship and Development Index 2018",
+    "author": "Zoltán J. Ács",
+    "reason": "rated 2, 0 readers: A reference index and report, not a practical idea-led book."
+  },
+  {
+    "id": "34d93838-56cf-4dd6-aa11-f372090d8138",
+    "title": "UP PGT Commerce Business Organisation Book",
+    "author": "Dheeraj Kumar Singh",
+    "reason": "rated 2, 0 readers: Exam-preparation textbook, outside the catalogue's intended fit."
+  },
+  {
+    "id": "da9461bc-3c5f-4879-b6f2-fd94a59a6fb7",
+    "title": "Journal of Small Business and Entrepreneurship",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: An academic journal, not a standalone reader-oriented book."
+  },
+  {
+    "id": "800cba84-2b39-4b83-834a-bec76c549818",
+    "title": "Developing Entrepreneurship",
+    "author": "Virginia Moori Koenig",
+    "reason": "rated 2, 0 readers: Specialist academic work, not a broadly useful practical guide."
+  },
+  {
+    "id": "4b7c2c60-665f-4711-aed6-247ff7e45092",
+    "title": "Innovation and Entrepreneurship",
+    "author": "Martha Corrales-Estrada",
+    "reason": "rated 2, 0 readers: Academic treatment of innovation and entrepreneurship."
+  },
+  {
+    "id": "528510f9-8b69-46d9-b45b-adc8ebe330c9",
+    "title": "KVS PGT Commerce Book - Business Studies Volume 1 2025 Eidition",
+    "author": "Dheeraj Kumar Singh",
+    "reason": "rated 2, 0 readers: Exam-preparation textbook, outside the catalogue's intended fit."
+  },
+  {
+    "id": "4ef27054-9931-490f-b6bf-8aabb80aff4a",
+    "title": "Entrepreneurship Skills for New Ventures",
+    "author": "David C. Kimball",
+    "reason": "rated 1, 1 readers: Could not verify this title and author combination."
+  },
+  {
+    "id": "c174fb94-8a59-4624-8872-54053691e340",
+    "title": "Investment In Startups And Small Business Financing",
+    "author": "Farhad Taghizadeh-hesary",
+    "reason": "rated 2, 0 readers: Specialist academic work on startup and small-business financing."
+  },
+  {
+    "id": "35baabba-4e12-40aa-9daf-1460524deda8",
+    "title": "Entrepreneurship",
+    "author": "Marc H. Meyer",
+    "reason": "rated 2, 7 readers: Academic entrepreneurship textbook rather than a general-audience ideas book."
+  },
+  {
+    "id": "4f3f70b0-dee3-4593-b5d2-7a3fb90870fd",
+    "title": "Entrepreneurship",
+    "author": "Heidi M. Neck",
+    "reason": "rated 2, 21 readers: Entrepreneurship textbook, not a trade book for general readers."
+  },
+  {
+    "id": "5ad4674a-838f-4b3e-b38e-5888f64f25b7",
+    "title": "Entrepreneurship & Project Management",
+    "author": "Mr. Rohit Manglik",
+    "reason": "rated 1, 0 readers: Unverified title and author; appears to be low-value filler."
+  },
+  {
+    "id": "b7133b38-e5ec-494b-af8a-b6942cbd4726",
+    "title": "Startup DNA: The Entrepreneur’s Roadmap from Idea to Impact",
+    "author": "Mr. Yazuvendra Singh",
+    "reason": "rated 1, 0 readers: Could not verify this title and author as described."
+  },
+  {
+    "id": "111620bf-cd8b-4a18-b36b-e3be34ca66f8",
+    "title": "The Entrepreneur's Guide to Building a Thriving Startup",
+    "author": "Kenia Castro",
+    "reason": "rated 1, 0 readers: Could not verify this title and author as described."
+  },
+  {
+    "id": "bc374aea-7d97-4891-8a80-a5be68bca0f0",
+    "title": "Search Methodologies",
+    "author": "Edmund K. Burke",
+    "reason": "rated 2, 0 readers: Technical reference on search methods, not a general-audience book."
+  },
+  {
+    "id": "c42f7ce4-ac12-42a1-add5-ea35fbdb1825",
+    "title": "Excel VBA 24-Hour Trainer",
+    "author": "Tom Urtis",
+    "reason": "rated 2, 3 readers: Excel VBA training manual and reference, rather than an ideas book."
+  },
+  {
+    "id": "a6e4fdd0-fa92-463e-8114-d42b27523f05",
+    "title": "Industrial Organization and Management",
+    "author": "Hugo Diemer",
+    "reason": "rated 2, 6 readers: Early twentieth-century industrial management textbook."
+  },
+  {
+    "id": "6780d9ea-cd8d-4028-990a-c4f89d35b284",
+    "title": "Industrial Arts Index",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: Bibliographic index and reference work, not a learning-oriented trade book."
+  },
+  {
+    "id": "cf3325ba-4e7b-411c-aea2-bf8feefbd2cf",
+    "title": "The Evolution of Competitive Strategies in Global Forestry Industries",
+    "author": "Juha-Antti Lamberg",
+    "reason": "rated 2, 0 readers: Specialized academic monograph on forestry industry strategy."
+  },
+  {
+    "id": "10050f4c-6282-406b-95e6-2975be7954e9",
+    "title": "MIS Essentials",
+    "author": "David Kroenke",
+    "reason": "rated 2, 1 readers: Management information systems textbook."
+  },
+  {
+    "id": "64b1513c-e94e-40be-91ca-47aa87c06de2",
+    "title": "Readings in Cost Accounting, Budgeting & Control",
+    "author": "William Edgar Thomas",
+    "reason": "rated 2, 1 readers: Accounting readings collection, functioning as a textbook or anthology."
+  },
+  {
+    "id": "4084c329-55d0-458f-b800-913437602790",
+    "title": "MIS Essentials",
+    "author": "David M. Kroenke",
+    "reason": "rated 2, 1 readers: Management information systems textbook."
+  },
+  {
+    "id": "40abf1af-ade4-4a7b-a52e-e3abdadc4570",
+    "title": "Using MIS",
+    "author": "David Kroenke",
+    "reason": "rated 2, 4 readers: Management information systems textbook."
+  },
+  {
+    "id": "48750010-50ff-495a-90db-197b16f6a54f",
+    "title": "Business and Management Education in Transitioning and Developing Countries",
+    "author": "John R. McIntyre",
+    "reason": "rated 2, 0 readers: Academic collection focused on management education policy and practice."
+  },
+  {
+    "id": "f765126d-9c55-4033-bc40-7e136b1a0cc1",
+    "title": "Doing Business with Lithuania",
+    "author": "Marat Terterov",
+    "reason": "rated 2, 0 readers: Country-specific business reference guide, now dated."
+  },
+  {
+    "id": "8027b0bf-07de-4ffc-9115-51b66d4c9441",
+    "title": "Excel Formulas and Functions For Dummies",
+    "author": "Ken Bluttman",
+    "reason": "rated 2, 8 readers: Excel reference and instructional manual, not a general ideas book."
+  },
+  {
+    "id": "086aed01-6284-4a85-9bc3-5396ce141d53",
+    "title": "Elements of Mathematics for Economics and Finance",
+    "author": "Vassilis C. Mavron",
+    "reason": "rated 2, 2 readers: Technical mathematics textbook for economics and finance."
+  },
+  {
+    "id": "5b15781c-1a4c-40f9-9b19-450a4c1c049a",
+    "title": "An Annotated Timeline of Operations Research",
+    "author": "Saul I. Gass",
+    "reason": "rated 2, 1 readers: Annotated reference timeline, not a practical or narrative trade book."
+  },
+  {
+    "id": "23226452-6980-4a6a-8d58-0c65a6a8c5c8",
+    "title": "Contemporary Business, Canadian Edition",
+    "author": "Louis E. Boone",
+    "reason": "rated 2, 0 readers: Business textbook, rather than a general-reader book."
+  },
+  {
+    "id": "6da1d663-9485-4d1a-b856-d43c14e4f128",
+    "title": "The Economics of the Environment and Natural Resources",
+    "author": "Quentin Grafton",
+    "reason": "rated 2, 1 readers: Specialized economics textbook, rather than a broadly applicable trade book."
+  },
+  {
+    "id": "b936a813-3f2b-483c-8c33-75ec6169971a",
+    "title": "From Grey to Silver",
+    "author": "Sven Kunisch",
+    "reason": "rated 1, 0 readers: Could not verify a distinct, reliably identifiable book matching this listing."
+  },
+  {
+    "id": "d89a4083-9562-42ed-9b97-422843ad6065",
+    "title": "Understanding Business",
+    "author": "David Barnes",
+    "reason": "rated 2, 1 readers: Business textbook, not a general-audience idea-driven book."
+  },
+  {
+    "id": "66afe3ac-e1fb-4010-a6af-1e5940cc7415",
+    "title": "The New Palgrave Dictionary of Money and Finance",
+    "author": "John Eatwell",
+    "reason": "rated 2, 1 readers: Reference dictionary rather than a book designed for learning through a summary."
+  },
+  {
+    "id": "53a872ab-1a16-4b93-b7c8-e6cc9ff79898",
+    "title": "Data Mining Techniques",
+    "author": "Michael J. A. Berry",
+    "reason": "rated 2, 2 readers: Technical data-mining textbook and reference."
+  },
+  {
+    "id": "21431c9e-e584-460f-99f9-0a534c6a88f7",
+    "title": "Resilience Engineering",
+    "author": "Erik Hollnagel",
+    "reason": "rated 2, 3 readers: Specialist academic collection on resilience engineering."
+  },
+  {
+    "id": "f1631d4d-caa7-4031-a34f-6ac128351240",
+    "title": "Inspection Errors for Attributes in Quality Control",
+    "author": "Norman Lloyd Johnson",
+    "reason": "rated 2, 0 readers: Highly specialized quality-control research, with limited general-reader appeal."
+  },
+  {
+    "id": "3e5593d4-6c45-4148-86df-5295dd457cc6",
+    "title": "Microsoft Outlook Programming",
+    "author": "Sue Mosher",
+    "reason": "rated 2, 1 readers: Outdated software programming reference."
+  },
+  {
+    "id": "0fd9e7be-76a3-45e5-961a-df52cb61093b",
+    "title": "Economics",
+    "author": "Campbell R. McConnell",
+    "reason": "rated 2, 52 readers: Standard economics textbook rather than a trade nonfiction title."
+  },
+  {
+    "id": "b6d1e9fd-21bd-4643-8a64-df6b102b35e4",
+    "title": "The Economics of Science and Technology",
+    "author": "M.P. Feldman",
+    "reason": "rated 2, 0 readers: Specialized academic treatment of science and technology economics."
+  },
+  {
+    "id": "1f10a43a-9c3f-432a-9bc8-0181ff3a5920",
+    "title": "Iran",
+    "author": "United States. Bureau of International Commerce",
+    "reason": "rated 2, 0 readers: Dated government country-commerce reference."
+  },
+  {
+    "id": "c2ac546c-979a-44bb-bffa-7208a74fb396",
+    "title": "Research Methods for Business Students",
+    "author": "Mark Saunders",
+    "reason": "rated 2, 37 readers: Research-methods textbook for students."
+  },
+  {
+    "id": "c34b42f8-fbda-43ee-9aff-3116b708d19f",
+    "title": "Mindful Eating For Dummies",
+    "author": "Laura Dawn",
+    "reason": "rated 2, 3 readers: Instructional Dummies-style guide, rather than a distinctive idea-driven work."
+  },
+  {
+    "id": "d39d6bd7-bc3d-49f7-96f2-1942cf40f4b6",
+    "title": "Interventions for Addiction",
+    "author": "Unknown",
+    "reason": "rated 1, 0 readers: Could not identify a reliable book matching this generic title and unknown author."
+  },
+  {
+    "id": "bfec15dd-356b-4e55-af38-50dd911b13da",
+    "title": "Communication from the Inside Out",
+    "author": "Karen Mueller",
+    "reason": "rated 1, 0 readers: Could not verify a reliably identifiable book matching this listing."
+  },
+  {
+    "id": "dcff990a-5448-4306-96e2-d268950e7ff8",
+    "title": "Positive Psychology Studies in Education",
+    "author": "Abdolvahab Samavi",
+    "reason": "rated 2, 0 readers: Specialized academic studies in educational psychology."
+  },
+  {
+    "id": "1d8e3535-fc2b-4c29-a187-aca086ce5048",
+    "title": "Mindful Choices for Well-Being",
+    "author": "William C. Shearer",
+    "reason": "rated 1, 0 readers: Could not verify a distinct, reliably identifiable book matching this listing."
+  },
+  {
+    "id": "2c5618d5-3bff-4660-acdd-1ad855b37e3d",
+    "title": "Embracing Serenity: A Comprehensive Guide to Mindful Practices for Lasting Anxiety Relief and Inner Peace",
+    "author": "Unknown",
+    "reason": "rated 1, 0 readers: Generic title and unknown author; no reliable book identification."
+  },
+  {
+    "id": "2939f422-fcc6-4bd9-a3a9-f1687dfad4a5",
+    "title": "Innovations and Advances in Cognitive Behaviour Therapy",
+    "author": "Danielle A. Einstein",
+    "reason": "rated 2, 0 readers: Specialist academic treatment of cognitive behavioural therapy."
+  },
+  {
+    "id": "b756378c-a8d9-4c50-ae1d-591149ba4ab6",
+    "title": "The Art of Mindful Living",
+    "author": "SAYON MANDAL",
+    "reason": "rated 1, 0 readers: Could not verify a reliable, established book matching this listing."
+  },
+  {
+    "id": "d7d73987-250f-4ea5-8266-a8ef63b023a5",
+    "title": "Third-Generation Neuroimaging: Translating Research into Clinical Utility",
+    "author": "André Schmidt",
+    "reason": "rated 2, 0 readers: Specialized clinical neuroimaging reference."
+  },
+  {
+    "id": "4362a544-f9ee-4797-a832-f2a18f3c397c",
+    "title": "A critical appraisal of research in arts, health and wellbeing",
+    "author": "Stephen Clift",
+    "reason": "rated 2, 0 readers: Academic appraisal with a narrow research focus."
+  },
+  {
+    "id": "91ca3399-cb01-4b36-b3ff-fd3a3fff54e2",
+    "title": "Anxiety Disorders",
+    "author": "Helen Blair Simpson",
+    "reason": "rated 2, 1 readers: Clinical reference on anxiety disorders rather than a general-audience guide."
+  },
+  {
+    "id": "e5686c0c-01a3-440d-92b4-db5cbbf79ca9",
+    "title": "The Mindful Way Through Pain",
+    "author": "Sergio Rijo",
+    "reason": "rated 1, 0 readers: Unable to verify this title or author."
+  },
+  {
+    "id": "cb8ffa74-476f-4760-b44e-de9f6eacfe4b",
+    "title": "What is Mindfulness",
+    "author": "AQEEL AHMED",
+    "reason": "rated 1, 0 readers: Unable to verify this title or author."
+  },
+  {
+    "id": "f8045150-8cbb-44f6-a45b-e0e133713ca4",
+    "title": "135+ Guided Meditation Scripts (Volume 2)",
+    "author": "Jaime Wishstne",
+    "reason": "rated 2, 0 readers: Guided meditation scripts are a workbook-style resource."
+  },
+  {
+    "id": "0499151e-aeed-4e0e-8de6-ad9660bb2116",
+    "title": "Handbook of Mindfulness",
+    "author": "Kirk Warren Brown",
+    "reason": "rated 2, 0 readers: A specialist handbook and reference work, not a general-reader summary fit."
+  },
+  {
+    "id": "e921a191-768d-42eb-ae49-6b53242c6548",
+    "title": "Cultivating Serenity and Concentration Through Mindful Meditation Practices",
+    "author": "Unknown",
+    "reason": "rated 1, 0 readers: Unknown author and unverified title."
+  },
+  {
+    "id": "1666cf1b-0c91-4720-8696-b2429f57ec28",
+    "title": "The Impact of Mindfulness Meditation Programs on Performance-Related Outcomes",
+    "author": "Kimberly A. Hepner",
+    "reason": "rated 2, 0 readers: A research-focused report rather than a general-reader book."
+  },
+  {
+    "id": "c3a72ba9-6801-42a8-9f43-b543c035b9f4",
+    "title": "Mindfulness and Psychotherapy",
+    "author": "Christopher K. Germer",
+    "reason": "rated 2, 4 readers: A specialist psychotherapy text for clinical readers."
+  },
+  {
+    "id": "c2c083b8-71c8-47f0-b875-7c8ce734261d",
+    "title": "Meditation",
+    "author": "Rev. Patrick J. Harbula",
+    "reason": "rated 1, 0 readers: Unable to verify this title or author."
+  },
+  {
+    "id": "d932b9ac-1890-463e-b0b3-ade709de94bd",
+    "title": "The Power of Guided Meditation",
+    "author": "Jessica Crow",
+    "reason": "rated 1, 0 readers: Unable to verify this title or author."
+  },
+  {
+    "id": "579758fa-6cfc-42e6-812e-77f22b0f9625",
+    "title": "The Little Handbook of Mini-Mindfulness Meditation",
+    "author": "Unknown",
+    "reason": "rated 1, 0 readers: Unknown author and unverified title."
+  },
+  {
+    "id": "74b4ae83-8e29-4d3a-8126-8a400192bdf1",
+    "title": "Zen Mind-body Mindfulness Meditation Book",
+    "author": "Jessie Bowen",
+    "reason": "rated 1, 0 readers: Unable to verify this title or author."
+  },
+  {
+    "id": "833143d8-363e-43a1-8a91-f6058d22feba",
+    "title": "Mindfulness Meditation and The Art of Reiki",
+    "author": "Steve Robert Gooch",
+    "reason": "rated 1, 0 readers: Unable to verify this title or author."
+  },
+  {
+    "id": "55259d6c-82ba-4518-b8ea-2165baf6b813",
+    "title": "Transform Your Life with Mindfulness Meditation",
+    "author": "Glenda Freeman",
+    "reason": "rated 1, 0 readers: Unable to verify this title or author."
+  },
+  {
+    "id": "5b3a6e62-3142-4115-a08d-5aef50c29044",
+    "title": "Mindfulness Meditation in Psychotherapy",
+    "author": "Steven A Alper",
+    "reason": "rated 1, 0 readers: Unable to verify this title or author."
+  },
+  {
+    "id": "cfd25fdc-0f87-4139-ab76-38d1bec25da0",
+    "title": "How Mindfulness Meditation Works",
+    "author": "Ronald Cowen",
+    "reason": "rated 1, 0 readers: Unable to verify this title or author."
+  },
+  {
+    "id": "3c97d925-2cb7-4383-97a1-68f174caa563",
+    "title": "Mindfulness Meditation for Beginners: Daily Mindfulness and Guided Meditation Practices for Stress Reduction and Finding Inner Peace",
+    "author": "Patty Morgan",
+    "reason": "rated 1, 0 readers: Unable to verify this title or author."
+  },
+  {
+    "id": "b30edece-fb51-4b8e-804e-e4507daad6e2",
+    "title": "The Whole Truth About Habits",
+    "author": "J. A. Grobelny",
+    "reason": "rated 1, 0 readers: Unable to verify this title or author."
+  },
+  {
+    "id": "977f7072-98bb-4463-bc93-b3c26c06dbe4",
+    "title": "Productivity Without Pressure",
+    "author": "Sebastian Hale",
+    "reason": "rated 1, 0 readers: Unable to verify this title or author."
+  },
+  {
+    "id": "9f517716-a7ab-4cd7-82ad-5a134fb1b414",
+    "title": "40 Essential Productivity Hacks for Success in 7 Minutes Each",
+    "author": "Nietsnie Trebla",
+    "reason": "rated 1, 0 readers: Unable to verify this title or author."
+  },
+  {
+    "id": "2c7fedf6-0ed2-41d9-845a-de7b5ebf567c",
+    "title": "Performance Drivers in the Australian Banking and Financial Industry",
+    "author": "Ami-Lee Kelly",
+    "reason": "rated 2, 0 readers: Academic research topic; not a practical general-reader productivity book."
+  },
+  {
+    "id": "23becec1-5f0c-4416-9c4f-de9a2958afbd",
+    "title": "Smart 10-Minute Productivity Habits",
+    "author": "Joann Lindsey",
+    "reason": "rated 1, 0 readers: Unverified title and author; likely low-value self-published filler."
+  },
+  {
+    "id": "37fb73c5-6ceb-4473-aa9e-9a57f009379a",
+    "title": "The Holistic Habit: A Scientific Approach to Balanced Productivity and Well-Being",
+    "author": "Enrique G.",
+    "reason": "rated 1, 0 readers: Incomplete author details and no reliable evidence this book exists as described."
+  },
+  {
+    "id": "c24cfa2e-ae30-4b17-9208-1aa008fc9a8d",
+    "title": "Productivity Revolution 21: Strategies for Achieving Extraordinary Results in Less Time",
+    "author": "Gael Navarro",
+    "reason": "rated 1, 0 readers: Unverified title and author; likely low-value self-published filler."
+  },
+  {
+    "id": "b37b0eca-b6b7-4cbf-bbcf-2c04e2deebb4",
+    "title": "Habit Hacks",
+    "author": "Prince Penman",
+    "reason": "rated 1, 0 readers: Unverified title and author; likely low-value self-published filler."
+  },
+  {
+    "id": "4f0d8836-31ef-4a3e-a987-5abe60952ab6",
+    "title": "A Brief Introduction To Habits",
+    "author": "Tyson Phanann",
+    "reason": "rated 1, 0 readers: Unverified title and author; no reliable evidence this book exists as described."
+  },
+  {
+    "id": "b25d55a6-c7fc-4185-9215-810644cd7a6d",
+    "title": "Productivity Unleashed: Time Management Tips For Busy Lives",
+    "author": "Wilton Frey",
+    "reason": "rated 1, 0 readers: Unverified title and author; likely low-value self-published filler."
+  },
+  {
+    "id": "d766e021-c8bc-4929-b00e-11b53badadc2",
+    "title": "Mastering Productivity",
+    "author": "Prince Penman",
+    "reason": "rated 1, 0 readers: Unverified title and author; likely low-value self-published filler."
+  },
+  {
+    "id": "18711902-0aa1-4ff2-bb39-8ec952bae7a4",
+    "title": "6 Habits of Highly Productive Teams",
+    "author": "Murphy Brennan",
+    "reason": "rated 1, 0 readers: Unverified title and author; no reliable evidence this book exists as described."
+  },
+  {
+    "id": "3bcd9773-fbea-40eb-b6c5-bb83a3cae270",
+    "title": "How to Adopt Productive Habits and Maintain Them",
+    "author": "Leonardo Vega",
+    "reason": "rated 1, 0 readers: Could not verify this title or author."
+  },
+  {
+    "id": "23b4f762-5826-45e4-b935-4d0f97a41d00",
+    "title": "Top 23 Productive Habits in 2023",
+    "author": "Subrat Gupta",
+    "reason": "rated 1, 0 readers: Could not verify this title or author."
+  },
+  {
+    "id": "233de8dd-4871-431d-8a38-13e5e3fdf20b",
+    "title": "Mind Over Matter: How to Harness the Power of Your Thoughts to Create the Life You Want",
+    "author": "Shu Chen Hou",
+    "reason": "rated 1, 0 readers: Could not verify this title as described."
+  },
+  {
+    "id": "8f42a0d7-a41d-4743-a00d-128be622fc03",
+    "title": "Name Analyst",
+    "author": "Spiritual Publications",
+    "reason": "rated 1, 0 readers: Could not verify this title or publisher."
+  },
+  {
+    "id": "29663909-2b0a-486e-96b6-2527bc2122f9",
+    "title": "Thesaurus of ERIC Descriptors",
+    "author": "Unknown",
+    "reason": "rated 2, 0 readers: A reference work, not a practical narrative or idea-driven book."
+  },
+  {
+    "id": "3be2a0b6-bd69-462c-aa42-96af8c04eb26",
+    "title": "Fundamentals of Performance Improvement",
+    "author": "Darlene Van Tiem",
+    "reason": "rated 2, 0 readers: A specialist performance-improvement textbook."
+  },
+  {
+    "id": "1b26c280-5c0c-4527-8b30-b225a22d070c",
+    "title": "Managing Public Services - Implementing Changes",
+    "author": "Tony L. Doherty",
+    "reason": "rated 2, 0 readers: A specialist public-services management book."
+  },
+  {
+    "id": "90e524b0-2bdd-4d76-818e-d14cd8233f40",
+    "title": "Children's and Young People's Nursing in Practice",
+    "author": "Valerie Coleman",
+    "reason": "rated 2, 0 readers: A professional nursing textbook."
+  },
+  {
+    "id": "c93ef09a-a299-4394-8651-b43542ce8157",
+    "title": "Mental Healthcare Matters in Primary Care",
+    "author": "Ruth Chambers",
+    "reason": "rated 2, 1 readers: A clinical reference for primary-care professionals."
+  },
+  {
+    "id": "f5d3f1fa-5cc1-432a-8c65-39292884d801",
+    "title": "Cumulative List of Organizations Described in Section 170 (c) of the Internal Revenue Code of 1954",
+    "author": "United States. Internal Revenue Service",
+    "reason": "rated 2, 0 readers: An IRS organizational listing and reference document."
+  },
+  {
+    "id": "b2172ae7-ed0e-4c9e-91ba-d818608ff13d",
+    "title": "Managing Human Resources",
+    "author": "Alan Cowling",
+    "reason": "rated 2, 0 readers: A human-resources textbook."
+  },
+  {
+    "id": "7cc32cc3-0c60-4429-bff4-3ba791ae60bd",
+    "title": "The Complete MRCGP Study Guide",
+    "author": "Sarah Gear",
+    "reason": "rated 2, 0 readers: An exam-preparation study guide."
+  },
+  {
+    "id": "83496cc0-43b0-4fff-8ddf-376483a39594",
+    "title": "Leadership Unleashed: Inspiring Excellence",
+    "author": "Silviu Ciuta",
+    "reason": "rated 1, 0 readers: Could not verify this title or author."
+  },
+  {
+    "id": "7783470e-d776-41b4-8695-9543cb5fcbaa",
+    "title": "Coach Kizzi’s The Personal Development Coach",
+    "author": "Kizzi Nkwocha",
+    "reason": "rated 1, 0 readers: Could not verify this title as described."
+  },
+  {
+    "id": "d75c75ea-a79b-4923-9331-baaf527dc3a4",
+    "title": "The Art of Being Humble: A Journey to Self-Improvement",
+    "author": "F.G. Cardin",
+    "reason": "rated 1, 0 readers: Could not verify this title or author."
+  },
+  {
+    "id": "5c7afce2-0c0d-4435-9b3e-fee0193b52b3",
+    "title": "Learning About Mental Health Practice",
+    "author": "Theo Stickley",
+    "reason": "rated 2, 1 readers: A specialist text on mental-health practice."
+  },
+  {
+    "id": "9ca353c7-a034-4e66-939e-68ee8fa8aa39",
+    "title": "Kick Start Personal Development Journal",
+    "author": "Tony Nutley",
+    "reason": "rated 2, 0 readers: A personal-development journal rather than an idea-driven book."
+  },
+  {
+    "id": "c6d4d969-1d22-428c-8e1f-a8b7ce2d1203",
+    "title": "Reflection in Learning and Professional Development",
+    "author": "Jennifer A. Moon",
+    "reason": "rated 2, 3 readers: An academic text on learning and professional development."
+  },
+  {
+    "id": "8adf9d53-45ac-4843-b79d-a57e18ba1675",
+    "title": "Limitless: A Motivational Blueprint for Personal Growth and Success",
+    "author": "F Cardin",
+    "reason": "rated 1, 0 readers: Could not verify this title as described."
+  },
+  {
+    "id": "59d2174a-dc6c-413a-9ecb-8473ed36dde3",
+    "title": "The Power of Self Discipline",
+    "author": "Patrick Owens",
+    "reason": "rated 1, 0 readers: Could not verify this title or author."
+  },
+  {
+    "id": "781c1f78-6ed3-417e-b4ae-1189cfede0aa",
+    "title": "A Textbook of Personality Development",
+    "author": "Dr. Preeti",
+    "reason": "rated 2, 0 readers: A textbook, not a general-audience personal-development book."
+  },
+  {
+    "id": "1d83b032-7c7d-4727-a4a8-24a7881fb50f",
+    "title": "Personality Development in Adolescence",
+    "author": "Eva Elisabeth Aspaas Skoe",
+    "reason": "rated 2, 1 readers: A specialist scholarly work on adolescent development."
+  },
+  {
+    "id": "4565c9b3-1dc9-4102-b39b-36393dab3f4a",
+    "title": "The Power of Personal Growth",
+    "author": "Pawan Sharma",
+    "reason": "rated 1, 0 readers: Could not verify this title as described."
+  },
+  {
+    "id": "eeac0f48-15b2-47c5-ad28-f5019666e986",
+    "title": "Empower Your MIND And SOUL : A Journey To Personal Development.",
+    "author": "Rahul N Nevrekar",
+    "reason": "rated 1, 0 readers: Cannot verify this obscure title as described."
+  },
+  {
+    "id": "cfda6942-8a61-4af5-8215-2dbcc06b6ba9",
+    "title": "Personality Development- Communication and Soft Skills",
+    "author": "Prof. (Dr.) Santosh Pagare",
+    "reason": "rated 2, 0 readers: Appears to be a textbook on communication and soft skills."
+  },
+  {
+    "id": "dccf7ca2-1494-48e1-941d-26c807af87f0",
+    "title": "Personal Development With Success Ingredients",
+    "author": "Mo Abraham",
+    "reason": "rated 1, 2 readers: Cannot verify this obscure title as a reliable, substantive work."
+  },
+  {
+    "id": "54834fec-91b5-4c46-8529-61ba6eb4c6cf",
+    "title": "Interpersonal Techniques and Personal Development",
+    "author": "Haitham Al Fiqi",
+    "reason": "rated 1, 0 readers: Cannot verify this title as described."
+  },
+  {
+    "id": "065ec86b-f8c6-4d67-834e-46dd13b26310",
+    "title": "Unlock Your Potential: A Guide to Personal Development",
+    "author": "Keegan Emert",
+    "reason": "rated 1, 0 readers: Cannot verify this obscure title as a substantive work."
+  },
+  {
+    "id": "5a09886b-6114-4b83-90a1-b109373e670b",
+    "title": "Personal Development for Beginners & Dummies",
+    "author": "Giovanni Rigters",
+    "reason": "rated 1, 0 readers: An obscure, generic self-published title with limited catalogue value."
+  },
+  {
+    "id": "e00598a7-e7c6-4592-94c6-03fe888071ed",
+    "title": "Oxford Handbook of Psychiatry",
+    "author": "David Semple",
+    "reason": "rated 2, 4 readers: A respected reference handbook, not a general-interest book."
+  },
+  {
+    "id": "9a0ab4d7-79ae-4db4-83d8-ed118b45758c",
+    "title": "Psychology Around Us",
+    "author": "Nancy Ogden",
+    "reason": "rated 2, 4 readers: A psychology textbook rather than a general-interest title."
+  },
+  {
+    "id": "271ac706-0b41-45bb-945b-3c9b66462675",
+    "title": "Research Design and Statistical Analysis",
+    "author": "Jerome L. Myers",
+    "reason": "rated 2, 1 readers: A methods textbook focused on research design and statistical analysis."
+  },
+  {
+    "id": "0bc74b0d-96d8-4d1a-a076-c185e59bf1bc",
+    "title": "Dual-process Theories in Social Psychology",
+    "author": "Shelly Chaiken",
+    "reason": "rated 2, 0 readers: A specialized academic collection on social psychology theories."
+  },
+  {
+    "id": "a4c5262b-80dc-421f-bf2d-aeabb48661d1",
+    "title": "The Authoritarian Personality",
+    "author": "Theodor Adorno",
+    "reason": "rated 2, 12 readers: Influential classic, but a dated academic monograph."
+  },
+  {
+    "id": "67065d06-331c-4334-9aa5-7b69e5ced5bc",
+    "title": "The Handbook of Child and Adolescent Clinical Psychology",
+    "author": "Alan Carr",
+    "reason": "rated 2, 4 readers: Clinical reference handbook, rather than a general-reader book."
+  },
+  {
+    "id": "881e0fcb-5113-48a0-ae33-920cc6cd01a5",
+    "title": "Sources of the Self",
+    "author": "Charles Taylor",
+    "reason": "rated 2, 16 readers: A dense academic monograph in moral philosophy."
+  },
+  {
+    "id": "9394663a-8e3c-4a1c-89e8-44138240e6ff",
+    "title": "Qualitative Research from Start to Finish",
+    "author": "Robert K. Yin",
+    "reason": "rated 2, 3 readers: A research-methods textbook, not a general-reader summary fit."
+  },
+  {
+    "id": "c938f4ac-8a78-4de5-93fb-61c9d6a55216",
+    "title": "The Social Neuroscience of Empathy",
+    "author": "Jean Decety",
+    "reason": "rated 2, 3 readers: A specialist academic collection on empathy research."
+  },
+  {
+    "id": "6b637475-b19e-4f9c-862e-ab0d7c2c29bb",
+    "title": "Undoing Gender",
+    "author": "Judith Butler",
+    "reason": "rated 2, 21 readers: A challenging collection of academic essays on gender theory."
+  },
+  {
+    "id": "85d61392-d677-4b84-9b70-4bc6c4cae89c",
+    "title": "On Collective Memory",
+    "author": "Maurice Halbwachs",
+    "reason": "rated 2, 11 readers: An important but specialized sociological monograph."
+  },
+  {
+    "id": "39dbf0dc-be1e-4c11-a799-232d620d5904",
+    "title": "Situated Learning",
+    "author": "Jean Lave",
+    "reason": "rated 2, 17 readers: A foundational but specialized academic monograph on learning."
+  },
+  {
+    "id": "b0de6892-ee12-4cd0-972b-31ddb6085a6e",
+    "title": "Marital Conflict and Children",
+    "author": "E. Mark Cummings",
+    "reason": "rated 2, 3 readers: A specialist academic treatment of marital conflict and child outcomes."
+  },
+  {
+    "id": "8a91c087-e79d-4fbe-9207-48383a2a0e4e",
+    "title": "Cybernetics Or Control and Communication in the Animal and the Machine",
+    "author": "Norbert Wiener",
+    "reason": "rated 2, 54 readers: A foundational but highly technical work on systems and communication."
+  },
+  {
+    "id": "74234d8f-cb1c-4bea-a4c4-db936a9aa386",
+    "title": "Philosophical Explanations",
+    "author": "Robert Nozick",
+    "reason": "rated 2, 4 readers: A dense, specialist work of academic philosophy."
+  },
+  {
+    "id": "96ea9d2b-e865-4fb3-aa1a-d26841424c85",
+    "title": "Introduction to Mediation, Moderation, and Conditional Process Analysis",
+    "author": "Andrew F. Hayes",
+    "reason": "rated 2, 14 readers: A technical methods textbook for statistical analysis."
+  },
+  {
+    "id": "b6a3d32c-08d7-4eb5-9adb-1c882df849f6",
+    "title": "The Mind Made Flesh",
+    "author": "Nicholas Humphrey",
+    "reason": "rated 2, 2 readers: A collection of essays, rather than a cohesive practical book."
+  },
+  {
+    "id": "62b24c6a-747c-4917-872e-7ade2ed87d69",
+    "title": "Ego Analysis in the Helping Professions",
+    "author": "Frances Upham",
+    "reason": "rated 1, 1 readers: Unable to verify this title as described."
+  },
+  {
+    "id": "3ee8d36f-5ad4-44b8-bd5c-b829a6f7a1b9",
+    "title": "The Self in Understanding and Treating Psychological Disorders",
+    "author": "Michael Kyrios",
+    "reason": "rated 2, 0 readers: A specialist academic volume on clinical psychology."
+  },
+  {
+    "id": "2a0f438a-d501-4ec9-8784-6c62ba36e404",
+    "title": "Overcoming Polarization in the Public Square",
+    "author": "Lauren Swayne Barthold",
+    "reason": "rated 2, 0 readers: A niche academic work on public discourse and polarization."
+  },
+  {
+    "id": "1d11707a-8a8a-4974-b281-fbc40bbc5d31",
+    "title": "The Psychology of Justice and Legitimacy",
+    "author": "D. Ramona Bobocel",
+    "reason": "rated 2, 0 readers: A specialist academic treatment of justice and legitimacy."
+  },
+  {
+    "id": "4c264679-043b-4df4-9102-de7c08ee21be",
+    "title": "Beyond Identities: Human Becomings in Weirding Worlds",
+    "author": "Jim Dator",
+    "reason": "rated 1, 0 readers: Unable to verify this title as described."
+  },
+  {
+    "id": "8e2f51bf-5f1d-4b95-b5d9-42ba50b89e45",
+    "title": "Body Disownership in Complex Posttraumatic Stress Disorder",
+    "author": "Yochai Ataria",
+    "reason": "rated 2, 0 readers: A specialist academic monograph on trauma and body experience."
+  },
+  {
+    "id": "168f6630-58ac-48d0-9156-58b97840c797",
+    "title": "Beyond the Psychology Industry",
+    "author": "Paul Rhodes",
+    "reason": "rated 1, 0 readers: Unable to verify this title as a standalone book."
+  },
+  {
+    "id": "098ed338-5e75-44ca-b339-4a34a78cc020",
+    "title": "Self, Value, and Narrative",
+    "author": "Anthony Rudd",
+    "reason": "rated 2, 1 readers: A specialist philosophical monograph, rather than a broadly applicable book."
+  },
+  {
+    "id": "2d1a1f78-c2ca-4fa8-9cea-c07bd1dd005e",
+    "title": "The Films of Lars von Trier and Philosophy",
+    "author": "José A. Haro",
+    "reason": "rated 1, 0 readers: I’m not sure this book exists as described."
+  },
+  {
+    "id": "e5f78a3e-824d-45fa-97a4-ec1f6701d011",
+    "title": "Falling Awake",
+    "author": "Todd L. Blattner",
+    "reason": "rated 1, 0 readers: I’m not sure this book exists as described."
+  },
+  {
+    "id": "514ea5cc-ca7b-4c98-bbd6-d26f1330edf4",
+    "title": "Learner Narratives of Translingual Identities",
+    "author": "Patrick Kiernan",
+    "reason": "rated 2, 0 readers: A niche scholarly work on language learning and identity."
+  },
+  {
+    "id": "ba17b81d-85bc-47cf-8379-15b3a3745c3e",
+    "title": "Pride and Authenticity",
+    "author": "Ulrich Steinvorth",
+    "reason": "rated 2, 0 readers: A specialist philosophical work, not a broadly applicable title."
+  },
+  {
+    "id": "97c97260-ed74-4724-8b0c-218be59662ae",
+    "title": "Philosophy of Race",
+    "author": "Naomi Zack",
+    "reason": "rated 2, 3 readers: A textbook-style introduction to philosophy of race."
+  },
+  {
+    "id": "0d10f7b9-6500-4568-bbef-79a4ba1fd427",
+    "title": "Living Consciously: the Science of Self",
+    "author": "John Morris Dorsey",
+    "reason": "rated 1, 1 readers: I’m not sure this book exists as described."
+  },
+  {
+    "id": "2329e1ab-fbd3-4e75-8948-7798e24a7afb",
+    "title": "Aging and Human Nature",
+    "author": "Mark Schweda",
+    "reason": "rated 2, 0 readers: A scholarly treatment of aging and human nature."
+  },
+  {
+    "id": "1ffa9ed8-740e-4dbf-8e14-018fce1848e1",
+    "title": "Identity Structure Analysis and Teacher Mentorship",
+    "author": "Graham Passmore",
+    "reason": "rated 2, 0 readers: A specialist academic work on identity and teacher mentorship."
+  },
+  {
+    "id": "5044d1f1-d1ed-4c04-9c09-bf73e5bb83ca",
+    "title": "The Oxford Handbook of Hypo-egoic Phenomena",
+    "author": "Kirk Warren Brown",
+    "reason": "rated 2, 0 readers: An Oxford handbook and reference work, rather than a practical read."
+  },
+  {
+    "id": "7c7d5037-2c03-4f33-b2f2-7216815a9218",
+    "title": "Me Time",
+    "author": "Aubre Andrus",
+    "reason": "rated 1, 0 readers: A children’s or teen-oriented title, not a suitable adult nonfiction summary."
+  },
+  {
+    "id": "37ca35cd-396a-42b1-abe8-84f23013140a",
+    "title": "Inside Out",
+    "author": "Ann E. Potter",
+    "reason": "rated 1, 2 readers: I’m not sure this book exists as described."
+  },
+  {
+    "id": "e3dbb2c4-c1df-4450-9dda-6c16760a1506",
+    "title": "Phenomenology of Suicide",
+    "author": "Maurizio Pompili",
+    "reason": "rated 2, 0 readers: A specialist academic work on suicide phenomenology."
+  },
+  {
+    "id": "ad005c17-0468-4f49-8597-ec9bee88572a",
+    "title": "Male Eating Disorders",
+    "author": "Russell Delderfield",
+    "reason": "rated 2, 0 readers: A narrow specialist work on eating disorders in men."
+  },
+  {
+    "id": "ecce1354-9668-4403-980c-64b180dd204d",
+    "title": "Contemporary Masculinities",
+    "author": "Brendan Gough",
+    "reason": "rated 2, 0 readers: An academic study of contemporary masculinities."
+  },
+  {
+    "id": "53ae7824-05e2-47f4-b897-403a596a6255",
+    "title": "Self-Determination Theory and Healthy Aging",
+    "author": "Betsy Ng",
+    "reason": "rated 2, 0 readers: A specialist academic work connecting self-determination theory and aging."
+  },
+  {
+    "id": "bf5ab7d8-410d-43ec-9715-66379486cb0e",
+    "title": "Moral Certainty and the Foundations of Morality",
+    "author": "Neil O'Hara",
+    "reason": "rated 1, 0 readers: I’m not sure this book exists as described."
+  },
+  {
+    "id": "422f7382-1205-468a-8d90-35b33c4d8631",
+    "title": "Confronting the Existential Threat of Dementia",
+    "author": "Richard Cheston",
+    "reason": "rated 2, 0 readers: A specialist work about dementia and existential concerns."
+  },
+  {
+    "id": "4a05acae-966a-4e0a-89d3-3b0775d7d124",
+    "title": "Ego Psychology and Social Work Practice",
+    "author": "Eda Goldstein",
+    "reason": "rated 2, 54 readers: A professional social-work textbook."
+  },
+  {
+    "id": "af29ba66-5241-497b-b562-6735a89ee3d7",
+    "title": "Measuring Ego Development",
+    "author": "Jane Loevinger",
+    "reason": "rated 2, 5 readers: A technical measurement and assessment reference."
+  },
+  {
+    "id": "d76e0337-4131-4c66-b7a6-ea4c10e69615",
+    "title": "Remembering the Falklands War",
+    "author": "Sarah Maltby",
+    "reason": "rated 2, 0 readers: A specialist academic study of Falklands War memory."
+  },
+  {
+    "id": "6c891593-0d67-45d2-8279-f7e7ca5c9c59",
+    "title": "Liberation in the Face of Uncertainty",
+    "author": "Hubert J. M. Hermans",
+    "reason": "rated 2, 0 readers: A specialized philosophical work on uncertainty and liberation."
+  },
+  {
+    "id": "e04b5a76-73e0-4820-977a-f61f51485579",
+    "title": "Revisiting the Use of Self",
+    "author": "Deena Mandell",
+    "reason": "rated 2, 1 readers: A specialist social-work treatment of professional use of self."
+  },
+  {
+    "id": "cc2b6a42-63bb-420f-a7d7-fe28ae3cb0b5",
+    "title": "Relational Anthropology for Contemporary Economics",
+    "author": "Jermo van Nes",
+    "reason": "rated 1, 0 readers: I’m not sure this book exists as described."
+  },
+  {
+    "id": "9babc67d-cca4-4b23-9ff6-834cd23fcc31",
+    "title": "Constructing the Self in a Mediated World",
+    "author": "Debra Grodin",
+    "reason": "rated 2, 0 readers: An academic collection on media and identity."
+  },
+  {
+    "id": "7db75fca-d6b6-44ff-a304-28023b92cf76",
+    "title": "Reasons Without Persons",
+    "author": "Brian Hedden",
+    "reason": "rated 1, 0 readers: I’m not sure this exists as a book rather than a scholarly paper."
+  },
+  {
+    "id": "d967be52-f6c2-4580-bc0c-5e572dbbc87c",
+    "title": "Dual-Process Theories in Moral Psychology",
+    "author": "Cordula Brand",
+    "reason": "rated 2, 0 readers: A specialist academic treatment of moral psychology."
+  },
+  {
+    "id": "da3a6ee2-0a56-4583-9b97-82617623b326",
+    "title": "Empowerment of Women Through Self Help Groups",
+    "author": "G. Sreeramulu",
+    "reason": "rated 2, 0 readers: A scholarly study of self-help groups, with limited general-reader application."
+  },
+  {
+    "id": "111ef477-4281-41b9-a214-398f109702c5",
+    "title": "Summary: The Body Keeps the Score by Bessel Van Der Kolk M.D.",
+    "author": "Quick Savant",
+    "reason": "rated 1, 1 readers: This is a third-party summary of another book."
+  }
+]
