@@ -1,9 +1,10 @@
 import SwiftUI
 import UIKit
 
-/// The reading pass: the shelf of books opened in full, the invite code on a library card ("Give 5,
-/// get 5"), a field for a friend's code, and BookBite Unlimited. Opens as a sheet when a book is out of
-/// reach (with `book`), from Library and invite links, and as a page from Settings.
+/// The reading pass: the shelf of books opened in full, then big pastel action cards (after Drop's
+/// "Refer & earn"): invite friends (opens `InviteSheet`), enter a friend's code (`CodeEntrySheet`), and
+/// BookBite Unlimited. Opens as a sheet when a book is out of reach (with `book`), from Library and
+/// invite links, and as a page from Settings.
 struct ReadingPassView: View {
     /// The book they tried to open when the pass ran out
     var book: Book? = nil
@@ -16,15 +17,13 @@ struct ReadingPassView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var books: [String: Book] = [:]
-    @State private var codeInput = ""
-    @State private var codeError: String?
-    @State private var isRedeeming = false
+    @State private var showingInvite = false
+    @State private var showingCodeEntry = false
     @State private var isPurchasing = false
     @State private var purchaseError: String?
     /// One line of good news after a code, a friend joining, or a subscription
     @State private var celebration: String?
     @State private var signInPrompt: SignInPrompt?
-    @State private var linkCopied = false
 
     private var pass: ReadingPass { store.pass }
 
@@ -42,13 +41,9 @@ struct ReadingPassView: View {
                     PassShelf(rows: pass.shelfRows, books: books)
                 }
 
-                inviteSection
+                inviteCards
 
-                if canEnterCode {
-                    codeSection
-                }
-
-                unlimitedSection
+                unlimitedCards
             }
             .padding(.horizontal, 24)
             .padding(.top, 12)
@@ -66,7 +61,9 @@ struct ReadingPassView: View {
         .signInPrompt($signInPrompt)
         .onAppear {
             books = PassBooks.lookup()
-            if codeInput.isEmpty, let pending = store.pendingInviteCode { codeInput = pending }
+            // From an invite link: the code is waiting, so go straight to it
+            // Signed in, the store uses it by itself
+            if store.pendingInviteCode != nil && !store.isSignedIn { showingCodeEntry = true }
             announceNewFriends()
         }
         .task {
@@ -75,7 +72,15 @@ struct ReadingPassView: View {
             await subscription.loadProduct()
         }
         .onChange(of: store.pendingInviteCode) { _, code in
-            if let code { codeInput = code }
+            if code != nil && !store.isSignedIn { showingCodeEntry = true }
+        }
+        .sheet(isPresented: $showingInvite) {
+            InviteSheet()
+        }
+        .sheet(isPresented: $showingCodeEntry) {
+            CodeEntrySheet {
+                celebration = "Your friend's code worked: 5 more books for you, and 5 for them."
+            }
         }
     }
 
@@ -160,163 +165,59 @@ struct ReadingPassView: View {
         return "Each book you open in full takes a place on your shelf. Books on your shelf stay yours to reread. Key ideas are always free."
     }
 
-    // MARK: - Invite
+    // MARK: - Invite & earn
 
-    private var inviteSection: some View {
-        PassSection(title: "Give 5, get 5") {
-            Text(inviteCaption)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+    private var inviteCards: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            PassEyebrow(text: "Invite & earn")
 
-            if let invite = pass.invite {
-                VStack(spacing: 14) {
-                    Text("YOUR INVITE CODE")
-                        .font(.caption.weight(.semibold))
-                        .tracking(1.6)
-                        .foregroundStyle(.secondary)
-                    LibraryCard(code: invite.code)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
+            PassActionCard(
+                title: "Invite your friends",
+                message: inviteMessage,
+                buttonTitle: "Invite",
+                art: "InviteFriends",
+                color: PassActionCard.butter,
+                action: openInvite
+            )
 
-                VStack(spacing: 10) {
-                    ShareLink(
-                        item: invite.url,
-                        subject: Text("5 free books on BookBite"),
-                        message: Text(InviteMessage.text(code: invite.code, url: invite.url, book: nil))
-                    ) {
-                        Label("Send to a friend", systemImage: "paperplane")
-                    }
-                    .buttonStyle(PassPrimaryButtonStyle())
-
-                    Button {
-                        UIPasteboard.general.url = invite.url
-                        linkCopied = true
-                    } label: {
-                        Label(linkCopied ? "Link copied" : "Copy invite link", systemImage: linkCopied ? "checkmark" : "link")
-                            .contentTransition(.symbolEffect(.replace))
-                    }
-                    .buttonStyle(PassSecondaryButtonStyle())
-                    .sensoryFeedback(.success, trigger: linkCopied) { _, new in new }
-                }
-
-                InviteProgressPanel(invite: invite)
-                    .padding(.top, 8)
-
-                MilestoneLadder(friendsJoined: invite.friendsJoined)
-                    .padding(.top, 8)
-            } else if store.isSignedIn {
-                // Signed in, but the server hasn't answered yet
-                ProgressView()
-                    .frame(maxWidth: .infinity, minHeight: 120)
-            } else {
-                Button {
-                    signInPrompt = SignInPrompt(reason: .invite(friendCode: nil)) {}
-                } label: {
-                    Text("Sign in to get your code")
-                }
-                .buttonStyle(PassPrimaryButtonStyle())
+            if canEnterCode {
+                PassActionCard(
+                    title: "Enter an invite code",
+                    message: store.pendingInviteCode != nil
+                        ? "Your friend's code is ready. Claim 5 books for you, and 5 for them."
+                        : "Got a code from a friend? You both get 5 more books.",
+                    buttonTitle: store.pendingInviteCode != nil ? "Claim" : "Start",
+                    art: "InviteCode",
+                    color: PassActionCard.peach,
+                    action: { showingCodeEntry = true }
+                )
+                .transition(.opacity.combined(with: .scale(scale: 0.96)))
             }
         }
     }
 
-    private var inviteCaption: String {
+    private var inviteMessage: String {
         let joined = pass.invite?.friendsJoined ?? 0
-        if let invite = pass.invite, joined >= invite.maxFriends {
-            return "\(joined) friends joined with your code. Thank you for sharing BookBite."
-        }
         switch joined {
-        case 0: return "Send your code to a friend. When they join BookBite with it, you both get 5 more books."
-        case 1: return "1 friend joined, so you both got 5 more books. Each new friend adds another 5."
-        default: return "\(joined) friends joined: \(joined * ReadingPass.booksPerInvite) books earned. Each new friend adds another 5."
+        case 0: return "Give 5 books, get 5 books for every friend who joins."
+        case 1: return "1 friend joined: 5 books earned. Invite another for 5 more."
+        default: return "\(joined) friends joined: \(joined * ReadingPass.booksPerInvite) books earned. Invite another for 5 more."
         }
     }
 
-    // MARK: - Friend's code
+    /// The invite sheet needs the account's code, so signed-out readers sign in first
+    private func openInvite() {
+        if store.isSignedIn {
+            showingInvite = true
+        } else {
+            signInPrompt = SignInPrompt(reason: .invite(friendCode: nil)) { showingInvite = true }
+        }
+    }
 
     /// Signed out (sign-in comes on send), or a new account that hasn't used a code yet
     private var canEnterCode: Bool {
         guard store.isSignedIn else { return true }
         return pass.invite?.canJoinWithCode == true
-    }
-
-    private var codeSection: some View {
-        PassSection(title: "Have a code?") {
-            Text("A friend's code gives you both 5 more books. Each account can use one.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-
-            HStack(spacing: 10) {
-                TextField("K7QM2P", text: $codeInput)
-                    .font(.system(.title3, design: .serif))
-                    .tracking(4)
-                    .textInputAutocapitalization(.characters)
-                    .autocorrectionDisabled()
-                    .submitLabel(.go)
-                    .onSubmit(useCode)
-                    .padding(.horizontal, 14)
-                    .frame(minHeight: 48)
-                    .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .strokeBorder(Color.primary.opacity(0.15), lineWidth: 0.5)
-                    }
-                    .accessibilityLabel("Friend's code")
-
-                // No paste permission prompt: the system button pastes only when tapped
-                PasteButton(payloadType: String.self) { strings in
-                    if let first = strings.first { codeInput = first }
-                }
-                .labelStyle(.iconOnly)
-                .buttonBorderShape(.capsule)
-                .tint(.primary)
-            }
-
-            if let codeError {
-                Text(codeError)
-                    .font(.footnote)
-                    .foregroundStyle(.red)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .transition(.opacity)
-            }
-
-            Button(action: useCode) {
-                HStack(spacing: 8) {
-                    if isRedeeming { ProgressView().tint(Color.paper) }
-                    Text(store.isSignedIn ? "Use code" : "Claim 5 books")
-                }
-            }
-            .buttonStyle(PassPrimaryButtonStyle())
-            .disabled(codeInput.trimmingCharacters(in: .whitespaces).isEmpty || isRedeeming)
-        }
-    }
-
-    private func useCode() {
-        codeError = nil
-        guard let code = ReadingPass.normalizeCode(codeInput) else {
-            codeError = ReadingPassError.invalidCode.localizedDescription
-            return
-        }
-        let action: () -> Void = {
-            Task { await self.redeem(code) }
-        }
-        if let prompt = SignInPrompt.gate(.invite(friendCode: code), auth: authService, action: action) {
-            signInPrompt = prompt
-        }
-    }
-
-    private func redeem(_ code: String) async {
-        isRedeeming = true
-        defer { isRedeeming = false }
-        do {
-            _ = try await store.redeem(code)
-            codeInput = ""
-            celebration = "Your friend's code worked: 5 more books for you, and 5 for them."
-        } catch {
-            codeError = error.localizedDescription
-        }
     }
 
     private func announceNewFriends() {
@@ -331,33 +232,25 @@ struct ReadingPassView: View {
     // MARK: - Unlimited
 
     @ViewBuilder
-    private var unlimitedSection: some View {
-        if store.hasUnlimited {
-            PassSection(title: "BookBite Unlimited") {
-                Text("Your subscription renews monthly. Manage or cancel it in Settings → Apple Account → Subscriptions.")
+    private var unlimitedCards: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            PassEyebrow(text: "Read without limits")
+
+            if store.hasUnlimited {
+                Text("You have BookBite Unlimited. It renews monthly; manage or cancel it in Settings → Apple Account → Subscriptions.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
-            }
-        } else {
-            PassSection(title: "Read without limits") {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("BookBite Unlimited")
-                        .font(.headline)
-                    Text("Open every book in full, read or listen, as often as you like.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
-                Button(action: purchase) {
-                    HStack(spacing: 8) {
-                        if isPurchasing { ProgressView() }
-                        Text("Subscribe · \(subscription.priceText)")
-                    }
-                }
-                .buttonStyle(PassSecondaryButtonStyle())
-                .disabled(isPurchasing)
+            } else {
+                PassActionCard(
+                    title: "BookBite Unlimited",
+                    message: "Every book in full, read or listen. \(subscription.priceText).",
+                    buttonTitle: "Subscribe",
+                    art: "ReadUnlimited",
+                    color: PassActionCard.mint,
+                    isLoading: isPurchasing,
+                    action: purchase
+                )
 
                 if let purchaseError {
                     Text(purchaseError)
@@ -378,6 +271,7 @@ struct ReadingPassView: View {
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)
+                .padding(.horizontal, 4)
             }
         }
     }
@@ -417,31 +311,22 @@ struct ReadingPassView: View {
     }
 }
 
-/// A headed block of the pass: a hairline, then a serif heading
-private struct PassSection<Content: View>: View {
-    let title: String
-    @ViewBuilder let content: Content
+/// Small caps over a group of cards: "INVITE & EARN"
+struct PassEyebrow: View {
+    let text: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            VStack(alignment: .leading, spacing: 12) {
-                Rectangle()
-                    .fill(Color.primary.opacity(0.12))
-                    .frame(height: 0.5)
-                    .accessibilityHidden(true)
-                Text(title)
-                    .font(.system(.title2, design: .serif))
-                    .fontWeight(.medium)
-                    .accessibilityAddTraits(.isHeader)
-            }
-            content
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        Text(text.uppercased())
+            .font(.caption.weight(.semibold))
+            .tracking(1.6)
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 4)
+            .accessibilityAddTraits(.isHeader)
     }
 }
 
 /// Ink on paper, full width: the book page's primary button
-private struct PassPrimaryButtonStyle: ButtonStyle {
+struct PassPrimaryButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
 
     func makeBody(configuration: Configuration) -> some View {
@@ -460,7 +345,7 @@ private struct PassPrimaryButtonStyle: ButtonStyle {
 }
 
 /// A hairline outline, full width: the book page's secondary button
-private struct PassSecondaryButtonStyle: ButtonStyle {
+struct PassSecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.subheadline.weight(.semibold))
