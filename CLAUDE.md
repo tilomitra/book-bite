@@ -70,6 +70,7 @@ npm run lint       # eslint, config in server/.eslintrc.cjs
 ```bash
 npm run populate-books                      # Google Books + NYT, with AI summaries
 npm run add-curated-books -- --dry-run      # ~$0.003/book; hand-picked list in scripts/data/curated-books.json (Open Library covers); drop --dry-run to insert + summarize
+npm run weekly-books -- --dry-run           # the weekly pipeline (see "Weekly books"); prints the picks, writes nothing
 npx tsx scripts/populate-books.ts 30 high google   # [booksPerCategory] [priority] [source]
 npm run generate-summaries                  # books missing summaries
 npm run generate-extended-summaries
@@ -153,6 +154,10 @@ Answers personal questions ("my team keeps missing deadlines") from ideas across
 ## Buying the book
 
 The reader's end section (`ReaderEndSection`) has a "Get the full book" menu (Amazon, Bookshop.org; `BookStore` + `Book.purchaseURL` in `Core/Models/BookPurchase.swift`); the Amazon Associates disclosure is the footer under Version in `SettingsView`. The app never builds store URLs: it opens `GET /api/books/:id/buy`, which logs a `purchase_click` JSON line (book, store, source) and redirects (`server/src/services/purchaseLinks.ts`): Amazon `/dp/<ISBN-10>` (converted from a 978 ISBN-13 if needed, else a books search), Bookshop.org `/a/<id>/<ISBN-13>` (else search). Affiliate ids come from `AMAZON_ASSOCIATE_TAG` and `BOOKSHOP_AFFILIATE_ID` on Render; unset → plain links. Adding a store = a case on both sides. Amazon links are amazon.com only (no locale routing yet).
+
+## Weekly books
+
+`.github/workflows/weekly-books.yml` runs `scripts/weekly-books.ts --feature --limit 20` on Thursdays 17:23 UTC (and by hand from the Actions tab, with a dry-run switch). Secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `OPENAI_API_KEY`, `NYT_API_KEY`, `GOOGLE_BOOKS_API_KEY`. Candidates in priority order: current NYT non-fiction lists, books in `curated-books.json` not yet in the DB (the queue: add titles there to get them in), then Open Library's most-read recent books, most-read per genre and monthly trending. Filters: title + author surname dedupe (same keys as `add-curated-books`), `isFiction` on Open Library subjects, English, cover, no workbooks/summaries/journals (`JUNK_TITLE`), ≥ 300 readers (≥ 25 for books from the last 2 years; NYT and curated skip this). Then `gpt-6-luna` rates every non-curated candidate 1–5 and picks a genre from the app's genres; only 4–5 stay. Picks: first `--discover` (8) slots for finds, the rest from the curated queue, max 2 per author. After inserting + summaries it runs `embed-books`, `embed-ideas` and `backfill-covers --ids <new>`. The job report (picks, failures, rejects with reasons) is in the run summary and the `weekly-books-report` artifact. The job fails when it picked books but added none (usually Supabase paused). Shared lookup/insert code: `scripts/lib/bookImport.ts`.
 
 ## Covers
 
