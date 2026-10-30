@@ -13,15 +13,15 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=Geist:wght@400;500;600;650;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/landing.css">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;650;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/landing.css?v=8">
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
 
   <header class="nav" data-nav>
     <a class="brand" href="#top" aria-label="BookBite home">
-      <img src="/icon.png" alt="" width="30" height="30">
+      <img src="/icon.png" alt="" width="26" height="26">
       <span>BookBite</span>
     </a>
     <a class="btn btn-small" data-testflight href="#">Get the beta</a>
@@ -33,225 +33,154 @@
       <canvas class="hero-gl" data-gl aria-hidden="true"></canvas>
       <div class="hero-center">
         <h1 class="hero-title" data-split>The world’s best books, in 15&nbsp;minutes a&nbsp;day.</h1>
-        <p class="hero-lede load-in" style="--d: 800ms">Key ideas from 2,000+ bestselling non-fiction books to read or listen to, with AI that helps you apply them to your own life.</p>
+        <p class="hero-lede load-in" style="--d: 800ms">Read or listen to the key ideas from great non-fiction, then use them to solve real problems.</p>
         <div class="hero-actions load-in" style="--d: 950ms">
           <a class="btn btn-light" data-testflight href="#">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.37 12.46c-.02-2.33 1.9-3.45 1.99-3.5-1.08-1.59-2.77-1.8-3.37-1.83-1.43-.15-2.8.84-3.53.84-.73 0-1.85-.82-3.04-.8-1.56.02-3 .91-3.81 2.31-1.62 2.82-.41 7 1.17 9.29.77 1.12 1.69 2.38 2.9 2.33 1.17-.05 1.61-.75 3.02-.75 1.41 0 1.81.75 3.04.73 1.26-.02 2.05-1.14 2.82-2.27.89-1.3 1.25-2.56 1.27-2.62-.03-.01-2.43-.93-2.46-3.73zM14.06 5.6c.64-.78 1.08-1.86.96-2.94-.93.04-2.05.62-2.71 1.4-.6.69-1.12 1.79-.98 2.85 1.03.08 2.09-.53 2.73-1.31z"/></svg>
             Join the beta on TestFlight
           </a>
         </div>
-        <p class="hero-note load-in" style="--d: 1100ms">Free while in beta. iPhone, iOS 18.5 or later.</p>
+        <p class="hero-note load-in" style="--d: 1100ms">iPhone and iPad, iOS 18.5 or later.</p>
       </div>
     </section>
 
-    <!-- The bite: a cover is eaten down to its one-sentence hook as you scroll -->
-    <section class="bite" data-bite aria-labelledby="bite-title">
-      <div class="bite-sticky">
-        <div class="bite-stage">
-          <div class="bite-book" data-bite-book>
-            <div class="bite-cover book3d" data-bite-cover>
-              <div class="b-inner"></div>
-              <div class="b-back"></div>
-              <div class="b-spine"><span class="st">The Psychology of Money</span><span class="sa">Morgan Housel</span></div>
-              <div class="b-fore"></div>
-              <div class="b-head"></div>
-              <div class="b-tail"></div>
-              <div class="b-front"><img src="https://covers.openlibrary.org/b/id/10389354-L.jpg" alt="The Psychology of Money by Morgan Housel" loading="lazy"></div>
-            </div>
-            <canvas class="crumbs" data-crumbs aria-hidden="true"></canvas>
-          </div>
-          <div class="bite-copy">
-            <h2 class="bite-title" id="bite-title" data-bite-title>Three hundred pages.<br> One big idea.</h2>
-            <blockquote class="bite-hook" data-bite-hook>Financial success depends less on mastering formulas than on understanding your own behavior, staying patient, and making choices you can live with.</blockquote>
-            <p class="bite-source" data-bite-source>The Psychology of Money, Morgan Housel</p>
-          </div>
-        </div>
-        <div class="bite-meter" aria-hidden="true"><span data-bite-meter></span></div>
-      </div>
-    </section>
+    <!-- The walkthrough: the phone stays put and the real app runs inside it (landing.js, updateTour) -->
+    <section class="tour" data-tour aria-label="The app">
+      <div class="tour-sticky">
+        <ol class="tour-index" aria-label="Parts of the app">
+          <li><button type="button" data-tour-jump>Discover</button></li>
+          <li><button type="button" data-tour-jump>The book page</button></li>
+          <li><button type="button" data-tour-jump>The reader</button></li>
+          <li><button type="button" data-tour-jump>Ask</button></li>
+        </ol>
 
-    <!-- Solve: AI turns a daily problem into books and steps -->
-    <section class="solve" data-solve aria-labelledby="solve-title">
-      <div class="solve-copy">
-        <h2 id="solve-title">Bring a problem. Leave with a plan.</h2>
-        <p>Pick what’s on your mind. BookBite’s AI finds the books that tackle it, pulls out the steps you can try today, and answers follow-up questions about your situation using what the books actually say.</p>
-        <div class="problems" role="tablist" aria-label="Example problems" data-problems></div>
-      </div>
-      <div class="solve-card" data-solve-card aria-live="polite">
-        <div class="solve-tag">Example</div>
-        <div class="solve-q" data-solve-q></div>
-        <div class="solve-match" data-solve-part>
-          <div class="solve-cover"><img alt="" data-solve-img></div>
-          <div>
-            <div class="solve-label">Best match</div>
-            <div class="solve-title" data-solve-title></div>
-            <div class="solve-why" data-solve-why></div>
-          </div>
-        </div>
-        <div class="solve-label" data-solve-part>Try this today</div>
-        <ol class="solve-steps" data-solve-steps></ol>
-        <div class="solve-ask" data-solve-part>
-          <div class="ask-q" data-ask-q></div>
-          <div class="ask-a" data-ask-a></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Story: a pinned phone walks through the app -->
-    <section class="story" data-story aria-label="What's inside the app">
-      <div class="story-sticky">
-        <div class="story-steps">
-          <article class="step" data-step="0">
-            <h2>Key ideas in 15 minutes</h2>
-            <p>Skip the filler. Swipe through the ideas that carry each book and save the ones you want to remember to your notebook.</p>
-          </article>
-          <article class="step" data-step="1">
-            <h2>Go deeper when you want to</h2>
-            <p>Read the full summary in short chapters, in light, sepia or dark mode. BookBite remembers where you stopped.</p>
-          </article>
-          <article class="step" data-step="2">
-            <h2>Listen on the go</h2>
-            <p>Turn your commute, workout or chores into learning time with narrated summaries that play from the lock screen.</p>
-          </article>
-          <article class="step" data-step="3">
-            <h2>Ask the whole library</h2>
-            <p>Describe what’s going on. BookBite finds the books that fit and answers with steps from them, each one linked to the book it came from.</p>
-          </article>
-          <ol class="story-dots" aria-hidden="true"><li></li><li></li><li></li><li></li></ol>
-        </div>
-
-        <div class="story-device">
-          <div class="phone phone-lg">
-            <div class="phone-screen" data-story-screen>
-              <div class="island"></div>
-
-              <!-- Key ideas -->
-              <div class="scr scr-ideas" data-scr="0">
-                <div class="scr-nav"><span class="back">‹</span><span>Deep Work</span><span></span></div>
-                <div class="ideas-head">Key ideas</div>
-                <div class="deck" data-deck></div>
-                <div class="deck-count"><span data-deck-count>1</span> of 6</div>
-                <div class="deck-actions"><span class="keep" data-keep>Keep</span><span>Share</span></div>
+        <div class="tour-device" data-tour-device>
+          <div class="iphone">
+            <div class="iphone-screen">
+              <div class="tour-screen is-active" data-tour-screen>
+                <img class="tall" data-tall src="/screens/discover-tall.webp" alt="The Discover feed: an idea for you, books picked for you, more like Atomic Habits, and books by topic">
+                <img class="fixed-top" src="/screens/discover-top.webp" alt="">
+                <img class="fixed-tab" src="/screens/tab-discover.webp" alt="">
               </div>
-
-              <!-- Reader -->
-              <div class="scr scr-reader" data-scr="1">
-                <div class="reader-bar"><span class="back">‹</span><span class="reader-left" data-reader-left>12 min left</span><span class="aa">Aa</span></div>
-                <div class="reader-progress"><span data-reader-progress></span></div>
-                <div class="reader-page" data-reader-page>
-                  <div class="reader-chapter">What deep work is</div>
-                  <p class="reader-p first"><span class="dropcap">N</span><span class="lead">ewport defines deep work</span> as professional activity performed in a state of distraction-free concentration, at the edge of one’s cognitive abilities. It creates value, improves skill, and is difficult to replicate.</p>
-                  <p class="reader-p">Its counterpart, shallow work, consists of logistical or low-demand tasks, such as routine email, scheduling and some meetings, that are often performed while distracted and are easy to reproduce.</p>
-                  <p class="reader-p">Shallow tasks may be necessary, but they can expand to fill the day, leaving little room for the work that requires thought and produces lasting results.</p>
-                  <div class="reader-chapter">Why it is rare</div>
-                  <p class="reader-p">Workplaces and technologies encourage constant connectivity, quick responses and frequent task switching. Being busy starts to look like being productive.</p>
-                </div>
-                <div class="theme-pill" aria-hidden="true"><span data-theme-name="paper">Paper</span><span data-theme-name="sepia">Sepia</span><span data-theme-name="night">Night</span></div>
+              <div class="tour-screen" data-tour-screen>
+                <img class="tall" data-tall src="/screens/detail-tall.webp" alt="The Atomic Habits book page: cover, summary, key ideas, how to apply it, who it’s for and the other side" loading="lazy">
+                <img class="fixed-top" src="/screens/detail-top.webp" alt="" loading="lazy">
+                <img class="fixed-tab" src="/screens/tab-search.webp" alt="" loading="lazy">
               </div>
-
-              <!-- Listen -->
-              <div class="scr scr-listen" data-scr="2">
-                <div class="listen-art">
-                  <img src="https://books.google.com/books/publisher/content/images/frontcover/lZpFCgAAQBAJ?fife=w600-h900&amp;source=gbs_api" alt="" loading="lazy">
-                </div>
-                <div class="listen-title">Deep Work</div>
-                <div class="listen-author">Cal Newport</div>
-                <div class="wave" data-wave></div>
-                <div class="listen-time"><span data-listen-at>0:00</span><span>14:20</span></div>
-                <div class="listen-controls">
-                  <span class="skip-btn">15</span>
-                  <span class="play"><i></i><i></i></span>
-                  <span class="skip-btn fwd">15</span>
-                </div>
+              <div class="tour-screen" data-tour-screen>
+                <img class="shot-layer is-on" src="/screens/reader-paper.webp" alt="The summary in the reader’s paper theme" loading="lazy">
+                <img class="shot-layer" src="/screens/reader-sepia.webp" alt="" loading="lazy">
+                <img class="shot-layer" src="/screens/reader-night.webp" alt="" loading="lazy">
               </div>
-
-              <!-- Ask -->
-              <div class="scr scr-ask" data-scr="3">
-                <div class="scr-nav"><span class="back">‹</span><span>Ask</span><span></span></div>
-                <div class="ask-thread">
-                  <div class="bubble me" data-ask-part>My job is mostly email. How do I get real work done?</div>
-                  <div class="ask-read" data-ask-part>
-                    <span class="ask-covers">
-                      <img src="https://books.google.com/books/publisher/content/images/frontcover/lZpFCgAAQBAJ?fife=w200-h300&amp;source=gbs_api" alt="" loading="lazy">
-                      <img src="https://covers.openlibrary.org/b/id/847534-M.jpg" alt="" loading="lazy">
-                      <img src="https://books.google.com/books/publisher/content/images/frontcover/XfFvDwAAQBAJ?fife=w200-h300&amp;source=gbs_api" alt="" loading="lazy">
-                    </span>
-                    <span data-ask-read>Reading 3 books</span>
-                  </div>
-                  <p class="ask-direct" data-ask-direct></p>
-                  <div class="ask-point" data-ask-part>
-                    <p><b>Guard one deep hour.</b> Shallow work expands to fill the day unless real work gets a fixed block first.</p>
-                    <span class="ask-chip">Deep Work</span>
-                  </div>
-                  <div class="ask-point" data-ask-part>
-                    <p><b>Start with the hard thing.</b> Do your most important task before you open the inbox.</p>
-                    <span class="ask-chip">Eat That Frog!</span>
-                  </div>
-                  <div class="ask-week" data-ask-part><span>This week</span>Block 9 to 10 for one task, email closed. Check messages at 11 and 4.</div>
-                </div>
-                <div class="ask-input"><span>Ask a follow-up</span><i></i></div>
+              <div class="tour-screen" data-tour-screen>
+                <img class="shot-layer is-on" src="/screens/ask-home.webp" alt="The Ask tab with a question to try and topics to explore" loading="lazy">
+                <img class="shot-layer" src="/screens/ask-compose.webp" alt="Typing a question, with matching books appearing underneath" loading="lazy">
+                <img class="shot-layer" src="/screens/ask-answer.webp" alt="An answer citing several books" loading="lazy">
               </div>
             </div>
           </div>
         </div>
+
+        <div class="tour-copy">
+          <article data-tour-step><h3>Discover non-fiction worth reading.</h3><p>Books picked around your goals.</p></article>
+          <article data-tour-step><h3>Get the book in a minute.</h3><p>The hook, the key ideas and how to apply them.</p></article>
+          <article data-tour-step><h3>Go deeper when you want to.</h3><p>Full summaries in short chapters, in three themes.</p></article>
+          <article data-tour-step><h3>Get unstuck with advice from great books.</h3><p>Describe what’s going on and get steps you can try.</p></article>
+        </div>
       </div>
     </section>
 
-    <!-- Widget -->
-    <section class="widget-sec" data-widget-sec aria-labelledby="widget-title">
-      <div class="widget-copy">
-        <h2 id="widget-title">One big idea every morning</h2>
-        <p>Build a daily learning habit without opening the app. The Idea of the Day widget puts a key idea from a different book on your Home Screen each morning. Tap it to read more.</p>
-        <div class="widget-picker" role="tablist" aria-label="Sample ideas" data-widget-picker></div>
+    <!-- The collection -->
+    <section class="chapter" id="collection" aria-labelledby="collection-title">
+      <header class="ch-head">
+        <h2 id="collection-title">2,000+ books.<em>The best of non-fiction.</em></h2>
+      </header>
+      <div class="bento">
+        <div class="covers span-12" data-shelfline aria-label="Some of the books in BookBite"></div>
+        <article class="tile span-4"><img src="/art/tile-habits.webp" alt="" loading="lazy"><div><h3>Habits</h3></div></article>
+        <article class="tile span-4"><img src="/art/tile-money.webp" alt="" loading="lazy"><div><h3>Money</h3></div></article>
+        <article class="tile tile-lead span-4"><img src="/art/tile-lead.webp" alt="" loading="lazy"><div><h3>Leadership</h3></div></article>
+        <article class="tile span-4"><img src="/art/tile-mind.webp" alt="" loading="lazy"><div><h3>Psychology</h3></div></article>
+        <article class="tile span-4"><img src="/art/tile-health.webp" alt="" loading="lazy"><div><h3>Health</h3></div></article>
+        <article class="tile span-4"><img src="/art/tile-calm.webp" alt="" loading="lazy"><div><h3>Calm</h3></div></article>
       </div>
-      <div class="home" data-home>
-        <div class="home-wall" data-home-wall aria-hidden="true"></div>
-        <div class="home-grid" aria-hidden="true">
-          <i></i><i></i><i></i><i></i>
-        </div>
-        <div class="widget" data-widget aria-live="polite">
-          <div class="widget-cover"><img alt="" data-widget-img></div>
-          <div class="widget-body">
-            <div class="widget-label">Idea of the day</div>
-            <p class="widget-idea" data-widget-idea></p>
-            <div class="widget-by" data-widget-by></div>
+    </section>
+
+    <!-- Ask -->
+    <section class="chapter chapter-dark" data-dark id="ask" aria-labelledby="ask-title">
+      <header class="ch-head">
+        <h2 id="ask-title">Bring a problem.<em>Leave with a plan.</em></h2>
+      </header>
+      <div class="bento bento-ask">
+        <article class="card card-thread" data-thread>
+          <p class="bubble" style="--i:0">My team keeps missing deadlines and I end up doing the work myself</p>
+          <div class="reading" style="--i:1"><span class="stack" data-read-covers></span><span>Read 8 books</span></div>
+          <p class="direct" style="--i:2">You need to address why work is late, not quietly absorb the shortfall yourself.</p>
+          <ul class="points">
+            <li style="--i:3"><b>Find the constraint.</b> Look for the person, process, or dependency holding up delivery. <span class="cite">The Phoenix Project</span></li>
+            <li style="--i:4"><b>Make ownership clear.</b> Define who is responsible for each piece and how decisions will be shared. <span class="cite">The Mythical Man-Month</span></li>
+          </ul>
+        </article>
+        <article class="card card-week">
+          <h3>This week</h3>
+          <button type="button" class="task" data-task aria-pressed="false"><i aria-hidden="true"></i><span>Hold a short team review of overdue work and assign one owner, next step, and realistic date to each item.</span></button>
+        </article>
+        <article class="card card-sources">
+          <div class="fan" data-fan aria-hidden="true"></div>
+          <h3>Read the book behind the advice.</h3>
+        </article>
+      </div>
+    </section>
+
+    <!-- Read or listen -->
+    <section class="chapter chapter-photos" aria-label="Read or listen">
+      <div class="bento">
+        <article class="panel panel-grey card-read span-6" data-page-theme="night">
+          <div class="read-head">
+            <h3>Read it tonight.</h3>
+            <div class="swatches" role="radiogroup" aria-label="Reader theme" data-swatches>
+              <button type="button" role="radio" aria-checked="false" aria-label="Paper" data-swatch="paper"></button>
+              <button type="button" role="radio" aria-checked="false" aria-label="Sepia" data-swatch="sepia"></button>
+              <button type="button" role="radio" aria-checked="true" aria-label="Night" data-swatch="night"></button>
+            </div>
           </div>
-        </div>
-        <div class="home-grid" aria-hidden="true">
-          <i></i><i></i><i class="bb"></i><i></i>
-          <i></i><i></i><i></i><i></i>
-        </div>
-        <div class="home-dock" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-      </div>
-    </section>
-
-    <!-- Shelves -->
-    <section class="shelves" data-shelves aria-labelledby="shelves-title">
-      <h2 id="shelves-title">Bestselling non-fiction, picked for your goals.</h2>
-      <p>2,000+ titles across psychology, productivity, money, health, relationships and leadership. Choose your goals and BookBite builds shelves around them. Missing a book? Request it and get a summary in a minute or two.</p>
-      <ul class="goals" aria-label="Goals you can choose">
-        <li>Better habits</li><li>Better with money</li><li>Leading at work</li><li>How people think</li><li>Healthier living</li><li>Better relationships</li><li>Calm and meaning</li><li>Starting something</li><li>Creative work</li><li>How the world works</li>
-      </ul>
-      <div class="rows" aria-hidden="true">
-        <div class="row" data-row="0"></div>
-        <div class="row" data-row="1"></div>
+          <div class="page">
+            <div class="page-bar"><span>Atomic Habits</span><span>7 min left</span></div>
+            <div class="page-line"><i></i></div>
+            <p class="page-first"><span class="initial">S</span><span class="lead">mall habits often</span> seem too trivial to matter, while ambitious resolutions demand more effort than daily life can sustain.</p>
+            <p>James Clear argues that lasting change comes from building a system of small behaviors, not relying on a burst of motivation.</p>
+            <h4>The plateau of latent potential</h4>
+            <p>Habits compound like interest: their effects grow as small actions repeat.</p>
+          </div>
+        </article>
+        <article class="panel panel-grey card-listen span-6" data-player>
+          <h3>Hear it on the way home.</h3>
+          <div class="player">
+            <img src="https://books.google.com/books/publisher/content/images/frontcover/XfFvDwAAQBAJ?fife=w400-h600&amp;source=gbs_api" alt="Atomic Habits by James Clear" loading="lazy">
+            <div class="player-body">
+              <p class="player-title">Atomic Habits</p>
+              <p class="player-by">James Clear</p>
+              <div class="wave" data-wave aria-hidden="true"></div>
+              <div class="player-time" aria-hidden="true"><span data-wave-at>0:42</span><span>5:00</span></div>
+            </div>
+          </div>
+          <div class="controls" aria-hidden="true">
+            <span class="back15">15</span>
+            <span class="pause"><i></i><i></i></span>
+            <span class="fwd15">15</span>
+          </div>
+        </article>
       </div>
     </section>
 
     <!-- CTA -->
-    <section class="cta" data-cta aria-labelledby="cta-title">
+    <section class="cta" data-dark data-cta aria-labelledby="cta-title">
       <div class="cta-icon" data-cta-icon>
         <img src="/icon.png" alt="The BookBite app icon: a cream B with a bite out of its corner" width="200" height="200">
         <div class="cta-glare" aria-hidden="true"></div>
       </div>
-      <h2 id="cta-title">Fifteen minutes a day adds up.</h2>
-      <p>BookBite is free while in beta on TestFlight. Install Apple’s TestFlight app, then tap the link to join.</p>
+      <h2 id="cta-title">Free while in beta.</h2>
       <a class="btn btn-light btn-big" data-testflight href="#">Join the beta on TestFlight</a>
-      <ol class="cta-steps">
-        <li>Install TestFlight from the App Store</li>
-        <li>Open the invite on your iPhone</li>
-        <li>Tap Install, then pick your first book</li>
-      </ol>
     </section>
   </main>
 
@@ -261,7 +190,7 @@
   </footer>
 
   <script src="/books.js"></script>
-  <script src="/landing.js"></script>
+  <script src="/landing.js?v=8"></script>
   <script src="/mosaic.js"></script>
 </body>
 </html>

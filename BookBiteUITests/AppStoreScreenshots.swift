@@ -30,6 +30,86 @@ final class AppStoreScreenshots: XCTestCase {
         _ = app.wait(for: .unknown, timeout: seconds)
     }
 
+    /// Extra screens for the landing page (design/landing, server/public/screens): the audio player,
+    /// the key idea deck, and the reader in each theme. Run like the test below.
+    @MainActor
+    func testCaptureLandingScreens() throws {
+        for theme in ["paper", "sepia", "night"] {
+            app.launchArguments += ["-readerTheme", theme]
+            app.launch()
+            app.tabBars.buttons["Search"].tap()
+            let field = app.searchFields.element
+            XCTAssertTrue(field.waitForExistence(timeout: 20))
+            field.tap()
+            field.typeText("Atomic Habits")
+            let result = app.cells.firstMatch
+            XCTAssertTrue(result.waitForExistence(timeout: 20))
+            settle(2)
+            result.tap()
+            let read = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Read summary' OR label BEGINSWITH 'Continue reading' OR label BEGINSWITH 'Read again'")).firstMatch
+            XCTAssertTrue(read.waitForExistence(timeout: 40))
+            settle(4)
+
+            if theme == "paper" {
+                let listen = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Listen'")).firstMatch
+                if listen.exists {
+                    listen.tap()
+                    settle(6)
+                    snap("listen")
+                    app.swipeDown(velocity: .fast)
+                    settle(2)
+                }
+                let keep = app.buttons["Keep idea"].firstMatch
+                for _ in 0..<6 where !(keep.exists && keep.isHittable) {
+                    app.swipeUp(velocity: .slow)
+                }
+                settle(2)
+                snap("keyideas")
+                app.swipeDown(velocity: .fast); app.swipeDown(velocity: .fast); app.swipeDown(velocity: .fast)
+                settle(1)
+            }
+
+            read.tap()
+            settle(6)
+            snap("reader-\(theme)")
+            app.terminate()
+        }
+    }
+
+    /// Overlapping frames of Discover and the book page. design/landing/stitch.py joins them into one tall screen,
+    /// which the landing page's walkthrough scrolls inside the phone.
+    @MainActor
+    func testCaptureWalkthrough() throws {
+        app.launch()
+        XCTAssertTrue(app.staticTexts["An idea for you"].waitForExistence(timeout: 40))
+        settle(6)
+        let spot = app.windows.firstMatch.coordinate(withNormalizedOffset: CGVector(dx: 0.12, dy: 0.5))
+        func scrollFrames(_ name: String, count: Int) {
+            snap("\(name)-0")
+            for i in 1...count {
+                // A slow drag with a hold at the end, so the page doesn't coast
+                spot.press(forDuration: 0.1,
+                           thenDragTo: app.windows.firstMatch.coordinate(withNormalizedOffset: CGVector(dx: 0.12, dy: 0.22)),
+                           withVelocity: .slow, thenHoldForDuration: 0.5)
+                settle(3)
+                snap("\(name)-\(i)")
+            }
+        }
+        scrollFrames("discover", count: 7)
+
+        app.tabBars.buttons["Search"].tap()
+        let field = app.searchFields.element
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        field.tap()
+        field.typeText("Atomic Habits")
+        let result = app.cells.firstMatch
+        XCTAssertTrue(result.waitForExistence(timeout: 20))
+        settle(2)
+        result.tap()
+        settle(8)
+        scrollFrames("detail", count: 6)
+    }
+
     @MainActor
     func testCaptureScreens() throws {
         app.launch()

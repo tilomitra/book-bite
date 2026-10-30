@@ -1,4 +1,4 @@
-// BookBite landing page. No dependencies: scroll scenes are driven by one rAF loop reading each section's progress.
+// BookBite landing page. No dependencies: the scroll scenes are driven by one rAF loop reading each section's progress.
 (() => {
   // Set this to the public TestFlight invite (https://testflight.apple.com/join/<code>) once the beta is public.
   const TESTFLIGHT_URL = 'https://testflight.apple.com/join/BOOKBITE';
@@ -10,52 +10,9 @@
   const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
   const range = (p, a, b) => clamp((p - a) / (b - a));
   const easeOut = (t) => 1 - Math.pow(1 - t, 3);
-  const backOut = (t) => 1 + 2.4 * Math.pow(t - 1, 3) + 1.4 * Math.pow(t - 1, 2);
 
   $$('[data-testflight]').forEach((a) => { a.href = TESTFLIGHT_URL; a.rel = 'noopener'; });
   $$('[data-year]').forEach((el) => { el.textContent = new Date().getFullYear(); });
-  const today = $('[data-today]');
-  if (today) today.textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
-
-  /* ---------- Covers ---------- */
-  // Bookcloth colours, as in the app's TypographicCover: picked from the title so a book always gets the same one
-  const CLOTHS = ['#732324', '#2f4a3a', '#24364f', '#5b4a2e', '#3d2c44', '#6a5a3c', '#2e3d3f', '#4a2a22'];
-  const clothFor = (title) => CLOTHS[[...title].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % CLOTHS.length];
-
-  // A 3D hardcover (see .book3d): the cover in front, a spine with title and author in the cover's colour, page edges
-  function bookEl(book) {
-    const el = document.createElement('div');
-    el.className = 'book3d';
-    const cloth = book.tint || clothFor(book.title);
-    el.style.setProperty('--cloth', cloth);
-    el.style.setProperty('--edge', cloth);
-    const [r, g, b] = [1, 3, 5].map((i) => parseInt(cloth.slice(i, i + 2), 16));
-    if (0.299 * r + 0.587 * g + 0.114 * b > 160) el.style.setProperty('--spine-ink', 'rgba(20, 18, 16, .85)');
-    el.innerHTML = '<div class="b-back"></div><div class="b-spine"><span class="st"></span><span class="sa"></span></div>'
-      + '<div class="b-fore"></div><div class="b-head"></div><div class="b-tail"></div><div class="b-front"><span class="t"></span></div>';
-    $('.st', el).textContent = book.title;
-    $('.sa', el).textContent = book.author.split(/,| and /)[0];
-    $('.t', el).textContent = book.title;
-    if (book.cover) {
-      const img = new Image();
-      img.alt = '';
-      img.decoding = 'async';
-      img.onload = () => img.classList.add('ok');
-      img.src = book.cover;
-      $('.b-front', el).append(img);
-    }
-    return el;
-  }
-  const shuffled = (list, seed) => {
-    const out = [...list];
-    let s = seed;
-    for (let i = out.length - 1; i > 0; i--) {
-      s = (s * 9301 + 49297) % 233280;
-      const j = Math.floor((s / 233280) * (i + 1));
-      [out[i], out[j]] = [out[j], out[i]];
-    }
-    return out;
-  };
 
   /* ---------- Hero ---------- */
   const title = $('[data-split]');
@@ -64,383 +21,125 @@
     title.setAttribute('aria-label', title.textContent);
     title.innerHTML = words.map((w, i) => `<span class="w" aria-hidden="true"><span style="--i:${i}">${w}</span></span>`).join(' ');
   }
-
   requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add('is-loaded')));
 
-  /* ---------- Nav ---------- */
-  const nav = $('[data-nav]');
+  /* ---------- The walkthrough ---------- */
+  const tour = $('[data-tour]');
+  const tourDevice = $('[data-tour-device]');
+  const tourScreens = $$('[data-tour-screen]');
+  const tourSteps = $$('[data-tour-step]');
+  const tourJumps = $$('[data-tour-jump]');
+  const INTRO_END = 0.05;
+  // How much scroll each part of the app gets: the screens that scroll inside the phone need more
+  const WEIGHTS = [2.2, 2.2, 1.2, 1.6];
+  const TOTAL = WEIGHTS.reduce((a, b) => a + b, 0);
+  const STARTS = WEIGHTS.map((_, i) => WEIGHTS.slice(0, i).reduce((a, b) => a + b, 0) / TOTAL);
+  let tourIdx = -1;
 
-  /* ---------- Bite ---------- */
-  const bite = $('[data-bite]');
-  const biteCover = $('[data-bite-cover]');
-  const biteHook = $('[data-bite-hook]');
-  const biteSource = $('[data-bite-source]');
-  const biteMeter = $('[data-bite-meter]');
-  const crumbsCanvas = $('[data-crumbs]');
-  let hookWords = [];
-  if (biteHook) {
-    biteHook.innerHTML = biteHook.textContent.trim().split(/\s+/).map((w) => `<span class="w">${w}</span>`).join(' ');
-    hookWords = $$('.w', biteHook);
-  }
-  const BITES = [
-    { at: 0.1, x: 0.8, y: 0.03 },
-    { at: 0.2, x: 0.99, y: 0.12 },
-    { at: 0.3, x: 1.01, y: 0.27 },
-  ];
-  const bitten = BITES.map(() => false);
+  function updateTour(p) {
+    const rise = easeOut(range(p, 0, INTRO_END));
+    const small = innerWidth <= 900;
+    tourDevice.style.setProperty('--dev-y', `${(1 - rise) * innerHeight * (small ? 0.06 : 0.16)}px`);
+    tourDevice.style.setProperty('--dev-s', 1 - (1 - rise) * 0.06);
 
-  // Crumbs: a burst of paper flecks each time a bite lands
-  const crumbs = [];
-  const ctx = crumbsCanvas?.getContext('2d');
-  function spawnCrumbs(b) {
-    if (!ctx || reduceMotion) return;
-    const cr = crumbsCanvas.getBoundingClientRect();
-    const cv = biteCover.getBoundingClientRect();
-    const x = cv.left - cr.left + b.x * cv.width;
-    const y = cv.top - cr.top + b.y * cv.height;
-    const colors = ['#e9e6dd', '#d8d4c9', '#bcb6a8', '#2a2623', '#c9a24a'];
-    for (let i = 0; i < 26; i++) {
-      const a = -Math.PI / 2 + (Math.random() - 0.2) * Math.PI * 1.1;
-      const v = 2 + Math.random() * 6;
-      crumbs.push({ x, y, vx: Math.cos(a) * v + 1.5, vy: Math.sin(a) * v, r: 1.5 + Math.random() * 3.5, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.4, life: 1, c: colors[i % colors.length] });
+    const f = range(p, INTRO_END, 1);
+    let idx = STARTS.length - 1;
+    while (idx > 0 && f < STARTS[idx]) idx--;
+    const lp = clamp((f - STARTS[idx]) / (WEIGHTS[idx] / TOTAL));
+    if (idx !== tourIdx) {
+      tourIdx = idx;
+      tourScreens.forEach((s, i) => { s.classList.toggle('is-active', i === idx); s.classList.toggle('is-past', i < idx); });
+      tourSteps.forEach((s, i) => { s.classList.toggle('is-active', i === idx); });
+      tourJumps.forEach((b, i) => { if (i === idx) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
     }
-  }
-  function drawCrumbs() {
-    if (!ctx) return;
-    const dpr = Math.min(devicePixelRatio, 2);
-    const w = crumbsCanvas.clientWidth, h = crumbsCanvas.clientHeight;
-    if (crumbsCanvas.width !== w * dpr) { crumbsCanvas.width = w * dpr; crumbsCanvas.height = h * dpr; }
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, w, h);
-    for (let i = crumbs.length - 1; i >= 0; i--) {
-      const p = crumbs[i];
-      p.vy += 0.32; p.vx *= 0.985; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life -= 0.012;
-      if (p.life <= 0 || p.y > h) { crumbs.splice(i, 1); continue; }
-      ctx.save();
-      ctx.globalAlpha = Math.min(1, p.life * 1.5);
-      ctx.translate(p.x, p.y); ctx.rotate(p.rot);
-      ctx.fillStyle = p.c;
-      ctx.fillRect(-p.r, -p.r * 0.7, p.r * 2, p.r * 1.4);
-      ctx.restore();
+    // The screen on stage scrolls, or steps through its shots
+    const screen = tourScreens[idx];
+    const tall = $('[data-tall]', screen);
+    if (tall) {
+      const travel = Math.max(0, tall.offsetHeight - screen.offsetHeight);
+      tall.style.setProperty('--scroll', `${-range(lp, 0.08, 0.94) * travel}px`);
+    }
+    const shots = $$('.shot-layer', screen);
+    if (shots.length > 1) {
+      const n = Math.min(shots.length - 1, Math.floor(lp * shots.length));
+      shots.forEach((s, i) => s.classList.toggle('is-on', i === n));
     }
   }
 
-  function updateBite(p) {
-    const w = biteCover.offsetWidth;
-    BITES.forEach((b, i) => {
-      const t = range(p, b.at, b.at + 0.05);
-      biteCover.style.setProperty(`--r${i + 1}`, `${(t > 0 ? backOut(t) : 0) * w * 0.21}px`);
-      if (t > 0 && !bitten[i]) { bitten[i] = true; spawnCrumbs(b); }
-      if (p < b.at - 0.02) bitten[i] = false;
-    });
-    const turn = easeOut(range(p, 0, 0.4));
-    biteCover.style.setProperty('--ry', `${24 - turn * 12}deg`);
-    biteCover.style.setProperty('--s', `${1 - easeOut(range(p, 0.38, 0.6)) * 0.12}`);
-    const words = range(p, 0.36, 0.86) * hookWords.length;
-    hookWords.forEach((el, i) => el.style.setProperty('--o', 0.1 + 0.9 * clamp(words - i)));
-    biteSource.style.setProperty('--o', range(p, 0.86, 0.92));
-    biteMeter.style.transform = `scaleX(${p})`;
-  }
+  tourJumps.forEach((b, i) => b.addEventListener('click', () => {
+    const r = tour.getBoundingClientRect();
+    const f = STARTS[i] + 0.04;
+    scrollTo({ top: scrollY + r.top + (INTRO_END + f * (1 - INTRO_END)) * (r.height - innerHeight), behavior: reduceMotion ? 'auto' : 'smooth' });
+  }));
 
-  /* ---------- Solve ---------- */
-  // Example problems; steps come from each book's "How to apply it" section in the app
-  const PROBLEMS = [
-    {
-      problem: 'I keep putting off the big task',
-      book: 'Eat That Frog!',
-      why: 'Do your most important task first, before easier work takes over the day.',
-      steps: [
-        'Tonight, write tomorrow’s list and mark the one task with the biggest impact.',
-        'Start your day with a distraction-free block on that task, before you check messages.',
-        'If it feels daunting, define the next concrete step and work in short, timed chunks.',
-      ],
-      ask: 'What if the big task depends on other people?',
-      answer: 'Tracy would have you split it. Find the part only you can do and make that tomorrow morning’s frog. Send your requests to others first thing, so their part moves while you work on yours.',
-    },
-    {
-      problem: 'I can’t stop checking my phone',
-      book: 'Deep Work',
-      why: 'Focus is a rare, valuable skill, and you can train it like any other.',
-      steps: [
-        'Schedule protected focus blocks and decide in advance what each one is for.',
-        'During a block, silence notifications and keep messaging closed.',
-        'Practise boredom: wait in a line or take a walk without reaching for your phone.',
-      ],
-      ask: 'I need my phone for work, though.',
-      answer: 'Newport’s point is to be deliberate, not to go offline. Pick set times to check messages, say three a day, and leave the phone in another room during focus blocks. Most things that feel urgent can wait two hours.',
-    },
-    {
-      problem: 'I want to stop stressing about money',
-      book: 'The Psychology of Money',
-      why: 'Financial success is less about formulas and more about your behaviour.',
-      steps: [
-        'Write down what “enough” means for you, and check big decisions against it.',
-        'Build a buffer, like an emergency fund, so a setback never forces a rushed choice.',
-        'Pick an investing approach you can stick with when markets fall.',
-      ],
-      ask: 'My friends earn more and I feel behind.',
-      answer: 'Housel would say comparison has no finish line. Define what a good life costs for you and measure progress against that, not against what other people appear to spend.',
-    },
-    {
-      problem: 'I have a tough conversation coming up',
-      book: 'Never Split the Difference',
-      why: 'Negotiation lessons from a former FBI hostage negotiator, for any high-stakes talk.',
-      steps: [
-        'Label the other person’s emotions out loud: “It seems like you’re worried about…”',
-        'Ask “what” and “how” questions instead of yes-or-no ones.',
-        'Mirror their last few words to keep them talking.',
-      ],
-      ask: 'I need to ask my boss for a raise.',
-      answer: 'Voss would start by naming what your boss is likely feeling: “It seems like budgets are tight this year.” Then ask, “How can we get my pay in line with what I now deliver?” It invites them to solve the problem with you.',
-    },
-    {
-      problem: 'My new habits never stick',
-      book: 'Atomic Habits',
-      why: 'Small changes, repeated daily, add up to remarkable results.',
-      steps: [
-        'Make it obvious: put the cue where you’ll see it, like a book on your pillow.',
-        'Shrink the habit until it takes two minutes, then show up every day.',
-        'Think in identity: not “I want to read” but “I’m a reader.”',
-      ],
-      ask: 'I always quit after a week.',
-      answer: 'Clear’s rule is never miss twice. One missed day is an accident; two is the start of a new habit. Keep the habit small enough that even on a bad day you can do the two-minute version.',
-    },
-  ].map((p) => ({ ...p, ...(BOOKS.find((b) => b.title === p.book) || {}) }));
-
-  const solveCard = $('[data-solve-card]');
-  const problemsEl = $('[data-problems]');
-  let solveIndex = -1, solveTimers = [], solveAuto = null, solveTyping = null;
-  function showProblem(i) {
-    if (!solveCard || i === solveIndex) return;
-    solveIndex = i;
-    const p = PROBLEMS[i];
-    $$('button', problemsEl).forEach((b, j) => b.setAttribute('aria-selected', String(j === i)));
-    solveTimers.forEach(clearTimeout); solveTimers = [];
-    clearInterval(solveTyping);
-    $('[data-solve-q]').textContent = p.problem;
-    $('[data-solve-img]').src = p.cover || '';
-    $('[data-solve-title]').textContent = `${p.book}${p.author ? `, ${p.author}` : ''}`;
-    $('[data-solve-why]').textContent = p.why;
-    const steps = $('[data-solve-steps]');
-    steps.replaceChildren(...p.steps.map((t) => { const li = document.createElement('li'); li.textContent = t; return li; }));
-    $('[data-ask-q]').textContent = p.ask;
-    const answer = $('[data-ask-a]');
-    answer.textContent = '';
-    const parts = [$('[data-solve-q]'), ...$$('[data-solve-part]', solveCard).slice(0, 2), ...steps.children, $('.solve-ask')];
-    parts.forEach((el) => { el.classList.add('rv'); el.classList.remove('in'); });
-    if (reduceMotion) { parts.forEach((el) => el.classList.add('in')); answer.textContent = p.answer; return; }
-    parts.forEach((el, k) => solveTimers.push(setTimeout(() => el.classList.add('in'), 120 + k * 260)));
-    // The follow-up answer types out once the steps are in
-    solveTimers.push(setTimeout(() => {
-      let n = 0;
-      solveTyping = setInterval(() => {
-        n = Math.min(p.answer.length, n + 3);
-        answer.textContent = p.answer.slice(0, n);
-        if (n < p.answer.length) answer.insertAdjacentHTML('beforeend', '<span class="caret"></span>');
-        else clearInterval(solveTyping);
-      }, 24);
-    }, 120 + parts.length * 260 + 200));
-  }
-  if (problemsEl && solveCard) {
-    PROBLEMS.forEach((p, i) => {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.setAttribute('role', 'tab');
-      b.textContent = p.problem;
-      b.addEventListener('click', () => { clearInterval(solveAuto); solveAuto = 'off'; showProblem(i); });
-      problemsEl.append(b);
-    });
-    let started = false;
-    new IntersectionObserver(([e]) => {
-      if (e.isIntersecting && !started) { started = true; showProblem(0); }
-      if (reduceMotion || solveAuto === 'off') return;
-      if (e.isIntersecting && !solveAuto) solveAuto = setInterval(() => showProblem((solveIndex + 1) % PROBLEMS.length), 11000);
-      else if (!e.isIntersecting && solveAuto) { clearInterval(solveAuto); solveAuto = null; }
-    }, { threshold: 0.35 }).observe(solveCard);
-  }
-
-  /* ---------- Story ---------- */
-  const story = $('[data-story]');
-  const steps = $$('[data-step]');
-  const screens = $$('[data-scr]');
-  const dots = $$('.story-dots li');
-  const deck = $('[data-deck]');
-  const IDEAS = [
-    '<b>Focus is a skill.</b> Distraction-free effort on demanding tasks helps you learn hard things faster and do better work.',
-    '<b>It’s what the economy rewards:</b> mastering difficult skills quickly and producing results at a high level.',
-    '<b>It’s getting rare.</b> Constant connectivity, quick replies and task switching crowd it out of the day.',
-    '<b>It feels better, too.</b> Sustained attention and care for craft make work more meaningful.',
-    '<b>Build routines, not willpower.</b> Time-block your focus periods and make deep work a regular part of the week.',
-    '<b>Four rules:</b> work deeply, embrace boredom, quit social media you don’t need, and drain the shallows.',
-  ];
-  const cards = IDEAS.map((html, i) => {
-    const c = document.createElement('div');
-    c.className = 'idea-card';
-    c.innerHTML = `<span>${html}</span><span class="n">${i + 1} / ${IDEAS.length}</span>`;
-    deck?.append(c);
-    return c;
+  /* ---------- The collection: real covers ---------- */
+  const SHELF = ['Atomic Habits', 'Sapiens', 'The Psychology of Money', 'Deep Work', 'Thinking, Fast and Slow', 'Never Split the Difference', 'The Power of Habit', 'Zero to One', 'Meditations', 'The Laws of Human Nature', 'Ikigai', 'Influence', 'Rich Dad Poor Dad', 'Mindset', 'The Body Keeps the Score', 'Steve Jobs', 'The Lean Startup', 'The 48 Laws of Power', 'The Intelligent Investor', 'The Power of Now', 'Emotional Intelligence', 'A Brief History of Time', 'The Prince', 'Ego Is the Enemy'];
+  const fillShelf = (el, titles) => titles.map((t) => BOOKS.find((b) => b.title === t)).filter(Boolean).forEach((b) => {
+    const img = new Image();
+    img.alt = b.title;
+    img.decoding = 'async';
+    img.src = b.cover.replace('fife=w1200-h1800', 'fife=w300-h450').replace('1600x1600bb', '300x300bb');
+    el.append(img);
   });
-  const deckCount = $('[data-deck-count]');
-  const keep = $('[data-keep]');
-  const readerScr = $('[data-scr="1"]');
-  const readerPage = $('[data-reader-page]');
-  const readerProgress = $('[data-reader-progress]');
-  const readerLeft = $('[data-reader-left]');
-  const themeNames = $$('[data-theme-name]');
-  const listenScr = $('[data-scr="2"]');
+  fillShelf($('[data-shelfline]'), SHELF);
+
+  /* ---------- Ask: the answer arrives once, when the card comes on screen ---------- */
+  const thread = $('[data-thread]');
+  const cited = [
+    'https://books.google.com/books/publisher/content/images/frontcover/H6x-DwAAQBAJ?fife=w300-h450&source=gbs_api',
+    'https://books.google.com/books/publisher/content/images/frontcover/Yq35BY5Fk3gC?fife=w300-h450&source=gbs_api',
+    'https://covers.openlibrary.org/b/id/14632659-M.jpg',
+  ];
+  const addCover = (el, src, angle) => {
+    const img = new Image();
+    img.alt = '';
+    img.src = src;
+    if (angle !== undefined) img.style.setProperty('--a', `${angle}deg`);
+    el.append(img);
+  };
+  cited.forEach((src) => addCover($('[data-read-covers]'), src));
+  [cited[2], cited[1], cited[0]].forEach((src, i) => addCover($('[data-fan]'), src, [-13, 13, 0][i]));
+  if (!reduceMotion) {
+    thread.classList.add('pre');
+    new IntersectionObserver(([e], io) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      thread.classList.remove('pre');
+    }, { threshold: 0.3 }).observe(thread);
+  }
+  const task = $('[data-task]');
+  task.addEventListener('click', () => task.setAttribute('aria-pressed', String(task.getAttribute('aria-pressed') !== 'true')));
+
+  /* ---------- Reader themes ---------- */
+  const swatches = $$('[data-swatch]');
+  swatches.forEach((b) => b.addEventListener('click', () => {
+    b.closest('[data-page-theme]').dataset.pageTheme = b.dataset.swatch;
+    swatches.forEach((x) => x.setAttribute('aria-checked', String(x === b)));
+  }));
+
+  /* ---------- Audio: the waveform plays while it's on screen ---------- */
   const wave = $('[data-wave]');
-  const listenAt = $('[data-listen-at]');
-  const askParts = $$('[data-ask-part]');
-  const askRead = $('[data-ask-read]');
-  const askDirect = $('[data-ask-direct]');
-  const ASK_DIRECT = 'Give real work a protected block before email gets the day, and answer messages in batches.';
-  // When each part of the Ask answer shows: question, books, (direct answer types), points, this week
-  const ASK_AT = [0.04, 0.12, 0.5, 0.6, 0.7];
-  const STORY_HUES = [8, 32, 48, 352];
-  const waveBars = [];
-  if (wave) {
-    for (let i = 0; i < 46; i++) {
-      const bar = document.createElement('i');
-      const h = 18 + Math.abs(Math.sin(i * 1.7) * 52 + Math.sin(i * 0.43) * 30);
-      bar.style.setProperty('--h', `${Math.min(100, h)}%`);
-      bar.style.setProperty('--dl', `${(i % 7) * -0.15}s`);
-      wave.append(bar);
-      waveBars.push(bar);
-    }
-  }
-  let lastStep = -1;
-
-  function updateStory(p) {
-    const n = steps.length;
-    const f = clamp(p, 0, 0.9999) * n;
-    const idx = Math.floor(f);
-    const lp = f - idx;
-    if (idx !== lastStep) {
-      steps.forEach((s, i) => {
-        s.classList.toggle('is-active', i === idx);
-        s.classList.toggle('is-before', i < idx);
-        s.classList.toggle('is-after', i > idx);
-      });
-      screens.forEach((s, i) => {
-        s.classList.toggle('is-active', i === idx);
-        s.classList.toggle('is-past', i < idx);
-      });
-      story.style.setProperty('--story-h', STORY_HUES[idx]);
-      $('.story-device .phone').style.setProperty('--rot', `${[-3, 2, -2, 3][idx]}deg`);
-      lastStep = idx;
-    }
-    dots.forEach((d, i) => d.style.setProperty('--f', i < idx ? 1 : i === idx ? lp : 0));
-
-    // Key ideas: cards fly off as you scroll
-    const cardF = clamp(range(lp, 0.05, 0.9) * (cards.length - 1), 0, cards.length - 1);
-    const current = Math.round(cardF);
-    cards.forEach((c, i) => {
-      const d = i - cardF;
-      let tf, op = 1;
-      if (d < -0.5) { tf = `translateX(-130%) rotate(-12deg)`; op = 0; }
-      else if (d <= 0) { tf = `translateX(${d * 120}%) rotate(${d * 10}deg)`; }
-      else { tf = `translateY(${Math.min(d, 2) * 9}px) scale(${1 - Math.min(d, 2) * 0.05})`; op = d > 2.5 ? 0 : 1; }
-      c.style.transform = tf;
-      c.style.opacity = op;
-      c.style.zIndex = 100 - i;
-    });
-    if (deckCount) deckCount.textContent = current + 1;
-    keep?.classList.toggle('is-kept', current >= 4);
-    if (keep) keep.textContent = current >= 4 ? 'Kept' : 'Keep';
-
-    // Reader: scrolls, and switches Paper → Sepia → Night
-    const theme = lp < 0.36 ? 'paper' : lp < 0.7 ? 'sepia' : 'night';
-    readerScr.classList.toggle('t-sepia', theme === 'sepia');
-    readerScr.classList.toggle('t-night', theme === 'night');
-    themeNames.forEach((t) => t.classList.toggle('on', t.dataset.themeName === theme));
-    readerPage.style.transform = `translateY(${-lp * 26}%)`;
-    readerProgress.style.transform = `scaleX(${0.12 + lp * 0.3})`;
-    readerLeft.textContent = `${Math.round(12 - lp * 4)} min left`;
-
-    // Listen
-    const played = range(lp, 0.05, 0.95);
-    waveBars.forEach((b, i) => b.classList.toggle('on', i / waveBars.length < played));
-    const secs = Math.round(played * 860 * 0.4);
-    listenAt.textContent = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
-    listenScr.classList.toggle('is-playing', idx === 2 && !reduceMotion);
-
-    // Ask: the question lands, the books it reads appear, then the answer writes itself in
-    const askP = idx === 3 ? lp : idx > 3 ? 1 : 0;
-    askParts.forEach((el, i) => el.classList.toggle('is-hidden', askP < ASK_AT[i]));
-    askRead.textContent = askP < 0.24 ? 'Reading 3 books' : 'Read 3 books';
-    const chars = Math.floor(range(askP, 0.24, 0.48) * ASK_DIRECT.length);
-    if (askDirect.dataset.len !== String(chars)) {
-      askDirect.textContent = ASK_DIRECT.slice(0, chars);
-      if (chars > 0 && chars < ASK_DIRECT.length) askDirect.insertAdjacentHTML('beforeend', '<span class="caret"></span>');
-      askDirect.dataset.len = chars;
-    }
-  }
-
-  /* ---------- Widget ---------- */
-  const WIDGET = [
-    { title: 'The Power of Habit', idea: 'You can change a habit by keeping the old cue and reward but changing the routine.' },
-    { title: 'Emotional Intelligence', idea: 'Self-awareness is key to understanding your emotions and their impact on your decisions.' },
-    { title: 'The Laws of Human Nature', idea: 'Social pressure pulls people toward conformity, so a sense of purpose and independent judgment helps preserve your individuality.' },
-    { title: 'The Subtle Art of Not Giving a F*ck', idea: 'Choose values based on what you can influence and how you behave, rather than on status, approval or outcomes outside your control.' },
-    { title: 'The Psychology of Money', idea: 'People make money decisions through the lens of their experiences, incentives and emotions, so behavior often matters more than technical knowledge.' },
-  ].map((w) => ({ ...w, ...(BOOKS.find((b) => b.title === w.title) || {}) })).filter((w) => w.cover);
-
-  const home = $('[data-home]');
-  const widget = $('[data-widget]');
-  const widgetImg = $('[data-widget-img]');
-  const widgetIdea = $('[data-widget-idea]');
-  const widgetBy = $('[data-widget-by]');
-  const picker = $('[data-widget-picker]');
-  let widgetIndex = -1;
-  let widgetTimer = null;
-
-  function showWidget(i, { instant = false } = {}) {
-    if (i === widgetIndex || !WIDGET[i]) return;
-    widgetIndex = i;
-    const w = WIDGET[i];
-    const apply = () => {
-      widgetImg.src = w.cover;
-      widgetImg.alt = `${w.title} cover`;
-      widgetIdea.textContent = w.idea;
-      widgetBy.textContent = `${w.title}, ${w.author}`;
-      widget.classList.remove('swap');
-    };
-    const hue = w.hue ?? null;
-    widget.classList.toggle('neutral', hue === null);
-    if (hue !== null) home.style.setProperty('--h', hue);
-    home.style.setProperty('--s', hue === null ? '6%' : '55%');
-    $$('button', picker).forEach((b, j) => b.setAttribute('aria-selected', String(j === i)));
-    if (instant) return apply();
-    widget.classList.add('swap', 'flip');
-    setTimeout(() => widget.classList.remove('flip'), 260);
-    setTimeout(apply, 320);
-  }
-  if (picker && WIDGET.length) {
-    WIDGET.forEach((w, i) => {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.setAttribute('role', 'tab');
-      b.innerHTML = `<img alt="" src="${w.cover}"><span></span>`;
-      b.lastChild.textContent = w.title.replace(/ of Not Giving a F\*ck/, '');
-      b.addEventListener('click', () => { clearInterval(widgetTimer); widgetTimer = null; showWidget(i); });
-      picker.append(b);
-    });
-    showWidget(0, { instant: true });
-    if (!reduceMotion) {
-      new IntersectionObserver(([e]) => {
-        if (e.isIntersecting && widgetTimer === null && widgetIndex !== -2) {
-          widgetTimer = setInterval(() => showWidget((widgetIndex + 1) % WIDGET.length), 3800);
-        } else if (!e.isIntersecting && widgetTimer) { clearInterval(widgetTimer); widgetTimer = null; }
-      }, { threshold: 0.4 }).observe(home);
-    }
-  }
-
-  /* ---------- Shelves marquee ---------- */
-  const rows = $$('[data-row]').map((row, r) => {
-    const books = shuffled(BOOKS, 90 + r * 31).slice(0, 18);
-    [...books, ...books].forEach((b) => row.append(bookEl(b)));
-    return { el: row, dir: r ? 1 : -1, x: r ? -600 : 0 };
+  const waveAt = $('[data-wave-at]');
+  const BARS = 44, LENGTH = 300;
+  const bars = Array.from({ length: BARS }, (_, i) => {
+    const b = document.createElement('i');
+    b.style.setProperty('--h', `${Math.round(22 + Math.abs(Math.sin(i * 1.7) * 48 + Math.sin(i * 0.43) * 30))}%`);
+    wave.append(b);
+    return b;
   });
+  let played = 42;
+  const showPlayed = () => {
+    bars.forEach((b, i) => b.classList.toggle('on', i / BARS < played / LENGTH));
+    waveAt.textContent = `${Math.floor(played / 60)}:${String(Math.floor(played % 60)).padStart(2, '0')}`;
+  };
+  showPlayed();
+  if (!reduceMotion) {
+    let timer = null;
+    new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !timer) timer = setInterval(() => { played = (played + 1) % LENGTH; showPlayed(); }, 1000);
+      else if (!e.isIntersecting && timer) { clearInterval(timer); timer = null; }
+    }).observe(wave);
+  }
 
   /* ---------- CTA icon tilt ---------- */
   const cta = $('[data-cta]');
@@ -459,38 +158,22 @@
   }
 
   /* ---------- Loop ---------- */
+  const nav = $('[data-nav]');
+  const darks = $$('[data-dark]');
   const progressOf = (el) => {
     const r = el.getBoundingClientRect();
     return clamp(-r.top / (r.height - innerHeight));
   };
   const visible = (el) => { const r = el.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight; };
-  let lastY = scrollY, velocity = 0, lastT = performance.now();
 
-  function frame(now) {
-    const dt = Math.min(64, now - lastT) / 1000;
-    lastT = now;
-    const y = scrollY;
-    velocity += ((y - lastY) / Math.max(dt, 0.001) - velocity) * 0.12;
-    lastY = y;
+  function frame() {
+    nav.classList.toggle('is-stuck', scrollY > 40);
+    const navY = 40;
+    nav.classList.toggle('on-dark', darks.some((d) => { const r = d.getBoundingClientRect(); return r.top <= navY && r.bottom > navY; }));
 
-    nav.classList.toggle('is-stuck', y > 40);
-
-    if (bite && visible(bite)) updateBite(progressOf(bite));
-    if (crumbs.length) drawCrumbs();
-    if (story && visible(story)) updateStory(progressOf(story));
-
-    rows.forEach((r) => {
-      if (!visible(r.el)) return;
-      const boost = reduceMotion ? 0 : clamp(Math.abs(velocity) / 18, 0, 60);
-      r.x += r.dir * ((reduceMotion ? 0 : 30) + boost) * dt * (r.dir < 0 ? 1 : 1);
-      const w = r.el.scrollWidth / 2;
-      if (w > 0) { if (r.x < -w) r.x += w; if (r.x > 0) r.x -= w; }
-      const skew = reduceMotion ? 0 : clamp(velocity / 300, -6, 6);
-      r.el.style.transform = `translate3d(${r.x}px, 0, 0) skewX(${-skew * r.dir}deg)`;
-    });
-
+    if (visible(tour)) updateTour(progressOf(tour));
     requestAnimationFrame(frame);
   }
-  if (story) updateStory(0);
+  updateTour(0);
   requestAnimationFrame(frame);
 })();
