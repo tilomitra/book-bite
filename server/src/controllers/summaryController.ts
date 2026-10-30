@@ -16,7 +16,9 @@ const DailyIdeaQuerySchema = z.object({
 
 const HighlightsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).max(1000).default(1),
-  limit: z.coerce.number().int().min(1).max(50).default(20)
+  limit: z.coerce.number().int().min(1).max(50).default(20),
+  // New for each visit to Discover; mixes the order. Without it the feed is most read first.
+  seed: z.coerce.number().int().min(1).max(2147483647).optional()
 });
 
 export class SummaryController {
@@ -24,9 +26,10 @@ export class SummaryController {
     try {
       const parsed = HighlightsQuerySchema.safeParse(req.query);
       if (!parsed.success) {
-        return res.status(400).json({ error: 'page and limit must be positive integers' });
+        return res.status(400).json({ error: 'page, limit and seed must be positive integers' });
       }
-      return res.json(await highlightService.getHighlights(parsed.data.page, parsed.data.limit));
+      const { page, limit, seed } = parsed.data;
+      return res.json(await highlightService.getHighlights(page, limit, seed));
     } catch (error) {
       return next(error);
     }

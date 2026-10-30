@@ -6,7 +6,10 @@ struct FeaturedBooksView: View {
     @ObservedObject private var readingProgress = ReadingProgressStore.shared
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.scenePhase) private var scenePhase
-    @State private var wasInBackground = false
+    /// When the app went to the background; nil while it is open
+    @State private var backgroundedAt: Date?
+    /// Away at least this long, the whole feed is rebuilt in a new order, not only the idea
+    private let freshFeedAfter: TimeInterval = 30 * 60
 
     /// iPad and other wide windows: the idea of the day beside Continue reading, cards three to a row
     private var isWide: Bool { horizontalSizeClass == .regular }
@@ -87,13 +90,17 @@ struct FeaturedBooksView: View {
         .onReceive(NotificationCenter.default.publisher(for: OnboardingPreferences.didChange)) { _ in
             Task { await viewModel.loadFeaturedBooks() }
         }
-        // Coming back to the app counts as opening it: show a new idea
+        // Coming back to the app counts as opening it: show a new idea, and after a while a new feed
         .onChange(of: scenePhase) { _, phase in
             if phase == .background {
-                wasInBackground = true
-            } else if phase == .active && wasInBackground {
-                wasInBackground = false
-                Task { await viewModel.refreshIdea() }
+                backgroundedAt = .now
+            } else if phase == .active, let since = backgroundedAt {
+                backgroundedAt = nil
+                if Date.now.timeIntervalSince(since) >= freshFeedAfter {
+                    Task { await viewModel.loadFeaturedBooks() }
+                } else {
+                    Task { await viewModel.refreshIdea() }
+                }
             }
         }
     }

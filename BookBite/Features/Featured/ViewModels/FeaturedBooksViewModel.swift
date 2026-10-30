@@ -43,9 +43,23 @@ class FeaturedBooksViewModel: ObservableObject {
     private var hasMoreHighlights = true
     /// Books already in the feed (ids and "title|author", to skip other editions): each book shows up once
     private var usedBookKeys = Set<String>()
-    /// Position in the editorial rotation, so card styles alternate
-    private var editorialStep = 0
+    /// Card kinds left in this round, in random order: 0 spotlight, 1 quick bites, 2 passage, 3 highlight shelf
+    private var editorialDeck: [Int] = []
+    private var lastEditorialKind: Int?
+    /// Shelves since the last card, and how many (one or two, at random) come before the next one
     private var shelfStep = 0
+    private var shelvesBeforeCard = 2
+    /// Where the card and shelf titles start, and how many of each the feed has used
+    private var titleOffset = 0
+    private var biteCards = 0
+    private var highlightShelves = 0
+
+    // A new order on every visit (launch, pull to refresh, return after a while): one seed drives the
+    // shelf order, the books in each shelf, the card rotation and the server's highlight order.
+    private var feedSeed = 1
+    private var generator = SeededGenerator(seed: 1)
+    /// Books shown on earlier visits; they move further back so the top of the feed changes
+    private var shownBefore = Set<String>()
     private let highlightsPageSize = 24
     /// Blocks added per `loadMore()`
     private let chunkSize = 6
@@ -76,6 +90,7 @@ class FeaturedBooksViewModel: ObservableObject {
 
         // Clear cache to ensure fresh data
         bookRepository.clearCache()
+        startNewOrder()
 
         // Loads alongside the books; a failure only hides the card
         let dailyIdeaTask = Task { await fetchIdea() }
@@ -131,6 +146,32 @@ class FeaturedBooksViewModel: ObservableObject {
             added.append(block)
         }
         blocks.append(contentsOf: added)
+        DiscoverHistory.record(added.flatMap(shownBookIds))
+    }
+
+    private func startNewOrder() {
+        feedSeed = Int.random(in: 1...Int(Int32.max))
+        generator = SeededGenerator(seed: UInt64(feedSeed))
+        shownBefore = DiscoverHistory.shownBookIds
+    }
+
+    /// Books a block puts on screen (a shelf only its preview), for `DiscoverHistory`
+    private func shownBookIds(_ block: DiscoverBlock) -> [String] {
+        switch block {
+        case .shelf(_, let books): return books.prefix(BookShelf.previewCount).map(\.id)
+        case .spotlight(let highlight), .passage(let highlight): return [highlight.book.id]
+        case .quickBites(_, _, let highlights): return highlights.map(\.book.id)
+        }
+    }
+
+    /// Ranked books, mixed for this visit; books shown on earlier visits move back
+    private func mixedBooks(_ books: [Book], spread: Double = 1.5) -> [Book] {
+        let shown = shownBefore
+        return FeedShuffle.jittered(books, spread: spread, pushedBack: { shown.contains($0.id) }, using: &generator)
+    }
+
+    private func mixed<T>(_ items: [T], spread: Double) -> [T] {
+        FeedShuffle.jittered(items, spread: spread, using: &generator)
     }
 
     private func resetFeed() async {
@@ -139,8 +180,13 @@ class FeaturedBooksViewModel: ObservableObject {
         nextHighlightsPage = 1
         hasMoreHighlights = bookRepository is HighlightsProviding
         usedBookKeys = []
-        editorialStep = 0
+        editorialDeck = []
+        lastEditorialKind = nil
         shelfStep = 0
+        shelvesBeforeCard = 2
+        titleOffset = Int.random(in: 0..<12, using: &generator)
+        biteCards = 0
+        highlightShelves = 0
         if let dailyIdea { markUsed(dailyIdea.book) }
         blocks = []
         await appendChunk()
@@ -152,16 +198,19 @@ class FeaturedBooksViewModel: ObservableObject {
             return
         }
         do {
-            let page = try await provider.fetchHighlights(page: nextHighlightsPage, limit: highlightsPageSize)
+            let page = try await provider.fetchHighlights(page: nextHighlightsPage, limit: highlightsPageSize, seed: feedSeed)
             nextHighlightsPage += 1
             hasMoreHighlights = page.hasMore
-            // Within a page (books of similar popularity), the ones closest to the reader's taste first
+            // The server mixes the order per seed; within a page, the ones closest to the reader's taste first
             var items = page.items
             if let scores = recommendations?.scores, !scores.isEmpty {
                 items = items.enumerated()
                     .sorted { (scores[$0.element.id] ?? -1, -$0.offset) > (scores[$1.element.id] ?? -1, -$1.offset) }
                     .map(\.element)
             }
+            // Books shown on earlier visits go to the end of the page
+            let shown = shownBefore
+            items = items.filter { !shown.contains($0.book.id) } + items.filter { shown.contains($0.book.id) }
             highlightQueue += items.filter { !isUsed($0.book) }
         } catch {
             // The feed ends with the shelves; the next scroll to the bottom tries again
@@ -199,20 +248,17 @@ class FeaturedBooksViewModel: ObservableObject {
         return taken
     }
 
-    /// Two shelves, then an editorial card, while genre shelves last; after that editorial cards
-    /// alternate with shelves built from highlights.
+    /// One or two shelves, then an editorial card, while genre shelves last; after that editorial cards
+    /// alternate with shelves built from highlights. Card kinds come in a random order each round.
     private func nextBlock() -> DiscoverBlock? {
-        let rotationLength = pendingShelves.isEmpty ? 4 : 3
-        let position = editorialStep % rotationLength
-
-        if shelfStep < 2, let shelf = takeShelf() {
+        if shelfStep < shelvesBeforeCard, let shelf = takeShelf() {
             shelfStep += 1
             return shelf
         }
         shelfStep = 0
-        editorialStep += 1
+        shelvesBeforeCard = Int.random(in: 1...2, using: &generator)
 
-        if let block = editorialBlock(at: position) {
+        if let block = editorialBlock(nextEditorialKind()) {
             return block
         }
         // Not enough highlights for that card: fall back to whatever is left
@@ -249,21 +295,38 @@ class FeaturedBooksViewModel: ObservableObject {
         }
     }
 
-    private func editorialBlock(at position: Int) -> DiscoverBlock? {
-        let round = editorialStep / 4
-        switch position {
+    /// Each kind once per round in a shuffled order, never the same kind twice in a row.
+    /// Highlight shelves join the rounds once the genre shelves run out.
+    private func nextEditorialKind() -> Int {
+        if editorialDeck.isEmpty {
+            var kinds = pendingShelves.isEmpty ? [0, 1, 2, 3] : [0, 1, 2]
+            kinds.shuffle(using: &generator)
+            if kinds.first == lastEditorialKind {
+                kinds.swapAt(0, kinds.count - 1)
+            }
+            editorialDeck = kinds
+        }
+        let kind = editorialDeck.removeFirst()
+        lastEditorialKind = kind
+        return kind
+    }
+
+    private func editorialBlock(_ kind: Int) -> DiscoverBlock? {
+        switch kind {
         case 0:
             return takeHighlight().map(DiscoverBlock.spotlight)
         case 1:
             guard highlightQueue.count >= 3 else { return nil }
-            let titles = Self.biteTitles[round % Self.biteTitles.count]
+            let titles = Self.biteTitles[(titleOffset + biteCards) % Self.biteTitles.count]
+            biteCards += 1
             return .quickBites(title: titles.title, caption: titles.caption, highlights: takeHighlights(3))
         case 2:
             return takeHighlight(quotable: true).map(DiscoverBlock.passage)
         default:
             guard highlightQueue.count >= 6 else { return nil }
             let books = takeHighlights(8).map(\.book)
-            let title = Self.highlightShelfTitles[round % Self.highlightShelfTitles.count]
+            let title = Self.highlightShelfTitles[(titleOffset + highlightShelves) % Self.highlightShelfTitles.count]
+            highlightShelves += 1
             return .shelf(title: title, books: books)
         }
     }
@@ -327,7 +390,7 @@ class FeaturedBooksViewModel: ObservableObject {
         return top.isEmpty ? 0 : top.reduce(0, +) / Double(top.count)
     }
 
-    /// Most popular first, then alphabetical, so shelves keep the same order between visits
+    /// Most popular first, then alphabetical; `mixedBooks` then varies it per visit
     private func sortedByPopularity(_ books: [Book]) -> [Book] {
         books.sorted { book1, book2 in
             switch (book1.popularityScore, book2.popularityScore) {
@@ -440,29 +503,31 @@ class FeaturedBooksViewModel: ObservableObject {
         
         let preferred = Set(OnboardingPreferences.preferredGenres)
         let scores = recommendations?.scores ?? [:]
+        // "More Books" stays last
+        let moreBooks = orderedGenres.filter { $0.genre == "More Books" }
+        orderedGenres.removeAll { $0.genre == "More Books" }
 
+        // Each visit mixes the ranked order (best shelves and books still lean to the top)
         if scores.isEmpty {
-            // Topics picked during onboarding come first, in their usual order
-            orderedGenres = orderedGenres.filter { preferred.contains($0.genre) }
-                + orderedGenres.filter { !preferred.contains($0.genre) }
+            // Topics picked during onboarding come first
+            orderedGenres = mixed(orderedGenres.filter { preferred.contains($0.genre) }, spread: 0.8)
+                + mixed(orderedGenres.filter { !preferred.contains($0.genre) }, spread: 0.8)
         } else {
-            // Shelves closest to the reader's taste first (picked topics get a nudge); "More Books" stays last
-            let moreBooks = orderedGenres.filter { $0.genre == "More Books" }
-            orderedGenres = orderedGenres
-                .filter { $0.genre != "More Books" }
+            // Shelves closest to the reader's taste first (picked topics get a nudge)
+            orderedGenres = mixed(orderedGenres
                 .map { (genre: $0.genre, books: sortedByScore($0.books, scores: scores)) }
                 .map { shelf in (shelf, affinity(of: shelf.books, scores: scores) + (preferred.contains(shelf.genre) ? 0.05 : 0)) }
                 .sorted { $0.1 > $1.1 }
-                .map(\.0)
-                + moreBooks
+                .map(\.0), spread: 0.8)
         }
+        orderedGenres = (orderedGenres + moreBooks).map { (genre: $0.genre, books: mixedBooks($0.books)) }
 
-        // Personal shelves ("For you", "More like …", goals) go above the genre shelves
+        // Personal shelves ("For you", "More like …", goals) go above the genre shelves; "For you" stays first
         let genreNames = Set(orderedGenres.map(\.genre))
         let personal = (recommendations?.shelves ?? [])
             .filter { !genreNames.contains($0.title) && !$0.books.isEmpty }
-            .map { (genre: $0.title, books: $0.books) }
-        booksByGenre = personal + orderedGenres
+            .map { (genre: $0.title, books: mixedBooks($0.books, spread: 1.0)) }
+        booksByGenre = Array(personal.prefix(1)) + mixed(Array(personal.dropFirst()), spread: 0.8) + orderedGenres
     }
     
     private func mapCategoryToGenre(_ category: String) -> String {

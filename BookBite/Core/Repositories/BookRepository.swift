@@ -29,8 +29,9 @@ protocol DailyIdeaProviding {
 }
 
 protocol HighlightsProviding {
-    /// Books with a summary, most read first, each with its hook and one key idea. page starts at 1.
-    func fetchHighlights(page: Int, limit: Int) async throws -> HighlightsPage
+    /// Books with a summary, each with its hook and one key idea. page starts at 1. seed (1...Int32.max,
+    /// new per visit) mixes the order and the idea per book; the same seed gives the same pages.
+    func fetchHighlights(page: Int, limit: Int, seed: Int) async throws -> HighlightsPage
 }
 
 /// Ask: answers to personal questions from ideas across the catalogue (`ask/*` endpoints)
