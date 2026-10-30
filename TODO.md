@@ -38,6 +38,15 @@ Ideas for taking the app to Apple Design Award level. Done so far: Editorial Dis
 ## Trust
 - [x] Show the summary's analysis (critiques, limitations, pitfalls) and citations; they are decoded but not displayed.
 
+## Catalogue (needs you at your desk)
+- [ ] Build the app in Xcode and run the unit tests (the "Newly added" shelves and `NewBooksTests` were written without a compiler).
+- [ ] Deploy the server (merge to `main`) so `GET /api/books/new` exists; until then the "Newly added" shelves stay hidden.
+- [ ] Clean up the catalogue: read `server/scripts/data/catalog-removals.md` (754 books), delete entries from `catalog-removals.json` for books to keep, then `cd server && npm run clean-catalog -- --apply scripts/data/catalog-removals.json`. Keep `scripts/data/removed-books-backup.jsonl` (git-ignored) to restore by hand.
+- [ ] Add the 233 new curated books: `npm run add-curated-books -- --dry-run`, then `npm run add-curated-books` (~$0.70). Or let the weekly job add them over a few months.
+- [ ] After both: `npm run embed-books` and `npm run embed-ideas` (a few cents), and `npm run backfill-covers` for the new books.
+- [ ] Add GitHub repository secrets for the weekly job (Settings → Secrets and variables → Actions): `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `OPENAI_API_KEY`, `NYT_API_KEY`, `GOOGLE_BOOKS_API_KEY`.
+- [ ] First weekly run by hand: Actions → Weekly books → Run workflow with "dry run" on; check the report, then run it without.
+
 ## Ask (needs you at your desk)
 - [ ] Apply `server/supabase/add-idea-embeddings.sql` in the Supabase SQL editor (project `yjejgiltdbuombrzdtbv`). Creates `idea_embeddings` and the `match_ideas` RPC; until then Ask falls back to whole-book matching and cites weaker books.
 - [ ] Backfill it: `cd server && npm run embed-ideas -- --dry-run`, then `npm run embed-ideas` (a couple of cents). Re-run after generating summaries.
