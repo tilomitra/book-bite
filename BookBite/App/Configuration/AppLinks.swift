@@ -9,7 +9,7 @@ enum AppLinks {
     static let termsOfUse = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
 
     /// Public support address for "Send Feedback". The row is hidden while this is nil.
-    static let supportEmail: String? = nil
+    static let supportEmail: String? = "tilomitra@gmail.com"
 
     static func feedbackMail(appVersion: String) -> URL? {
         guard let supportEmail else { return nil }

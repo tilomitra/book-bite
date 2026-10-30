@@ -30,6 +30,7 @@ Ideas for taking the app to Apple Design Award level. Done so far: Editorial Dis
 ## Content
 - [x] Chapters for featured books (210 of 211 regenerated 2026-10-26, $0.33).
 - [ ] Chapters for the rest of the non-fiction catalogue (~1,500 books, ~$2.30, ~1 hour): `npm run regenerate-extended-summaries -- --by-popularity` (resumable; skips books already done; dry-run first).
+- [ ] Replace covers hotlinked from Headway (no rights): `cd server && npm run backfill-covers -- --unlicensed --dry-run --report /tmp/covers.json`, check the report, then run it again without `--dry-run`. Books with no other cover get the typographic one.
 - [ ] Unfeature or delete the placeholder book "Unti9780063422506" (`544bc854-8962-43fe-b02e-cc7aa5833362`), an NYT import with no real title; its regeneration fails.
 - [ ] Reader hyphenation sometimes breaks at the wrong place ("Gett-ing").
 - [ ] Citations are decoded but not shown.
