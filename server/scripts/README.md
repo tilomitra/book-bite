@@ -57,6 +57,17 @@ npm run weekly-books -- --limit 10 --feature    # add 10 books and mark them fea
 npm run weekly-books -- --report /tmp/weekly.md # Markdown report of picks and rejects
 ```
 
+#### `clean-catalog.ts` - Remove Books That Don't Belong
+
+Rates every book (same rubric as the weekly pipeline) and lists fiction, textbooks, workbooks and obscure titles for removal. Books someone saved or read are always kept.
+
+```bash
+npm run clean-catalog -- --report /tmp/clean.md                  # step 1, read-only: writes scripts/data/catalog-removals.json
+npm run clean-catalog -- --apply scripts/data/catalog-removals.json   # step 2: back up, then delete
+```
+
+Review the report and delete entries from the JSON for books to keep before step 2.
+
 The GitHub Action needs these repository secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `OPENAI_API_KEY`, `NYT_API_KEY`, `GOOGLE_BOOKS_API_KEY`.
 
 ### 🤖 Summary Generation

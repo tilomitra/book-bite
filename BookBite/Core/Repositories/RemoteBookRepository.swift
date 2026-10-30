@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-class RemoteBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRepository, DailyIdeaProviding, RecommendationsProviding, HighlightsProviding, AskProviding {
+class RemoteBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRepository, DailyIdeaProviding, RecommendationsProviding, HighlightsProviding, NewBooksProviding, AskProviding {
     private let networkService = NetworkService.shared
     private let cacheService = CacheService.shared
     
@@ -100,6 +100,10 @@ class RemoteBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
 
     func fetchHighlights(page: Int, limit: Int, seed: Int) async throws -> HighlightsPage {
         return try await networkService.get(endpoint: "summaries/highlights?page=\(page)&limit=\(limit)&seed=\(seed)")
+    }
+
+    func fetchNewBooks(limit: Int) async throws -> NewBooks {
+        return try await networkService.get(endpoint: "books/new?limit=\(limit)")
     }
 
     func fetchRecommendations(_ request: RecommendationRequest) async throws -> Recommendations {

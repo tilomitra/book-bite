@@ -1,2 +1,4 @@
 # Old extended summaries saved by scripts/regenerate-extended-summaries.ts
 scripts/data/extended-summary-backup.jsonl
+# Books removed by scripts/clean-catalog.ts --apply (rows + summaries, to restore by hand)
+scripts/data/removed-books-backup.jsonl

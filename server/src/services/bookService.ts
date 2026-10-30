@@ -99,6 +99,42 @@ export class BookService {
     return result;
   }
 
+  /**
+   * "Newly added" shelves in Discover and Library: the newest books that have a summary (a book
+   * without one would open to an empty page), plus how many arrived in the last 7 days.
+   */
+  async getNewBooks(limit: number = 24): Promise<{ books: Book[]; addedThisWeek: number }> {
+    const cacheKey = `new-books:${limit}`;
+    const cached = this.cache.get<{ books: Book[]; addedThisWeek: number }>(cacheKey);
+    if (cached) return cached;
+
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    // Twice the limit, so filtering out fiction still fills the shelf
+    const [listResult, countResult] = await Promise.all([
+      supabase
+        .from('books')
+        .select('*, summaries!inner(id)')
+        .order('created_at', { ascending: false })
+        .order('id')
+        .range(0, limit * 2 - 1),
+      supabase
+        .from('books')
+        .select('id, summaries!inner(id)', { count: 'exact', head: true })
+        .gte('created_at', weekAgo)
+    ]);
+    if (listResult.error) {
+      throw new Error(`Failed to fetch new books: ${listResult.error.message}`);
+    }
+
+    const books = (listResult.data || [])
+      .map(({ summaries: _summaries, ...book }: any) => book as Book)
+      .filter(isNonFiction)
+      .slice(0, limit);
+    const result = { books, addedThisWeek: countResult.count || 0 };
+    this.cache.set(cacheKey, result);
+    return result;
+  }
+
   async getNYTBestsellerBooks(options: { 
     page?: number; 
     limit?: number;

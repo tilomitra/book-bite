@@ -46,6 +46,15 @@ export class BookController {
     }
   }
 
+  async getNewBooks(req: Request, res: Response, next: NextFunction) {
+    try {
+      const limit = Math.min(50, Math.max(1, Math.floor(Number(req.query.limit)) || 24));
+      res.json(await bookService.getNewBooks(limit));
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getNYTBestsellerBooks(req: Request, res: Response, next: NextFunction) {
     try {
       const { page, limit, fresh = false } = req.query;

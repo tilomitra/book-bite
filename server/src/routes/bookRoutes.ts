@@ -8,6 +8,7 @@ const router = Router();
 router.get('/', bookController.getAllBooks);
 router.get('/featured', bookController.getFeaturedBooks);
 router.get('/nyt-bestsellers', bookController.getNYTBestsellerBooks);
+router.get('/new', bookController.getNewBooks);
 router.get('/search', bookController.searchBooks);
 router.get('/categories', bookController.getCategories);
 router.get('/category/:category', bookController.getBooksByCategory);

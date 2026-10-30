@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Library tab, your reading loop: summaries in progress, kept ideas (Notebook), books opened recently,
-/// saved (needs sign-in), finished and downloaded. Settings opens from the account button in the header.
+/// saved (needs sign-in), newly added to the catalogue, finished and downloaded. Settings opens from the account button in the header.
 struct MyLibraryView: View {
     @EnvironmentObject private var authService: SupabaseAuthService
     @ObservedObject private var recentBooks = RecentBooksStore.shared
@@ -62,6 +62,14 @@ struct MyLibraryView: View {
                     }
                 } else {
                     signInPrompt
+                }
+
+                if let newBooks = viewModel.newBooks, !newBooks.books.isEmpty {
+                    BookShelf(
+                        title: FeaturedBooksViewModel.newBooksShelfTitle,
+                        caption: newBooks.caption,
+                        books: newBooks.books
+                    )
                 }
 
                 if !finishedBooks.isEmpty {

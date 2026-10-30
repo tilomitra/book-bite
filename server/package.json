@@ -16,6 +16,7 @@
     "populate-books": "tsx scripts/populate-books.ts",
     "add-curated-books": "tsx scripts/add-curated-books.ts",
     "weekly-books": "tsx scripts/weekly-books.ts",
+    "clean-catalog": "tsx scripts/clean-catalog.ts",
     "populate-books-google": "tsx scripts/populate-books.ts 25 all google",
     "populate-books-nyt": "tsx scripts/populate-books.ts 15 all nyt",
     "populate-books-high-priority": "tsx scripts/populate-books.ts 25 high all",

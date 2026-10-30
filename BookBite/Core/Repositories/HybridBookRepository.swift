@@ -1,6 +1,6 @@
 import Foundation
 
-class HybridBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRepository, DailyIdeaProviding, RecommendationsProviding, HighlightsProviding, AskProviding {
+class HybridBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRepository, DailyIdeaProviding, RecommendationsProviding, HighlightsProviding, NewBooksProviding, AskProviding {
     private let remoteRepository = RemoteBookRepository()
     private let offlineStorage = OfflineStorageService.shared
 
@@ -64,6 +64,10 @@ class HybridBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
 
     func fetchHighlights(page: Int, limit: Int, seed: Int) async throws -> HighlightsPage {
         return try await remoteRepository.fetchHighlights(page: page, limit: limit, seed: seed)
+    }
+
+    func fetchNewBooks(limit: Int) async throws -> NewBooks {
+        return try await remoteRepository.fetchNewBooks(limit: limit)
     }
 
     func fetchRecommendations(_ request: RecommendationRequest) async throws -> Recommendations {

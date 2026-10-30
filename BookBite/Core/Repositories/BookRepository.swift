@@ -43,6 +43,11 @@ protocol AskProviding {
     func ask(_ request: AskRequest) -> AsyncThrowingStream<AskStreamEvent, Error>
 }
 
+protocol NewBooksProviding {
+    /// The newest books with a summary, newest first
+    func fetchNewBooks(limit: Int) async throws -> NewBooks
+}
+
 protocol RecommendationsProviding {
     func fetchRecommendations(_ request: RecommendationRequest) async throws -> Recommendations
 }

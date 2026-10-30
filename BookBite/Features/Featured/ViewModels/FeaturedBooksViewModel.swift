@@ -35,6 +35,9 @@ class FeaturedBooksViewModel: ObservableObject {
     private var nytBestsellerBooks: [Book] = []
     /// Personal shelves and per-book scores from the server; nil before they load or if they fail
     private var recommendations: Recommendations?
+    /// Newest books with a summary, newest first; empty if they fail to load
+    private var newBooks: [Book] = []
+    static let newBooksShelfTitle = "Newly added"
 
     // Feed state
     private var pendingShelves: [(genre: String, books: [Book])] = []
@@ -95,6 +98,7 @@ class FeaturedBooksViewModel: ObservableObject {
         // Loads alongside the books; a failure only hides the card
         let dailyIdeaTask = Task { await fetchIdea() }
         let recommendationsTask = Task { await fetchRecommendations() }
+        let newBooksTask = Task { await fetchNewBooks() }
 
         do {
             async let featuredBooksTask = bookRepository.fetchFeaturedBooks()
@@ -106,6 +110,7 @@ class FeaturedBooksViewModel: ObservableObject {
             nytBestsellerBooks = nytBooks
             // Wait for the personal shelves too, so the page doesn't reshuffle while someone reads it
             recommendations = await recommendationsTask.value ?? recommendations
+            newBooks = await newBooksTask.value ?? newBooks
             groupBooksByGenre()
             // Before the feed, so its book isn't repeated on a card
             dailyIdea = await dailyIdeaTask.value ?? dailyIdea
@@ -378,6 +383,17 @@ class FeaturedBooksViewModel: ObservableObject {
         }
     }
 
+    private func fetchNewBooks() async -> [Book]? {
+        guard let provider = bookRepository as? NewBooksProviding else { return nil }
+        do {
+            return try await provider.fetchNewBooks(limit: 24).books
+        } catch {
+            // Discover works without the shelf
+            print("Failed to load new books: \(error)")
+            return nil
+        }
+    }
+
     /// Books closest to the reader's taste first; books without a score keep their order after them
     private func sortedByScore(_ books: [Book], scores: [String: Double]) -> [Book] {
         let scored = books.filter { scores[$0.id] != nil }.sorted { scores[$0.id]! > scores[$1.id]! }
@@ -527,7 +543,9 @@ class FeaturedBooksViewModel: ObservableObject {
         let personal = (recommendations?.shelves ?? [])
             .filter { !genreNames.contains($0.title) && !$0.books.isEmpty }
             .map { (genre: $0.title, books: mixedBooks($0.books, spread: 1.0)) }
-        booksByGenre = Array(personal.prefix(1)) + mixed(Array(personal.dropFirst()), spread: 0.8) + orderedGenres
+        // "Newly added" comes right after "For you", newest first (not mixed: the order is the point)
+        let newShelf: [(genre: String, books: [Book])] = newBooks.isEmpty ? [] : [(genre: Self.newBooksShelfTitle, books: newBooks)]
+        booksByGenre = Array(personal.prefix(1)) + newShelf + mixed(Array(personal.dropFirst()), spread: 0.8) + orderedGenres
     }
     
     private func mapCategoryToGenre(_ category: String) -> String {

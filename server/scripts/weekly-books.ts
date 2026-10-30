@@ -40,7 +40,6 @@ import fs from 'fs';
 import path from 'path';
 import { spawnSync } from 'child_process';
 import chalk from 'chalk';
-import OpenAI from 'openai';
 import { isFiction } from '../src/utils/fiction';
 import {
   CuratedBook,
@@ -56,10 +55,10 @@ import {
   loadExistingKeys,
   withRetry
 } from './lib/bookImport';
+import { JUNK_TITLE, KEEP_SCORE, rateBooks } from './lib/bookVetting';
 
 config();
 
-const VET_MODEL = 'gpt-6-luna';
 const NYT_LISTS = [
   'combined-print-and-e-book-nonfiction',
   'hardcover-nonfiction',
@@ -90,18 +89,8 @@ const OPEN_LIBRARY_SUBJECTS: Record<string, string> = {
   interpersonal_relations: 'Relationships',
   authorship: 'Writing'
 };
-// Genres the app already uses (categories in curated-books.json), so new books join existing shelves.
-const GENRES = [
-  'Psychology', 'Self-Help', 'Business', 'Economics', 'Finance', 'History', 'Science', 'Technology',
-  'Biography', 'Health', 'Philosophy', 'Society', 'Parenting', 'Relationships', 'Productivity',
-  'Leadership', 'Career', 'Marketing', 'Writing', 'Spirituality', 'Mindfulness', 'Travel'
-];
 const RECENT_MIN_READERS = 25;
 const MAX_PER_AUTHOR = 2;
-// Not books to summarize: companions to other books, journals, textbooks, bundles.
-const JUNK_TITLE =
-  /\b(workbook|summary|study guide|analysis of|journal|planner|notebook|colou?ring|box(ed)? set|collection|textbook|for dummies|cookbook|recipes|calendar|activity book|edition|volume|vol\.|book \d|part \d)\b/i;
-
 type Source = 'nyt' | 'curated' | 'recent' | 'popular';
 const SOURCE_ORDER: Source[] = ['nyt', 'curated', 'recent', 'popular'];
 
@@ -252,51 +241,6 @@ function rejectReason(c: Candidate, options: Options): string | null {
   return null;
 }
 
-/** Asks the model to rate each candidate 1–5 and pick its genre. */
-async function vet(candidates: Candidate[]): Promise<void> {
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-  for (let i = 0; i < candidates.length; i += 30) {
-    const batch = candidates.slice(i, i + 30);
-    const list = batch
-      .map((c, n) => `${n + 1}. "${c.title}" by ${c.author}${c.year ? ` (${c.year})` : ''}${c.nyt ? ' [NYT bestseller]' : ''}`)
-      .join('\n');
-    const prompt = `BookBite is an app with summaries of non-fiction books: key ideas, how to apply them, and answers to readers' problems drawn from ideas across the catalogue. Rate each book below for the catalogue.
-
-5 = a widely recommended non-fiction book with clear ideas readers can learn from or apply (e.g. Thinking, Fast and Slow; Educated; The Psychology of Money)
-4 = a well-reviewed non-fiction book from a known author or publisher, worth a summary
-3 = real but minor, niche or dated
-2 = not a good fit: textbook, reference work, anthology, poetry, a companion to another book, a primary religious text, a political tract or a celebrity book without ideas
-1 = fiction, a children's book, a summary/workbook of another book, self-published filler, or unknown to you
-
-Rules: rate 1 if you are not sure the book exists as described. Pick the genre from: ${GENRES.join(', ')}.
-
-Books:
-${list}
-
-Reply with JSON: {"books": [{"n": 1, "score": 5, "genre": "Psychology", "reason": "max 12 words"}]}, one entry per book.`;
-    try {
-      const response = await withRetry(() =>
-        openai.chat.completions.create({
-          model: VET_MODEL,
-          max_completion_tokens: 8000,
-          response_format: { type: 'json_object' },
-          messages: [{ role: 'user', content: prompt }]
-        })
-      );
-      const parsed = JSON.parse(response.choices[0].message.content || '{}');
-      for (const r of parsed.books || []) {
-        const c = batch[Number(r.n) - 1];
-        if (!c) continue;
-        c.score = Number(r.score) || 0;
-        c.reason = typeof r.reason === 'string' ? r.reason : undefined;
-        if (GENRES.includes(r.genre)) c.category = r.genre;
-      }
-    } catch (error) {
-      console.log(chalk.yellow(`   Vetting batch failed: ${error instanceof Error ? error.message : error}`));
-    }
-  }
-}
-
 function runScript(args: string[]): boolean {
   console.log(chalk.blue(`\n▶ npx tsx ${args.join(' ')}`));
   const result = spawnSync('npx', ['tsx', ...args], { cwd: path.join(__dirname, '..'), stdio: 'inherit' });
@@ -380,14 +324,22 @@ async function main() {
   const toVet = passed.filter(c => c.source !== 'curated');
   if (vetting && toVet.length) {
     console.log(chalk.blue(`🧐 Vetting ${toVet.length} candidates`));
-    await vet(toVet);
+    const ratings = await rateBooks(
+      toVet.map(c => ({ title: c.title, author: c.author, year: c.year, note: c.nyt ? 'NYT bestseller' : undefined }))
+    );
+    ratings.forEach((r, i) => {
+      if (!r) return;
+      toVet[i].score = r.score;
+      toVet[i].reason = r.reason;
+      if (r.genre) toVet[i].category = r.genre;
+    });
   }
 
   const order = (c: Candidate) => SOURCE_ORDER.indexOf(c.source);
   const picks: Candidate[] = [];
   const perAuthor = new Map<string, number>();
   const ranked = passed
-    .filter(c => c.source === 'curated' || !vetting || (c.score ?? 0) >= 4)
+    .filter(c => c.source === 'curated' || !vetting || (c.score ?? 0) >= KEEP_SCORE)
     .sort((a, b) => order(a) - order(b) || (b.score ?? 0) - (a.score ?? 0) || b.readers - a.readers);
   const pick = (c: Candidate) => {
     const author = lastName(c.author).toLowerCase();
@@ -405,7 +357,7 @@ async function main() {
     if (picks.length >= options.limit) break;
     pick(c);
   }
-  if (vetting) for (const c of toVet) if ((c.score ?? 0) < 4) rejected.push({ ...c, reason: `rated ${c.score ?? '?'}: ${c.reason ?? ''}` });
+  if (vetting) for (const c of toVet) if ((c.score ?? 0) < KEEP_SCORE) rejected.push({ ...c, reason: `rated ${c.score ?? '?'}: ${c.reason ?? ''}` });
 
   console.log(chalk.blue(`\n✅ ${picks.length} picks`));
   for (const c of picks) {
