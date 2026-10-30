@@ -1,0 +1,56 @@
+# Adds new non-fiction books every week: server/scripts/weekly-books.ts finds candidates
+# (NYT lists, the curated list, Open Library), vets them, adds the best with summaries, then
+# embeds them and checks their covers. Needs the repository secrets listed under env.
+name: Weekly books
+
+on:
+  schedule:
+    - cron: '23 17 * * 4' # Thursdays 17:23 UTC, after the NYT lists update on Wednesday evening
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: Books to add
+        default: '20'
+      dry_run:
+        description: Only find and vet candidates, add nothing
+        type: boolean
+        default: false
+
+concurrency:
+  group: weekly-books
+  cancel-in-progress: false
+
+jobs:
+  add-books:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    defaults:
+      run:
+        working-directory: server
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      NYT_API_KEY: ${{ secrets.NYT_API_KEY }}
+      GOOGLE_BOOKS_API_KEY: ${{ secrets.GOOGLE_BOOKS_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      - name: Add books
+        run: >
+          npx tsx scripts/weekly-books.ts
+          --limit "${{ inputs.limit || '20' }}"
+          --feature
+          --report weekly-books-report.md
+          ${{ inputs.dry_run && '--dry-run' || '' }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: weekly-books-report
+          path: server/weekly-books-report.md
+          if-no-files-found: ignore

@@ -47,6 +47,18 @@ npm run add-curated-books                           # everything (~$0.003 per bo
 
 To add more books, append entries to `curated-books.json`. Re-running is safe: existing books are skipped.
 
+#### `weekly-books.ts` - Weekly Book Pipeline
+
+Runs every Thursday from `.github/workflows/weekly-books.yml`. Finds candidates (NYT non-fiction lists, the curated list, Open Library's most-read and trending books), drops books already in the database, fiction, workbooks and little-read books, asks the model to rate the rest, and adds the best (default 20) with summaries. Then it runs `embed-books`, `embed-ideas` and `backfill-covers` for the new books.
+
+```bash
+npm run weekly-books -- --dry-run               # find and vet only; writes nothing
+npm run weekly-books -- --limit 10 --feature    # add 10 books and mark them featured
+npm run weekly-books -- --report /tmp/weekly.md # Markdown report of picks and rejects
+```
+
+The GitHub Action needs these repository secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `OPENAI_API_KEY`, `NYT_API_KEY`, `GOOGLE_BOOKS_API_KEY`.
+
 ### 🤖 Summary Generation
 
 #### `generate-missing-summaries.ts` - Complete Summary Generation
