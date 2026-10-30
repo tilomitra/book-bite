@@ -460,6 +460,8 @@ struct BookDetailView: View {
         }
 
         OtherSideSection(summary: summary)
+
+        SourcesSection(citations: summary.displayCitations)
     }
 
     private var noSummaryView: some View {
@@ -513,6 +515,33 @@ private struct DetailSection<Content: View>: View {
             content
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+/// "Sources": what the summary draws on, quiet and last on the page. Hidden when there are none.
+private struct SourcesSection: View {
+    let citations: [Citation]
+
+    var body: some View {
+        if !citations.isEmpty {
+            DetailSection(title: "Sources") {
+                VStack(alignment: .leading, spacing: 10) {
+                    ForEach(citations, id: \.self) { citation in
+                        if let link = citation.link {
+                            Link(destination: link) {
+                                Text("\(citation.source) \(Image(systemName: "arrow.up.right"))")
+                            }
+                            .foregroundStyle(.primary)
+                        } else {
+                            Text(citation.source)
+                        }
+                    }
+                }
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+        }
     }
 }
 

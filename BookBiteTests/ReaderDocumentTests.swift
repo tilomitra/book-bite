@@ -107,6 +107,15 @@ struct ReaderDocumentTests {
         #expect(document.minutesLeft(at: 1) == 0)
     }
 
+    @Test("Doubled consonants split between the pair")
+    func testHyphenationOfDoubledConsonants() {
+        let en = Locale(identifier: "en_US")
+        for (word, expected) in [("Getting", "Get\u{00AD}ting"), ("getting", "get\u{00AD}ting"),
+                                 ("stopping", "stop\u{00AD}ping"), ("running", "run\u{00AD}ning")] {
+            #expect(Hyphenator.hyphenate(word, locale: en) == expected)
+        }
+    }
+
     @Test("Hyphenation only inserts invisible soft hyphens")
     func testHyphenation() {
         let text = "Extraordinary productivity requires understanding."

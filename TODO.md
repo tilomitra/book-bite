@@ -29,11 +29,11 @@ Ideas for taking the app to Apple Design Award level. Done so far: Editorial Dis
 
 ## Content
 - [x] Chapters for featured books (210 of 211 regenerated 2026-10-26, $0.33).
-- [ ] Chapters for the rest of the non-fiction catalogue (~1,500 books, ~$2.30, ~1 hour): `npm run regenerate-extended-summaries -- --by-popularity` (resumable; skips books already done; dry-run first).
-- [ ] Replace covers hotlinked from Headway (no rights): `cd server && npm run backfill-covers -- --unlicensed --dry-run --report /tmp/covers.json`, check the report, then run it again without `--dry-run`. Books with no other cover get the typographic one.
-- [ ] Unfeature or delete the placeholder book "Unti9780063422506" (`544bc854-8962-43fe-b02e-cc7aa5833362`), an NYT import with no real title; its regeneration fails.
-- [ ] Reader hyphenation sometimes breaks at the wrong place ("Gett-ing").
-- [ ] Citations are decoded but not shown.
+- [ ] Chapters for the rest of the non-fiction catalogue (1,522 books, ~$3, ~6.5 hours): running since 2026-10-30. If it stops, re-run `npm run regenerate-extended-summaries -- --by-popularity` (resumable; skips books already done).
+- [x] Replace covers hotlinked from Headway (78 books, 2026-10-30: 44 new covers, 34 typographic).
+- [x] Unfeature the placeholder book "Unti9780063422506" (`544bc854-8962-43fe-b02e-cc7aa5833362`). Still in the catalogue; delete it if wanted.
+- [ ] Reader hyphenation sometimes breaks at the wrong place ("Gett-ing"). Not reproduced: `Hyphenator` gives "Get-ting" on iOS 26.3 (covered by a test) and no stored summary contains it; needs a screenshot of the book and text size.
+- [x] Show citations: "Sources" at the end of the book page.
 
 ## Trust
 - [x] Show the summary's analysis (critiques, limitations, pitfalls) and citations; they are decoded but not displayed.
