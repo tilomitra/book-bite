@@ -215,3 +215,30 @@ struct ReadingPassTests {
         #expect(text.contains("K7QM2P"))
     }
 }
+
+struct InviteMilestoneTests {
+    @Test("The next milestone and the progress toward it")
+    func testMilestones() {
+        #expect(InviteMilestone.next(after: 0)?.title == "Reader")
+        #expect(InviteMilestone.next(after: 1)?.title == "Bookworm")
+        #expect(InviteMilestone.progress(friendsJoined: 2) == 0.5)
+        #expect(InviteMilestone.progress(friendsJoined: 0) == 0)
+        #expect(InviteMilestone.next(after: 20) == nil)
+        #expect(InviteMilestone.progress(friendsJoined: 25) == 1)
+        #expect(InviteMilestone.all.last?.friends == 20)
+    }
+
+    @Test("Friends' join dates decode, and older servers without them still decode")
+    func testFriendDates() throws {
+        let json = """
+        {"code":"K7QM2P","url":"https://book-bite.onrender.com/invite/K7QM2P","friendsJoined":1,"maxFriends":20,
+         "joinedWithCode":false,"canJoinWithCode":true,"friends":[{"joinedAt":"2026-10-30T12:00:00.123+00:00"}]}
+        """
+        let invite = try NetworkService.makeDecoder().decode(ReadingPass.Invite.self, from: Data(json.utf8))
+        #expect(invite.friends?.count == 1)
+
+        let old = json.replacingOccurrences(of: #","friends":[{"joinedAt":"2026-10-30T12:00:00.123+00:00"}]"#, with: "")
+        let oldInvite = try NetworkService.makeDecoder().decode(ReadingPass.Invite.self, from: Data(old.utf8))
+        #expect(oldInvite.friends == nil)
+    }
+}

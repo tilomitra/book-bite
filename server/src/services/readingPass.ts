@@ -87,6 +87,8 @@ export interface ReadingPassStatus {
     code: string;
     url: string;
     friendsJoined: number;
+    /** When each friend joined, oldest first (no names: the inviter never learns who used the code) */
+    friends: { joinedAt: string }[];
     maxFriends: number;
     joinedWithCode: boolean;
     canJoinWithCode: boolean;
@@ -106,21 +108,22 @@ export class RedeemFailure extends Error {
 
 export class ReadingPassService {
   async status(user: PassUser): Promise<ReadingPassStatus> {
-    const [code, friendsJoined, joinedWithCode, unlockedBookIds] = await Promise.all([
+    const [code, friends, joinedWithCode, unlockedBookIds] = await Promise.all([
       this.codeFor(user.id),
-      this.friendsJoined(user.id),
+      this.friends(user.id),
       this.joinedWithCode(user.id),
       this.unlockedBookIds(user.id)
     ]);
     return {
       freeBooks: FREE_BOOKS,
       booksPerInvite: BOOKS_PER_INVITE,
-      limit: bookLimit(friendsJoined, joinedWithCode),
+      limit: bookLimit(friends.count, joinedWithCode),
       unlockedBookIds,
       invite: {
         code,
         url: inviteUrl(code),
-        friendsJoined,
+        friendsJoined: friends.count,
+        friends: friends.joinedAt.map((joinedAt) => ({ joinedAt })),
         maxFriends: MAX_FRIENDS,
         joinedWithCode,
         canJoinWithCode: !joinedWithCode && isNewAccount(user.created_at)
@@ -130,14 +133,14 @@ export class ReadingPassService {
 
   /** Unlocks books in order while books are left. Also syncs books a guest opened before signing in. */
   async unlock(user: PassUser, bookIds: string[]): Promise<ReadingPassStatus> {
-    const [friendsJoined, joinedWithCode] = await Promise.all([
-      this.friendsJoined(user.id),
+    const [friends, joinedWithCode] = await Promise.all([
+      this.friends(user.id),
       this.joinedWithCode(user.id)
     ]);
     const { error } = await supabase.rpc('unlock_books', {
       p_user_id: user.id,
       p_book_ids: bookIds,
-      p_limit: bookLimit(friendsJoined, joinedWithCode)
+      p_limit: bookLimit(friends.count, joinedWithCode)
     });
     if (error) throw new Error(`Failed to unlock books: ${error.message}`);
     return this.status(user);
@@ -192,13 +195,16 @@ export class ReadingPassService {
     throw new Error('Failed to create invite code');
   }
 
-  private async friendsJoined(userId: string): Promise<number> {
-    const { count, error } = await supabase
+  /** How many friends joined with the user's code, and when (the first MAX_FRIENDS) */
+  private async friends(userId: string): Promise<{ count: number; joinedAt: string[] }> {
+    const { data, count, error } = await supabase
       .from('referrals')
-      .select('id', { count: 'exact', head: true })
-      .eq('referrer_id', userId);
+      .select('created_at', { count: 'exact' })
+      .eq('referrer_id', userId)
+      .order('created_at', { ascending: true })
+      .limit(MAX_FRIENDS);
     if (error) throw new Error(`Failed to count invites: ${error.message}`);
-    return count ?? 0;
+    return { count: count ?? 0, joinedAt: (data ?? []).map((row) => row.created_at as string) };
   }
 
   private async joinedWithCode(userId: string): Promise<boolean> {

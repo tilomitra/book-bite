@@ -1,15 +1,4 @@
-// Invite page: copies the code, and makes the library card a 3D object you can tilt and turn over.
-document.querySelectorAll('[data-copy]').forEach((button) => {
-  button.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(button.dataset.copy);
-      button.textContent = 'Copied';
-    } catch {
-      button.textContent = button.dataset.copy;
-    }
-  });
-});
-
+// Invite page: the library card is a 3D object you can tilt; tapping it copies the code.
 const card = document.querySelector('[data-card]');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -69,12 +58,20 @@ if (card) {
     setTimeout(() => requestAnimationFrame(float), 900);
   }
 
-  const flip = () => card.classList.toggle('is-flipped');
-  card.addEventListener('click', () => { if (!moved) flip(); });
+  const copy = async () => {
+    const label = card.querySelector('[data-card-tap]');
+    try {
+      await navigator.clipboard.writeText(card.dataset.copyCode);
+      label.textContent = 'Copied';
+    } catch {
+      label.textContent = card.dataset.copyCode;
+    }
+  };
+  card.addEventListener('click', () => { if (!moved) copy(); });
   card.addEventListener('keydown', (event) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      flip();
+      copy();
     }
   });
 }

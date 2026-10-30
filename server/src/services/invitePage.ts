@@ -8,19 +8,6 @@ export function appDownloadUrl(): string {
   return process.env.APP_STORE_URL || 'https://testflight.apple.com/join/BOOKBITE';
 }
 
-/** Bars of a pretend barcode, fixed per code: thin and thick strokes from the code's characters */
-export function barcode(code: string): string {
-  const bars: string[] = [];
-  for (const ch of code + code.split('').reverse().join('')) {
-    const n = ch.charCodeAt(0);
-    for (let bit = 0; bit < 4; bit++) {
-      const wide = (n >> bit) & 1;
-      bars.push(`<i style="width:${wide ? 3 : 1}px"></i>`);
-    }
-  }
-  return bars.join('');
-}
-
 /** `code` must already be a normalized invite code (letters and digits only), so it needs no escaping */
 export function invitePage(code: string): string {
   const download = appDownloadUrl().replace(/&/g, '&amp;').replace(/"/g, '&quot;');
@@ -51,33 +38,15 @@ export function invitePage(code: string): string {
     <p class="dek">BookBite gives you the key ideas of the best non-fiction in 15 minutes. Read or listen, then ask how they apply to your own life.</p>
 
     <section class="card-stage" aria-label="Invite code ${code}">
-      <div class="card" data-card tabindex="0" role="button" aria-label="Library card with invite code ${code}. Press to turn over.">
-        <div class="face front">
+      <p class="card-eyebrow">Your friend's invite code</p>
+      <div class="card" data-card data-copy-code="${code}" tabindex="0" role="button" aria-label="Invite code ${code}. Press to copy.">
+        <div class="face">
           <span class="hole" aria-hidden="true"></span>
-          <header class="card-head">
-            <div>
-              <p class="card-brand">BookBite</p>
-              <p class="card-sub">Public Library · Borrower's Card</p>
-            </div>
-            <span class="seal" aria-hidden="true">B</span>
-          </header>
-          <p class="field-label">Invite No.</p>
           <p class="code" aria-hidden="true">${[...code].map((c) => `<span>${c}</span>`).join('')}</p>
-          <div class="fields">
-            <p><span class="field-label">Good for</span><span class="typed">5 free books</span></p>
-            <p><span class="field-label">Plus</span><span class="typed">5 for your friend</span></p>
-          </div>
-          <div class="barcode" aria-hidden="true">${barcode(code)}</div>
-        </div>
-        <div class="face back" aria-hidden="true">
-          <p class="back-title">Date due</p>
-          <div class="due">${[0, 1, 2, 3, 4, 5].map((i) => `<span>${i === 0 ? '<b class="stamp">JOINED<br>+5</b>' : ''}</span>`).join('')}</div>
-          <p class="back-note">Each friend who joins with this card earns a stamp: 5 books for them, 5 for you.</p>
+          <p class="card-tap" data-card-tap>Tap to copy</p>
         </div>
       </div>
-      <p class="card-hint">Drag to tilt · tap to turn over</p>
-      <button class="copy" type="button" data-copy="${code}">Copy code</button>
-      <p class="card-note">You both get 5 more books when you join with it.</p>
+      <p class="card-note">Join with it and you both get 5 more books.</p>
     </section>
 
     <ol class="steps">

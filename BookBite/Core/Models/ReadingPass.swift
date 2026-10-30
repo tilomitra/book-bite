@@ -21,6 +21,12 @@ struct ReadingPass: Codable, Equatable {
         let joinedWithCode: Bool
         /// A new account that hasn't used a code yet
         let canJoinWithCode: Bool
+        /// When each friend joined, oldest first. Nil from servers before join dates were sent.
+        var friends: [Friend]? = nil
+
+        struct Friend: Codable, Equatable {
+            let joinedAt: Date
+        }
     }
 
     static let guest = ReadingPass(limit: freeBooks, unlockedBookIds: [], invite: nil)
@@ -146,5 +152,37 @@ enum InviteMessage {
             opener = "I've been reading the key ideas of great non-fiction on BookBite."
         }
         return "\(opener) Here are 5 free books to start, on me: \(url.absoluteString) (code \(code))"
+    }
+}
+
+// MARK: - Invite milestones
+
+/// Named steps on the way to `maxFriends`, so each invite has a next thing to reach.
+/// Every friend still gives 5 books; a milestone is the running total, with a title.
+struct InviteMilestone: Equatable, Identifiable {
+    let friends: Int
+    let title: String
+
+    var id: Int { friends }
+    var books: Int { friends * ReadingPass.booksPerInvite }
+
+    static let all: [InviteMilestone] = [
+        InviteMilestone(friends: 1, title: "Reader"),
+        InviteMilestone(friends: 3, title: "Bookworm"),
+        InviteMilestone(friends: 5, title: "Bibliophile"),
+        InviteMilestone(friends: 10, title: "Librarian"),
+        InviteMilestone(friends: 20, title: "Head Librarian"),
+    ]
+
+    /// The first milestone not yet reached, nil once all are
+    static func next(after friendsJoined: Int) -> InviteMilestone? {
+        all.first { $0.friends > friendsJoined }
+    }
+
+    /// 0...1 from the previous milestone to `next`
+    static func progress(friendsJoined: Int) -> Double {
+        guard let next = next(after: friendsJoined) else { return 1 }
+        let previous = all.last { $0.friends <= friendsJoined }?.friends ?? 0
+        return Double(friendsJoined - previous) / Double(next.friends - previous)
     }
 }

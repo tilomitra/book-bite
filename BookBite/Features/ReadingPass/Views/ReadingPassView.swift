@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// The reading pass: the shelf of books opened in full, the invite code on a library card ("Give 5,
 /// get 5"), a field for a friend's code, and BookBite Unlimited. Opens as a sheet when a book is out of
@@ -23,6 +24,7 @@ struct ReadingPassView: View {
     /// One line of good news after a code, a friend joining, or a subscription
     @State private var celebration: String?
     @State private var signInPrompt: SignInPrompt?
+    @State private var linkCopied = false
 
     private var pass: ReadingPass { store.pass }
 
@@ -168,16 +170,42 @@ struct ReadingPassView: View {
                 .fixedSize(horizontal: false, vertical: true)
 
             if let invite = pass.invite {
-                LibraryCard(invite: invite)
-
-                ShareLink(
-                    item: invite.url,
-                    subject: Text("5 free books on BookBite"),
-                    message: Text(InviteMessage.text(code: invite.code, url: invite.url, book: nil))
-                ) {
-                    Label("Send to a friend", systemImage: "paperplane")
+                VStack(spacing: 14) {
+                    Text("YOUR INVITE CODE")
+                        .font(.caption.weight(.semibold))
+                        .tracking(1.6)
+                        .foregroundStyle(.secondary)
+                    LibraryCard(code: invite.code)
                 }
-                .buttonStyle(PassPrimaryButtonStyle())
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 8)
+
+                VStack(spacing: 10) {
+                    ShareLink(
+                        item: invite.url,
+                        subject: Text("5 free books on BookBite"),
+                        message: Text(InviteMessage.text(code: invite.code, url: invite.url, book: nil))
+                    ) {
+                        Label("Send to a friend", systemImage: "paperplane")
+                    }
+                    .buttonStyle(PassPrimaryButtonStyle())
+
+                    Button {
+                        UIPasteboard.general.url = invite.url
+                        linkCopied = true
+                    } label: {
+                        Label(linkCopied ? "Link copied" : "Copy invite link", systemImage: linkCopied ? "checkmark" : "link")
+                            .contentTransition(.symbolEffect(.replace))
+                    }
+                    .buttonStyle(PassSecondaryButtonStyle())
+                    .sensoryFeedback(.success, trigger: linkCopied) { _, new in new }
+                }
+
+                InviteProgressPanel(invite: invite)
+                    .padding(.top, 8)
+
+                MilestoneLadder(friendsJoined: invite.friendsJoined)
+                    .padding(.top, 8)
             } else if store.isSignedIn {
                 // Signed in, but the server hasn't answered yet
                 ProgressView()
