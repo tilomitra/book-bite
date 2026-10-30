@@ -36,7 +36,7 @@ struct OnboardingAuthSheet: View {
         // Prompts are taller: their art replaces the mark and the message is longer
         let optionsDetent = switch prompt {
         case .ask: PresentationDetent.height(530)
-        case .save: PresentationDetent.height(500)
+        case .save, .invite: PresentationDetent.height(500)
         case nil: PresentationDetent.height(430)
         }
         self.optionsDetent = optionsDetent
@@ -128,7 +128,7 @@ struct OnboardingAuthSheet: View {
                 .font(.system(size: 30, weight: .medium, design: .serif))
                 .tracking(-0.4)
                 .fixedSize(horizontal: false, vertical: true)
-            Text(prompt?.message ?? "Save books to your library, pick up where you left off, and sync across devices.")
+            Text(prompt?.message ?? defaultMessage)
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -281,10 +281,19 @@ struct OnboardingAuthSheet: View {
         }
     }
 
+    /// Opened from a friend's invite link, the welcome sheet says what the account is for
+    private var defaultMessage: String {
+        if ReadingPassStore.shared.pendingInviteCode != nil {
+            return "A friend gave you 5 books. Create a free account to claim them, save books and sync across devices."
+        }
+        return "Save books to your library, pick up where you left off, and sync across devices."
+    }
+
     private var signInMessage: String {
         switch prompt {
         case .ask: return "Sign in to read your answer."
         case .save: return "Sign in to save the book."
+        case .invite: return "Sign in to get your invite code."
         case nil: return "Sign in to see your saved books."
         }
     }

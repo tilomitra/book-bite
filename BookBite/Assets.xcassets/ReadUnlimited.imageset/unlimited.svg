@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="170" viewBox="0 0 200 170">
+  <g fill="none" stroke="#1f1716" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- infinity -->
+    <path d="M100 52 C88 36 64 36 64 52 C64 68 88 68 100 52 C112 36 136 36 136 52 C136 68 112 68 100 52 Z" fill="#f6cf5a"/>
+    <!-- stack of books -->
+    <rect x="48" y="132" width="104" height="20" rx="3" fill="#f2a7c3"/>
+    <path d="M58 132 L58 152 M142 132 L142 152"/>
+    <rect x="58" y="112" width="92" height="20" rx="3" fill="#fffdf8" transform="rotate(-3 104 122)"/>
+    <path d="M68 112 L68 132" transform="rotate(-3 104 122)"/>
+    <rect x="52" y="92" width="96" height="20" rx="3" fill="#a9ecd4" transform="rotate(4 100 102)"/>
+    <path d="M62 92 L62 112 M138 92 L138 112" transform="rotate(4 100 102)"/>
+    <!-- sparkle lines -->
+    <path d="M100 14 L100 24 M150 24 L144 32 M50 24 L56 32"/>
+  </g>
+  <g stroke="#1f1716" stroke-width="2" stroke-linejoin="round">
+    <path d="M172 92 l3 7 7 1 -5 5 1.5 7 -6.5 -3.5 -6.5 3.5 1.5 -7 -5 -5 7 -1 z" fill="#e9a3e6"/>
+    <path d="M26 80 l2 5 5 .5 -4 3.5 1 5 -4 -2.5 -4 2.5 1 -5 -4 -3.5 5 -.5 z" fill="#f6cf5a"/>
+  </g>
+</svg>

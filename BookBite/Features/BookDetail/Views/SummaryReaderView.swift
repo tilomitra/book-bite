@@ -88,6 +88,11 @@ struct SummaryReaderView: View {
         .sensoryFeedback(.impact(flexibility: .soft, intensity: 0.6), trigger: isFinished) { _, finished in finished }
         .sensoryFeedback(.selection, trigger: chapterJumps)
         .onAppear(perform: load)
+        .task {
+            // Opening the reader takes a place on the reading pass. The book page shows the pass instead
+            // when none are left, so this fails only if another device used the last one meanwhile.
+            if !(await ReadingPassStore.shared.open(book.id)) { dismiss() }
+        }
         .onDisappear { record(force: true) }
         .onChange(of: scenePhase) { _, phase in
             if phase != .active { record(force: true) }

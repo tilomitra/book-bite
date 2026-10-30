@@ -235,6 +235,8 @@ struct ReaderEndSection: View {
             .padding(.top, style.size * 0.6)
             .accessibilityHint("Opens a bookstore")
 
+            GiftBookButton(book: book, style: style)
+
             Button(action: onClose) {
                 Text("Back to the book")
                     .font(.system(size: style.size * 0.85, design: style.typeface.design))

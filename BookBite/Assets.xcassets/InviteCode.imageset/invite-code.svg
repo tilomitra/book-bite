@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="170" viewBox="0 0 200 170">
+  <g fill="none" stroke="#1f1716" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- rainbow arch: three bands -->
+    <path d="M40 140 L40 112 A60 60 0 0 1 160 112 L160 140 L144 140 L144 112 A44 44 0 0 0 56 112 L56 140 Z" fill="#e9a3e6"/>
+    <path d="M56 140 L56 112 A44 44 0 0 1 144 112 L144 140 L130 140 L130 112 A30 30 0 0 0 70 112 L70 140 Z" fill="#a9ecd4"/>
+    <path d="M70 140 L70 112 A30 30 0 0 1 130 112 L130 140 L118 140 L118 112 A18 18 0 0 0 82 112 L82 140 Z" fill="#fffdf8"/>
+    <!-- clouds -->
+    <path d="M24 152 Q24 140 36 141 Q40 130 52 136 Q62 132 64 144 Q74 146 72 152 Z" fill="#fffdf8"/>
+    <path d="M128 152 Q126 141 138 142 Q144 131 156 137 Q166 134 168 145 Q178 147 176 152 Z" fill="#fffdf8"/>
+    <!-- heart -->
+    <path d="M168 40 C168 30 182 28 184 38 C186 28 200 30 198 42 C196 54 184 60 178 66 C174 58 168 52 168 40 Z" transform="rotate(16 183 46)"/>
+    <path d="M14 108 C14 102 22 101 23 107 C24 101 32 102 31 109 C30 115 24 118 21 121 C18 117 14 114 14 108 Z"/>
+  </g>
+  <!-- asterisk -->
+  <g stroke="#1f1716" stroke-width="2.2" stroke-linecap="round">
+    <path d="M70 24 L70 40 M62 28 L78 36 M62 36 L78 28"/>
+  </g>
+</svg>

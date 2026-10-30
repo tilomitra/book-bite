@@ -1,0 +1,60 @@
+{
+  "identifier" : "6B1E5D2A",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21580001",
+      "localizations" : [
+
+      ],
+      "name" : "BookBite Unlimited",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "9.00",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6758000001",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Every book in full, read or listen, as often as you like.",
+              "displayName" : "BookBite Unlimited",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "tilo.BookBite.unlimited.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "BookBite Unlimited Monthly",
+          "subscriptionGroupID" : "21580001",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

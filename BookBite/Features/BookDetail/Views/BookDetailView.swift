@@ -6,6 +6,9 @@ struct BookDetailView: View {
     @StateObject private var viewModel: BookDetailViewModel
     @ObservedObject private var audioService = AudioPlaybackService.shared
     @ObservedObject private var progressStore = ReadingProgressStore.shared
+    @ObservedObject private var passStore = ReadingPassStore.shared
+    /// The reading pass sheet, when the book is out of free books
+    @State private var showingPass = false
     @State private var signInPrompt: SignInPrompt?
     @State private var showingAudioPlayer = false
     @State private var coverTint: Color?
@@ -64,6 +67,9 @@ struct BookDetailView: View {
             AudioPlayerView(audioService: audioService)
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showingPass) {
+            ReadingPassView(book: viewModel.book)
         }
     }
 
@@ -250,12 +256,56 @@ struct BookDetailView: View {
             if summary.hasAudio {
                 secondaryButton(
                     title: summary.formattedAudioDuration.map { "Listen · \($0)" } ?? "Listen",
-                    icon: "headphones"
+                    icon: access == .locked ? "lock" : "headphones"
                 ) {
-                    audioService.loadAudio(for: viewModel.book, summary: summary, autoPlay: true)
-                    showingAudioPlayer = true
+                    listen(to: summary)
                 }
             }
+
+            if summary.hasFullText || summary.hasAudio, let caption = passCaption {
+                Button { showingPass = true } label: {
+                    Text(caption)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 4)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityHint("Shows your reading pass")
+            }
+        }
+    }
+
+    // MARK: - Reading pass
+
+    private var access: ReadingAccess {
+        passStore.access(for: viewModel.book.id)
+    }
+
+    /// What opening this book means for the pass, under the buttons. Nothing once it's on the shelf.
+    private var passCaption: String? {
+        switch access {
+        case .unlimited, .unlocked: return nil
+        case .free(let remaining) where remaining == 1: return "This is your last free book · Give 5, get 5"
+        case .free(let remaining): return "Uses 1 of your \(remaining) free books"
+        case .locked: return "You've read your free books · Give a friend 5, get 5"
+        }
+    }
+
+    private func listen(to summary: Summary) {
+        guard access != .locked else {
+            showingPass = true
+            return
+        }
+        Task {
+            guard await passStore.open(viewModel.book.id) else {
+                showingPass = true
+                return
+            }
+            audioService.loadAudio(for: viewModel.book, summary: summary, autoPlay: true)
+            showingAudioPlayer = true
         }
     }
 
@@ -297,55 +347,66 @@ struct BookDetailView: View {
         return .inProgress(fraction: entry.fraction, minutesLeft: left)
     }
 
+    private func readTitle(for state: ReadingState) -> (title: String, icon: String) {
+        switch state {
+        case .unread(let minutes): return ("Read summary · \(minutes) min", "book")
+        case .inProgress(_, let left): return ("Continue reading · \(left) min left", "book")
+        case .finished: return ("Read again", "checkmark")
+        }
+    }
+
+    @ViewBuilder
     private func readButton(for summary: Summary) -> some View {
         let state = readingState(for: summary)
-        let title: String
-        let icon: String
-        switch state {
-        case .unread(let minutes):
-            title = "Read summary · \(minutes) min"
-            icon = "book"
-        case .inProgress(_, let left):
-            title = "Continue reading · \(left) min left"
-            icon = "book"
-        case .finished:
-            title = "Read again"
-            icon = "checkmark"
-        }
+        let label = readTitle(for: state)
 
-        return NavigationLink(destination: SummaryReaderView(book: viewModel.book, summary: summary)) {
-            Label {
-                Text(title)
-                    .contentTransition(.interpolate)
-            } icon: {
-                Image(systemName: icon)
-                    .contentTransition(.symbolEffect(.replace))
+        if access == .locked {
+            // Out of free books: the button opens the pass instead of the reader
+            Button { showingPass = true } label: {
+                readLabel(title: label.title, icon: "lock", state: state)
             }
-            .font(.headline)
-            .multilineTextAlignment(.center)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 15)
-            .padding(.horizontal, 16)
-            .foregroundStyle(Color.paper)
-            .background(Color.primary)
-            // How far through: a thin line along the bottom edge
-            .overlay(alignment: .bottomLeading) {
-                if case .inProgress(let fraction, _) = state {
-                    GeometryReader { proxy in
-                        Rectangle()
-                            .fill(Color.paper.opacity(0.45))
-                            .frame(width: proxy.size.width * fraction, height: 3)
-                            .frame(maxHeight: .infinity, alignment: .bottom)
-                    }
-                    .accessibilityHidden(true)
-                }
+            .buttonStyle(.plain)
+            .accessibilityHint("You've read your free books. Shows ways to read more.")
+        } else {
+            // The reader takes a free book from the pass when it opens
+            NavigationLink(destination: SummaryReaderView(book: viewModel.book, summary: summary)) {
+                readLabel(title: label.title, icon: label.icon, state: state)
             }
-            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-            .contentShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .buttonStyle(.plain)
+            .animation(reduceMotion ? nil : .snappy, value: state)
+            .accessibilityValue(readingAccessibilityValue(state))
         }
-        .buttonStyle(.plain)
-        .animation(reduceMotion ? nil : .snappy, value: state)
-        .accessibilityValue(readingAccessibilityValue(state))
+    }
+
+    private func readLabel(title: String, icon: String, state: ReadingState) -> some View {
+        Label {
+            Text(title)
+                .contentTransition(.interpolate)
+        } icon: {
+            Image(systemName: icon)
+                .contentTransition(.symbolEffect(.replace))
+        }
+        .font(.headline)
+        .multilineTextAlignment(.center)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 15)
+        .padding(.horizontal, 16)
+        .foregroundStyle(Color.paper)
+        .background(Color.primary)
+        // How far through: a thin line along the bottom edge
+        .overlay(alignment: .bottomLeading) {
+            if case .inProgress(let fraction, _) = state {
+                GeometryReader { proxy in
+                    Rectangle()
+                        .fill(Color.paper.opacity(0.45))
+                        .frame(width: proxy.size.width * fraction, height: 3)
+                        .frame(maxHeight: .infinity, alignment: .bottom)
+                }
+                .accessibilityHidden(true)
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .contentShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 
     private func readingAccessibilityValue(_ state: ReadingState) -> String {

@@ -7,6 +7,8 @@ struct SignInPrompt: Identifiable {
         /// The question they tried to ask and the books that look like they answer it (may be empty)
         case ask(question: String, books: [Book])
         case save(Book)
+        /// Getting an invite code, or claiming a friend's (`friendCode` from an invite link)
+        case invite(friendCode: String?)
     }
 
     let id = UUID()
@@ -59,7 +61,7 @@ struct SignInPromptArt: View {
         switch reason {
         case .ask(_, let books) where !books.isEmpty:
             CoverFan(books: Array(books.prefix(3)), width: 58)
-        case .ask:
+        case .ask, .invite:
             BookBiteMark(size: 56)
         case .save(let book):
             EditorialCover(book: book, width: 64)
@@ -84,6 +86,7 @@ extension SignInPrompt.Reason {
         switch self {
         case .ask: return "Get your answer"
         case .save: return "Save it to your Library"
+        case .invite(let code): return code == nil ? "Get 5 more books" : "Claim your 5 books"
         }
     }
 
@@ -101,6 +104,11 @@ extension SignInPrompt.Reason {
             return found + " Create a free account to read the answer."
         case .save(let book):
             return "Create a free account to keep “\(book.shelfTitle)” in your Library and read it offline."
+        case .invite(let code):
+            if code != nil {
+                return "A friend gave you 5 books. Create a free account to add them to your reading pass."
+            }
+            return "Create a free account to get your invite code. Each friend who joins with it gives you both 5 more books."
         }
     }
 
