@@ -14,6 +14,9 @@ import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import audioRoutes from './routes/audioRoutes';
 import askRoutes from './routes/askRoutes';
+import readingPassRoutes from './routes/readingPassRoutes';
+import { normalizeInviteCode } from './services/readingPass';
+import { invitePage } from './services/invitePage';
 import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
@@ -58,6 +61,13 @@ if (process.env.NODE_ENV !== 'test') {
 // Landing page and /privacy (server/public): works from src/ under tsx and from dist/ after tsc
 app.use(express.static(path.join(__dirname, '../public'), { maxAge: '10m', extensions: ['html'] }));
 
+// Invite links shared from the app: the code, and how to get the app
+app.get('/invite/:code', (req, res) => {
+  const code = normalizeInviteCode(req.params.code);
+  if (!code) return res.redirect('/');
+  return res.type('html').set('Cache-Control', 'public, max-age=600').send(invitePage(code));
+});
+
 // Health check endpoint
 app.get('/health', (_, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -69,6 +79,7 @@ app.use('/api/summaries', summaryRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api', ratingsRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/user/reading-pass', readingPassRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api', audioRoutes);
 app.use('/api/ask', askRoutes);

@@ -36,6 +36,8 @@ struct MyLibraryView: View {
                     LibraryIntro()
                 }
 
+                ReadingPassRow()
+
                 if horizontalSizeClass == .regular && !readingProgress.inProgress.isEmpty && !savedIdeas.ideas.isEmpty {
                     // iPad: what you're reading and what you kept, side by side
                     HStack(alignment: .top, spacing: 16) {

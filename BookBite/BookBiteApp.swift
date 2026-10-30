@@ -39,12 +39,18 @@ struct BookBiteApp: App {
             .task {
                 WidgetBridge.publishServerURL(AppConfiguration.shared.baseServerURL)
                 SpotlightIndexer.shared.start()
+                SubscriptionStore.shared.start()
             }
         }
     }
 
-    /// `bookbite://book/<id>?title=&author=&cover=` from shared links and the widget
+    /// `bookbite://book/<id>?title=&author=&cover=` from shared links and the widget,
+    /// `bookbite://invite/<code>` from a friend's invite page
     private func handleDeepLink(_ url: URL) {
+        if let code = ReadingPass.code(fromInviteLink: url) {
+            ReadingPassStore.shared.receiveInvite(code)
+            return
+        }
         guard let partial = dependencies.sharingService.handleIncomingURL(url) else { return }
         DeepLinkRouter.shared.open(bookId: partial.id, partial: partial)
     }

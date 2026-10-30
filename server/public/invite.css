@@ -1,0 +1,145 @@
+/* Invite page (/invite/<code>): the app's paper, ink and serif, and a library card with the code. */
+
+:root {
+  --paper: #f7f2e8;
+  --card: #fffdf8;
+  --ink: #1f1716;
+  --ink-dim: rgba(31, 23, 22, 0.62);
+  --hair: rgba(31, 23, 22, 0.16);
+  --accent: #ff5b2e;
+  --serif: "Newsreader", "New York", Georgia, serif;
+  --sans: "Geist", -apple-system, system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #14110f;
+    --card: #1e1a17;
+    --ink: #ece5da;
+    --ink-dim: rgba(236, 229, 218, 0.62);
+    --hair: rgba(236, 229, 218, 0.18);
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 17px/1.55 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+
+.invite {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 40px 16px 64px;
+  text-align: center;
+}
+
+.brand img { border-radius: 10px; }
+
+.eyebrow {
+  margin: 28px 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+h1 {
+  margin: 0;
+  font: 500 clamp(36px, 9vw, 52px)/1.05 var(--serif);
+  letter-spacing: -0.02em;
+}
+
+h1 em { font-style: italic; }
+
+.dek {
+  margin: 16px auto 0;
+  max-width: 420px;
+  font: 19px/1.5 var(--serif);
+  color: var(--ink-dim);
+}
+
+.card {
+  position: relative;
+  margin: 36px auto 0;
+  padding: 24px 20px 20px;
+  max-width: 360px;
+  background: var(--card);
+  border: 1px solid var(--hair);
+  border-radius: 6px;
+  box-shadow: 0 1px 0 var(--hair), 0 12px 32px rgba(31, 23, 22, 0.08);
+}
+
+.card-label {
+  margin: 0 -20px;
+  padding: 0 20px 12px;
+  border-bottom: 1px solid var(--hair);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+.code {
+  margin: 10px 0 14px;
+  font: 500 44px/1 var(--serif);
+  letter-spacing: 0.18em;
+  padding-left: 0.18em;
+}
+
+.copy {
+  font: 500 15px var(--sans);
+  color: var(--ink);
+  background: none;
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+  padding: 10px 20px;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.card-note { margin: 14px 0 0; font-size: 14px; color: var(--ink-dim); }
+
+.steps {
+  margin: 36px auto 0;
+  padding: 0;
+  max-width: 360px;
+  list-style: none;
+  counter-reset: step;
+  text-align: left;
+}
+
+.steps li {
+  counter-increment: step;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-top: 1px solid var(--hair);
+}
+
+.steps li::before {
+  content: counter(step);
+  flex: none;
+  width: 20px;
+  font: 18px var(--serif);
+  color: var(--ink-dim);
+}
+
+.button {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+}

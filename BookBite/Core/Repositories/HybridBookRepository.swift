@@ -1,6 +1,6 @@
 import Foundation
 
-class HybridBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRepository, DailyIdeaProviding, RecommendationsProviding, HighlightsProviding, AskProviding {
+class HybridBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRepository, DailyIdeaProviding, RecommendationsProviding, HighlightsProviding, AskProviding, ReadingPassProviding {
     private let remoteRepository = RemoteBookRepository()
     private let offlineStorage = OfflineStorageService.shared
 
@@ -80,6 +80,18 @@ class HybridBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
 
     func ask(_ request: AskRequest) -> AsyncThrowingStream<AskStreamEvent, Error> {
         return remoteRepository.ask(request)
+    }
+
+    func fetchReadingPass() async throws -> ReadingPass {
+        return try await remoteRepository.fetchReadingPass()
+    }
+
+    func unlockBooks(_ bookIds: [String]) async throws -> ReadingPass {
+        return try await remoteRepository.unlockBooks(bookIds)
+    }
+
+    func redeemInviteCode(_ code: String) async throws -> ReadingPass {
+        return try await remoteRepository.redeemInviteCode(code)
     }
 
     func searchBooks(query: String) async throws -> [Book] {

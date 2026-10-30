@@ -4,6 +4,9 @@ struct RootView: View {
     @EnvironmentObject var dependencies: DependencyContainer
     @ObservedObject private var audioService = AudioPlaybackService.shared
     @ObservedObject private var router = DeepLinkRouter.shared
+    @ObservedObject private var readingPass = ReadingPassStore.shared
+    @EnvironmentObject private var authService: SupabaseAuthService
+    @Environment(\.scenePhase) private var scenePhase
     @State private var showFullAudioPlayer = false
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var selectedTab: AppTab = .discover
@@ -94,6 +97,18 @@ struct RootView: View {
             AudioPlayerView(audioService: audioService)
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
+        }
+        // Invite links and Library open the reading pass from here
+        .sheet(isPresented: $readingPass.isPresentingPass) {
+            ReadingPassView()
+        }
+        // The pass follows the account: load it, move guest books onto it, use a code from an invite link
+        .task(id: authService.currentUser?.id) {
+            await readingPass.setUser(authService.currentUser?.id)
+        }
+        .onChange(of: scenePhase) { _, phase in
+            // Back in the app: a friend may have joined with the code
+            if phase == .active { Task { await readingPass.refresh() } }
         }
     }
 

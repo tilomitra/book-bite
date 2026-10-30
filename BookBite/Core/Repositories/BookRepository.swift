@@ -43,6 +43,15 @@ protocol AskProviding {
     func ask(_ request: AskRequest) -> AsyncThrowingStream<AskStreamEvent, Error>
 }
 
+/// Free books left, books opened in full and the invite code. Signed-in only (`/user/reading-pass`).
+protocol ReadingPassProviding {
+    func fetchReadingPass() async throws -> ReadingPass
+    /// Opens books while books are left; the returned pass lists the ones that are unlocked
+    func unlockBooks(_ bookIds: [String]) async throws -> ReadingPass
+    /// Joins with a friend's code. Throws `ReadingPassError.rejected` with a message to show.
+    func redeemInviteCode(_ code: String) async throws -> ReadingPass
+}
+
 protocol RecommendationsProviding {
     func fetchRecommendations(_ request: RecommendationRequest) async throws -> Recommendations
 }

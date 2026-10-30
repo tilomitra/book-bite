@@ -1,3 +1,4 @@
+import StoreKit
 import SwiftUI
 import UIKit
 
@@ -10,6 +11,10 @@ struct SettingsView: View {
     @ObservedObject private var askHistory = AskHistoryStore.shared
     @ObservedObject private var recentBooks = RecentBooksStore.shared
     @ObservedObject private var readingProgress = ReadingProgressStore.shared
+    @ObservedObject private var readingPass = ReadingPassStore.shared
+    @ObservedObject private var subscription = SubscriptionStore.shared
+    @State private var showingManageSubscription = false
+    @State private var restoreMessage: String?
     @StateObject private var reminder = ReminderSettingsViewModel()
 
     @AppStorage("readerTheme") private var readerTheme: ReaderTheme = .paper
@@ -57,6 +62,7 @@ struct SettingsView: View {
     var body: some View {
         Form {
             accountSection
+            readingPassSection
             notificationsSection
             readingSection
             interestsSection
@@ -90,6 +96,48 @@ struct SettingsView: View {
                 showingAuth = false
             }
         }
+        .manageSubscriptionsSheet(isPresented: $showingManageSubscription)
+        .alert("Restore Purchases", isPresented: Binding(get: { restoreMessage != nil }, set: { if !$0 { restoreMessage = nil } })) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(restoreMessage ?? "")
+        }
+    }
+
+    // MARK: - Reading Pass
+
+    private var readingPassSection: some View {
+        Section {
+            NavigationLink {
+                ReadingPassView(showsCloseButton: false)
+            } label: {
+                LabeledContent("Reading Pass", value: readingPassSummary)
+            }
+            if subscription.isSubscribed {
+                Button("Manage Subscription") { showingManageSubscription = true }
+            } else {
+                Button("Restore Purchases") {
+                    Task {
+                        do {
+                            try await subscription.restore()
+                            restoreMessage = subscription.isSubscribed
+                                ? "BookBite Unlimited is active again."
+                                : "No active subscription was found for this Apple Account."
+                        } catch {
+                            restoreMessage = error.localizedDescription
+                        }
+                    }
+                }
+            }
+        } footer: {
+            Text("Give a friend 5 books and you get 5 more. Key ideas are always free.")
+        }
+    }
+
+    private var readingPassSummary: String {
+        if subscription.isSubscribed { return "Unlimited" }
+        let left = readingPass.pass.remaining
+        return left == 1 ? "1 book left" : "\(left) books left"
     }
 
     // MARK: - Account

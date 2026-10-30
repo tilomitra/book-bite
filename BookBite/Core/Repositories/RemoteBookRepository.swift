@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-class RemoteBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRepository, DailyIdeaProviding, RecommendationsProviding, HighlightsProviding, AskProviding {
+class RemoteBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRepository, DailyIdeaProviding, RecommendationsProviding, HighlightsProviding, AskProviding, ReadingPassProviding {
     private let networkService = NetworkService.shared
     private let cacheService = CacheService.shared
     
@@ -253,6 +253,36 @@ class RemoteBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
         try await networkService.delete(endpoint: "user/favorites/\(bookId)", headers: await authHeaders())
     }
     
+    // MARK: - ReadingPassProviding
+
+    func fetchReadingPass() async throws -> ReadingPass {
+        try await networkService.get(endpoint: "user/reading-pass", headers: await authHeaders())
+    }
+
+    func unlockBooks(_ bookIds: [String]) async throws -> ReadingPass {
+        struct UnlockRequest: Encodable { let bookIds: [String] }
+        return try await networkService.post(
+            endpoint: "user/reading-pass/unlock",
+            body: UnlockRequest(bookIds: Array(bookIds.prefix(50))),
+            headers: await authHeaders()
+        )
+    }
+
+    func redeemInviteCode(_ code: String) async throws -> ReadingPass {
+        do {
+            return try await networkService.post(
+                endpoint: "user/reading-pass/redeem",
+                body: ["code": code],
+                headers: await authHeaders()
+            )
+        } catch NetworkError.clientError(let status, let data) where status != 401 {
+            // `{error, code}`: a message written for the reader
+            struct Rejection: Decodable { let error: String }
+            let message = (try? JSONDecoder().decode(Rejection.self, from: data))?.error
+            throw ReadingPassError.rejected(message ?? "That code didn't work. Check it and try again.")
+        }
+    }
+
     func fetchFavorites() async throws -> [Book] {
         struct FavoritesResponse: Codable {
             let favorites: [FavoriteItem]
