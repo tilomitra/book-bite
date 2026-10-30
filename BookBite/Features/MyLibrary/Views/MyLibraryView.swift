@@ -23,11 +23,17 @@ struct MyLibraryView: View {
                     Button {
                         showingSettings = true
                     } label: {
-                        Image(systemName: isSignedIn ? "person.crop.circle.fill" : "person.crop.circle")
-                            .font(.system(size: 26))
-                            .foregroundColor(.primary)
-                            .frame(width: 44, height: 44)
-                            .contentShape(Rectangle())
+                        Group {
+                            if isSignedIn, let user = authService.currentUser {
+                                AccountInitial(user: user, size: 34)
+                            } else {
+                                Image(systemName: "person.crop.circle")
+                                    .font(.system(size: 26))
+                                    .foregroundColor(.primary)
+                            }
+                        }
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
                     }
                     .accessibilityLabel("Account and settings")
                 })

@@ -18,6 +18,8 @@ export interface ExtendedSummaryResult {
   model: string;
 }
 
+import { KEY_IDEA_RULES, KeyIdeaContext, buildKeyIdeaRewritePrompt, checkRewrittenIdeas } from './keyIdeaPrompt';
+
 export class OpenAIService {
   private client: OpenAI;
   // GPT-6 Luna is a reasoning model: it takes max_completion_tokens (reasoning tokens count
@@ -101,7 +103,7 @@ Please provide a JSON response with the following structure:
   "oneSentenceHook": "A compelling one-sentence summary that captures the essence of the book",
   "keyIdeas": [
     {
-      "idea": "The main insight or concept",
+      "idea": "Short lead: the book's claim and why it matters, following the key idea rules below",
       "tags": ["relevant", "tags"],
       "confidence": "high|medium|low",
       "sources": ["Chapter reference or context"]
@@ -125,6 +127,8 @@ Please provide a JSON response with the following structure:
   ],
   "readTimeMinutes": estimated_reading_time_in_minutes
 }
+
+${KEY_IDEA_RULES}
 
 Ensure all arrays have at least one item, and confidence levels are realistic based on the description provided.`;
   }
@@ -282,5 +286,37 @@ Return the enhanced summary in the same JSON structure as the input.`;
       console.error('Error generating extended summary with OpenAI:', error);
       throw new Error('Failed to generate extended book summary');
     }
+  }
+
+  /** New text for a book's key ideas. One retry with the problems spelled out; throws if it is still wrong. */
+  async rewriteKeyIdeas(context: KeyIdeaContext): Promise<{
+    ideas: string[];
+    usage: { inputTokens: number; outputTokens: number };
+  }> {
+    const usage = { inputTokens: 0, outputTokens: 0 };
+    const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
+      { role: 'user', content: buildKeyIdeaRewritePrompt(context) }
+    ];
+    let problems: string[] = [];
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const response = await this.client.chat.completions.create({
+        model: this.cheaperModel,
+        max_completion_tokens: 8000,
+        response_format: { type: 'json_object' },
+        messages
+      });
+      usage.inputTokens += response.usage?.prompt_tokens ?? 0;
+      usage.outputTokens += response.usage?.completion_tokens ?? 0;
+      const content = response.choices[0].message.content;
+      if (!content) throw new Error('No response content from OpenAI');
+      const ideas = JSON.parse(content).keyIdeas;
+      problems = checkRewrittenIdeas(ideas, context.currentIdeas.length);
+      if (problems.length === 0) return { ideas, usage };
+      messages.push(
+        { role: 'assistant', content },
+        { role: 'user', content: `Fix these problems and reply with the same JSON: ${problems.join('; ')}.` }
+      );
+    }
+    throw new Error(`bad key ideas: ${problems.join('; ')}`);
   }
 }
