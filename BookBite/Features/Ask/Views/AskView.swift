@@ -7,6 +7,8 @@ struct AskView: View {
     @Binding var path: NavigationPath
     @StateObject private var viewModel = AskHomeViewModel(bookRepository: DependencyContainer.shared.bookRepository)
     @State private var compose: ComposeRequest?
+    @State private var signInPrompt: SignInPrompt?
+    @EnvironmentObject private var authService: SupabaseAuthService
 
     struct ComposeRequest: Identifiable {
         let id = UUID()
@@ -31,7 +33,10 @@ struct AskView: View {
 
                 if let daily = viewModel.question {
                     DailyQuestionCard(daily: daily) {
-                        path.append(AskRoute(question: daily.question))
+                        signInPrompt = SignInPrompt.gate(.ask(question: daily.question, books: daily.books),
+                                                         auth: authService) {
+                            path.append(AskRoute(question: daily.question))
+                        }
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 18)
@@ -93,6 +98,7 @@ struct AskView: View {
         .task { await viewModel.load() }
         // A new question every time the tab opens; the first one comes with `load()`
         .onAppear { viewModel.showNextQuestion() }
+        .signInPrompt($signInPrompt)
         .fullScreenCover(item: $compose) { request in
             AskComposeView(suggestions: request.suggestions) { question in
                 compose = nil

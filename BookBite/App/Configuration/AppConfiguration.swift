@@ -49,6 +49,16 @@ struct AppConfiguration {
     var isCacheEnabled: Bool {
         return true
     }
+
+    /// Asking the library and saving books need an account (`SignInPrompt`). Debug builds launched
+    /// with `-skipSignInPrompts YES` (the App Store screenshot test) ask without one.
+    var requiresSignIn: Bool {
+        #if DEBUG
+        return !UserDefaults.standard.bool(forKey: "skipSignInPrompts")
+        #else
+        return true
+        #endif
+    }
     
     // MARK: - Cache Configuration
     
