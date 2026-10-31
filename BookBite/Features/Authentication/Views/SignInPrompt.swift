@@ -9,6 +9,14 @@ struct SignInPrompt: Identifiable {
         case save(Book)
         /// Getting an invite code, or claiming a friend's (`friendCode` from an invite link)
         case invite(friendCode: String?)
+
+        var analyticsName: String {
+            switch self {
+            case .ask: return "ask"
+            case .save: return "save"
+            case .invite: return "invite"
+            }
+        }
     }
 
     let id = UUID()
@@ -23,6 +31,7 @@ struct SignInPrompt: Identifiable {
             action()
             return nil
         }
+        Analytics.capture(.signInPromptShown(reason: reason.analyticsName))
         return SignInPrompt(reason: reason, onSignedIn: action)
     }
 }

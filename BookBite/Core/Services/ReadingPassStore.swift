@@ -184,6 +184,7 @@ final class ReadingPassStore: ObservableObject {
             let updated = try await repository.redeemInviteCode(code)
             clearPendingCode()
             setAccountPass(updated)
+            Analytics.capture(.inviteRedeemed)
             return updated
         } catch let error as ReadingPassError {
             // Turned down: keeping the code would only retry it at every launch

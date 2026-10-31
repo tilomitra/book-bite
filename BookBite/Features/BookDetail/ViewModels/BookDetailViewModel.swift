@@ -277,6 +277,7 @@ class BookDetailViewModel: ObservableObject {
             } else {
                 try await favoriteRepository.addToFavorites(book.id)
                 isFavorite = true
+                Analytics.capture(.bookSaved(book))
                 if AppConfiguration.shared.isLoggingEnabled {
                     print("✅ Added book \(book.title) to favorites")
                 }

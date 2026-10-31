@@ -29,7 +29,7 @@ Ideas for taking the app to Apple Design Award level. Done so far: Editorial Dis
 
 ## Content
 - [x] Chapters for featured books (210 of 211 regenerated 2026-10-26, $0.33).
-- [ ] Chapters for the rest of the non-fiction catalogue (1,522 books, ~$3, ~6.5 hours): running since 2026-10-30. If it stops, re-run `npm run regenerate-extended-summaries -- --by-popularity` (resumable; skips books already done).
+- [x] Chapters for the rest of the non-fiction catalogue (1,519 of 1,522 regenerated 2026-10-30, $2.35). Three failed because they aren't real books: "Statistical Reference Index", "Professional Journal of the United States Army" and the placeholder "Unti9780063422506".
 - [x] Replace covers hotlinked from Headway (78 books, 2026-10-30; the 34 no script source found were matched by hand). *Flux* has a square cover: no sharp 2:3 English edition found.
 - [x] Unfeature the placeholder book "Unti9780063422506" (`544bc854-8962-43fe-b02e-cc7aa5833362`). Still in the catalogue; delete it if wanted.
 - [ ] Reader hyphenation sometimes breaks at the wrong place ("Gett-ing"). Not reproduced: `Hyphenator` gives "Get-ting" on iOS 26.3 (covered by a test) and no stored summary contains it; needs a screenshot of the book and text size.
@@ -52,3 +52,12 @@ Ideas for taking the app to Apple Design Award level. Done so far: Editorial Dis
 - [ ] Server-side enforcement: `/summaries/book/:id` still returns the full text to everyone. Gate it once older app versions are gone, with App Store Server API checks for subscribers.
 - [ ] Universal links for `/invite/<code>` (needs Associated Domains, so the paid team) and a deferred deep link, so a new install gets the code without typing it.
 - [ ] Push a notification to the inviter when a friend joins (today Library shows it on the next refresh).
+
+## Analytics (PostHog)
+- [ ] Create a PostHog US Cloud project and set `POSTHOG_PROJECT_KEY` for the BookBite target's Release configuration. Until then analytics are off. Confirm the first events arrive (Debug: launch with `SIMCTL_CHILD_POSTHOG_PROJECT_KEY=<key>`).
+- [ ] Turn on "Discard client IP data" in the PostHog project settings.
+- [ ] Update the App Store Connect privacy answers: Device ID and User ID for analytics.
+- [ ] Delete PostHog data on account deletion: call PostHog's API from `DELETE auth/account`, or disclose that it stays in `privacy.html`'s Delete section. Do this before shipping.
+- [ ] Deploy `privacy.html` no later than the app release that turns analytics on.
+- [ ] Track invite shares (`ShareLink` doesn't report completion; redemptions are tracked).
+- [ ] Build the funnels and retention dashboards: onboarding → first book → finished, reading pass → invite or subscribe.

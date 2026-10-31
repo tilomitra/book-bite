@@ -52,6 +52,7 @@ final class SavedIdeasStore: ObservableObject {
         }
         ideas.insert(SavedIdea(book: book, ideaId: ideaId, text: text, savedAt: Date()), at: 0)
         save()
+        Analytics.capture(.ideaSaved(book))
         return true
     }
 

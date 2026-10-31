@@ -133,6 +133,7 @@ final class AskConversationViewModel: ObservableObject {
             conversation.turns.removeAll { $0.id == failed }
             failedTurnId = nil
         }
+        Analytics.capture(.askSent(isFollowUp: !conversation.turns.isEmpty))
         let turn = AskTurn(question: question)
         conversation.turns.append(turn)
         stream(into: turn.id)

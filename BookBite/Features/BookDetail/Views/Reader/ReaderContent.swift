@@ -216,7 +216,10 @@ struct ReaderEndSection: View {
             Menu {
                 ForEach(BookStore.allCases) { store in
                     Button {
-                        if let url = book.purchaseURL(store: store, source: "reader") { openURL(url) }
+                        if let url = book.purchaseURL(store: store, source: "reader") {
+                            Analytics.capture(.getBookClicked(book, store: store.name))
+                            openURL(url)
+                        }
                     } label: {
                         Text(store.name)
                         Text(store.caption)
