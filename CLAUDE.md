@@ -75,7 +75,8 @@ npm run generate-summaries                  # books missing summaries
 npm run generate-extended-summaries
 npm run regenerate-extended-summaries -- --dry-run --limit 1   # rewrite existing extended summaries into the chapter format (see below); ~$0.0016/book, ~$3 for all
 npm run regenerate-key-ideas -- --dry-run --ids <uuid>   # rewrites heading-like key ideas into claims (`keyIdeaPrompt.ts`, books averaging < 10 words per idea); ~$0.0006/book; then re-run embed-ideas and embed-books
-npm run generate-audio -- --title "Atomic Habits"   # or --book-id <uuid>, --list-missing, --dry-run, --force --voice-id <id>
+npm run generate-audio -- --title "Atomic Habits"   # or --book-id <uuid>, --list-missing, --dry-run, --force --voice-id <id> --model <id>
+npm run generate-audio -- --title "Deep Work" --compare --voices <id>,<id>   # A/B: one script, several voices/models, local files only (no upload)
 npm run backfill-covers -- --dry-run --featured --report /tmp/covers.json   # see "Covers" below; drop --dry-run to write
 npm run embed-books -- --dry-run            # see "Recommendations"; only re-embeds books whose text changed, a few cents for all
 npm run embed-ideas -- --dry-run            # see "Ask"; one vector per key idea and how-to-apply action, needs add-idea-embeddings.sql
@@ -83,7 +84,7 @@ npm run update-reader-counts -- --dry-run   # free; sets popularity_score = Open
 npm run update-book-covers
 ```
 `popularity_score` is the Open Library reader count (users who marked the book want-to-read/reading/read; e.g. 48 Laws of Power ≈ 52k, most books < 500, 0 = no match). Both `update-reader-counts` and `add-curated-books` pick the matching work with the most readers, which avoids linking to an obscure edition. Don't run the old `update-popularity-scores` (Google Books rating formula, a different scale; it overwrites 0 scores). Featured flag (`is_featured`) is separate: new books aren't featured, so they don't appear on Discover's genre shelves until flagged.
-Audio ≈ $0.94/book (GPT-4o script + ElevenLabs Turbo v2.5). Default voice Adam `pNInz6obpgDQGcFmaJgB`; others: Bella `EXAVITQu4vr4xnSDxMaL`, Rachel `21m00Tcm4TlvDq8ikWAM`, Antoni `ErXwobaYiN019PkySvjV`.
+Audio ≈ $0.80/book: `gpt-6-luna` writes a ~1,500-word spoken script (`audioScript.ts`: rules for the ear, cleanup, allowed delivery tags like `[thoughtful]`, at most one per paragraph), then ElevenLabs **Eleven v4** (`eleven_v4`, $0.08/1k chars; Turbo v2.5 is deprecated and sounded flat) reads it in ~2,500-character parts joined by request stitching (`previous_request_ids` from the `request-id` header; the MP3 parts are concatenated). v4 takes only stability and similarity (no style/speed, no SSML); tags are stripped for models that would read them aloud. Default voice is the custom `ZF6FPAbjXT4488VcRRnw`; library voices: Adam `pNInz6obpgDQGcFmaJgB`, Bella `EXAVITQu4vr4xnSDxMaL`, Rachel `21m00Tcm4TlvDq8ikWAM`, Antoni `ErXwobaYiN019PkySvjV`. `--compare` writes `script.txt` plus one file per variant to `/tmp/bookbite-audio-compare/<title>/`: current Turbo v2.5, v4 per voice, and Gemini TTS (`geminiTtsService.ts`, `gemini-3.8-flash-tts`, voice Charon) when `GEMINI_API_KEY` is set. Existing audio was made with Turbo v2.5; regenerate with `--force` after picking a voice.
 
 ### Database
 Schema: `server/supabase/schema.sql` plus loose SQL files in `server/supabase/` (featured/NYT/extended-summary columns, `add-book-embeddings.sql` for pgvector, `add-reading-pass.sql` for the reading pass). Apply via the Supabase SQL editor; `migrations/` is empty. ~2,060 books.
@@ -222,7 +223,7 @@ Behaviour worth knowing:
 - `app.set('trust proxy', 1)` for Render.
 
 ## Environment (`server/.env`, see `.env.example`)
-`PORT`, `NODE_ENV`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_KEY`, `GOOGLE_BOOKS_API_KEY`, `NYT_API_KEY`, `OPENAI_API_KEY`, `ELEVENLABS_API_KEY`, `REDIS_URL`, `RATE_LIMIT_WINDOW_MS`, `RATE_LIMIT_MAX_REQUESTS`, `CORS_ORIGIN`, optional `DEBUG_ERRORS`, optional `ASK_MODEL`, optional `AMAZON_ASSOCIATE_TAG` / `BOOKSHOP_AFFILIATE_ID`, optional `PUBLIC_BASE_URL` / `APP_STORE_URL` (invite links).
+`PORT`, `NODE_ENV`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_KEY`, `GOOGLE_BOOKS_API_KEY`, `NYT_API_KEY`, `OPENAI_API_KEY`, `ELEVENLABS_API_KEY`, `REDIS_URL`, `RATE_LIMIT_WINDOW_MS`, `RATE_LIMIT_MAX_REQUESTS`, `CORS_ORIGIN`, optional `DEBUG_ERRORS`, optional `ASK_MODEL`, optional `GEMINI_API_KEY` (audio `--compare` only), optional `AMAZON_ASSOCIATE_TAG` / `BOOKSHOP_AFFILIATE_ID`, optional `PUBLIC_BASE_URL` / `APP_STORE_URL` (invite links).
 
 ## Known open issues
 - The `chat_conversations`/`chat_messages` tables in `schema.sql` are unused since the chat routes were removed.
