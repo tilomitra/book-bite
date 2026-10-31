@@ -6,6 +6,7 @@ class NetworkService: ObservableObject {
     
     private let session = URLSession.shared
     private let baseURL: URL
+    private let connectivity: ConnectivityChecking
     
     // Configuration
     struct Configuration {
@@ -13,7 +14,8 @@ class NetworkService: ObservableObject {
         static let maxRetryAttempts = 3
     }
     
-    init() {
+    init(connectivity: ConnectivityChecking = ConnectivityMonitor.shared) {
+        self.connectivity = connectivity
         let baseURLString = AppConfiguration.shared.baseServerURL
         guard let url = URL(string: baseURLString) else {
             fatalError("Invalid base URL: \(baseURLString)")
@@ -90,8 +92,24 @@ class NetworkService: ObservableObject {
             request.httpBody = body
         }
         
+        // Offline, fail at once so callers can use what is on the device
+        guard connectivity.isOnline else {
+            throw NetworkError.networkFailure(URLError(.notConnectedToInternet))
+        }
+
         // Perform request with retry logic
         return try await performRequestWithRetry(request)
+    }
+
+    /// Only transient failures of idempotent requests are retried. Never cancellation, never non-GET requests
+    /// (a retried POST can create duplicates server-side), and never "no connection": that won't change in a few seconds.
+    static func shouldRetry(_ error: Error, method: String?, retryCount: Int, isOnline: Bool) -> Bool {
+        guard method == HTTPMethod.GET.rawValue, retryCount < Configuration.maxRetryAttempts, isOnline else { return false }
+        if error is CancellationError { return false }
+        if let urlError = error as? URLError {
+            return urlError.code != .cancelled && !urlError.isOffline
+        }
+        return true
     }
     
     private func performRequestWithRetry<T: Codable>(_ request: URLRequest, retryCount: Int = 0) async throws -> T {
@@ -154,10 +172,7 @@ class NetworkService: ObservableObject {
         } catch let error as NetworkError {
             throw error
         } catch {
-            // Only retry transient failures of idempotent requests; never retry cancellation
-            // or non-GET requests (a retried POST can create duplicates server-side)
-            let isCancelled = error is CancellationError || (error as? URLError)?.code == .cancelled
-            if !isCancelled && request.httpMethod == HTTPMethod.GET.rawValue && retryCount < Configuration.maxRetryAttempts {
+            if Self.shouldRetry(error, method: request.httpMethod, retryCount: retryCount, isOnline: connectivity.isOnline) {
                 let delay = Double(retryCount + 1)
                 try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
                 return try await performRequestWithRetry(request, retryCount: retryCount + 1)

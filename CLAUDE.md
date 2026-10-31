@@ -10,7 +10,7 @@ BookBite shows AI-generated non-fiction book summaries (one-sentence hook, key i
 - **Widget extension** (`BookBiteWidget/`, target `BookBiteWidget`, bundle id `tilo.BookBite.BookBiteWidget`): "Idea of the Day" Home Screen widget (small, medium), embedded in the app.
 - **Landing page** (`server/public/`): static one-page site served by the Express server at `/` (so `book-bite.onrender.com/`). See "Landing page" below.
 - **Server** (`server/`): Express + TypeScript, Supabase (Postgres) for data, OpenAI for summaries/Ask, ElevenLabs for audio, Bull/Redis for the summary job queue.
-- The app is **remote-only**: all books/summaries come from the server. There is no bundled data or offline-first mode (only per-book offline downloads via `OfflineStorageService`). `HybridBookRepository` is just a wrapper around `RemoteBookRepository`.
+- The app is **remote-only**: all books/summaries come from the server. There is no bundled data or offline-first mode (only per-book offline downloads via `OfflineStorageService`). `HybridBookRepository` is a wrapper around `RemoteBookRepository`; for `fetchBook`/`fetchSummary` it uses the copy on the device (`CacheService`, then `OfflineStorageService`) first when offline and as a fallback when the request fails.
 
 ## Running it locally (do this first)
 
@@ -54,7 +54,7 @@ xcodebuild -project BookBite.xcodeproj -scheme BookBite -destination 'platform=i
 xcodebuild test -project BookBite.xcodeproj -scheme BookBite -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -only-testing:BookBiteTests
 # single test: -only-testing:BookBiteTests/SearchServiceTests/testSearchByTitle
 ```
-Unit tests use Swift Testing (`@Test`, `#expect`); 108 tests, all should pass. UI tests (`BookBiteUITests`) are XCTest templates.
+Unit tests use Swift Testing (`@Test`, `#expect`); 113 tests, all should pass. UI tests (`BookBiteUITests`) are XCTest templates.
 
 ### Server
 ```bash
@@ -95,7 +95,8 @@ Schema: `server/supabase/schema.sql` plus loose SQL files in `server/supabase/` 
 - `App/Intents/`: App Intents + `BookBiteShortcuts` (`AppShortcutsProvider`). `TodaysIdeaIntent` ("Today's idea in BookBite") fetches the idea of the day via `DailyIdeaProviding` (falls back to the widget's cached idea in the app group if it's today's), speaks it and shows `DailyIdeaSnippetView` (cover is downloaded up front because snippets render out of process). `ContinueReadingIntent` (`openAppWhenRun`) routes to `ReadingProgressStore.shared.inProgress.first`.
 - `Core/Repositories`: `BookRepository` protocol plus capability protocols (`DailyIdeaProviding`, `RecommendationsProviding`, …) that view models check with `as?`; `RemoteBookRepository` does all API calls (books, summaries, summary-generation jobs, favorites, recommendations, Ask incl. its SSE stream), and `HybridBookRepository` must forward each new one. Favorites send the Supabase access token from `SupabaseAuthService.getAccessToken()`.
 - `Core/Services`:
-  - `NetworkService`: generic `get/post/put/delete`. Use `NetworkService.makeDecoder()` for any server/Supabase JSON (ISO8601 dates with or without fractional seconds). Retries only transient failures of GET requests; decoding failures throw `.decodingError` immediately; POST takes a `timeout:` (book request uses 180s because the server runs the LLM synchronously).
+  - `NetworkService`: generic `get/post/put/delete`. Use `NetworkService.makeDecoder()` for any server/Supabase JSON (ISO8601 dates with or without fractional seconds). Retries only transient failures of GET requests (`shouldRetry`; never "no connection" errors, see `URLError.isOffline`); offline (`ConnectivityMonitor`) it throws `.networkFailure(URLError(.notConnectedToInternet))` at once without a request; decoding failures throw `.decodingError` immediately; POST takes a `timeout:` (book request uses 180s because the server runs the LLM synchronously).
+  - `ConnectivityMonitor` (shared, `NWPathMonitor`): `isOnline` (any thread; online until the first path update) and `@Published isConnected` (main). `NetworkService` and `HybridBookRepository` take a `ConnectivityChecking` so tests can stub it.
   - `SearchService`: hits `/books/search?source=local` directly with `URLSession.shared` (not via the repository); tests stub it with a `URLProtocol`.
   - `SupabaseAuthService`: talks to Supabase Auth REST directly; session persisted in UserDefaults. Browsing works signed out (guest), but **asking and saving need an account** (see "Sign-in prompts").
   - `AudioPlaybackService` (shared, `@MainActor`): AVPlayer + lock-screen controls; `MiniAudioPlayer` overlay in `RootView`.

@@ -3,9 +3,11 @@ import Foundation
 class HybridBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRepository, DailyIdeaProviding, RecommendationsProviding, HighlightsProviding, AskProviding, ReadingPassProviding {
     private let remoteRepository = RemoteBookRepository()
     private let offlineStorage = OfflineStorageService.shared
+    private let cache = CacheService.shared
+    private let connectivity: ConnectivityChecking
 
-    init() {
-        // Simplified - no network monitoring needed
+    init(connectivity: ConnectivityChecking = ConnectivityMonitor.shared) {
+        self.connectivity = connectivity
     }
     
     // MARK: - BookRepository Implementation
@@ -22,36 +24,48 @@ class HybridBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
         return try await remoteRepository.fetchNYTBestsellerBooks()
     }
     
+    /// Online: the server, then the copy on the device if the request fails. Offline: the copy first, without waiting.
     func fetchBook(by id: String) async throws -> Book? {
-        // Try remote first
+        if !connectivity.isOnline, let local = localBook(id: id) {
+            return local
+        }
         do {
             return try await remoteRepository.fetchBook(by: id)
         } catch {
-            // Fall back to offline storage if available
-            if let offlineBook = offlineStorage.getOfflineBook(id: id) {
+            if let local = localBook(id: id) {
                 if AppConfiguration.shared.isLoggingEnabled {
-                    print("📖 HybridBookRepository: Using offline book for \(id)")
+                    print("📖 HybridBookRepository: Using the book on the device for \(id)")
                 }
-                return offlineBook
+                return local
             }
             throw error
         }
     }
 
     func fetchSummary(for bookId: String) async throws -> Summary? {
-        // Try remote first
+        if !connectivity.isOnline, let local = localSummary(bookId: bookId) {
+            return local
+        }
         do {
             return try await remoteRepository.fetchSummary(for: bookId)
         } catch {
-            // Fall back to offline storage if available
-            if let offlineSummary = offlineStorage.getOfflineSummary(bookId: bookId) {
+            if let local = localSummary(bookId: bookId) {
                 if AppConfiguration.shared.isLoggingEnabled {
-                    print("📖 HybridBookRepository: Using offline summary for book \(bookId)")
+                    print("📖 HybridBookRepository: Using the summary on the device for book \(bookId)")
                 }
-                return offlineSummary
+                return local
             }
             throw error
         }
+    }
+
+    // A download is kept until removed; the cache is newer (every fetch writes it) but iOS can purge it
+    private func localBook(id: String) -> Book? {
+        (try? cache.getCachedBook(id: id)) ?? offlineStorage.getOfflineBook(id: id)
+    }
+
+    private func localSummary(bookId: String) -> Summary? {
+        (try? cache.getCachedSummary(bookId: bookId)) ?? offlineStorage.getOfflineSummary(bookId: bookId)
     }
     
     func fetchDailyIdea(for date: String) async throws -> DailyIdea? {
