@@ -14,7 +14,7 @@ class DependencyContainer: ObservableObject {
     private init() {}
     
     private func createBookRepository() -> BookRepository {
-        // Simplified - always use RemoteBookRepository (HybridBookRepository now just wraps it)
+        // Wraps RemoteBookRepository and reads the copies on the device when offline
         return HybridBookRepository()
     }
 }

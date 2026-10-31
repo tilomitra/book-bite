@@ -85,7 +85,7 @@ class FeaturedBooksViewModel: ObservableObject {
     ]
     private static let highlightShelfTitles = ["More to explore", "Keep reading", "Also worth a look", "From the stacks"]
 
-    private static let snapshotKey = "discover"
+    static let snapshotKey = "discover"
 
     init(bookRepository: BookRepository, cache: CacheService = .shared) {
         self.bookRepository = bookRepository

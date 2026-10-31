@@ -306,6 +306,7 @@ struct BookDetailView: View {
                 return
             }
             Analytics.capture(.audioStarted(viewModel.book))
+            OfflineLibrary.shared.keepForReading(viewModel.book, summary: summary)
             audioService.loadAudio(for: viewModel.book, summary: summary, autoPlay: true)
             showingAudioPlayer = true
         }

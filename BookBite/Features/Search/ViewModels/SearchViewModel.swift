@@ -9,6 +9,7 @@ class SearchViewModel: ObservableObject {
     @Published var isLoadingMore = false
     @Published var searchError: Error?
     @Published var hasMore = false
+    @Published var isShowingLocalResults = false
     
     private let searchService: SearchService
     /// The query the latest search was started for, so the empty state waits for the debounce
@@ -35,6 +36,20 @@ class SearchViewModel: ObservableObject {
         
         searchService.$searchError
             .assign(to: &$searchError)
+
+        searchService.$isShowingLocalResults
+            .assign(to: &$isShowingLocalResults)
+
+        // Back online: replace results from the device with the whole library
+        ConnectivityMonitor.shared.$isConnected
+            .removeDuplicates()
+            .filter { $0 }
+            .sink { [weak self] _ in
+                guard let self, self.searchService.isShowingLocalResults, !self.isQueryEmpty else { return }
+                self.lastSearchedQuery = self.searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+                self.searchService.search(query: self.lastSearchedQuery)
+            }
+            .store(in: &cancellables)
 
         // Search as the user types
         $searchText

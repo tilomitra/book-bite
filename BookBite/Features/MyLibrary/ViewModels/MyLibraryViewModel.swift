@@ -19,7 +19,9 @@ final class MyLibraryViewModel: ObservableObject {
 
     /// `userId` keeps one account's saved books from showing on another's Library
     func load(isSignedIn: Bool, userId: String? = nil) async {
+        // Books kept for reading already show under Continue reading and Finished
         downloadedBooks = offlineStorage.getAllOfflineBooks()
+            .filter { $0.reason == .saved }
             .sorted { $0.downloadedAt > $1.downloadedAt }
             .compactMap { offlineStorage.getOfflineBook(id: $0.bookId) }
 

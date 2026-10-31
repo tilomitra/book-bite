@@ -6,6 +6,7 @@ struct EditorialHeader<Caption: View, Trailing: View>: View {
     let title: String
     @ViewBuilder var caption: Caption
     @ViewBuilder var trailing: Trailing
+    @ObservedObject private var connectivity = ConnectivityMonitor.shared
 
     init(title: String,
          @ViewBuilder caption: () -> Caption = { EmptyView() },
@@ -34,7 +35,13 @@ struct EditorialHeader<Caption: View, Trailing: View>: View {
 
                 trailing
             }
+
+            if !connectivity.isConnected {
+                OfflineNotice()
+                    .transition(.opacity)
+            }
         }
+        .animation(.easeInOut(duration: 0.2), value: connectivity.isConnected)
         .padding(.horizontal, 20)
         .padding(.top, 8)
     }
@@ -65,5 +72,20 @@ extension View {
                 Color.paper.ignoresSafeArea(edges: .top).frame(height: 0)
             }
             .toolbar(.hidden, for: .navigationBar)
+    }
+}
+
+/// One quiet line under an editorial header while the device is offline. Grey, no banner: the screen
+/// below still works from what is on the device.
+struct OfflineNotice: View {
+    private var device: String {
+        UIDevice.current.userInterfaceIdiom == .pad ? "iPad" : "iPhone"
+    }
+
+    var body: some View {
+        Label("Offline · Showing what's on this \(device)", systemImage: "wifi.slash")
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+            .accessibilityElement(children: .combine)
     }
 }

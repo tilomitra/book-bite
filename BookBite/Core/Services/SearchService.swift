@@ -11,13 +11,21 @@ class SearchService: ObservableObject {
     @Published var isLoadingMore = false
     @Published var searchError: Error?
     @Published var hasMore = false
+    /// True when the results come from the books on this device, because there is no connection
+    @Published var isShowingLocalResults = false
     
+    private let connectivity: ConnectivityChecking
+    private let localLibrary: @MainActor () -> LocalLibrary
     private var currentPage = 1
     private var currentQuery = ""
     private let pageSize = 20
     
-    init(repository: BookRepository) {
+    init(repository: BookRepository,
+         connectivity: ConnectivityChecking = ConnectivityMonitor.shared,
+         localLibrary: @escaping @MainActor () -> LocalLibrary = { LocalLibrary.onDevice() }) {
         self.repository = repository
+        self.connectivity = connectivity
+        self.localLibrary = localLibrary
     }
     
     func search(query: String) {
@@ -42,6 +50,12 @@ class SearchService: ObservableObject {
     }
     
     private func performSearch(query: String, page: Int, isNewSearch: Bool = false) async {
+        // Offline, search the books on the device instead of waiting for a request that can't succeed
+        if isNewSearch && !connectivity.isOnline {
+            showLocalResults(for: query)
+            return
+        }
+
         if isNewSearch {
             isSearching = true
         } else {
@@ -75,11 +89,23 @@ class SearchService: ObservableObject {
                 } else {
                     searchResults.append(contentsOf: response.results)
                 }
+                isShowingLocalResults = false
                 hasMore = response.pagination?.hasMore ?? false
                 currentPage = response.pagination?.page ?? page
             }
         } catch {
             if !Task.isCancelled {
+                let isOffline = (error as? URLError)?.isOffline == true || !connectivity.isOnline
+                if isOffline && isNewSearch {
+                    showLocalResults(for: query)
+                    return
+                }
+                if isOffline {
+                    // Keep the results already on screen; more can load when the connection is back
+                    hasMore = false
+                    isLoadingMore = false
+                    return
+                }
                 searchError = error
                 if isNewSearch {
                     searchResults = []
@@ -92,6 +118,15 @@ class SearchService: ObservableObject {
             isSearching = false
             isLoadingMore = false
         }
+    }
+    
+    private func showLocalResults(for query: String) {
+        searchResults = localLibrary().search(query)
+        isShowingLocalResults = true
+        hasMore = false
+        searchError = nil
+        isSearching = false
+        isLoadingMore = false
     }
     
     func loadInitialBooks() async {
@@ -175,6 +210,7 @@ class SearchService: ObservableObject {
         isSearching = false
         isLoadingMore = false
         hasMore = false
+        isShowingLocalResults = false
         currentPage = 1
         currentQuery = ""
     }
