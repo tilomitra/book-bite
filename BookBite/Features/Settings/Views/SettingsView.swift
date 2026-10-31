@@ -272,9 +272,9 @@ struct SettingsView: View {
             Text("Storage")
         } footer: {
             if let cacheInfo {
-                Text("Books you save are downloaded so you can read them offline. The cache uses \(cacheInfo.formattedSize).")
+                Text("Books you save or start reading are downloaded so you can read them offline. The cache uses \(cacheInfo.formattedSize).")
             } else {
-                Text("Books you save are downloaded so you can read them offline.")
+                Text("Books you save or start reading are downloaded so you can read them offline.")
             }
         }
     }

@@ -40,6 +40,7 @@ struct BookBiteApp: App {
                 WidgetBridge.publishServerURL(AppConfiguration.shared.baseServerURL)
                 SpotlightIndexer.shared.start()
                 SubscriptionStore.shared.start()
+                await OfflineLibrary.shared.maintain(repository: dependencies.bookRepository)
             }
         }
     }

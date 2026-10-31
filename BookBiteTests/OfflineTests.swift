@@ -55,10 +55,14 @@ struct OfflineRepositoryTests {
     }
 
     private func makeSummary(bookId: String) -> Summary {
+        Self.summary(bookId: bookId, hook: "Focus is a skill.")
+    }
+
+    static func summary(bookId: String, hook: String) -> Summary {
         Summary(
             id: "summary-\(bookId)",
             bookId: bookId,
-            oneSentenceHook: "Focus is a skill.",
+            oneSentenceHook: hook,
             keyIdeas: [],
             howToApply: [],
             commonPitfalls: [],
@@ -92,5 +96,104 @@ struct OfflineRepositoryTests {
         #expect(book?.title == "Deep Work")
         #expect(summary?.oneSentenceHook == "Focus is a skill.")
         #expect(Date().timeIntervalSince(start) < 0.5)
+    }
+}
+
+struct OfflineBookRulesTests {
+    private let now = Date(timeIntervalSinceReferenceDate: 800_000_000)
+    private let day: TimeInterval = 24 * 60 * 60
+
+    private func entry(_ id: String, reason: OfflineBook.Reason, daysAgo: Double = 0, refreshedDaysAgo: Double? = nil) -> OfflineBook {
+        let downloaded = now.addingTimeInterval(-daysAgo * day)
+        return OfflineBook(bookId: id, bookTitle: id, bookAuthors: [], reason: reason, downloadedAt: downloaded,
+                           refreshedAt: refreshedDaysAgo.map { now.addingTimeInterval(-$0 * day) })
+    }
+
+    @Test("Downloads from older versions were favorites and count as saved")
+    func legacyManifestDecodesAsSaved() throws {
+        let json = #"[{"bookId":"b1","downloadedAt":5,"bookTitle":"T","bookAuthors":["A"],"hasSummary":true,"hasCoverImage":false}]"#
+        let books = try JSONDecoder().decode([OfflineBook].self, from: Data(json.utf8))
+        #expect(books.first?.reason == .saved)
+        #expect(books.first?.hasAudio == false)
+        #expect(books.first?.refreshedAt == books.first?.downloadedAt)
+    }
+
+    @Test("A reading copy goes 30 days after the book is finished; saved books and unfinished books stay")
+    func expiredReadingCopies() {
+        let books = [
+            entry("finished-long-ago", reason: .reading, daysAgo: 60),
+            entry("finished-recently", reason: .reading, daysAgo: 60),
+            entry("in-progress", reason: .reading, daysAgo: 60),
+            entry("no-progress-old", reason: .reading, daysAgo: 31),
+            entry("no-progress-new", reason: .reading, daysAgo: 2),
+            entry("saved-finished", reason: .saved, daysAgo: 60),
+        ]
+        let progress: [String: Date?] = [
+            "finished-long-ago": now.addingTimeInterval(-31 * day),
+            "finished-recently": now.addingTimeInterval(-5 * day),
+            "in-progress": Date?.none,
+            "saved-finished": now.addingTimeInterval(-90 * day),
+        ]
+        let expired = OfflineBook.expiredReadingCopies(books, progress: progress, now: now)
+        #expect(Set(expired) == ["finished-long-ago", "no-progress-old"])
+    }
+
+    @Test("Stale downloads come oldest first, up to the limit")
+    func staleDownloads() {
+        let books = [
+            entry("fresh", reason: .saved, refreshedDaysAgo: 1),
+            entry("old", reason: .saved, refreshedDaysAgo: 10),
+            entry("oldest", reason: .reading, refreshedDaysAgo: 40),
+            entry("older", reason: .saved, refreshedDaysAgo: 20),
+        ]
+        let stale = OfflineBook.stale(books, maxAge: 7 * day, limit: 2, now: now)
+        #expect(stale.map(\.bookId) == ["oldest", "older"])
+    }
+}
+
+struct OfflineStorageTests {
+    private let storage = OfflineStorageService.shared
+
+    private func makeBook(id: String) -> Book {
+        Book(id: id, title: "Atomic Habits", authors: ["James Clear"])
+    }
+
+    @Test("Keeping a saved book for reading doesn't make it a reading copy")
+    func savedIsNeverDowngraded() throws {
+        let id = "offline-test-\(UUID().uuidString)"
+        defer { storage.removeOfflineBook(id) }
+
+        try storage.downloadBookForOffline(makeBook(id: id), summary: nil, reason: .saved)
+        try storage.downloadBookForOffline(makeBook(id: id), summary: nil, reason: .reading)
+        #expect(storage.offlineBook(id: id)?.reason == .saved)
+    }
+
+    @Test("Saving a reading copy makes it saved")
+    func readingCopyBecomesSaved() throws {
+        let id = "offline-test-\(UUID().uuidString)"
+        defer { storage.removeOfflineBook(id) }
+
+        try storage.downloadBookForOffline(makeBook(id: id), summary: nil, reason: .reading)
+        #expect(storage.offlineBook(id: id)?.reason == .reading)
+        try storage.downloadBookForOffline(makeBook(id: id), summary: nil, reason: .saved)
+        #expect(storage.offlineBook(id: id)?.reason == .saved)
+    }
+
+    @Test("A newer summary replaces the downloaded one, and is ignored for books not on the device")
+    func updateDownloadedSummary() throws {
+        let id = "offline-test-\(UUID().uuidString)"
+        let other = "offline-test-\(UUID().uuidString)"
+        defer { storage.removeOfflineBook(id) }
+
+        try storage.downloadBookForOffline(makeBook(id: id), summary: nil, reason: .reading)
+        #expect(storage.offlineBook(id: id)?.hasSummary == false)
+
+        storage.updateDownloadedSummary(OfflineRepositoryTests.summary(bookId: id, hook: "Small habits compound."))
+        #expect(storage.getOfflineSummary(bookId: id)?.oneSentenceHook == "Small habits compound.")
+        #expect(storage.offlineBook(id: id)?.hasSummary == true)
+
+        storage.updateDownloadedSummary(OfflineRepositoryTests.summary(bookId: other, hook: "Not kept"))
+        #expect(storage.getOfflineSummary(bookId: other) == nil)
+        #expect(storage.offlineBook(id: other) == nil)
     }
 }

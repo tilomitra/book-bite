@@ -304,6 +304,7 @@ struct BookDetailView: View {
                 showingPass = true
                 return
             }
+            OfflineLibrary.shared.keepForReading(viewModel.book, summary: summary)
             audioService.loadAudio(for: viewModel.book, summary: summary, autoPlay: true)
             showingAudioPlayer = true
         }

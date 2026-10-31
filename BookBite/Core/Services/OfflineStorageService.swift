@@ -51,7 +51,12 @@ class OfflineStorageService {
 
     // MARK: - Manifest Management
 
+    // The reader, the book page and launch refreshes write from different tasks; every read-modify-write holds it
+    private let manifestLock = NSRecursiveLock()
+
     private func loadManifest() -> [OfflineBook] {
+        manifestLock.lock()
+        defer { manifestLock.unlock() }
         guard fileManager.fileExists(atPath: manifestPath.path) else { return [] }
 
         do {
@@ -66,9 +71,11 @@ class OfflineStorageService {
     }
 
     private func saveManifest(_ manifest: [OfflineBook]) {
+        manifestLock.lock()
+        defer { manifestLock.unlock() }
         do {
             let data = try JSONEncoder().encode(manifest)
-            try data.write(to: manifestPath)
+            try data.write(to: manifestPath, options: .atomic)
         } catch {
             if AppConfiguration.shared.isLoggingEnabled {
                 print("❌ OfflineStorageService: Failed to save manifest: \(error)")
@@ -76,53 +83,102 @@ class OfflineStorageService {
         }
     }
 
-    private func addToManifest(_ offlineBook: OfflineBook) {
+    private func updateManifest(_ change: (inout [OfflineBook]) -> Void) {
+        manifestLock.lock()
+        defer { manifestLock.unlock() }
         var manifest = loadManifest()
-        // Remove existing entry if present
-        manifest.removeAll { $0.bookId == offlineBook.bookId }
-        manifest.append(offlineBook)
+        change(&manifest)
         saveManifest(manifest)
     }
 
+    private func updateEntry(bookId: String, _ change: (inout OfflineBook) -> Void) {
+        updateManifest { manifest in
+            guard let index = manifest.firstIndex(where: { $0.bookId == bookId }) else { return }
+            change(&manifest[index])
+        }
+    }
+
     private func removeFromManifest(bookId: String) {
-        var manifest = loadManifest()
-        manifest.removeAll { $0.bookId == bookId }
-        saveManifest(manifest)
+        updateManifest { $0.removeAll { $0.bookId == bookId } }
     }
 
     // MARK: - Download Operations
 
-    /// Download a book for offline access
-    func downloadBookForOffline(_ book: Book, summary: Summary?) throws {
+    /// Download a book for offline access. A saved book stays saved when it is kept again for reading;
+    /// the cover and audio already on the device stay.
+    func downloadBookForOffline(_ book: Book, summary: Summary?, reason: OfflineBook.Reason = .saved) throws {
         if AppConfiguration.shared.isLoggingEnabled {
-            print("📥 OfflineStorageService: Downloading book \(book.id) for offline")
+            print("📥 OfflineStorageService: Downloading book \(book.id) for offline (\(reason.rawValue))")
         }
 
         // Save book data
         let bookData = try JSONEncoder().encode(book)
-        try bookData.write(to: bookPath(id: book.id))
+        try bookData.write(to: bookPath(id: book.id), options: .atomic)
 
         // Save summary if available
-        var hasSummary = false
         if let summary = summary {
             let summaryData = try JSONEncoder().encode(summary)
-            try summaryData.write(to: summaryPath(bookId: book.id))
-            hasSummary = true
+            try summaryData.write(to: summaryPath(bookId: book.id), options: .atomic)
         }
+        let hasSummary = fileManager.fileExists(atPath: summaryPath(bookId: book.id).path)
 
         // Track in manifest
-        let offlineBook = OfflineBook(
-            bookId: book.id,
-            bookTitle: book.title,
-            bookAuthors: book.authors,
-            hasSummary: hasSummary,
-            hasCoverImage: false
-        )
-        addToManifest(offlineBook)
+        updateManifest { manifest in
+            if let index = manifest.firstIndex(where: { $0.bookId == book.id }) {
+                var entry = manifest[index]
+                entry.bookTitle = book.title
+                entry.bookAuthors = book.authors
+                entry.hasSummary = hasSummary
+                entry.refreshedAt = Date()
+                if reason == .saved { entry.reason = .saved }
+                manifest[index] = entry
+            } else {
+                manifest.append(OfflineBook(
+                    bookId: book.id,
+                    bookTitle: book.title,
+                    bookAuthors: book.authors,
+                    hasSummary: hasSummary,
+                    reason: reason
+                ))
+            }
+        }
 
         if AppConfiguration.shared.isLoggingEnabled {
             print("✅ OfflineStorageService: Book \(book.id) saved for offline")
         }
+    }
+
+    /// Writes a newer copy of a downloaded book. Does nothing for books not on the device.
+    func updateDownloadedBook(_ book: Book) {
+        guard isBookDownloadedForOffline(book.id),
+              let data = try? JSONEncoder().encode(book) else { return }
+        try? data.write(to: bookPath(id: book.id), options: .atomic)
+        updateEntry(bookId: book.id) { entry in
+            entry.bookTitle = book.title
+            entry.bookAuthors = book.authors
+        }
+    }
+
+    /// Writes a newer summary of a downloaded book, so a rewritten summary reaches the device.
+    /// Does nothing for books not on the device.
+    func updateDownloadedSummary(_ summary: Summary) {
+        guard isBookDownloadedForOffline(summary.bookId),
+              let data = try? JSONEncoder().encode(summary),
+              (try? data.write(to: summaryPath(bookId: summary.bookId), options: .atomic)) != nil else { return }
+        updateEntry(bookId: summary.bookId) { entry in
+            entry.hasSummary = true
+            entry.refreshedAt = Date()
+        }
+    }
+
+    /// Records a refresh attempt, so a book the server can't refresh doesn't hold up the others
+    func markRefreshed(bookId: String) {
+        updateEntry(bookId: bookId) { $0.refreshedAt = Date() }
+    }
+
+    /// The download's entry, if the book is on the device
+    func offlineBook(id: String) -> OfflineBook? {
+        loadManifest().first { $0.bookId == id }
     }
 
     /// Download cover image for offline access
@@ -143,22 +199,10 @@ class OfflineStorageService {
         }
 
         // Save image data
-        try data.write(to: imagePath(bookId: bookId))
+        try data.write(to: imagePath(bookId: bookId), options: .atomic)
 
         // Update manifest to indicate we have the cover
-        var manifest = loadManifest()
-        if let index = manifest.firstIndex(where: { $0.bookId == bookId }) {
-            let existing = manifest[index]
-            let updated = OfflineBook(
-                bookId: existing.bookId,
-                bookTitle: existing.bookTitle,
-                bookAuthors: existing.bookAuthors,
-                hasSummary: existing.hasSummary,
-                hasCoverImage: true
-            )
-            manifest[index] = updated
-            saveManifest(manifest)
-        }
+        updateEntry(bookId: bookId) { $0.hasCoverImage = true }
 
         if AppConfiguration.shared.isLoggingEnabled {
             print("✅ OfflineStorageService: Cover image saved for book \(bookId)")
@@ -265,20 +309,7 @@ class OfflineStorageService {
     }
 
     private func updateManifestAudioStatus(bookId: String, hasAudio: Bool) {
-        var manifest = loadManifest()
-        if let index = manifest.firstIndex(where: { $0.bookId == bookId }) {
-            let existing = manifest[index]
-            let updated = OfflineBook(
-                bookId: existing.bookId,
-                bookTitle: existing.bookTitle,
-                bookAuthors: existing.bookAuthors,
-                hasSummary: existing.hasSummary,
-                hasCoverImage: existing.hasCoverImage,
-                hasAudio: hasAudio
-            )
-            manifest[index] = updated
-            saveManifest(manifest)
-        }
+        updateEntry(bookId: bookId) { $0.hasAudio = hasAudio }
     }
 
     // MARK: - Query Operations

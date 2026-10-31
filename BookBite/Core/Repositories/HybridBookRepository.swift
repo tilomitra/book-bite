@@ -30,7 +30,9 @@ class HybridBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
             return local
         }
         do {
-            return try await remoteRepository.fetchBook(by: id)
+            let book = try await remoteRepository.fetchBook(by: id)
+            if let book { offlineStorage.updateDownloadedBook(book) }
+            return book
         } catch {
             if let local = localBook(id: id) {
                 if AppConfiguration.shared.isLoggingEnabled {
@@ -47,7 +49,10 @@ class HybridBookRepository: BookRepository, SummaryGenerationCapable, FavoriteRe
             return local
         }
         do {
-            return try await remoteRepository.fetchSummary(for: bookId)
+            let summary = try await remoteRepository.fetchSummary(for: bookId)
+            // A summary rewritten on the server reaches the device copy the next time it is fetched
+            if let summary { offlineStorage.updateDownloadedSummary(summary) }
+            return summary
         } catch {
             if let local = localSummary(bookId: bookId) {
                 if AppConfiguration.shared.isLoggingEnabled {

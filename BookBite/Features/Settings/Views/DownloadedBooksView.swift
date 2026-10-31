@@ -32,7 +32,7 @@ struct DownloadedBooksView: View {
                     ContentUnavailableView {
                         Label("No Downloaded Books", systemImage: "arrow.down.circle")
                     } description: {
-                        Text("Books you favorite will be automatically downloaded for offline reading.")
+                        Text("Books you save or start reading are downloaded so you can read them offline.")
                     }
                 }
             } else {
@@ -84,7 +84,7 @@ struct DownloadedBooksView: View {
                 viewModel.removeAllBooks()
             }
         } message: {
-            Text("This will remove all downloaded books from offline storage. You can re-download them by favoriting the books again.")
+            Text("This removes all downloaded books from this device. A book downloads again when you save it or open it to read.")
         }
     }
 }

@@ -91,7 +91,12 @@ struct SummaryReaderView: View {
         .task {
             // Opening the reader takes a place on the reading pass. The book page shows the pass instead
             // when none are left, so this fails only if another device used the last one meanwhile.
-            if !(await ReadingPassStore.shared.open(book.id)) { dismiss() }
+            guard await ReadingPassStore.shared.open(book.id) else {
+                dismiss()
+                return
+            }
+            // A book opened in full stays readable offline
+            OfflineLibrary.shared.keepForReading(book, summary: summary)
         }
         .onDisappear { record(force: true) }
         .onChange(of: scenePhase) { _, phase in
