@@ -34,6 +34,11 @@ struct OnboardingView: View {
                                             removal: .move(edge: .leading).combined(with: .opacity)))
             case .notifications:
                 NotificationsPromptView(viewModel: viewModel) {
+                    Analytics.capture(.onboardingCompleted(
+                        topics: OnboardingPreferences.preferredGenres.count,
+                        goals: OnboardingPreferences.readingGoals.count,
+                        likedBooks: OnboardingPreferences.likedBookIds.count
+                    ))
                     withAnimation(.easeInOut(duration: 0.4)) { hasCompletedOnboarding = true }
                 }
                 .transition(.move(edge: .trailing).combined(with: .opacity))

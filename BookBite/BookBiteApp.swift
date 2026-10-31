@@ -15,6 +15,7 @@ struct BookBiteApp: App {
 
     init() {
         OnboardingPreferences.migrateExistingInstall()
+        Analytics.start()
     }
 
     var body: some Scene {

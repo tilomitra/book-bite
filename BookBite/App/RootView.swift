@@ -107,6 +107,11 @@ struct RootView: View {
             ReadingPassView()
         }
         // The pass follows the account: load it, move guest books onto it, use a code from an invite link
+        // Waits for the stored session: while it loads there's no user, which isn't a sign-out
+        .task(id: authService.authState) {
+            guard authService.authState != .loading else { return }
+            Analytics.identify(authService.currentUser?.id)
+        }
         .task(id: authService.currentUser?.id) {
             await readingPass.setUser(authService.currentUser?.id)
         }

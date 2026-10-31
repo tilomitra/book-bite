@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		39B0A1C2D3E4F50617283903 /* PostHog in Frameworks */ = {isa = PBXBuildFile; productRef = 39B0A1C2D3E4F50617283902 /* PostHog */; };
 		39A1B2C3D4E5F60718293A13 /* BookBiteWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 39A1B2C3D4E5F60718293A10 /* BookBiteWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -106,6 +107,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				39B0A1C2D3E4F50617283903 /* PostHog in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,6 +179,7 @@
 			);
 			name = BookBite;
 			packageProductDependencies = (
+				39B0A1C2D3E4F50617283902 /* PostHog */,
 			);
 			productName = BookBite;
 			productReference = 39024F352E4E11BD00BA3E1D /* BookBite.app */;
@@ -285,6 +288,9 @@
 			);
 			mainGroup = 39024F2C2E4E11BD00BA3E1D;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				39B0A1C2D3E4F50617283901 /* XCRemoteSwiftPackageReference "posthog-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 39024F362E4E11BD00BA3E1D /* Products */;
 			projectDirPath = "";
@@ -732,6 +738,24 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+/* Begin XCRemoteSwiftPackageReference section */
+		39B0A1C2D3E4F50617283901 /* XCRemoteSwiftPackageReference "posthog-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/PostHog/posthog-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.93.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		39B0A1C2D3E4F50617283902 /* PostHog */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 39B0A1C2D3E4F50617283901 /* XCRemoteSwiftPackageReference "posthog-ios" */;
+			productName = PostHog;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 39024F2D2E4E11BD00BA3E1D /* Project object */;
 }

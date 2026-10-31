@@ -60,6 +60,7 @@ struct ReadingPassView: View {
         .sensoryFeedback(.success, trigger: pass.limit) { old, new in new > old }
         .signInPrompt($signInPrompt)
         .onAppear {
+            Analytics.capture(.readingPassViewed)
             books = PassBooks.lookup()
             // From an invite link: the code is waiting, so go straight to it
             // Signed in, the store uses it by itself
@@ -284,6 +285,7 @@ struct ReadingPassView: View {
             do {
                 switch try await subscription.purchase(accountId: authService.currentUser?.id) {
                 case .purchased:
+                    Analytics.capture(.subscriptionStarted)
                     celebration = "Welcome to BookBite Unlimited. Every book is open to you."
                 case .pending:
                     purchaseError = "Your purchase is waiting for approval. Books unlock when it goes through."

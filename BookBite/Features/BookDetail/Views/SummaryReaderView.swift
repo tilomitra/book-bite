@@ -95,6 +95,7 @@ struct SummaryReaderView: View {
                 dismiss()
                 return
             }
+            Analytics.capture(.readingStarted(book))
             // A book opened in full stays readable offline
             OfflineLibrary.shared.keepForReading(book, summary: summary)
         }
@@ -332,6 +333,7 @@ struct SummaryReaderView: View {
         if !isFinished, metrics.range - metrics.offset < 80 {
             isFinished = true
             ReadingProgressStore.shared.markFinished(book)
+            Analytics.capture(.readingFinished(book))
             return
         }
         record()

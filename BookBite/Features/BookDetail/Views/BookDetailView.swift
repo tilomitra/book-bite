@@ -37,6 +37,7 @@ struct BookDetailView: View {
         .background(Color.paper.ignoresSafeArea())
         .task {
             RecentBooksStore.shared.record(viewModel.book)
+            Analytics.capture(.bookViewed(viewModel.book))
             // Without a cover image the page shows a TypographicCover: tint with its cloth colour
             let tint = await CoverTint.color(for: viewModel.book.coverAssetName)
                 ?? Color(TypographicCover.cloth(for: viewModel.book.title))
@@ -304,6 +305,7 @@ struct BookDetailView: View {
                 showingPass = true
                 return
             }
+            Analytics.capture(.audioStarted(viewModel.book))
             OfflineLibrary.shared.keepForReading(viewModel.book, summary: summary)
             audioService.loadAudio(for: viewModel.book, summary: summary, autoPlay: true)
             showingAudioPlayer = true
