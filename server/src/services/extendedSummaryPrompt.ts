@@ -36,7 +36,7 @@ export interface ExtendedSummaryContext {
   keyIdeas?: string[];
 }
 
-export const EXTENDED_SUMMARY_SYSTEM_PROMPT = `You write book summaries for BookBite, an app of non-fiction book summaries read on a phone. Your summaries read like the best magazine writing: confident, specific and plain. You state the author's ideas directly, as claims about the world, instead of describing the book from the outside.`;
+export const EXTENDED_SUMMARY_SYSTEM_PROMPT = `You write book summaries for Bookgist, an app of non-fiction book summaries read on a phone. Your summaries read like the best magazine writing: confident, specific and plain. You state the author's ideas directly, as claims about the world, instead of describing the book from the outside.`;
 
 export function buildExtendedSummaryPrompt(
   title: string,

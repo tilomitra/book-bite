@@ -122,7 +122,7 @@ struct SettingsView: View {
                         do {
                             try await subscription.restore()
                             restoreMessage = subscription.isSubscribed
-                                ? "BookBite Unlimited is active again."
+                                ? "Bookgist Unlimited is active again."
                                 : "No active subscription was found for this Apple Account."
                         } catch {
                             restoreMessage = error.localizedDescription
@@ -198,7 +198,7 @@ struct SettingsView: View {
         } footer: {
             if reminder.isDenied {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Notifications are off for BookBite.")
+                    Text("Notifications are off for Bookgist.")
                     Button("Turn On in Settings") {
                         if let url = URL(string: UIApplication.openNotificationSettingsURLString) {
                             openURL(url)
@@ -292,7 +292,7 @@ struct SettingsView: View {
         } header: {
             Text("Privacy & Data")
         } footer: {
-            Text("Your reading progress, notebook, recently opened books and Ask history are stored only on this \(UIDevice.current.model), not on BookBite's servers. Usage analytics record what you do in the app, such as which books you open, but never what you ask.")
+            Text("Your reading progress, notebook, recently opened books and Ask history are stored only on this \(UIDevice.current.model), not on Bookgist's servers. Usage analytics record what you do in the app, such as which books you open, but never what you ask.")
         }
     }
 
@@ -323,7 +323,7 @@ struct SettingsView: View {
             Text("About")
         } footer: {
             // Required by Amazon Associates for the "Get the full book" links
-            Text("As an Amazon Associate, BookBite earns from qualifying purchases.")
+            Text("As an Amazon Associate, Bookgist earns from qualifying purchases.")
         }
     }
 

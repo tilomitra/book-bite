@@ -3,7 +3,7 @@ import UIKit
 
 /// The reading pass: the shelf of books opened in full, then big pastel action cards (after Drop's
 /// "Refer & earn"): invite friends (opens `InviteSheet`), enter a friend's code (`CodeEntrySheet`), and
-/// BookBite Unlimited. Opens as a sheet when a book is out of reach (with `book`), from Library and
+/// Bookgist Unlimited. Opens as a sheet when a book is out of reach (with `book`), from Library and
 /// invite links, and as a page from Settings.
 struct ReadingPassView: View {
     /// The book they tried to open when the pass ran out
@@ -152,7 +152,7 @@ struct ReadingPassView: View {
 
     private var dek: String {
         if store.hasUnlimited {
-            return "Every book is open to you in full. Thank you for supporting BookBite."
+            return "Every book is open to you in full. Thank you for supporting Bookgist."
         }
         if !store.isSignedIn && store.pendingInviteCode != nil {
             return "Create a free account to add them to your shelf. Your friend gets 5 more books too."
@@ -238,13 +238,13 @@ struct ReadingPassView: View {
             PassEyebrow(text: "Read without limits")
 
             if store.hasUnlimited {
-                Text("You have BookBite Unlimited. It renews monthly; manage or cancel it in Settings → Apple Account → Subscriptions.")
+                Text("You have Bookgist Unlimited. It renews monthly; manage or cancel it in Settings → Apple Account → Subscriptions.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             } else {
                 PassActionCard(
-                    title: "BookBite Unlimited",
+                    title: "Bookgist Unlimited",
                     message: "Every book in full, read or listen. \(subscription.priceText).",
                     buttonTitle: "Subscribe",
                     art: "ReadUnlimited",
@@ -286,7 +286,7 @@ struct ReadingPassView: View {
                 switch try await subscription.purchase(accountId: authService.currentUser?.id) {
                 case .purchased:
                     Analytics.capture(.subscriptionStarted)
-                    celebration = "Welcome to BookBite Unlimited. Every book is open to you."
+                    celebration = "Welcome to Bookgist Unlimited. Every book is open to you."
                 case .pending:
                     purchaseError = "Your purchase is waiting for approval. Books unlock when it goes through."
                 case .cancelled:

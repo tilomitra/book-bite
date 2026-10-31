@@ -6,7 +6,7 @@ import Foundation
 final class ReminderSettingsViewModel: ObservableObject {
     @Published private(set) var isOn = false
     @Published private(set) var time: Date = ReminderSettingsViewModel.date(from: DailyIdeaReminder.defaultTime)
-    /// Notifications are off for BookBite in the Settings app; the switch can't help until they're back on
+    /// Notifications are off for Bookgist in the Settings app; the switch can't help until they're back on
     @Published private(set) var isDenied = false
     @Published private(set) var isLoaded = false
 

@@ -159,7 +159,7 @@ struct GiftBookButton: View {
         if let invite = store.accountPass?.invite {
             ShareLink(
                 item: invite.url,
-                subject: Text("5 free books on BookBite"),
+                subject: Text("5 free books on Bookgist"),
                 message: Text(InviteMessage.text(code: invite.code, url: invite.url, book: book))
             ) {
                 Label("Give a friend 5 books", systemImage: "gift")

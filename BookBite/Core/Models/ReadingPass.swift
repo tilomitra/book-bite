@@ -147,9 +147,9 @@ enum InviteMessage {
     static func text(code: String, url: URL, book: Book? = nil) -> String {
         let opener: String
         if let book {
-            opener = "I just finished “\(book.shelfTitle)” on BookBite and thought of you."
+            opener = "I just finished “\(book.shelfTitle)” on Bookgist and thought of you."
         } else {
-            opener = "I've been reading the key ideas of great non-fiction on BookBite."
+            opener = "I've been reading the key ideas of great non-fiction on Bookgist."
         }
         return "\(opener) Here are 5 free books to start, on me: \(url.absoluteString) (code \(code))"
     }

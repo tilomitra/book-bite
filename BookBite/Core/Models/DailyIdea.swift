@@ -9,6 +9,6 @@ struct DailyIdea: Codable {
 
     /// Text for the share sheet, e.g. "Small habits compound." — Atomic Habits by James Clear
     var shareText: String {
-        "\"\(idea.idea)\" — \(book.title) by \(book.formattedAuthors)\n\nFrom BookBite"
+        "\"\(idea.idea)\" — \(book.title) by \(book.formattedAuthors)\n\nFrom Bookgist"
     }
 }

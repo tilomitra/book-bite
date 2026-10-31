@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Welcome screen: covers orbiting the BookBite mark, the pitch, and Get Started, which raises the
+/// Welcome screen: covers orbiting the Bookgist mark, the pitch, and Get Started, which raises the
 /// sign-up sheet while the orbit slides up behind it.
 struct WelcomeView: View {
     @EnvironmentObject var authService: SupabaseAuthService
@@ -55,7 +55,7 @@ struct WelcomeView: View {
 
     private var pitch: some View {
         VStack(spacing: 0) {
-            Text("BookBite")
+            Text("Bookgist")
                 .font(.caption)
                 .fontWeight(.semibold)
                 .tracking(2)
@@ -103,7 +103,7 @@ struct WelcomeView: View {
 
 // MARK: - Orbit hero
 
-/// Book covers and feature icons on three slowly turning rings around the BookBite mark.
+/// Book covers and feature icons on three slowly turning rings around the Bookgist mark.
 struct OrbitHero: View {
     let books: [Book]
     @Environment(\.accessibilityReduceMotion) private var reduceMotion

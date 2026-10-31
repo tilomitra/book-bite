@@ -302,7 +302,7 @@ enum AskShareText {
         }
         if let week = answer.thisWeek { parts.append("This week: \(week)") }
         if let other = answer.otherSide { parts.append(other) }
-        parts.append("From BookBite")
+        parts.append("From Bookgist")
         return parts.filter { !$0.isEmpty }.joined(separator: "\n\n")
     }
 }

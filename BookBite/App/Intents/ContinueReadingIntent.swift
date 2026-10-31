@@ -1,6 +1,6 @@
 import AppIntents
 
-/// "Continue reading in BookBite": opens the app on the summary the user was last reading.
+/// "Continue reading in Bookgist": opens the app on the summary the user was last reading.
 struct ContinueReadingIntent: AppIntent {
     static let title: LocalizedStringResource = "Continue Reading"
     static let description = IntentDescription(

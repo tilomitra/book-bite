@@ -78,7 +78,7 @@ struct InviteProgressPanel: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Every milestone reached")
                         .font(.system(.title3, design: .serif).weight(.medium))
-                    Text("Thank you for sharing BookBite.")
+                    Text("Thank you for sharing Bookgist.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }

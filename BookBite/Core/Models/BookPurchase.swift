@@ -1,7 +1,7 @@
 import Foundation
 
 /// Stores for "Get the full book". Links go through the server (`GET books/:id/buy`), which
-/// redirects to the store with BookBite's affiliate id, so ids can change without an app update.
+/// redirects to the store with Bookgist's affiliate id, so ids can change without an app update.
 enum BookStore: String, CaseIterable, Identifiable {
     case amazon, bookshop
 

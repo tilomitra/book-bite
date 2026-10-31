@@ -1,5 +1,5 @@
 /**
- * BookBite is a non-fiction ideas app: novels, poetry and plays have no "key ideas" to apply, so
+ * Bookgist is a non-fiction ideas app: novels, poetry and plays have no "key ideas" to apply, so
  * they stay out of the idea of the day, Discover and recommendations, and importers skip them.
  *
  * Categories are messy. Google Books tags some non-fiction "Fiction / General" (Into Thin Air,

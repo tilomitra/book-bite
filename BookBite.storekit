@@ -20,7 +20,7 @@
       "localizations" : [
 
       ],
-      "name" : "BookBite Unlimited",
+      "name" : "Bookgist Unlimited",
       "subscriptions" : [
         {
           "adHocOffers" : [
@@ -37,13 +37,13 @@
           "localizations" : [
             {
               "description" : "Every book in full, read or listen, as often as you like.",
-              "displayName" : "BookBite Unlimited",
+              "displayName" : "Bookgist Unlimited",
               "locale" : "en_US"
             }
           ],
           "productID" : "tilo.BookBite.unlimited.monthly",
           "recurringSubscriptionPeriod" : "P1M",
-          "referenceName" : "BookBite Unlimited Monthly",
+          "referenceName" : "Bookgist Unlimited Monthly",
           "subscriptionGroupID" : "21580001",
           "type" : "RecurringSubscription",
           "winbackOffers" : [
