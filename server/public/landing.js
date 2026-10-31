@@ -1,4 +1,4 @@
-// BookBite landing page. No dependencies: the scroll scenes are driven by one rAF loop reading each section's progress.
+// Bookgist landing page. No dependencies: the scroll scenes are driven by one rAF loop reading each section's progress.
 (() => {
   // Set this to the public TestFlight invite (https://testflight.apple.com/join/<code>) once the beta is public.
   const TESTFLIGHT_URL = 'https://testflight.apple.com/join/BOOKBITE';

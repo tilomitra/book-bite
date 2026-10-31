@@ -36,7 +36,7 @@ class SharingService: ObservableObject {
             shareText += " by \(book.formattedAuthors)"
         }
         
-        shareText += " on BookBite!"
+        shareText += " on Bookgist!"
         
         if let link = generateShareableLink(for: book) {
             shareText += "\n\n\(link.absoluteString)"

@@ -47,7 +47,7 @@ Ideas for taking the app to Apple Design Award level. Done so far: Editorial Dis
 
 ## Reading pass (5 free books, Give 5 get 5, $9/month Unlimited)
 - [ ] Apply `server/supabase/add-reading-pass.sql` in the Supabase SQL editor. Until then `/api/user/reading-pass` fails and signed-in readers fall back to the pass on their device.
-- [ ] Create the subscription in App Store Connect: group "BookBite Unlimited", product `tilo.BookBite.unlimited.monthly`, 1 month, $9.00. Needs the paid developer team (the free team can't sign In-App Purchase).
+- [ ] Create the subscription in App Store Connect: group "Bookgist Unlimited", product `tilo.BookBite.unlimited.monthly`, 1 month, $9.00. Needs the paid developer team (the free team can't sign In-App Purchase).
 - [ ] Set `APP_STORE_URL` on Render once the app is live (invite pages link to the TestFlight placeholder until then).
 - [ ] Server-side enforcement: `/summaries/book/:id` still returns the full text to everyone. Gate it once older app versions are gone, with App Store Server API checks for subscribers.
 - [ ] Universal links for `/invite/<code>` (needs Associated Domains, so the paid team) and a deferred deep link, so a new install gets the code without typing it.

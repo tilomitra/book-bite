@@ -204,7 +204,7 @@ struct OnboardingAuthSheet: View {
                         if mode == .signUp {
                             Text("Already have an account? ").foregroundStyle(.secondary) + Text("Sign in").fontWeight(.semibold)
                         } else {
-                            Text("New to BookBite? ").foregroundStyle(.secondary) + Text("Create an account").fontWeight(.semibold)
+                            Text("New to Bookgist? ").foregroundStyle(.secondary) + Text("Create an account").fontWeight(.semibold)
                         }
                     }
                     .font(.subheadline)

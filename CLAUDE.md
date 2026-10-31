@@ -4,7 +4,9 @@ Guidance for Claude Code when working in this repository. Keep it accurate: upda
 
 ## What this is
 
-BookBite shows AI-generated non-fiction book summaries (one-sentence hook, key ideas, how-to-apply, extended summary, audio summary, Ask: questions answered from ideas across the catalogue). Reading a book in full (reader or audio) uses the reading pass: 5 free books, 5 more per invite, or $9/month Unlimited (see "Reading pass").
+**Naming:** the product is **Bookgist** (renamed from BookBite on 2026-10-31; planned domain `bookgist.app`). Only user-facing text changed. Code, targets, the Xcode project and scheme, bundle ids, the app group, the `tilo.BookBite.unlimited.monthly` product id, the `bookbite://` URL scheme, storage keys, `BOOKBITE_SERVER_URL`, the `bookbite-20` Amazon tag, the repo and `book-bite.onrender.com` keep the old name on purpose (changing them breaks installs, links or purchases, or needs registrar/store work). The rest of this file says BookBite for those identifiers. `CFBundleDisplayName` is set with `INFOPLIST_KEY_CFBundleDisplayName` on the app and widget targets.
+
+Bookgist shows AI-generated non-fiction book summaries (one-sentence hook, key ideas, how-to-apply, extended summary, audio summary, Ask: questions answered from ideas across the catalogue). Reading a book in full (reader or audio) uses the reading pass: 5 free books, 5 more per invite, or $9/month Unlimited (see "Reading pass").
 
 - **iOS app** (`BookBite/`): SwiftUI, MVVM, iOS 18.5+ deployment target, bundle id `tilo.BookBite`. Built with Xcode 26 (iOS 26 simulator SDK). Universal (iPhone + iPad, `TARGETED_DEVICE_FAMILY = 1,2`); see "iPad" below.
 - **Widget extension** (`BookBiteWidget/`, target `BookBiteWidget`, bundle id `tilo.BookBite.BookBiteWidget`): "Idea of the Day" Home Screen widget (small, medium), embedded in the app.

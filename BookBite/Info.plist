@@ -12,7 +12,7 @@
 		<true/>
 	</dict>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>BookBite connects to a development server on your local network.</string>
+	<string>Bookgist connects to a development server on your local network.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

@@ -65,7 +65,7 @@ export class OpenLibraryService {
       const response = await axios.get(`${OPEN_LIBRARY_BASE}/works/${cleanWorkId}/ratings.json`, {
         timeout: 5000,
         headers: {
-          'User-Agent': 'BookBite-App/1.0 (contact@bookbite.app)'
+          'User-Agent': 'Bookgist-App/1.0 (tilomitra@gmail.com)'
         }
       });
 
@@ -107,7 +107,7 @@ export class OpenLibraryService {
         },
         timeout: 5000,
         headers: {
-          'User-Agent': 'BookBite-App/1.0 (contact@bookbite.app)'
+          'User-Agent': 'Bookgist-App/1.0 (tilomitra@gmail.com)'
         }
       });
 
@@ -125,7 +125,7 @@ export class OpenLibraryService {
           const editionResponse = await axios.get(`${OPEN_LIBRARY_BASE}${book.key}.json`, {
             timeout: 5000,
             headers: {
-              'User-Agent': 'BookBite-App/1.0 (contact@bookbite.app)'
+              'User-Agent': 'Bookgist-App/1.0 (tilomitra@gmail.com)'
             }
           });
           
@@ -154,7 +154,7 @@ export class OpenLibraryService {
         },
         timeout: 5000,
         headers: {
-          'User-Agent': 'BookBite-App/1.0 (contact@bookbite.app)'
+          'User-Agent': 'Bookgist-App/1.0 (tilomitra@gmail.com)'
         }
       });
 

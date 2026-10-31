@@ -117,7 +117,7 @@ struct InviteSheet: View {
                     VStack(spacing: 10) {
                         ShareLink(
                             item: invite.url,
-                            subject: Text("5 free books on BookBite"),
+                            subject: Text("5 free books on Bookgist"),
                             message: Text(InviteMessage.text(code: invite.code, url: invite.url, book: nil))
                         ) {
                             Label("Send to a friend", systemImage: "paperplane")

@@ -130,7 +130,7 @@ struct PressableButtonStyle: ButtonStyle {
     }
 }
 
-/// The BookBite mark: a serif "B" in a black disc.
+/// The Bookgist mark: a serif "B" in a black disc.
 struct BookBiteMark: View {
     var size: CGFloat = 64
 

@@ -1,7 +1,7 @@
 import Foundation
 import StoreKit
 
-/// BookBite Unlimited: a $9/month auto-renewable subscription (StoreKit 2) that removes the reading
+/// Bookgist Unlimited: a $9/month auto-renewable subscription (StoreKit 2) that removes the reading
 /// pass limit. The entitlement is read on device from `Transaction.currentEntitlements`; the server
 /// doesn't know about it. Local testing uses `BookBite.storekit` (set in the BookBite scheme).
 @MainActor

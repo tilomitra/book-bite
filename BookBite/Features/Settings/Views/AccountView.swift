@@ -55,7 +55,7 @@ struct AccountView: View {
                     confirmingDelete = true
                 }
             } footer: {
-                Text("This deletes your account, saved books and reading history from BookBite's servers. You can't undo this.")
+                Text("This deletes your account, saved books and reading history from Bookgist's servers. You can't undo this.")
             }
         }
         .navigationTitle("Account")
@@ -67,7 +67,7 @@ struct AccountView: View {
                     .controlSize(.large)
             }
         }
-        .confirmationDialog("Sign out of BookBite?", isPresented: $confirmingSignOut, titleVisibility: .visible) {
+        .confirmationDialog("Sign out of Bookgist?", isPresented: $confirmingSignOut, titleVisibility: .visible) {
             Button("Sign Out", role: .destructive) {
                 Task { await signOut() }
             }

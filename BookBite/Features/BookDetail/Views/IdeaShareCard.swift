@@ -71,7 +71,7 @@ struct IdeaShareCard: View {
 
                 Spacer(minLength: 12)
 
-                Text("BookBite")
+                Text("Bookgist")
                     .font(.system(size: 13, weight: .medium, design: .serif))
                     .tracking(0.3)
                     .foregroundStyle(ink.opacity(0.45))

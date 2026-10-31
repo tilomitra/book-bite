@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="BookBite/Assets.xcassets/AppIcon.appiconset/Bookbite_V2-1024x1024@1x.png" width="128" alt="BookBite app icon">
+  <img src="BookBite/Assets.xcassets/AppIcon.appiconset/Bookbite_V2-1024x1024@1x.png" width="128" alt="Bookgist app icon">
 </p>
 
-<h1 align="center">BookBite</h1>
+<h1 align="center">Bookgist</h1>
 
 <p align="center">
   <em>The big ideas from great non-fiction, in the time it takes to drink a coffee.</em>
@@ -21,11 +21,11 @@
 
 ---
 
-BookBite is an iOS app for people who want to learn from books but do not have time to read all of them. Each book gets a one-sentence hook, its key ideas, how to apply them, an honest look at its weak points, and a chaptered summary you can read in about ten minutes. You can also listen to it, or ask a question about your own situation and get answers drawn from several books.
+Bookgist is an iOS app for people who want to learn from books but do not have time to read all of them. Each book gets a one-sentence hook, its key ideas, how to apply them, an honest look at its weak points, and a chaptered summary you can read in about ten minutes. You can also listen to it, or ask a question about your own situation and get answers drawn from several books.
 
 The design is quiet and editorial, like a good magazine. The only color comes from the book covers.
 
-BookBite is in beta on TestFlight. See the [website](https://book-bite.onrender.com/).
+Bookgist is in beta on TestFlight. See the [website](https://book-bite.onrender.com/).
 
 ## What you can do
 
@@ -38,22 +38,22 @@ BookBite is in beta on TestFlight. See the [website](https://book-bite.onrender.
 - **A real reading page.** Each book has a hook, key ideas, how to apply them, who it is for, and "The other side" (critiques and limits).
 - **Key ideas as cards.** Swipe through them, keep the ones you like, or share one as an image.
 - **A reader built for long text.** Chapters with a contents menu, Paper, Sepia and Night themes, serif or sans type, and text size that follows Dynamic Type.
-- **Picks up where you stopped.** BookBite remembers your place and shows "N min left".
+- **Picks up where you stopped.** Bookgist remembers your place and shows "N min left".
 - **Audio summaries** with lock-screen controls.
 
 ### Keep
 - **Library.** Continue reading, recently opened, saved books, finished books ("12 finished this year") and offline downloads.
 - **Notebook.** All the ideas you kept, by book or by date.
-- **Request any book.** Search Google Books. BookBite writes the summary on demand.
+- **Request any book.** Search Google Books. Bookgist writes the summary on demand.
 
 ### Everywhere on iPhone
 - **Home Screen widget** with the Idea of the Day (small and medium).
-- **Siri and Shortcuts:** "Today's idea in BookBite" and "Continue reading".
+- **Siri and Shortcuts:** "Today's idea in Bookgist" and "Continue reading".
 - **Spotlight** finds books you have opened.
 - **Share links** (`bookbite://book/<id>`) open the book in the app.
 - **A daily 8 AM reminder**, if you want one.
 
-Sign-in (Apple or email) is optional. You can use almost all of BookBite as a guest.
+Sign-in (Apple or email) is optional. You can use almost all of Bookgist as a guest.
 
 ## How it works
 

@@ -16,7 +16,7 @@ enum AppLinks {
         var components = URLComponents()
         components.scheme = "mailto"
         components.path = supportEmail
-        components.queryItems = [URLQueryItem(name: "subject", value: "BookBite \(appVersion) feedback")]
+        components.queryItems = [URLQueryItem(name: "subject", value: "Bookgist \(appVersion) feedback")]
         return components.url
     }
 }

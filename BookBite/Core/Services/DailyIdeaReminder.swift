@@ -40,7 +40,7 @@ enum DailyIdeaReminder {
         return DateComponents(hour: trigger.dateComponents.hour, minute: trigger.dateComponents.minute)
     }
 
-    /// True when the user turned notifications off for BookBite in the Settings app
+    /// True when the user turned notifications off for Bookgist in the Settings app
     static func isDenied() async -> Bool {
         await UNUserNotificationCenter.current().notificationSettings().authorizationStatus == .denied
     }

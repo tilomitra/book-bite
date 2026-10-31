@@ -106,7 +106,7 @@ extension SignInPrompt.Reason {
             let quoted = "“\(Self.shortened(question))”"
             let found: String
             switch books.count {
-            case 0: found = "BookBite answers \(quoted) with ideas from across the library."
+            case 0: found = "Bookgist answers \(quoted) with ideas from across the library."
             case 1: found = "We found a book with ideas on \(quoted)."
             default: found = "We found \(books.count) books with ideas on \(quoted)."
             }

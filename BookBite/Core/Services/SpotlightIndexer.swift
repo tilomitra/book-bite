@@ -5,7 +5,7 @@ import UIKit
 import UniformTypeIdentifiers
 
 /// Puts the books the user opened, is reading or finished into Spotlight, so searching a title on the
-/// Home Screen finds it in BookBite. Watches `RecentBooksStore` and `ReadingProgressStore`; only books
+/// Home Screen finds it in Bookgist. Watches `RecentBooksStore` and `ReadingProgressStore`; only books
 /// that were added or removed since the last run are (re)indexed, so covers aren't downloaded again.
 @MainActor
 final class SpotlightIndexer {

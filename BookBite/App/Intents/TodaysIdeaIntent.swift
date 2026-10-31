@@ -2,7 +2,7 @@ import AppIntents
 import SwiftUI
 import UIKit
 
-/// "Today's idea in BookBite": speaks the idea of the day and shows it as a snippet, without opening the app.
+/// "Today's idea in Bookgist": speaks the idea of the day and shows it as a snippet, without opening the app.
 struct TodaysIdeaIntent: AppIntent {
     static let title: LocalizedStringResource = "Today's Idea"
     static let description = IntentDescription(

@@ -133,7 +133,7 @@ class AudioPlaybackService: NSObject, ObservableObject {
         var nowPlayingInfo = [String: Any]()
         nowPlayingInfo[MPMediaItemPropertyTitle] = book.title
         nowPlayingInfo[MPMediaItemPropertyArtist] = book.formattedAuthors
-        nowPlayingInfo[MPMediaItemPropertyAlbumTitle] = "BookBite Summary"
+        nowPlayingInfo[MPMediaItemPropertyAlbumTitle] = "Bookgist Summary"
         nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentTime
         nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = duration
         nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? playbackRate : 0.0
