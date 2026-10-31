@@ -54,7 +54,7 @@ xcodebuild -project BookBite.xcodeproj -scheme BookBite -destination 'platform=i
 xcodebuild test -project BookBite.xcodeproj -scheme BookBite -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -only-testing:BookBiteTests
 # single test: -only-testing:BookBiteTests/SearchServiceTests/testSearchByTitle
 ```
-Unit tests use Swift Testing (`@Test`, `#expect`); 119 tests, all should pass. UI tests (`BookBiteUITests`) are XCTest templates.
+Unit tests use Swift Testing (`@Test`, `#expect`); 123 tests, all should pass. UI tests (`BookBiteUITests`) are XCTest templates.
 
 ### Server
 ```bash
@@ -97,7 +97,7 @@ Schema: `server/supabase/schema.sql` plus loose SQL files in `server/supabase/` 
 - `Core/Services`:
   - `NetworkService`: generic `get/post/put/delete`. Use `NetworkService.makeDecoder()` for any server/Supabase JSON (ISO8601 dates with or without fractional seconds). Retries only transient failures of GET requests (`shouldRetry`; never "no connection" errors, see `URLError.isOffline`); offline (`ConnectivityMonitor`) it throws `.networkFailure(URLError(.notConnectedToInternet))` at once without a request; decoding failures throw `.decodingError` immediately; POST takes a `timeout:` (book request uses 180s because the server runs the LLM synchronously).
   - `ConnectivityMonitor` (shared, `NWPathMonitor`): `isOnline` (any thread; online until the first path update) and `@Published isConnected` (main). `NetworkService` and `HybridBookRepository` take a `ConnectivityChecking` so tests can stub it. `EditorialHeader` shows `OfflineNotice` ("Offline · Showing what's on this iPhone", grey footnote) under the title while offline.
-  - `SearchService`: hits `/books/search?source=local` directly with `URLSession.shared` (not via the repository); tests stub it with a `URLProtocol`.
+  - `SearchService`: hits `/books/search?source=local` directly with `URLSession.shared` (not via the repository); tests stub it with a `URLProtocol`. Offline (or when a new search fails with an offline `URLError`) it searches `LocalLibrary.onDevice()` instead and sets `isShowingLocalResults`: downloads, reading progress, recently opened and the Discover snapshot's books, ranked like the server (title exact > prefix > contains > all words > subtitle > author > category > description; within a rank, books with a summary on the device first). The results list shows `OfflineNotice` and hides "Request it"; `SearchViewModel` searches again when the connection returns. A failed load-more while offline keeps the results on screen.
   - `SupabaseAuthService`: talks to Supabase Auth REST directly; session persisted in UserDefaults. Browsing works signed out (guest), but **asking and saving need an account** (see "Sign-in prompts").
   - `AudioPlaybackService` (shared, `@MainActor`): AVPlayer + lock-screen controls; `MiniAudioPlayer` overlay in `RootView`.
   - `RecentBooksStore` (shared, `@MainActor`): books opened in `BookDetailView`, newest first, max 20, in UserDefaults (works signed out).

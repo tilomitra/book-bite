@@ -81,6 +81,12 @@ struct SearchResultsContent: View {
                     }
                     .buttonStyle(.bordered)
                 }
+            } else if searchViewModel.showEmptyState && searchViewModel.isShowingLocalResults {
+                ContentUnavailableView {
+                    Label("You're offline", systemImage: "wifi.slash")
+                } description: {
+                    Text("No books on this device match \"\(searchViewModel.searchText)\". Search the whole library when you're online.")
+                }
             } else if searchViewModel.showEmptyState {
                 ContentUnavailableView {
                     Label("No results", systemImage: "magnifyingglass")
@@ -96,6 +102,7 @@ struct SearchResultsContent: View {
                 SearchResultsList(
                     books: searchViewModel.searchResults,
                     isLoadingMore: searchViewModel.isLoadingMore,
+                    isLocal: searchViewModel.isShowingLocalResults,
                     onBookAppear: searchViewModel.onBookAppear
                 )
             }
@@ -106,10 +113,17 @@ struct SearchResultsContent: View {
 struct SearchResultsList: View {
     let books: [Book]
     let isLoadingMore: Bool
+    /// Results from the books on this device (offline): say so, and don't offer requests
+    var isLocal = false
     let onBookAppear: (Book) -> Void
 
     var body: some View {
         List {
+            if isLocal {
+                OfflineNotice()
+                    .listRowSeparator(.hidden)
+            }
+
             ForEach(books) { book in
                 NavigationLink(destination: BookDetailView(book: book)) {
                     SearchResultRow(book: book)
@@ -125,8 +139,10 @@ struct SearchResultsList: View {
                     .listRowInsets(EdgeInsets())
             }
 
-            Section {
-                RequestBookLink()
+            if !isLocal {
+                Section {
+                    RequestBookLink()
+                }
             }
         }
         .listStyle(.plain)
