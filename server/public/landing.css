@@ -1,4 +1,5 @@
-/* Bookgist landing page: Geist Serif only (self-hosted, fonts/), in black, white and grey.
+/* Bookgist landing page: Geist Serif (self-hosted, fonts/) for the page, Geist sans for buttons
+   and the app UI drawn in cards. Black, white and grey.
    All colour comes from book covers, the tile art (art/) and real app screens (screens/). */
 /* Geist Serif ships one weight (400); weights 450-550 below fall back to it. */
 @font-face {
@@ -18,6 +19,7 @@
   --line: rgba(0, 0, 0, 0.08);
   --accent: #000;
   --font: "Geist Serif", "Times New Roman", Times, serif;
+  --sans: "Geist", -apple-system, system-ui, sans-serif;
   /* Motion and layout */
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-spring: cubic-bezier(0.34, 1.4, 0.5, 1);
@@ -55,7 +57,7 @@ a { color: inherit; }
 /* ---------- Buttons ---------- */
 .btn {
   display: inline-flex; align-items: center; gap: 8px;
-  font: 500 15px/1 var(--font);
+  font: 500 15px/1 var(--sans);
   text-decoration: none;
   border-radius: 999px;
   padding: 14px 22px;
@@ -244,7 +246,8 @@ a { color: inherit; }
 
 .chapter-dark { padding-bottom: clamp(72px, 9vw, 120px); }
 
-/* Custom cards: the app's content, drawn for the page */
+/* Custom cards: the app's content, drawn for the page. App UI is in Geist sans, like the buttons. */
+.card-thread, .task, .page-bar, .player, .controls { font-family: var(--sans); }
 .bento-ask { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); grid-template-rows: 1fr 1fr; }
 .card { border-radius: clamp(26px, 3vw, 40px); background: #161617; padding: clamp(24px, 3vw, 40px); overflow: hidden; }
 .card h3 { margin: 0; font: 500 clamp(17px, 1.35vw, 20px)/1.2 var(--font); letter-spacing: -0.02em; text-wrap: balance; }
@@ -263,7 +266,7 @@ a { color: inherit; }
 .card-thread > *, .points li { transition: opacity .6s var(--ease), transform .8s var(--ease); transition-delay: calc(var(--i, 0) * 280ms); }
 
 .card-week { background: #fff; color: #000; display: flex; flex-direction: column; justify-content: space-between; gap: 28px; }
-.task { display: flex; gap: 14px; padding: 0; border: 0; background: none; color: inherit; text-align: left; cursor: pointer; font: 450 clamp(16px, 1.3vw, 19px)/1.34 var(--font); letter-spacing: -0.012em; }
+.task { display: flex; gap: 14px; padding: 0; border: 0; background: none; color: inherit; text-align: left; cursor: pointer; font: 450 clamp(16px, 1.3vw, 19px)/1.34 var(--sans); letter-spacing: -0.012em; }
 .task i { flex: none; width: 22px; height: 22px; margin-top: 2px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px #000; transition: background-color .25s var(--ease); position: relative; }
 .task i::after { content: ""; position: absolute; left: 8px; top: 4px; width: 5px; height: 10px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg) scale(0); transition: transform .35s var(--ease-spring); }
 .task span { background: linear-gradient(#000, #000) 0 56% / 0 1.5px no-repeat; transition: background-size .5s var(--ease), color .3s; }
@@ -294,7 +297,7 @@ a { color: inherit; }
 }
 .page p { margin-bottom: .75em; }
 .page h4 { margin: 1.2em 0 .4em; font: 500 1.1em/1.25 ui-serif, "New York", Georgia, serif; }
-.page-bar { display: flex; justify-content: space-between; font: 400 12px/1 var(--font); color: var(--d); }
+.page-bar { display: flex; justify-content: space-between; font: 400 12px/1 var(--sans); color: var(--d); }
 .page-line { height: 1px; margin: 12px 0 20px; background: var(--l); }
 .page-line i { display: block; width: 28%; height: 100%; background: var(--t); }
 .initial { float: left; font-size: 3.1em; line-height: .82; padding: .06em .06em 0 0; }
@@ -304,7 +307,7 @@ a { color: inherit; }
 .card-listen { justify-content: space-between; gap: 28px; }
 .player { display: grid; grid-template-columns: clamp(104px, 11vw, 140px) minmax(0, 1fr); gap: clamp(18px, 2.4vw, 30px); align-items: end; margin-top: auto; }
 .player img { width: 100%; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 3px 7px 7px 3px; box-shadow: 0 24px 34px -18px rgba(0,0,0,.5); }
-.player-title { font: 500 clamp(16px, 1.3vw, 19px)/1.2 var(--font); letter-spacing: -0.015em; }
+.player-title { font: 500 clamp(16px, 1.3vw, 19px)/1.2 var(--sans); letter-spacing: -0.015em; }
 .player-by { margin-top: 2px; font-size: 14px; color: var(--text-2); }
 .wave { display: flex; align-items: center; gap: 2px; height: 40px; margin-top: 18px; }
 .wave i { flex: 1; height: var(--h); min-width: 0; border-radius: 2px; background: #c7c7cc; transition: background-color .2s; }
