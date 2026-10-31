@@ -17,6 +17,7 @@ struct SettingsView: View {
     @State private var restoreMessage: String?
     @StateObject private var reminder = ReminderSettingsViewModel()
 
+    @AppStorage(Analytics.enabledKey) private var analyticsEnabled = true
     @AppStorage("readerTheme") private var readerTheme: ReaderTheme = .paper
     @AppStorage("readerTypeface") private var readerTypeface: ReaderTypeface = .serif
 
@@ -283,13 +284,15 @@ struct SettingsView: View {
 
     private var privacySection: some View {
         Section {
+            Toggle("Share Usage Analytics", isOn: $analyticsEnabled)
+                .onChange(of: analyticsEnabled) { _, enabled in Analytics.setEnabled(enabled) }
             clearButton(.askHistory, isEmpty: askHistory.conversations.isEmpty)
             clearButton(.recentlyOpened, isEmpty: recentBooks.books.isEmpty)
             clearButton(.readingProgress, isEmpty: readingProgress.entries.isEmpty)
         } header: {
             Text("Privacy & Data")
         } footer: {
-            Text("Your reading progress, notebook, recently opened books and Ask history are stored only on this \(UIDevice.current.model), not on BookBite's servers.")
+            Text("Your reading progress, notebook, recently opened books and Ask history are stored only on this \(UIDevice.current.model), not on BookBite's servers. Usage analytics record what you do in the app, such as which books you open, but never what you ask.")
         }
     }
 
