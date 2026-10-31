@@ -1,6 +1,7 @@
 import OpenAI from 'openai';
 import { supabase } from '../config/supabase';
 import { ElevenLabsService, AudioGenerationOptions } from './elevenLabsService';
+import { SPOKEN_WRITING_RULES, cleanAudioScript, stripAudioTags } from './audioScript';
 import { Book, Summary, AudioGenerationJob } from '../models/types';
 
 const AUDIO_BUCKET = 'audio-summaries';
@@ -22,7 +23,9 @@ export interface AudioGenerationResult {
 export class AudioSummaryService {
   private openai: OpenAI;
   private elevenLabs: ElevenLabsService;
-  private model = 'gpt-4o';
+  // Same model as the written summaries. A reasoning model: max_completion_tokens counts
+  // reasoning tokens and only the default temperature is allowed.
+  private model = 'gpt-6-luna';
 
   constructor() {
     if (!process.env.OPENAI_API_KEY) {
@@ -49,16 +52,13 @@ export class AudioSummaryService {
     try {
       const response = await this.openai.chat.completions.create({
         model: this.model,
-        max_tokens: 3000,
-        temperature: 0.7,
+        max_completion_tokens: 12000,
         messages: [
           {
             role: 'system',
-            content: `You are a professional audiobook narrator and content creator.
-Your job is to create engaging, conversational audio scripts that sound natural when spoken aloud.
-Write in a warm, friendly tone as if explaining ideas to a curious friend over coffee.
-Use contractions, rhetorical questions, and natural speech patterns.
-Avoid jargon, complex sentence structures, and anything that sounds "written" rather than "spoken".`
+            content: `You write audio summaries of non-fiction books that a narrator reads aloud.
+Write the way a thoughtful person talks when they explain a book they love to a curious friend: warm, clear and specific.
+It must sound spoken, not read: natural rhythm, contractions, the odd question to the listener, no written-style constructions.`
           },
           {
             role: 'user',
@@ -67,16 +67,17 @@ Avoid jargon, complex sentence structures, and anything that sounds "written" ra
         ]
       });
 
-      const script = response.choices[0].message.content;
-      if (!script) {
+      const raw = response.choices[0].message.content;
+      if (!raw) {
         throw new Error('No script generated from OpenAI');
       }
 
-      const wordCount = script.split(/\s+/).length;
+      const script = cleanAudioScript(raw);
+      const wordCount = stripAudioTags(script).split(/\s+/).length;
       const estimatedDurationMinutes = wordCount / 150; // Average speaking rate
 
       return {
-        script: script.trim(),
+        script,
         wordCount,
         estimatedDurationMinutes
       };
@@ -114,46 +115,28 @@ CRITICAL PRIORITY: Focus 90% of the script on the ACTUAL IDEAS and PRACTICAL APP
 - Generic statements about why the topic matters
 - Lengthy introductions or context-setting
 
-STRUCTURE YOUR SCRIPT AS FOLLOWS:
+STRUCTURE (in this order, with no headings or labels in the script):
 
-[HOOK - ~50 words]
-Jump straight into the most compelling idea from the book. Start with something like:
-"Here's a question: [provocative question related to the book's core idea]" or
-"What if [counterintuitive premise from the book]?"
+1. Opening (about 50 words). Jump straight into the most compelling idea from the book: a provocative question or a counterintuitive premise.
 
-[CORE IDEAS - ~1100 words]
-This is the heart of the summary. For each major concept from the book:
-1. State the idea clearly and concisely
-2. Explain HOW it works with a specific example or analogy
-3. Share any memorable frameworks, models, or formulas the author presents
-4. Connect it to the next idea with a natural transition
+2. Core ideas (about 1100 words). The heart of the summary. For each major idea:
+   - State it clearly in one or two sentences.
+   - Show HOW it works with a specific example or analogy.
+   - Share any memorable framework, model or research finding the author presents.
+   - Move to the next idea with a natural spoken transition.
 
-Focus on:
-- The author's unique insights and frameworks
-- Specific techniques, strategies, or methods
-- Concrete examples that illustrate the concepts
-- Any surprising research findings or data points mentioned
+3. Putting it to work (about 300 words). Specific steps the listener can take, starting today, and the common mistakes to avoid. Concrete, not vague.
 
-[PRACTICAL APPLICATIONS - ~300 words]
-Give listeners specific, actionable steps they can implement immediately:
-- What exactly should they do differently starting today?
-- What's the first small step to apply each key concept?
-- What common mistakes should they avoid?
-Make these concrete and specific, not vague advice.
+4. Close (about 50 words). The single most important takeaway, brief and memorable.
 
-[CLOSING - ~50 words]
-End with the single most important takeaway - the one thing listeners should remember. Keep it brief and memorable.
+${SPOKEN_WRITING_RULES}
 
-WRITING STYLE:
-- Conversational but substantive - like explaining ideas to a smart friend
-- Use contractions and natural speech patterns
-- Short, punchy sentences mixed with longer explanatory ones
-- No bullet points - weave everything into flowing prose
-- No filler phrases like "let's dive in" or "here's the thing"
-- No meta-commentary about the book or summary itself
-- Get to the point quickly - every sentence should add value
+AVOID:
+- Filler like "let's dive in", "here's the thing" or "in this summary"
+- Meta-commentary about the book or the summary itself
+- Every sentence must add value
 
-OUTPUT: Write the complete audio script as continuous flowing text, ready to be spoken aloud.`;
+OUTPUT: Only the script, ready to be read aloud: paragraphs separated by blank lines, with delivery tags as allowed above.`;
   }
 
   /**
@@ -435,9 +418,12 @@ OUTPUT: Write the complete audio script as continuous flowing text, ready to be 
   /**
    * Estimate cost for generating audio for a script
    */
-  estimateCost(script: string): { characterCount: number; estimatedCost: number } {
+  estimateCost(
+    script: string,
+    modelId: string = this.elevenLabs.getDefaultModelId()
+  ): { characterCount: number; estimatedCost: number } {
     const characterCount = script.length;
-    const estimatedCost = this.elevenLabs.estimateCost(characterCount);
+    const estimatedCost = this.elevenLabs.estimateCost(characterCount, modelId);
     return { characterCount, estimatedCost };
   }
 
